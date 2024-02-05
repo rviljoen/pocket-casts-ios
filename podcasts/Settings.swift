@@ -892,10 +892,14 @@ class Settings: NSObject {
 
         static var plusCloudStorageLimit: Int {
             RemoteConfig.remoteConfig().configValue(forKey: Constants.RemoteParams.customStorageLimitGB).numberValue.intValue
-        }        
+        }
 
         static var patronCloudStorageLimit: Int {
             RemoteConfig.remoteConfig().configValue(forKey: Constants.RemoteParams.patronCloudStorageGB).numberValue.intValue
+        }
+
+        static var errorLogoutHandling: Bool {
+            return RemoteConfig.remoteConfig().configValue(forKey: Constants.RemoteParams.errorLogoutHandling).boolValue
         }
 
         private class func remoteMsToTime(key: String) -> TimeInterval {

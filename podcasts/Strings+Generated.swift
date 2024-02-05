@@ -408,6 +408,8 @@ internal enum L10n {
   internal static var clearUpNext: String { return L10n.tr("Localizable", "clear_up_next") }
   /// Are you sure you want to clear your Up Next queue?
   internal static var clearUpNextMessage: String { return L10n.tr("Localizable", "clear_up_next_message") }
+  /// Token authentication failed.
+  internal static var clientErrorTokenDeauth: String { return L10n.tr("Localizable", "client_error_token_deauth") }
   /// Close
   internal static var close: String { return L10n.tr("Localizable", "close") }
   /// Color
@@ -1695,6 +1697,8 @@ internal enum L10n {
   internal static func plusCloudStorageLimitFormat(_ p1: Any) -> String {
     return L10n.tr("Localizable", "plus_cloud_storage_limit_format", String(describing: p1))
   }
+  /// 50%% off your first year
+  internal static var plusDiscountYearlyMembership: String { return L10n.tr("Localizable", "plus_discount_yearly_membership") }
   /// You already have a Pocket Casts Plus account
   internal static var plusErrorAlreadyRegistered: String { return L10n.tr("Localizable", "plus_error_already_registered") }
   /// Thanks for your support, but unfortunately this means you can’t take part in this promotion.
@@ -1709,7 +1713,7 @@ internal enum L10n {
   internal static var plusFeatureThemesIcons: String { return L10n.tr("Localizable", "plus_feature_themes_icons") }
   /// PLUS FEATURES
   internal static var plusFeatures: String { return L10n.tr("Localizable", "plus_features") }
-  /// %1$@ Free
+  /// %1$@ Free Trial
   internal static func plusFreeMembershipFormat(_ p1: Any) -> String {
     return L10n.tr("Localizable", "plus_free_membership_format", String(describing: p1))
   }
@@ -2090,6 +2094,20 @@ internal enum L10n {
   /// %1$@ total time remaining
   internal static func queueTotalTimeRemaining(_ p1: Any) -> String {
     return L10n.tr("Localizable", "queue_total_time_remaining", String(describing: p1))
+  }
+  /// Rate
+  internal static var rate: String { return L10n.tr("Localizable", "rate") }
+  /// Ops! There was an error.
+  internal static var ratingError: String { return L10n.tr("Localizable", "rating_error") }
+  /// Only listeners of this podcast can give it a rating. Have a listen to a few episodes and then come back to give your rating. We look forward to hearing what you think!
+  internal static var ratingListenToThisPodcastMessage: String { return L10n.tr("Localizable", "rating_listen_to_this_podcast_message") }
+  /// Please listen to this podcast first
+  internal static var ratingListenToThisPodcastTitle: String { return L10n.tr("Localizable", "rating_listen_to_this_podcast_title") }
+  /// Your rating was submitted!
+  internal static var ratingSubmitted: String { return L10n.tr("Localizable", "rating_submitted") }
+  /// Rate %1$@
+  internal static func ratingTitle(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "rating_title", String(describing: p1))
   }
   /// FINDING NEW PODCAST EPISODES
   internal static var refreshControlFetchingEpisodes: String { return L10n.tr("Localizable", "refresh_control_fetching_episodes") }

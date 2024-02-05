@@ -53,6 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         GoogleCastManager.sharedManager.setup()
 
+        SyncManager.shouldUseNewSettingsSync = FeatureFlag.settingsSync.enabled
         CacheServerHandler.newShowNotesEndpoint = FeatureFlag.newShowNotesEndpoint.enabled
         CacheServerHandler.episodeFeedArtwork = FeatureFlag.episodeFeedArtwork.enabled
 
@@ -78,11 +79,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         setupBackgroundRefresh()
 
-        SKPaymentQueue.default().add(IapHelper.shared)
+        SKPaymentQueue.default().add(IAPHelper.shared)
 
         // Request the IAP products on launch
         if SubscriptionHelper.hasActiveSubscription() == false {
-            IapHelper.shared.requestProductInfo()
+            IAPHelper.shared.requestProductInfo()
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(handleThemeChanged), name: Constants.Notifications.themeChanged, object: nil)
@@ -162,7 +163,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         badgeHelper.teardown()
         shortcutManager.stopListeningForShortcutChanges()
 
-        SKPaymentQueue.default().remove(IapHelper.shared)
+        SKPaymentQueue.default().remove(IAPHelper.shared)
         UIApplication.shared.endReceivingRemoteControlEvents()
     }
 
@@ -280,6 +281,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             Constants.RemoteParams.patronCloudStorageGB: NSNumber(value: Constants.RemoteParams.patronCloudStorageGBDefault),
             Constants.RemoteParams.addMissingEpisodes: NSNumber(value: Constants.RemoteParams.addMissingEpisodesDefault),
             Constants.RemoteParams.newPlayerTransition: NSNumber(value: Constants.RemoteParams.newPlayerTransitionDefault),
+            Constants.RemoteParams.errorLogoutHandling: NSNumber(value: Constants.RemoteParams.errorLogoutHandlingDefault)
         ])
 
         remoteConfig.fetch(withExpirationDuration: 2.hour) { [weak self] status, _ in
@@ -288,6 +290,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
                 self?.updateEndOfYearRemoteValue()
                 self?.updateRemoteFeatureFlags()
+                ServerConfig.avoidLogoutOnError = FeatureFlag.errorLogoutHandling.enabled
             }
         }
     }
@@ -302,8 +305,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 try FeatureFlagOverrideStore().override(FeatureFlag.newPlayerTransition, withValue: Settings.newPlayerTransition)
             }
 
+            if FeatureFlag.errorLogoutHandling.enabled != Settings.errorLogoutHandling {
+                ServerConfig.avoidLogoutOnError = FeatureFlag.errorLogoutHandling.enabled
+                try FeatureFlagOverrideStore().override(FeatureFlag.errorLogoutHandling, withValue: Settings.errorLogoutHandling)
+            }
+
+            SyncManager.shouldUseNewSync = FeatureFlag.settingsSync.enabled
+
             // If the flag is off and we're turning it on we won't have the product info yet so we'll ask for them again
-            IapHelper.shared.requestProductInfoIfNeeded()
+            IAPHelper.shared.requestProductInfoIfNeeded()
         } catch {
             FileLog.shared.addMessage("Failed to set remote feature flag: \(error)")
         }

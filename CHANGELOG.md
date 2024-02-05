@@ -1,3 +1,8 @@
+7.57
+-----
+- Implement new introductory offer for Plus: 50% off on the first year. [#1362] [internal]
+- Fixes an issue where the auto add to top/bottom would be reset. [#788]
+
 7.56
 -----
 - Allows navigation from the Player to the Podcast screen by tapping on Podcast name [#1322]
