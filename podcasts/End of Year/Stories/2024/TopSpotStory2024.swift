@@ -1,5 +1,6 @@
 import SwiftUI
 import PocketCastsDataModel
+import PocketCastsUtils
 
 struct TopSpotStory2024: ShareableStory {
     let topPodcast: TopPodcast
@@ -29,7 +30,7 @@ struct TopSpotStory2024: ShareableStory {
 
                     VStack {
                         Spacer() // Force footer to bottom
-                        let timeString = topPodcast.totalPlayedTime.formatted()
+                        let timeString = topPodcast.totalPlayedTime.storyTimeDescriptionForSharing
                         let numberPlayed = topPodcast.numberOfPlayedEpisodes
                         let title = topPodcast.podcast.title ?? "unknown"
                         StoryFooter2024(title: "This was your top podcast in 2024",
