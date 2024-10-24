@@ -53,6 +53,13 @@ struct TopSpotStory2024: ShareableStory {
     func hideShareButton() -> Bool {
         true
     }
+
+    func sharingAssets() -> [Any] {
+        [
+            StoryShareableProvider.new(AnyView(self)),
+            StoryShareableText(L10n.eoyStoryTopPodcastShareText("%1$@"), podcast: topPodcast.podcast)
+        ]
+    }
 }
 
 

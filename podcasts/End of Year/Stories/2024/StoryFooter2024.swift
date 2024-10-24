@@ -11,7 +11,7 @@ struct StoryFooter2024: View {
             Text(description)
                 .font(.system(size: 15, weight: .light))
             Button(L10n.share) {
-                //TODO: Implement sharing
+                StoriesController.shared.share()
             }
             .buttonStyle(BasicButtonStyle(textColor: .black, backgroundColor: Color.clear, borderColor: .black))
         }

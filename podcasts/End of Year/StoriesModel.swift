@@ -244,6 +244,10 @@ private extension StoriesModel {
                 NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: controller.rawValue), object: nil, queue: .main) { [weak self] _ in
                     self?.replay()
                 }
+            case .share:
+                NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: controller.rawValue), object: nil, queue: .main) { [weak self] _ in
+                    self?.share()
+                }
             }
         }
 
