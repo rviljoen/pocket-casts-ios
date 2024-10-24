@@ -9,7 +9,12 @@ class EndOfYear2024StoriesModel: StoryModel {
     required init() { }
 
     func populate(with dataManager: DataManager) {
-        stories.append(.topSpot)
+        // First, search for top 5 podcasts
+        let topPodcasts = dataManager.topPodcasts(in: Self.year, limit: 5)
+        if !topPodcasts.isEmpty {
+            stories.append(.topSpot)
+            data.topPodcasts = Array(topPodcasts.prefix(5))
+        }
     }
 
     func story(for storyNumber: Int) -> any StoryView {
@@ -17,7 +22,7 @@ class EndOfYear2024StoriesModel: StoryModel {
         case .intro:
             return IntroStory2024()
         case .topSpot:
-            return TopSpotStory2024()
+            return TopSpotStory2024(topPodcast: data.topPodcasts.first!)
         case .epilogue:
             return EpilogueStory2023()
         }
@@ -53,4 +58,5 @@ class EndOfYear2024StoriesModel: StoryModel {
 
 /// An entity that holds data to present EoY 2024 stories
 class EndOfYear2024StoriesData {
+    var topPodcasts: [TopPodcast] = []
 }
