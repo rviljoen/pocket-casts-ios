@@ -859,6 +859,10 @@ class PlaybackManager: ServerPlaybackDelegate {
               let podcast = episode.parentPodcast() else {
             return
         }
+        overrideEffectsToggled(applyLocalSettings: applyLocalSettings, for: podcast)
+    }
+
+    func overrideEffectsToggled(applyLocalSettings: Bool, for podcast: Podcast) {
         podcast.isEffectsOverridden = applyLocalSettings
 
         DataManager.sharedManager.save(podcast: podcast)
