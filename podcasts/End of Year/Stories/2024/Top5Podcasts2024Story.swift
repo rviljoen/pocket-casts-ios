@@ -18,34 +18,14 @@ struct Top5Podcasts2024Story: ShareableStory {
     @State private var visible = false
 
     var body: some View {
-        GeometryReader { proxy in
+        GeometryReader { geometry in
             VStack(alignment: .leading) {
-                //            ScrollView {
-                ForEach(top5Podcasts.enumerated().map({ $0 }), id: \.element.podcast.uuid) { (idx, podcast) in
-                    HStack {
-                        Text("#\(idx+1)")
-                            .font(.system(size: 22, weight: .semibold))
-                        ZStack {
-                            Image(shapeImages[idx % shapeImages.count])
-                                .foregroundStyle(shapeColor)
-                            PodcastImage(uuid: podcast.podcast.uuid, size: .grid)
-                                .frame(width: 72, height: 72)
-                                .clipShape(RoundedRectangle(cornerRadius: 4))
-                        }
-                        .transition(.scale)
-                        VStack(alignment: .leading) {
-                            if let author = podcast.podcast.author {
-                                Text(author)
-                                    .font(.system(size: 15))
-                            }
-                            if let title = podcast.podcast.title {
-                                Text(title)
-                                    .font(.system(size: 18, weight: .medium))
-                            }
-                        }
-                        .transition(.opacity)
+                ScrollView(.vertical) {
+                    VStack(alignment: .leading) {
+                        podcastList()
                     }
                 }
+                .frame(height: geometry.size.height * 0.65)
                 Text("And you were big on these shows too!")
                     .font(.system(size: 30, weight: .bold))
                     .transition(.scale)
@@ -58,6 +38,34 @@ struct Top5Podcasts2024Story: ShareableStory {
         .ignoresSafeArea()
         .enableProportionalValueScaling()
         .background(backgroundColor)
+    }
+
+    @ViewBuilder func podcastList() -> some View {
+        ForEach(top5Podcasts.enumerated().map({ $0 }), id: \.element.podcast.uuid) { (idx, podcast) in
+            HStack {
+                Text("#\(idx+1)")
+                    .font(.system(size: 22, weight: .semibold))
+                ZStack {
+                    Image(shapeImages[idx % shapeImages.count])
+                        .foregroundStyle(shapeColor)
+                    PodcastImage(uuid: podcast.podcast.uuid, size: .grid)
+                        .frame(width: 72, height: 72)
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                }
+                .transition(.scale)
+                VStack(alignment: .leading) {
+                    if let author = podcast.podcast.author {
+                        Text(author)
+                            .font(.system(size: 15))
+                    }
+                    if let title = podcast.podcast.title {
+                        Text(title)
+                            .font(.system(size: 18, weight: .medium))
+                    }
+                }
+                .transition(.opacity)
+            }
+        }
     }
 
     func onAppear() {
