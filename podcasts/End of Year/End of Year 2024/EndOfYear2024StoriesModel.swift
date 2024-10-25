@@ -24,6 +24,13 @@ class EndOfYear2024StoriesModel: StoryModel {
             data.listeningTime = listeningTime
         }
 
+        // Longest episode
+        if let longestEpisode = dataManager.longestEpisode(in: Self.year),
+           let podcast = longestEpisode.parentPodcast() {
+            data.longestEpisode = longestEpisode
+            data.longestEpisodePodcast = podcast
+            stories.append(.longestEpisode)
+        }
     }
 
     func story(for storyNumber: Int) -> any StoryView {
@@ -34,6 +41,8 @@ class EndOfYear2024StoriesModel: StoryModel {
             return Top5Podcasts2024Story(top5Podcasts: data.topPodcasts)
         case .listeningTime:
             return ListeningTime2024Story(listeningTime: data.listeningTime)
+        case .longestEpisode:
+            return LongestEpisode2024Story(episode: data.longestEpisode, podcast: data.longestEpisodePodcast)
         case .epilogue:
             return EpilogueStory2024()
         }
@@ -91,4 +100,9 @@ class EndOfYear2024StoriesData {
     var topPodcasts: [TopPodcast] = []
 
     var listeningTime: Double = 0
+
+    var longestEpisode: Episode!
+
+    var longestEpisodePodcast: Podcast!
+
 }
