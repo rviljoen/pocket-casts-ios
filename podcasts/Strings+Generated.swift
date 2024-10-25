@@ -1745,6 +1745,10 @@ internal enum L10n {
   internal static var playback2024FeatureDescription: String { return L10n.tr("Localizable", "playback_2024_feature_description") }
   /// Playback 2024 is here!
   internal static var playback2024FeatureTitle: String { return L10n.tr("Localizable", "playback_2024_feature_title") }
+  /// %1$@ total listening to podcasts
+  internal static func playback2024ListeningTimeDescription(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_listening_time_description", String(describing: p1))
+  }
   /// View My Playback 2024
   internal static var playback2024ViewYear: String { return L10n.tr("Localizable", "playback_2024_view_year") }
   /// All podcasts

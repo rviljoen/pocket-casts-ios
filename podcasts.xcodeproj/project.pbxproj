@@ -1690,6 +1690,7 @@
 		F57D8F142C66CA230004C4DF /* UnsafeWait.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57D8F132C66CA230004C4DF /* UnsafeWait.swift */; };
 		F57D8F162C66CBB80004C4DF /* UnsafeTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57D8F152C66CBB80004C4DF /* UnsafeTransfer.swift */; };
 		F57D8F182C66CDF40004C4DF /* View+CVPixelBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57D8F172C66CDF40004C4DF /* View+CVPixelBuffer.swift */; };
+		F581ED422CC6F1A200A19860 /* ListeningTime2024Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = F581ED412CC6F19300A19860 /* ListeningTime2024Story.swift */; };
 		F586959A2C04320100E0754A /* PodcastManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58695992C04320100E0754A /* PodcastManagerTests.swift */; };
 		F59503B42C93590A007FB3C8 /* ActivityItemSourceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59503B32C93590A007FB3C8 /* ActivityItemSourceItem.swift */; };
 		F5952FCA2C057C6400754BC3 /* FMDatabaseQueue+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5952FC92C057C6400754BC3 /* FMDatabaseQueue+Test.swift */; };
@@ -1717,6 +1718,7 @@
 		F5F69D802C07C867000B3C87 /* FMDatabaseQueue+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F69D7F2C07C867000B3C87 /* FMDatabaseQueue+Test.swift */; };
 		F5F6DA702BBE1109009B1934 /* CategoryButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F6DA6F2BBE1109009B1934 /* CategoryButtonStyle.swift */; };
 		F5F6DA822BC0B512009B1934 /* CategoriesModalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F6DA812BC0B512009B1934 /* CategoriesModalPicker.swift */; };
+		F5F884632CC9EAA6002BED2C /* Humane-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5F884622CC9EAA6002BED2C /* Humane-Bold.otf */; };
 		F5F89B1E2C88B40A00013118 /* ShareButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F89B1D2C88B40A00013118 /* ShareButton.swift */; };
 		F5F8F3182CC314250071DD0E /* IntroStory2024.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F8F3172CC314250071DD0E /* IntroStory2024.swift */; };
 		F5FE747B2C223A6100DF2EAA /* ShareImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5FF61222BD07E3A00190711 /* ShareImageView.swift */; };
@@ -3623,6 +3625,7 @@
 		F57D8F132C66CA230004C4DF /* UnsafeWait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsafeWait.swift; sourceTree = "<group>"; };
 		F57D8F152C66CBB80004C4DF /* UnsafeTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsafeTransfer.swift; sourceTree = "<group>"; };
 		F57D8F172C66CDF40004C4DF /* View+CVPixelBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+CVPixelBuffer.swift"; sourceTree = "<group>"; };
+		F581ED412CC6F19300A19860 /* ListeningTime2024Story.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningTime2024Story.swift; sourceTree = "<group>"; };
 		F58695992C04320100E0754A /* PodcastManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastManagerTests.swift; sourceTree = "<group>"; };
 		F59503B32C93590A007FB3C8 /* ActivityItemSourceItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityItemSourceItem.swift; sourceTree = "<group>"; };
 		F5952FC92C057C6400754BC3 /* FMDatabaseQueue+Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FMDatabaseQueue+Test.swift"; sourceTree = "<group>"; };
@@ -3651,6 +3654,7 @@
 		F5F69D7F2C07C867000B3C87 /* FMDatabaseQueue+Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FMDatabaseQueue+Test.swift"; sourceTree = "<group>"; };
 		F5F6DA6F2BBE1109009B1934 /* CategoryButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryButtonStyle.swift; sourceTree = "<group>"; };
 		F5F6DA812BC0B512009B1934 /* CategoriesModalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesModalPicker.swift; sourceTree = "<group>"; };
+		F5F884622CC9EAA6002BED2C /* Humane-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Humane-Bold.otf"; sourceTree = "<group>"; };
 		F5F89B1D2C88B40A00013118 /* ShareButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareButton.swift; sourceTree = "<group>"; };
 		F5F8F3172CC314250071DD0E /* IntroStory2024.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroStory2024.swift; sourceTree = "<group>"; };
 		F5FF611F2BD076BA00190711 /* Sharing.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sharing.xcassets; sourceTree = "<group>"; };
@@ -4295,6 +4299,7 @@
 		460C375026D83171008B3609 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F5F884622CC9EAA6002BED2C /* Humane-Bold.otf */,
 				F51E3B512CC70A4A00AFAD05 /* Humane-Medium.otf */,
 				8B15E7212AD050EE0077F45A /* DMSans.ttf */,
 				8BB4AA652BD1A8040091480A /* sleep-timer-restarted-sound.mp3 */,
@@ -7863,6 +7868,7 @@
 			children = (
 				F5F8F3172CC314250071DD0E /* IntroStory2024.swift */,
 				F53C3E822CC73538004F3581 /* TopSpotStory2024.swift */,
+				F581ED412CC6F19300A19860 /* ListeningTime2024Story.swift */,
 			);
 			path = 2024;
 			sourceTree = "<group>";
@@ -8671,6 +8677,7 @@
 				BDBCE6D5244E7755004FFE13 /* AppIcon-Radioactive20x20~ipad.png in Resources */,
 				BDB1E4FF1B8C5C2B009AD30F /* CategorySummaryViewController.xib in Resources */,
 				BDEED1541EB06E26003FE87D /* Carplay.xcassets in Resources */,
+				F5F884632CC9EAA6002BED2C /* Humane-Bold.otf in Resources */,
 				40F1492D218BCC4F008F54EA /* FilterShortcutsViewController.xib in Resources */,
 				BDBCE6C6244E7755004FFE13 /* AppIcon-Radioactive29x29@3x.png in Resources */,
 				BDA002F51F7B318B00DCB4AE /* AppIcon-Round76x76@2x~ipad.png in Resources */,
@@ -10111,6 +10118,7 @@
 				461C46C7274D80990003D3A9 /* LocalizationHelpers.swift in Sources */,
 				32163E602B1EBDB6009BB16B /* DatabaseExport.swift in Sources */,
 				BD93134F1D795628007A70FC /* SharePodcastsViewController.swift in Sources */,
+				F581ED422CC6F1A200A19860 /* ListeningTime2024Story.swift in Sources */,
 				404D74AD24809BC9009DF761 /* SupporterGratitudeViewController.swift in Sources */,
 				BDCF60EC22EFEDDC0051EDB3 /* ThemeableTable.swift in Sources */,
 				10DFE9382C5A8D1300957D0A /* ABTestProviding.swift in Sources */,

@@ -3554,6 +3554,9 @@
 /* Label of the Playback 2024 call to action buton */
 "playback_2024_view_year" = "View My Playback 2024";
 
+/* A description used to indicate the number of days and hours spent listening to podcasts in the last year */
+"playback_2024_listening_time_description" = "%1$@ total listening to podcasts";
+
 /* Label of the End of Year dismiss button */
 "eoy_not_now" = "Not Now";
 
