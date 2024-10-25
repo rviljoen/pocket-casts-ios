@@ -29,7 +29,7 @@ class EndOfYear2024StoriesModel: StoryModel {
         case .listeningTime:
             return ListeningTime2024Story(listeningTime: data.listeningTime)
         case .epilogue:
-            return EpilogueStory2023()
+            return EpilogueStory2024()
         }
     }
 
