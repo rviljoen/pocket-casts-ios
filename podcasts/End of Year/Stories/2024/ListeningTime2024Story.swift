@@ -24,6 +24,8 @@ struct ListeningTime2024Story: ShareableStory {
                         .font(.custom("Humane-Bold", size: geometry.size.height * 0.7))
                     Text(description)
                         .font(.system(size: 30, weight: .bold))
+                        .padding(.horizontal, 6)
+                        .minimumScaleFactor(0.8)
                 }
                 Image("playback-sticker-way-to-go")
                     .resizable()
@@ -46,28 +48,40 @@ struct ListeningTime2024Story: ShareableStory {
 extension Double {
     func dateComponents() -> DateComponents {
         let calendar = Calendar.current
-        let referenceDate = Date(timeIntervalSinceReferenceDate: Double(seconds))
+        let seconds = Int(self)
+        let referenceDate = Date(timeIntervalSinceReferenceDate: TimeInterval(seconds))
 
-        let components = calendar.dateComponents([.day, .hour, .minute, .second], from: referenceDate)
-
-        return components
+        return calendar.dateComponents([.day, .hour, .minute, .second], from: referenceDate)
     }
 
-    func components() -> (Int, String) {
+    func components() -> (String, String) {
         let components = dateComponents()
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .full
+        formatter.maximumUnitCount = 2
+        formatter.allowsFractionalUnits = false
+        formatter.allowedUnits = [.day, .hour, .minute, .second]
+
         if let days = components.day, days != 0 {
             if let hours = components.hour, hours != 0 {
-                return (days, "days and \(hours) hours")
+                formatter.allowedUnits = [.day, .hour]
+            } else {
+                formatter.allowedUnits = [.day]
             }
-            return (days, "days")
         } else if let hours = components.hour, hours != 0 {
-            return (hours, "")
+            formatter.allowedUnits = [.hour]
         } else if let minutes = components.minute, minutes != 0 {
-            return (minutes, "")
+            formatter.allowedUnits = [.minute]
         } else if let seconds = components.second, seconds != 0 {
-            return (seconds, "")
+            formatter.allowedUnits = [.second]
+        }
+
+        if let timeString = formatter.string(from: components) {
+            let stringComponents = timeString.components(separatedBy: " ")
+            let modifiedComponents = stringComponents.suffix(from: 1).joined(separator: " ")
+            return (stringComponents.first ?? "0", modifiedComponents.replacingOccurrences(of: ",", with: ""))
         } else {
-            return (0, "Unknown time")
+            return ("0", "Unknown time")
         }
     }
 }
