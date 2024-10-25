@@ -179,7 +179,5 @@ fileprivate struct ShareButtonStyle: ButtonStyle {
     private struct Constants {
         static let shareButtonColor = Color.white
         static let shareButtonVerticalPadding: CGFloat = 13
-        static let shareButtonCornerRadius: CGFloat = 12
-        static let shareButtonBorderSize: CGFloat = 2
     }
 }

@@ -45,8 +45,8 @@ struct ListeningTime2024Story: ShareableStory {
     }
 }
 
-extension Double {
-    func dateComponents() -> DateComponents {
+fileprivate extension Double {
+    private func dateComponents() -> DateComponents {
         let calendar = Calendar.current
         let seconds = Int(self)
         let referenceDate = Date(timeIntervalSinceReferenceDate: TimeInterval(seconds))
