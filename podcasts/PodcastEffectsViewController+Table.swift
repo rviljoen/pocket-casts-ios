@@ -57,7 +57,12 @@ extension PodcastEffectsViewController: UITableViewDataSource, UITableViewDelega
             cell.timeStepper.maximumValue = 5
             cell.timeStepper.smallIncrements = 0.1
             cell.timeStepper.smallIncrementThreshold = TimeInterval.greatestFiniteMagnitude
-            if FeatureFlag.newSettingsStorage.enabled {
+            
+            if FeatureFlag.customPlaybackSettings.enabled,
+               !podcast.usedCustomEffectsBefore {
+                let effect = PlaybackManager.shared.effects()
+                cell.timeStepper.currentValue = effect.playbackSpeed
+            } else if FeatureFlag.newSettingsStorage.enabled {
                 cell.timeStepper.currentValue = podcast.settings.playbackSpeed
             } else {
                 cell.timeStepper.currentValue = podcast.playbackSpeed
@@ -73,7 +78,11 @@ extension PodcastEffectsViewController: UITableViewDataSource, UITableViewDelega
             cell.cellLabel?.text = L10n.settingsTrimSilence
             cell.cellSwitch.onTintColor = podcast.switchTintColor()
             cell.setImage(imageName: "player_trim")
-            if FeatureFlag.newSettingsStorage.enabled {
+            if FeatureFlag.customPlaybackSettings.enabled,
+               !podcast.usedCustomEffectsBefore {
+                let effect = PlaybackManager.shared.effects()
+                cell.cellSwitch.isOn = effect.trimSilence != .off
+            } else if FeatureFlag.newSettingsStorage.enabled {
                 cell.cellSwitch.isOn = podcast.settings.trimSilence != .off
             } else {
                 cell.cellSwitch.isOn = podcast.trimSilenceAmount > 0
@@ -90,7 +99,11 @@ extension PodcastEffectsViewController: UITableViewDataSource, UITableViewDelega
 
             let trimAmount: TrimSilenceAmount
 
-            if FeatureFlag.newSettingsStorage.enabled {
+            if FeatureFlag.customPlaybackSettings.enabled,
+               !podcast.usedCustomEffectsBefore {
+                let effect = PlaybackManager.shared.effects()
+                trimAmount = effect.trimSilence
+            } else if FeatureFlag.newSettingsStorage.enabled {
                 trimAmount = podcast.settings.trimSilence.amount
             } else {
                 trimAmount = TrimSilenceAmount(rawValue: Int32(podcast.trimSilenceAmount)) ?? .low
@@ -103,7 +116,11 @@ extension PodcastEffectsViewController: UITableViewDataSource, UITableViewDelega
             cell.cellLabel?.text = L10n.settingsVolumeBoost
             cell.cellSwitch.onTintColor = podcast.switchTintColor()
             cell.setImage(imageName: "player_volumeboost")
-            if FeatureFlag.newSettingsStorage.enabled {
+            if FeatureFlag.customPlaybackSettings.enabled,
+               !podcast.usedCustomEffectsBefore {
+                let effect = PlaybackManager.shared.effects()
+                cell.cellSwitch.isOn = effect.volumeBoost
+            } else if FeatureFlag.newSettingsStorage.enabled {
                 cell.cellSwitch.isOn = podcast.settings.boostVolume
             } else {
                 cell.cellSwitch.isOn = podcast.boostVolume
@@ -218,18 +235,27 @@ extension PodcastEffectsViewController: UITableViewDataSource, UITableViewDelega
     }
 
     @objc private func overrideEffectsToggled(_ sender: UISwitch) {
-        podcast.isEffectsOverridden = sender.isOn
-        podcast.syncStatus = SyncStatus.notSynced.rawValue
-        if FeatureFlag.customPlaybackSettings.enabled && !podcast.usedCustomEffectsBefore {
-            podcast.usedCustomEffectsBefore = true
+        if FeatureFlag.customPlaybackSettings.enabled {
+            PlaybackManager.shared.overrideEffectsToggled(applyLocalSettings: sender.isOn)
+            effectsTable.reloadData()
+        } else {
+            podcast.isEffectsOverridden = sender.isOn
+            podcast.syncStatus = SyncStatus.notSynced.rawValue
+            saveUpdates()
         }
-        saveUpdates()
 
         Analytics.track(.podcastSettingsCustomPlaybackEffectsToggled, properties: ["enabled": sender.isOn])
     }
 
     private func tableData() -> [[TableRow]] {
-        let hasTrimSilence = FeatureFlag.newSettingsStorage.enabled ? podcast.settings.trimSilence != .off : podcast.trimSilenceAmount > 0
+        let hasTrimSilence: Bool
+        if FeatureFlag.customPlaybackSettings.enabled,
+           !podcast.usedCustomEffectsBefore {
+            let effect = PlaybackManager.shared.effects()
+            hasTrimSilence = effect.trimSilence != .off
+        } else {
+            hasTrimSilence = FeatureFlag.newSettingsStorage.enabled ? podcast.settings.trimSilence != .off : podcast.trimSilenceAmount > 0
+        }
         if podcast.isEffectsOverridden && hasTrimSilence {
             return [[.customForPodcast], [.playbackSpeed, .trimSilence, .trimSilenceAmount, .volumeBoost]]
         }

@@ -864,9 +864,7 @@ class PlaybackManager: ServerPlaybackDelegate {
         DataManager.sharedManager.save(podcast: podcast)
         NotificationCenter.postOnMainThread(notification: Constants.Notifications.podcastUpdated, object: podcast.uuid)
 
-        let newEffects = loadEffects()
-        currentEffects = newEffects
-        handlePlaybackEffectsChanged(effects: newEffects)
+        effectsChangedExternally()
     }
 
     func isCurrentEffectGlobal() -> Bool {
