@@ -57,7 +57,7 @@ extension PodcastEffectsViewController: UITableViewDataSource, UITableViewDelega
             cell.timeStepper.maximumValue = 5
             cell.timeStepper.smallIncrements = 0.1
             cell.timeStepper.smallIncrementThreshold = TimeInterval.greatestFiniteMagnitude
-            
+
             if FeatureFlag.customPlaybackSettings.enabled,
                !podcast.usedCustomEffectsBefore {
                 let effect = PlaybackManager.shared.effects()
