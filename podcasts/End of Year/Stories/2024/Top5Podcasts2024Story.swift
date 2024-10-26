@@ -25,6 +25,12 @@ struct Top5Podcasts2024Story: ShareableStory {
                         podcastList()
                     }
                 }
+                .modify {
+                    if #available(iOS 16.4, *) {
+                        $0.scrollIndicators(.never)
+                          .scrollBounceBehavior(.basedOnSize)
+                    }
+                }
                 .frame(height: geometry.size.height * 0.65)
                 Text("And you were big on these shows too!")
                     .font(.system(size: 30, weight: .bold))
@@ -37,7 +43,12 @@ struct Top5Podcasts2024Story: ShareableStory {
         .animation(.default.speed(0.5), value: visible)
         .ignoresSafeArea()
         .enableProportionalValueScaling()
-        .background(backgroundColor)
+        .background(
+            Rectangle()
+                .fill(backgroundColor)
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
+        )
     }
 
     @ViewBuilder func podcastList() -> some View {

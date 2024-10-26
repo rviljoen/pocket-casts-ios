@@ -43,6 +43,8 @@ class EndOfYear2024StoriesModel: StoryModel {
         switch stories[storyNumber] {
         case .epilogue:
             return true
+        case .top5Podcasts:
+            return true
         default:
             return false
         }
