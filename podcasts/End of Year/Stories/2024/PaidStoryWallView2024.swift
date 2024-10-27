@@ -39,9 +39,9 @@ struct PaidStoryWallView2024: View {
 
                 VStack(alignment: .leading, spacing: 16) {
                     SubscriptionBadge2024(subscriptionTier: .plus)
-                    Text("There's more!")
+                    Text(L10n.playback2024PlusUpsellTitle)
                         .font(.system(size: 31, weight: .bold))
-                    Text("Support Pocket Casts subscribing to Plus and get more stats, plus Premium features like bookmarks, folders or preselect chapters!")
+                    Text(L10n.playback2024PlusUpsellDescription)
                         .font(.system(size: 15, weight: .light))
                     Button(L10n.playback2024PlusUpsellButtonTitle) {
                         guard let storiesViewController = FeatureFlag.newPlayerTransition.enabled ? SceneHelper.rootViewController() : SceneHelper.rootViewController()?.presentedViewController else {

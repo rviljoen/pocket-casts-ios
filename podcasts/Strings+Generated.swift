@@ -1756,6 +1756,10 @@ internal enum L10n {
   }
   /// Check out Pocket Casts Plus
   internal static var playback2024PlusUpsellButtonTitle: String { return L10n.tr("Localizable", "playback_2024_plus_upsell_button_title") }
+  /// Support Pocket Casts subscribing to Plus and get more stats, plus Premium features like bookmarks, folders or preselect chapters!
+  internal static var playback2024PlusUpsellDescription: String { return L10n.tr("Localizable", "playback_2024_plus_upsell_description") }
+  /// There's more!
+  internal static var playback2024PlusUpsellTitle: String { return L10n.tr("Localizable", "playback_2024_plus_upsell_title") }
   /// View My Playback 2024
   internal static var playback2024ViewYear: String { return L10n.tr("Localizable", "playback_2024_view_year") }
   /// All podcasts

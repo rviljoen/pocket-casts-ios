@@ -3560,6 +3560,12 @@
 /* A title shown in the button on the upsell screen to check out Pocket Casts Plus */
 "playback_2024_plus_upsell_button_title" = "Check out Pocket Casts Plus";
 
+/* A title shown in the upsell screen for Pocket Casts Plus subscription */
+"playback_2024_plus_upsell_title" = "There's more!";
+
+/* A description shown in the upsell screen for Pocket Casts Plus subscription */
+"playback_2024_plus_upsell_description" = "Support Pocket Casts subscribing to Plus and get more stats, plus Premium features like bookmarks, folders or preselect chapters!";
+
 /* Label of the End of Year dismiss button */
 "eoy_not_now" = "Not Now";
 
