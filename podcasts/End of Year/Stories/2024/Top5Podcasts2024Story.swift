@@ -6,6 +6,8 @@ struct Top5Podcasts2024Story: ShareableStory {
 
     let top5Podcasts: [TopPodcast]
 
+    let identifier: String = "top_five_podcast"
+
     private let shapeColor = Color.green
 
     private let backgroundColor = Color(hex: "#E0EFAD")
@@ -13,9 +15,12 @@ struct Top5Podcasts2024Story: ShareableStory {
                                "playback-2024-shape-two-ovals",
                                "playback-2024-shape-wavy-circle"]
 
-//    @ObservedObject private var animationViewModel = PlayPauseAnimationViewModel(duration: 0.8, animation: Animation.easeInOut(duration:))
+    @ObservedObject private var animationViewModel = PlayPauseAnimationViewModel(duration: 0.8, animation: Animation.easeInOut(duration:))
 
     @State private var visible = false
+
+    @State private var itemScale: Double = 0
+    @State private var itemOpacity: Double = 0
 
     var body: some View {
         GeometryReader { geometry in
@@ -23,6 +28,8 @@ struct Top5Podcasts2024Story: ShareableStory {
                 ScrollView(.vertical) {
                     VStack(alignment: .leading) {
                         podcastList()
+                            .modifier(animationViewModel.animate($itemOpacity, to: 1, after: 0.1))
+                            .modifier(animationViewModel.animate($itemScale, to: 1))
                     }
                 }
                 .modify {
@@ -32,15 +39,13 @@ struct Top5Podcasts2024Story: ShareableStory {
                     }
                 }
                 .frame(height: geometry.size.height * 0.65)
+
                 Text("And you were big on these shows too!")
                     .font(.system(size: 30, weight: .bold))
-                    .transition(.scale)
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .id(visible)
-        .animation(.default.speed(0.5), value: visible)
         .ignoresSafeArea()
         .enableProportionalValueScaling()
         .background(
@@ -49,41 +54,60 @@ struct Top5Podcasts2024Story: ShareableStory {
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
         )
+        .onAppear {
+            animationViewModel.play()
+        }
     }
 
     @ViewBuilder func podcastList() -> some View {
-        ForEach(top5Podcasts.enumerated().map({ $0 }), id: \.element.podcast.uuid) { (idx, podcast) in
-            HStack {
-                Text("#\(idx+1)")
-                    .font(.system(size: 22, weight: .semibold))
-                ZStack {
-                    Image(shapeImages[idx % shapeImages.count])
-                        .foregroundStyle(shapeColor)
-                    PodcastImage(uuid: podcast.podcast.uuid, size: .grid)
-                        .frame(width: 72, height: 72)
-                        .clipShape(RoundedRectangle(cornerRadius: 4))
-                }
-                .transition(.scale)
-                VStack(alignment: .leading) {
-                    if let author = podcast.podcast.author {
-                        Text(author)
-                            .font(.system(size: 15))
-                    }
-                    if let title = podcast.podcast.title {
-                        Text(title)
-                            .font(.system(size: 18, weight: .medium))
-                    }
-                }
-                .transition(.opacity)
+        ForEach(Array(zip(top5Podcasts.indices, top5Podcasts)), id: \.1.podcast.uuid) { index, item in
+            listCell(index: index, item: item)
+        }
+    }
+
+    @ViewBuilder func listCell(index: Int, item: TopPodcast) -> some View {
+        HStack {
+            let imageSize: Double = 72
+            let textAnimationOffset = imageSize/2
+            Text("#\(index + 1)")
+                .font(.system(size: 22, weight: .semibold))
+                .opacity(itemOpacity)
+                .offset(x: (1 - itemScale) * textAnimationOffset)
+
+            ZStack {
+                Image(shapeImages[index % shapeImages.count])
+                    .foregroundStyle(shapeColor)
+                PodcastImage(uuid: item.podcast.uuid, size: .grid)
+                    .frame(width: imageSize, height: imageSize)
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
             }
+            .scaleEffect(itemScale)
+
+            VStack(alignment: .leading) {
+                if let author = item.podcast.author {
+                    Text(author)
+                        .font(.system(size: 15))
+                }
+                if let title = item.podcast.title {
+                    Text(title)
+                        .font(.system(size: 18, weight: .medium))
+                }
+            }
+            .opacity(itemOpacity)
+            .offset(x: (1 - itemScale) * -textAnimationOffset)
         }
     }
 
     func onAppear() {
-        visible = true
-        Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in
-            visible.toggle()
-        }
+        Analytics.track(.endOfYearStoryShown, story: identifier)
+    }
+
+    func onPause() {
+        animationViewModel.pause()
+    }
+
+    func onResume() {
+        animationViewModel.play()
     }
 
     func sharingAssets() -> [Any] {
