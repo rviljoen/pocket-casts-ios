@@ -28,23 +28,28 @@ struct LongestEpisode2024Story: ShareableStory {
 
     var body: some View {
         GeometryReader { geometry in
-            VStack {
+            let isSmallScreen = geometry.size.height <= 600
+            VStack(alignment: .leading) {
+                Spacer()
                 ZStack {
-                    covers(geometry: geometry)
+                    covers()
                     let stickerSize = CGSize(width: 194, height: 135)
                     Image("playback-sticker-phew")
                         .resizable()
                         .frame(width: stickerSize.width, height: stickerSize.height)
-                        .position(x: -6, y: 40, for: stickerSize, in: geometry.frame(in: .local), corner: .topTrailing)
+                        .position(x: -6, y: 0, for: stickerSize, in: geometry.frame(in: .global), corner: .topTrailing)
                 }
-                .frame(height: geometry.size.height * 0.65)
-                VStack(alignment: .leading, spacing: 16) {
+                .frame(width: geometry.size.width * 0.9)
+                .padding(.top, isSmallScreen ? 0 : 20)
+                VStack(alignment: .leading, spacing: isSmallScreen ? 4 : 16) {
                     let timeString = episode.playedUpTo.storyTimeDescriptionForSharing
                     Text("The longest episode you listened to was \(timeString)")
-                            .font(.system(size: 31, weight: .bold))
+                        .font(.system(size: 31, weight: .bold))
                     Text("It was \"\(episode.title ?? "unknown")\" from \"\(podcast.title ?? "unknown")\"")
-                            .font(.system(size: 15, weight: .light))
+                        .font(.system(size: 15, weight: .light))
                 }
+                .padding(.horizontal, 24)
+                .padding(.bottom, isSmallScreen ? 4 : 16)
             }
         }
         .background(backgroundColor)
@@ -56,40 +61,42 @@ struct LongestEpisode2024Story: ShareableStory {
         }
     }
 
-    @ViewBuilder func covers(geometry: GeometryProxy) -> some View {
-        PodcastCoverContainer(geometry: geometry) {
-            ZStack {
-                PodcastCover(podcastUuid: podcast.uuid)
-                    .frame(width: geometry.size.width * 0.5, height: geometry.size.width * 0.5)
-                    .offset(x: -geometry.size.width * firstCover, y: geometry.size.width * firstCover)
-                    .modifier(animationViewModel.animate($firstCover, to: 0.4))
+    @ViewBuilder func covers() -> some View {
+        GeometryReader { geometry in
+            PodcastCoverContainer(geometry: geometry) {
+                ZStack {
+                    PodcastCover(podcastUuid: podcast.uuid)
+                        .frame(width: geometry.size.width * 0.5, height: geometry.size.width * 0.5)
+                        .offset(x: -geometry.size.width * firstCover, y: geometry.size.width * firstCover)
+                        .modifier(animationViewModel.animate($firstCover, to: 0.4))
 
-                PodcastCover(podcastUuid: podcast.uuid)
-                    .frame(width: geometry.size.width * 0.55, height: geometry.size.width * 0.55)
-                    .offset(x: -geometry.size.width * secondCover, y: geometry.size.width * secondCover)
-                    .modifier(animationViewModel.animate($secondCover, to: 0.32))
+                    PodcastCover(podcastUuid: podcast.uuid)
+                        .frame(width: geometry.size.width * 0.55, height: geometry.size.width * 0.55)
+                        .offset(x: -geometry.size.width * secondCover, y: geometry.size.width * secondCover)
+                        .modifier(animationViewModel.animate($secondCover, to: 0.32))
 
-                PodcastCover(podcastUuid: podcast.uuid)
-                    .frame(width: geometry.size.width * 0.6, height: geometry.size.width * 0.6)
-                    .offset(x: -geometry.size.width * thirdCover, y: geometry.size.width * thirdCover)
-                    .modifier(animationViewModel.animate($thirdCover, to: 0.24))
+                    PodcastCover(podcastUuid: podcast.uuid)
+                        .frame(width: geometry.size.width * 0.6, height: geometry.size.width * 0.6)
+                        .offset(x: -geometry.size.width * thirdCover, y: geometry.size.width * thirdCover)
+                        .modifier(animationViewModel.animate($thirdCover, to: 0.24))
 
-                PodcastCover(podcastUuid: podcast.uuid)
-                    .frame(width: geometry.size.width * 0.65, height: geometry.size.width * 0.65)
-                    .offset(x: -geometry.size.width * fourthCover, y: geometry.size.width * fourthCover)
-                    .modifier(animationViewModel.animate($fourthCover, to: 0.16))
+                    PodcastCover(podcastUuid: podcast.uuid)
+                        .frame(width: geometry.size.width * 0.65, height: geometry.size.width * 0.65)
+                        .offset(x: -geometry.size.width * fourthCover, y: geometry.size.width * fourthCover)
+                        .modifier(animationViewModel.animate($fourthCover, to: 0.16))
 
-                PodcastCover(podcastUuid: podcast.uuid)
-                    .frame(width: geometry.size.width * 0.7, height: geometry.size.width * 0.7)
-                    .offset(x: -geometry.size.width * fifthCover, y: geometry.size.width * fifthCover)
-                    .modifier(animationViewModel.animate($fifthCover, to: 0.08))
+                    PodcastCover(podcastUuid: podcast.uuid)
+                        .frame(width: geometry.size.width * 0.7, height: geometry.size.width * 0.7)
+                        .offset(x: -geometry.size.width * fifthCover, y: geometry.size.width * fifthCover)
+                        .modifier(animationViewModel.animate($fifthCover, to: 0.08))
 
-                PodcastCover(podcastUuid: podcast.uuid, higherQuality: true)
-                    .frame(width: geometry.size.width * 0.75, height: geometry.size.width * 0.75)
-                    .offset(x: -geometry.size.width * sixthCover, y: geometry.size.width * sixthCover)
-                    .modifier(animationViewModel.animate($sixthCover, to: 0))
+                    PodcastCover(podcastUuid: podcast.uuid, higherQuality: true)
+                        .frame(width: geometry.size.width * 0.75, height: geometry.size.width * 0.75)
+                        .offset(x: -geometry.size.width * sixthCover, y: geometry.size.width * sixthCover)
+                        .modifier(animationViewModel.animate($sixthCover, to: 0))
+                }
+                .offset(x: geometry.size.width * 0.04, y: geometry.size.height * 0.09)
             }
-            .offset(x: geometry.size.width * 0.04, y: geometry.size.height * 0.09)
         }
     }
 
