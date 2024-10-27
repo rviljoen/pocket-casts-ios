@@ -29,12 +29,13 @@ struct PaidStoryWallView2024: View {
                         MarqueeTextView(words: words, separator: separator, direction: .leading)
                         MarqueeTextView(words: words, separator: separator, direction: .trailing)
                     }
+                    .minimumScaleFactor(0.9)
                     .foregroundStyle(foregroundColor)
                     .rotationEffect(.degrees(-15))
-                    .frame(width: geometry.size.width + 200, height: 350)
+                    .frame(width: geometry.size.width + 200, height: geometry.size.width - 50)
                     .offset(x: -50)
                 }
-                .frame(width: geometry.size.width, height: 400)
+                .frame(width: geometry.size.width, height: geometry.size.width)
 
                 VStack(alignment: .leading, spacing: 16) {
                     SubscriptionBadge2024(subscriptionTier: .plus)
