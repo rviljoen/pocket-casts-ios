@@ -122,7 +122,7 @@ class EndOfYear2023StoriesModel: StoryModel {
     }
 
     func paywallView() -> AnyView {
-        AnyView(PaidStoryWallView())
+        AnyView(PaidStoryWallView().ignoresSafeArea(edges: .bottom))
     }
 
     func overlaidShareView() -> AnyView? {

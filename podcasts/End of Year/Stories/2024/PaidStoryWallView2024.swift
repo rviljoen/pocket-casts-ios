@@ -52,10 +52,9 @@ struct PaidStoryWallView2024: View {
                     .buttonStyle(BasicButtonStyle(textColor: .black, backgroundColor: Color.clear, borderColor: .black))
                 }
                 .padding(.horizontal, 24)
-                .padding(.vertical, 6)
+                .padding(.bottom, 6)
             }
         }
-        .enableProportionalValueScaling()
         .background(backgroundColor)
         .onAppear {
             Analytics.track(.endOfYearUpsellShown)

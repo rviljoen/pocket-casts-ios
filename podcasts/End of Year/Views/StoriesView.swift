@@ -45,7 +45,7 @@ struct StoriesView: View {
                     .environment(\.animated, true)
 
                 if model.shouldShowUpsell() {
-                    model.paywallView().zIndex(6).ignoresSafeArea(edges: .bottom).onAppear {
+                    model.paywallView().zIndex(6).onAppear {
                         model.pause()
                     }
                 }
