@@ -121,6 +121,10 @@ class EndOfYear2023StoriesModel: StoryModel {
         stories.count
     }
 
+    func paywallView() -> AnyView {
+        AnyView(PaidStoryWallView())
+    }
+
     func overlaidShareView() -> AnyView? {
         AnyView(shareButton())
     }

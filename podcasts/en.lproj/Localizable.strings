@@ -3557,6 +3557,9 @@
 /* A description used to indicate the number of days and hours spent listening to podcasts in the last year */
 "playback_2024_listening_time_description" = "%1$@ total listening to podcasts";
 
+/* A title shown in the button on the upsell screen to check out Pocket Casts Plus */
+"playback_2024_plus_upsell_button_title" = "Check out Pocket Casts Plus";
+
 /* Label of the End of Year dismiss button */
 "eoy_not_now" = "Not Now";
 

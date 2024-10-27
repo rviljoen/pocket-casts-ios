@@ -1754,6 +1754,8 @@ internal enum L10n {
   internal static func playback2024ListeningTimeDescription(_ p1: Any) -> String {
     return L10n.tr("Localizable", "playback_2024_listening_time_description", String(describing: p1))
   }
+  /// Check out Pocket Casts Plus
+  internal static var playback2024PlusUpsellButtonTitle: String { return L10n.tr("Localizable", "playback_2024_plus_upsell_button_title") }
   /// View My Playback 2024
   internal static var playback2024ViewYear: String { return L10n.tr("Localizable", "playback_2024_view_year") }
   /// All podcasts

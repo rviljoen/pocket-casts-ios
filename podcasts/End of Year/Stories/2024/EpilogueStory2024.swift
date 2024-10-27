@@ -21,12 +21,14 @@ struct EpilogueStory2024: StoryView {
         "Gratki"
     ].map { $0.uppercased() }
 
+    private let separator = Image("playback-24-heart")
+
     var body: some View {
         VStack {
             Spacer()
             VStack {
-                MarqueeTextView(words: words, direction: .leading)
-                MarqueeTextView(words: words, direction: .trailing)
+                MarqueeTextView(words: words, separator: separator, direction: .leading)
+                MarqueeTextView(words: words, separator: separator, direction: .trailing)
             }
             .frame(height: 350)
             .foregroundStyle(marqueeTextColor)
@@ -53,6 +55,7 @@ struct EpilogueStory2024: StoryView {
 
 struct MarqueeTextView: View {
     let words: [String]
+    let separator: Image
     let direction: HorizontalEdge
 
     @State private var offset = CGFloat.zero
@@ -66,7 +69,7 @@ struct MarqueeTextView: View {
                     Text(words[idx])
                         .font(.custom("Humane-Medium", size: 227))
                         .padding(.horizontal, -10)
-                    Image("playback-24-heart")
+                    separator
                 }
             }
 
@@ -92,6 +95,7 @@ struct MarqueeTextView: View {
                     startScrolling()
                 }
             }
+            .disabled(true)
         }
     }
 
