@@ -17,7 +17,7 @@ struct CompletionRate2024Story: ShareableStory {
 
     @ObservedObject private var animationViewModel = PlayPauseAnimationViewModel(duration: 0.3, animation: Animation.linear(duration:))
 
-    @State private var chartOpacity: Double = 0
+    @State private var chartOpacity: Double = 1
 
     var body: some View {
         GeometryReader { geometry in
@@ -56,17 +56,34 @@ struct CompletionRate2024Story: ShareableStory {
                 .frame(width: geometry.size.width / 2, height: geometry.size.height)
                 .offset(y: 3) // Offset to ensure bottoms match
                 .foregroundStyle(.black)
-                ZStack {
-                    Rectangle()
-                        .frame(width: geometry.size.width / 2, height: geometry.size.height * startedAndCompleted.percentage)
-                        .foregroundStyle(.black)
-                    Text(formattedPercentage)
-                        .font(.custom("Humane-Medium", size: 96))
-                        .foregroundStyle(backgroundColor)
+                if startedAndCompleted.percentage < 0.25 { // Switch layout if less than 25%
+                    VStack(alignment: .trailing, spacing: 0) {
+                        chartLabel()
+                            .foregroundStyle(.black)
+                        chartRectangle(size: geometry.size)
+                            .foregroundStyle(.black)
+                    }
+                } else {
+                    ZStack(alignment: .bottomTrailing) {
+                        chartRectangle(size: geometry.size)
+                        chartLabel()
+                            .foregroundStyle(backgroundColor)
+                            .padding(.trailing, 19)
+                    }
                 }
             }
             .padding(.horizontal, 24)
         }
+    }
+
+    @ViewBuilder func chartLabel() -> some View {
+        Text(formattedPercentage)
+            .font(.custom("Humane-Medium", size: 96))
+    }
+
+    @ViewBuilder func chartRectangle(size: CGSize) -> some View {
+        Rectangle()
+            .frame(width: size.width / 2, height: size.height * startedAndCompleted.percentage)
     }
 
     @ViewBuilder func footerView() -> some View {
@@ -106,8 +123,8 @@ struct CompletionRateStory2024_Previews: PreviewProvider {
         CompletionRate2024Story(subscriptionTier: .plus, startedAndCompleted: .init(started: 100, completed: 10))
             .previewDisplayName("10%")
 
-        CompletionRate2024Story(subscriptionTier: .plus, startedAndCompleted: .init(started: 100, completed: 30))
-            .previewDisplayName("30%")
+        CompletionRate2024Story(subscriptionTier: .plus, startedAndCompleted: .init(started: 100, completed: 25))
+            .previewDisplayName("21%")
 
         CompletionRate2024Story(subscriptionTier: .plus, startedAndCompleted: .init(started: 100, completed: 70))
             .previewDisplayName("70%")
