@@ -11,10 +11,12 @@ class EndOfYear2024StoriesModel: StoryModel {
 
     func populate(with dataManager: DataManager) {
         // First, search for top 5 podcasts
-        let topPodcasts = dataManager.topPodcasts(in: Self.year, limit: 5)
+        let topPodcasts = dataManager.topPodcasts(in: Self.year, limit: 10)
+
         if !topPodcasts.isEmpty {
-            stories.append(.top5Podcasts)
+            data.top8Podcasts = Array(topPodcasts.suffix(8)).map { $0.podcast }.reversed()
             data.topPodcasts = Array(topPodcasts.prefix(5))
+            stories.append(.top5Podcasts)
         }
 
         // Listening time
@@ -30,6 +32,15 @@ class EndOfYear2024StoriesModel: StoryModel {
             data.longestEpisode = longestEpisode
             data.longestEpisodePodcast = podcast
             stories.append(.longestEpisode)
+
+        //TODO: Select 8 random shows
+        // Listened podcasts and episodes
+        let listenedNumbers = dataManager.listenedNumbers(in: Self.year)
+        if listenedNumbers.numberOfEpisodes > 0
+            && listenedNumbers.numberOfPodcasts > 0
+            && !topPodcasts.isEmpty {
+            data.listenedNumbers = listenedNumbers
+            stories.append(.numberOfPodcastsAndEpisodesListened)
         }
     }
 
@@ -37,6 +48,8 @@ class EndOfYear2024StoriesModel: StoryModel {
         switch stories[storyNumber] {
         case .intro:
             return IntroStory2024()
+        case .numberOfPodcastsAndEpisodesListened:
+            return NumberListened2024(listenedNumbers: data.listenedNumbers, podcasts: data.top8Podcasts)
         case .top5Podcasts:
             return Top5Podcasts2024Story(top5Podcasts: data.topPodcasts)
         case .listeningTime:
@@ -105,4 +118,7 @@ class EndOfYear2024StoriesData {
 
     var longestEpisodePodcast: Podcast!
 
+    var listenedNumbers: ListenedNumbers!
+
+    var top8Podcasts: [Podcast] = []
 }
