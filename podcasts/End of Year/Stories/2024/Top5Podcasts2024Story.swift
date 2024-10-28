@@ -15,7 +15,7 @@ struct Top5Podcasts2024Story: ShareableStory {
                                "playback-2024-shape-two-ovals",
                                "playback-2024-shape-wavy-circle"]
 
-    @ObservedObject private var animationViewModel = PlayPauseAnimationViewModel(duration: 0.8, animation: Animation.easeInOut(duration:))
+    @ObservedObject private var animationViewModel = PlayPauseAnimationViewModel(duration: 0.8, animation: Animation.spring(_:))
 
     @State private var visible = false
 
