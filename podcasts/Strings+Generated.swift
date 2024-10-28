@@ -1744,6 +1744,14 @@ internal enum L10n {
   internal static var playLast: String { return L10n.tr("Localizable", "play_last") }
   /// Play Next
   internal static var playNext: String { return L10n.tr("Localizable", "play_next") }
+  /// From the %1$@ episodes you started you listened fully to a total of %2$@
+  internal static func playback2024CompletionRateDescription(_ p1: Any, _ p2: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_completion_rate_description", String(describing: p1), String(describing: p2))
+  }
+  /// You completion rate this year was %1$@
+  internal static func playback2024CompletionRateTitle(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_completion_rate_title", String(describing: p1))
+  }
   /// See your top podcasts, categories, listening stats and more. Share with friends and shout out your favourite creators!
   internal static var playback2024Description: String { return L10n.tr("Localizable", "playback_2024_description") }
   /// See your listening stats, top podcasts, and more.

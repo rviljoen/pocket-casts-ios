@@ -3566,6 +3566,12 @@
 /* A description shown in the upsell screen for Pocket Casts Plus subscription */
 "playback_2024_plus_upsell_description" = "Support Pocket Casts subscribing to Plus and get more stats, plus Premium features like bookmarks, folders or preselect chapters!";
 
+/* A title shown in the Completion Rate screen for Playback 2024 */
+"playback_2024_completion_rate_title" = "You completion rate this year was %1$@";
+
+/* A description shown in the Completion Rate screen for Playback 2024 */
+"playback_2024_completion_rate_description" = "From the %1$@ episodes you started you listened fully to a total of %2$@";
+
 /* Label of the End of Year dismiss button */
 "eoy_not_now" = "Not Now";
 
