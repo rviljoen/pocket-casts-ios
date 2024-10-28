@@ -24,6 +24,7 @@ struct Top5Podcasts2024Story: ShareableStory {
 
     var body: some View {
         GeometryReader { geometry in
+            let isSmallScreen = geometry.size.height <= 700
             VStack(alignment: .leading) {
                 ScrollView(.vertical) {
                     VStack(alignment: .leading) {
@@ -38,6 +39,7 @@ struct Top5Podcasts2024Story: ShareableStory {
                           .scrollBounceBehavior(.basedOnSize)
                     }
                 }
+                .disabled(!isSmallScreen) // Disable scrolling on larger where we shouldn't be clipping.
                 .frame(height: geometry.size.height * 0.65)
 
                 Text("And you were big on these shows too!")
