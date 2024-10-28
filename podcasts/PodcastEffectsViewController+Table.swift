@@ -45,7 +45,11 @@ extension PodcastEffectsViewController: UITableViewDataSource, UITableViewDelega
         case .playbackSpeed:
             let cell = tableView.dequeueReusableCell(withIdentifier: PodcastEffectsViewController.timeStepperCellId, for: indexPath) as! TimeStepperCell
             cell.cellLabel?.text = L10n.settingsPlaySpeed
-            if FeatureFlag.newSettingsStorage.enabled {
+            if FeatureFlag.customPlaybackSettings.enabled,
+               !podcast.usedCustomEffectsBefore {
+                let effect = PlaybackManager.shared.effects()
+                cell.cellSecondaryLabel.text = L10n.playbackSpeed(effect.playbackSpeed.localized())
+            } else if FeatureFlag.newSettingsStorage.enabled {
                 cell.cellSecondaryLabel.text = L10n.playbackSpeed(podcast.settings.playbackSpeed.localized())
             } else {
                 cell.cellSecondaryLabel.text = L10n.playbackSpeed(podcast.playbackSpeed.localized())
