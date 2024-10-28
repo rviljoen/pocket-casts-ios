@@ -57,6 +57,7 @@ struct PaidStoryWallView2024: View {
             }
         }
         .background(backgroundColor)
+        .allowsHitTesting(false)
         .onAppear {
             Analytics.track(.endOfYearUpsellShown)
         }
