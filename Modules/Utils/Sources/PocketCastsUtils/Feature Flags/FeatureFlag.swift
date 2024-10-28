@@ -226,7 +226,7 @@ public enum FeatureFlag: String, CaseIterable {
         case .endOfYear2024:
             false
         case .upNextShuffle:
-            true
+            false
         case .autoDownloadOnSubscribe:
             true
         }
