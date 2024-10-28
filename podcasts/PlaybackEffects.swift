@@ -55,7 +55,7 @@ class PlaybackEffects {
         effects.isGlobal = false
 
         if FeatureFlag.customPlaybackSettings.enabled &&
-            !podcast.usedCustomEffectsBefore {
+            shouldReflectGlobalSettings(for: podcast) {
             let globalEffect = globalEffects()
             effects.trimSilence = globalEffect.trimSilence
             effects.volumeBoost = globalEffect.volumeBoost
@@ -132,5 +132,15 @@ class PlaybackEffects {
         }
 
         return value > 0 ? .low : .off
+    }
+
+    private class func shouldReflectGlobalSettings(for podcast: Podcast) -> Bool {
+        let globalEffect = globalEffects()
+        let trimSilence = podcast.settings.trimSilence.amount
+        let volumeBoost = podcast.settings.boostVolume
+        let playbackSpeed = podcast.settings.playbackSpeed
+        return globalEffect.trimSilence == trimSilence &&
+        globalEffect.volumeBoost == volumeBoost &&
+        globalEffect.playbackSpeed == playbackSpeed
     }
 }
