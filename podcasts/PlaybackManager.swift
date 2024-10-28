@@ -871,6 +871,15 @@ class PlaybackManager: ServerPlaybackDelegate {
         effectsChangedExternally()
     }
 
+    func updateIfPodcastUsedCustomEffectsBefore() {
+        if let episode = currentEpisode() as? Episode, let podcast = episode.parentPodcast() {
+            if podcast.overrideGlobalEffects, !podcast.usedCustomEffectsBefore {
+                podcast.usedCustomEffectsBefore = true
+                DataManager.sharedManager.save(podcast: podcast)
+            }
+        }
+    }
+
     func isCurrentEffectGlobal() -> Bool {
         return effects().isGlobal
     }
