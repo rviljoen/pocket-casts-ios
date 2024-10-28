@@ -26,8 +26,9 @@ struct PaidStoryWallView2024: View {
                 Spacer()
                 ZStack {
                     VStack(spacing: -20) {
-                        MarqueeTextView(words: words, separator: separator, direction: .leading)
-                        MarqueeTextView(words: words, separator: separator, direction: .trailing)
+                        let separatorPadding: Double = -4
+                        MarqueeTextView(words: words, separator: separator, separatorPadding: separatorPadding, direction: .leading)
+                        MarqueeTextView(words: words, separator: separator, separatorPadding: separatorPadding, direction: .trailing)
                     }
                     .minimumScaleFactor(0.9)
                     .foregroundStyle(foregroundColor)

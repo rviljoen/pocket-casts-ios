@@ -56,6 +56,7 @@ struct EpilogueStory2024: StoryView {
 struct MarqueeTextView: View {
     let words: [String]
     let separator: Image
+    private(set) var separatorPadding: Double = 0 // Must be mutable for initializer
     let direction: HorizontalEdge
 
     @State private var offset = CGFloat.zero
@@ -70,6 +71,7 @@ struct MarqueeTextView: View {
                         .font(.custom("Humane-Medium", size: 227))
                         .padding(.horizontal, -10)
                     separator
+                        .padding(.horizontal, separatorPadding)
                 }
             }
 
