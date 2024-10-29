@@ -20,11 +20,8 @@ struct LongestEpisode2024Story: ShareableStory {
     @State var fifthCover: Double = 0.08
     @State var sixthCover: Double = 0
 
-    var backgroundColor = Color(hex: "#E0EFAD")
-
-    var tintColor: Color {
-        .white
-    }
+    private let backgroundColor = Color(hex: "#E0EFAD")
+    private let foregroundColor = Color.black
 
     var body: some View {
         GeometryReader { geometry in
@@ -53,6 +50,7 @@ struct LongestEpisode2024Story: ShareableStory {
             }
         }
         .background(backgroundColor)
+        .foregroundStyle(foregroundColor)
         .onAppear {
             if animated {
                 setInitialCoverOffsetForAnimation()
