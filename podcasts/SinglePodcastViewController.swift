@@ -23,8 +23,8 @@ class SinglePodcastViewController: UIViewController, DiscoverSummaryProtocol {
             subscribeButton.onImage = UIImage(named: "discover_tick")?.tintedImage(ThemeColor.support02())
             subscribeButton.offImage = UIImage(named: "discover_add")?.tintedImage(ThemeColor.primaryIcon02())
 
-            subscribeButton.offAccessibilityLabel = L10n.subscribe
-            subscribeButton.onAccessibilityLabel = L10n.subscribed
+            subscribeButton.offAccessibilityLabel = L10n.follow
+            subscribeButton.onAccessibilityLabel = L10n.unfollow
         }
     }
 

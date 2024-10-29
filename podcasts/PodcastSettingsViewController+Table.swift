@@ -185,7 +185,7 @@ extension PodcastSettingsViewController: UITableViewDataSource, UITableViewDeleg
             }
         case .unsubscribe:
             let cell = tableView.dequeueReusableCell(withIdentifier: PodcastSettingsViewController.destructiveButtonCellId, for: indexPath) as! DestructiveButtonCell
-            cell.buttonTitle.text = L10n.unsubscribe
+            cell.buttonTitle.text = L10n.unfollow
             cell.buttonTitle.textColor = ThemeColor.support05()
             return cell
         }

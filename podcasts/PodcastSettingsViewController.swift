@@ -98,7 +98,7 @@ class PodcastSettingsViewController: PCViewController {
             }
         }
         let optionPicker = OptionsPicker(title: downloadedCount > 0 ? nil : L10n.areYouSure)
-        let unsubscribeAction = OptionAction(label: L10n.unsubscribe, icon: nil, action: { [weak self] in
+        let unsubscribeAction = OptionAction(label: L10n.unfollow, icon: nil, action: { [weak self] in
             self?.performUnsubscribe()
         })
         if downloadedCount > 0 {
