@@ -42,13 +42,17 @@ struct EpilogueStory2024: StoryView {
                     StoriesController.shared.replay()
                     Analytics.track(.endOfYearStoryReplayButtonTapped)
                 }
+                .allowsHitTesting(true)
                 .buttonStyle(BasicButtonStyle(textColor: .black, backgroundColor: Color.clear, borderColor: .black))
             }
             .padding(.horizontal)
         }
         .minimumScaleFactor(0.8)
         .padding(.bottom, 40)
-        .background(backgroundColor)
+        .background {
+            backgroundColor
+                .allowsHitTesting(false)
+        }
         .enableProportionalValueScaling()
     }
 }
@@ -98,6 +102,7 @@ struct MarqueeTextView: View {
                 }
             }
             .disabled(true)
+            .allowsHitTesting(false)
         }
     }
 

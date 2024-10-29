@@ -51,14 +51,17 @@ struct PaidStoryWallView2024: View {
 
                         NavigationManager.sharedManager.showUpsellView(from: storiesViewController, source: .endOfYear, flow: SyncManager.isUserLoggedIn() ? .endOfYearUpsell : .endOfYear)
                     }
+                    .allowsHitTesting(true)
                     .buttonStyle(BasicButtonStyle(textColor: .black, backgroundColor: Color.clear, borderColor: .black))
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 6)
             }
         }
-        .background(backgroundColor)
-        .allowsHitTesting(false)
+        .background {
+            backgroundColor
+                .allowsHitTesting(false)
+        }
         .onAppear {
             Analytics.track(.endOfYearUpsellShown)
         }
