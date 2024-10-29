@@ -1762,6 +1762,14 @@ internal enum L10n {
   internal static func playback2024ListeningTimeDescription(_ p1: Any) -> String {
     return L10n.tr("Localizable", "playback_2024_listening_time_description", String(describing: p1))
   }
+  /// It was "%1$@" from "%2$@"
+  internal static func playback2024LongestEpisodeDescription(_ p1: Any, _ p2: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_longest_episode_description", String(describing: p1), String(describing: p2))
+  }
+  /// The longest episode you listened to was %1$@
+  internal static func playback2024LongestEpisodeTitle(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_longest_episode_title", String(describing: p1))
+  }
   /// Check out Pocket Casts Plus
   internal static var playback2024PlusUpsellButtonTitle: String { return L10n.tr("Localizable", "playback_2024_plus_upsell_button_title") }
   /// Support Pocket Casts subscribing to Plus and get more stats, plus Premium features like bookmarks, folders or preselect chapters!
@@ -1824,6 +1832,12 @@ internal enum L10n {
   internal static func playerEffectsTrimSilenceProgress(_ p1: Any) -> String {
     return L10n.tr("Localizable", "player_effects_trim_silence_progress", String(describing: p1))
   }
+  /// Episode download cancelled
+  internal static var playerEpisodeDownloadCancelled: String { return L10n.tr("Localizable", "player_episode_download_cancelled") }
+  /// Episode queued for download
+  internal static var playerEpisodeQueuedForDownload: String { return L10n.tr("Localizable", "player_episode_queued_for_download") }
+  /// Episode was removed
+  internal static var playerEpisodeWasRemoved: String { return L10n.tr("Localizable", "player_episode_was_removed") }
   /// The episode might be corrupted, but you can try to play it again.
   internal static var playerErrorCorruptedFile: String { return L10n.tr("Localizable", "player_error_corrupted_file") }
   /// Check your Internet connection and try again.

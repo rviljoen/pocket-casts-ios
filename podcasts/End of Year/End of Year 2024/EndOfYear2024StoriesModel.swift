@@ -24,6 +24,14 @@ class EndOfYear2024StoriesModel: StoryModel {
             data.listeningTime = listeningTime
         }
 
+        // Longest episode
+        if let longestEpisode = dataManager.longestEpisode(in: Self.year),
+           let podcast = longestEpisode.parentPodcast() {
+            data.longestEpisode = longestEpisode
+            data.longestEpisodePodcast = podcast
+            stories.append(.longestEpisode)
+        }
+
         // Completion Rate
         data.episodesStartedAndCompleted = dataManager.episodesStartedAndCompleted(in: Self.year)
         stories.append(.completionRate)
@@ -37,6 +45,8 @@ class EndOfYear2024StoriesModel: StoryModel {
             return Top5Podcasts2024Story(top5Podcasts: data.topPodcasts)
         case .listeningTime:
             return ListeningTime2024Story(listeningTime: data.listeningTime)
+        case .longestEpisode:
+            return LongestEpisode2024Story(episode: data.longestEpisode, podcast: data.longestEpisodePodcast)
         case .completionRate:
             return CompletionRate2024Story(subscriptionTier: SubscriptionHelper.activeTier, startedAndCompleted: data.episodesStartedAndCompleted)
         case .epilogue:

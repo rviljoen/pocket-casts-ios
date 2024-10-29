@@ -3557,6 +3557,12 @@
 /* A description used to indicate the number of days and hours spent listening to podcasts in the last year */
 "playback_2024_listening_time_description" = "%1$@ total listening to podcasts";
 
+/* A title shown with the amount of time listened on the Longest Episode screen of Playback 2024 */
+"playback_2024_longest_episode_title" = "The longest episode you listened to was %1$@";
+
+/* A description shown on the Longest Episode screen of Playback 2024 with the episode title and podcast title */
+"playback_2024_longest_episode_description" = "It was \"%1$@\" from \"%2$@\"";
+
 /* A title shown in the button on the upsell screen to check out Pocket Casts Plus */
 "playback_2024_plus_upsell_button_title" = "Check out Pocket Casts Plus";
 
@@ -4531,5 +4537,14 @@
 
 /* Auto Downloads Setting - Limits downloads to a number of show episodes. `%1$@' is a placeholder for the number of episodes*/
 "auto_download_limit_number_of_episodes_show" = "%1$@ Latest Episodes per Show";
+
+/* Toast message when episode download is removed*/
+"player_episode_was_removed" = "Episode was removed";
+
+/* Toast message when episode is queued for download*/
+"player_episode_queued_for_download" = "Episode queued for download";
+
+/* Toast message when episode download is cancelled*/
+"player_episode_download_cancelled" = "Episode download cancelled";
 
 
