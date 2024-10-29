@@ -99,6 +99,8 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
     override func viewDidLoad() {
         super.viewDidLoad()
         view.accessibilityViewIsModal = true
+        view.layer.cornerRadius = 55
+        //view.layer.cornerCurve = .continuous
         setupPlayer()
         setupGestures()
         setupObservers()
