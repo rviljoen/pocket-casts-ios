@@ -40,9 +40,9 @@ struct LongestEpisode2024Story: ShareableStory {
                 .padding(.top, isSmallScreen ? 0 : 20)
                 VStack(alignment: .leading, spacing: isSmallScreen ? 4 : 16) {
                     let timeString = episode.playedUpTo.storyTimeDescriptionForSharing
-                    Text("The longest episode you listened to was \(timeString)")
+                    Text(L10n.playback2024LongestEpisodeTitle(timeString))
                         .font(.system(size: 31, weight: .bold))
-                    Text("It was \"\(episode.title ?? "unknown")\" from \"\(podcast.title ?? "unknown")\"")
+                    Text(L10n.playback2024LongestEpisodeDescription(episode.title ?? "unknown", podcast.title ?? "unknown"))
                         .font(.system(size: 15, weight: .light))
                 }
                 .padding(.horizontal, 24)

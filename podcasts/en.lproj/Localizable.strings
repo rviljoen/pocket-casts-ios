@@ -3557,6 +3557,12 @@
 /* A description used to indicate the number of days and hours spent listening to podcasts in the last year */
 "playback_2024_listening_time_description" = "%1$@ total listening to podcasts";
 
+/* A title shown with the amount of time listened on the Longest Episode screen of Playback 2024 */
+"playback_2024_longest_episode_title" = "The longest episode you listened to was %1$@";
+
+/* A description shown on the Longest Episode screen of Playback 2024 with the episode title and podcast title */
+"playback_2024_longest_episode_description" = "It was \"%1$@\" from \"%2$@\"";
+
 /* Label of the End of Year dismiss button */
 "eoy_not_now" = "Not Now";
 
