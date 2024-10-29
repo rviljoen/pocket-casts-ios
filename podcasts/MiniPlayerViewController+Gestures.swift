@@ -1,4 +1,5 @@
 import Foundation
+import PocketCastsDataModel
 import PocketCastsUtils
 
 extension MiniPlayerViewController: UIGestureRecognizerDelegate {
@@ -82,6 +83,15 @@ extension MiniPlayerViewController: UIGestureRecognizerDelegate {
             }
         }
         optionsPicker.addAction(action: markAsPlayedAction)
+
+        let archiveAction = OptionAction(label: L10n.archive, icon: "episode-archive") {
+            if let episode = PlaybackManager.shared.currentEpisode() {
+                AnalyticsEpisodeHelper.shared.currentSource = self.analyticsSource
+                EpisodeManager.archiveEpisode(episode: episode as! Episode, fireNotification: true)
+            }
+        }
+        optionsPicker.addAction(action: archiveAction)
+
 
         let closeAction = OptionAction(label: L10n.miniPlayerClose, icon: "close") {
             Analytics.track(.miniPlayerLongPressMenuOptionTapped, properties: ["option": "close_and_clear_up_next"])
