@@ -824,10 +824,6 @@ class PlaybackManager: ServerPlaybackDelegate {
             podcast.playbackSpeed = effects.playbackSpeed
             podcast.boostVolume = effects.volumeBoost
 
-            if FeatureFlag.customPlaybackSettings.enabled, !podcast.usedCustomEffectsBefore {
-                podcast.usedCustomEffectsBefore = true
-            }
-
             DataManager.sharedManager.save(podcast: podcast)
             NotificationCenter.postOnMainThread(notification: Constants.Notifications.podcastUpdated, object: podcast.uuid)
         }
@@ -880,15 +876,6 @@ class PlaybackManager: ServerPlaybackDelegate {
         NotificationCenter.postOnMainThread(notification: Constants.Notifications.podcastUpdated, object: podcast.uuid)
 
         effectsChangedExternally()
-    }
-
-    func updateIfPodcastUsedCustomEffectsBefore() {
-        if let episode = currentEpisode() as? Episode, let podcast = episode.parentPodcast() {
-            if podcast.overrideGlobalEffects, !podcast.usedCustomEffectsBefore {
-                podcast.usedCustomEffectsBefore = true
-                DataManager.sharedManager.save(podcast: podcast)
-            }
-        }
     }
 
     func isCurrentEffectGlobal() -> Bool {
