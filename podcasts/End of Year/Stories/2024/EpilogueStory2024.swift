@@ -33,27 +33,32 @@ struct EpilogueStory2024: StoryView {
             .frame(height: 350)
             .foregroundStyle(marqueeTextColor)
             Spacer()
-            VStack(alignment: .leading, spacing: 16) {
-                Text(L10n.eoy2024EpilogueTitle)
-                    .font(.system(size: 31, weight: .bold))
-                Text(L10n.eoy2024EpilogueDescription)
-                    .font(.system(size: 15, weight: .light))
-                Button(L10n.eoyStoryReplay) {
-                    StoriesController.shared.replay()
-                    Analytics.track(.endOfYearStoryReplayButtonTapped)
-                }
-                .allowsHitTesting(true)
-                .buttonStyle(BasicButtonStyle(textColor: .black, backgroundColor: Color.clear, borderColor: .black))
-            }
-            .padding(.horizontal)
+            footerView()
         }
         .minimumScaleFactor(0.8)
-        .padding(.bottom, 40)
         .background {
             backgroundColor
+                .ignoresSafeArea()
                 .allowsHitTesting(false)
         }
         .enableProportionalValueScaling()
+    }
+
+    @ViewBuilder func footerView() -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(L10n.eoy2024EpilogueTitle)
+                .font(.system(size: 31, weight: .bold))
+            Text(L10n.eoy2024EpilogueDescription)
+                .font(.system(size: 15, weight: .light))
+            Button(L10n.eoyStoryReplay) {
+                StoriesController.shared.replay()
+                Analytics.track(.endOfYearStoryReplayButtonTapped)
+            }
+            .buttonStyle(BasicButtonStyle(textColor: .black, backgroundColor: Color.clear, borderColor: .black))
+            .allowsHitTesting(true)
+        }
+        .padding(.horizontal, 24)
+        .padding(.vertical, 6)
     }
 }
 
