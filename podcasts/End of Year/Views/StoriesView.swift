@@ -41,7 +41,11 @@ struct StoriesView: View {
                 // Manually set the zIndex order to ensure we can change the order when needed
                 model.story(index: model.currentStoryIndex)
                     .zIndex(3)
-                    .ignoresSafeArea(edges: .bottom)
+                    .modify {
+                        if model.overlaidShareView() != nil {
+                            $0.ignoresSafeArea(edges: .bottom)
+                        }
+                    }
                     .environment(\.animated, true)
 
                 if model.shouldShowUpsell() {
