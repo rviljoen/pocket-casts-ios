@@ -57,4 +57,6 @@ protocol NavigationProtocol: AnyObject {
     func dismissPresentedViewController(completion: (() -> Void)?)
     func showOnboardingFlow(flow: OnboardingFlow.Flow?)
     func showNotificationsPermissions()
+
+    func showSleepTimer()
 }
