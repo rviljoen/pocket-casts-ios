@@ -14,6 +14,7 @@ struct NumberListened2024: ShareableStory {
     @State var topRowXOffset: Double = 0
     @State var bottomRowXOffset: Double = 0
 
+    private let foregroundColor = Color.black
     private let backgroundColor = Color(hex: "#EFECAD")
     let identifier: String = "number_of_podcasts_and_episodes_listened"
 
@@ -24,6 +25,7 @@ struct NumberListened2024: ShareableStory {
             Spacer()
             footerView()
         }
+        .foregroundStyle(foregroundColor)
         .background(backgroundColor)
     }
 
