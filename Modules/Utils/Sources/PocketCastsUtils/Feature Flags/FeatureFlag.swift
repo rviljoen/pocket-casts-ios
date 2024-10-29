@@ -137,6 +137,9 @@ public enum FeatureFlag: String, CaseIterable {
     /// Push two auto downloads on subscribe of a podcast
     case autoDownloadOnSubscribe
 
+    /// Replace Subscribe/Unsubscribe with Follow/Unfollow
+    case useFollowNaming
+
     public var enabled: Bool {
         if let overriddenValue = FeatureFlagOverrideStore().overriddenValue(for: self) {
             return overriddenValue
@@ -229,6 +232,8 @@ public enum FeatureFlag: String, CaseIterable {
             true
         case .autoDownloadOnSubscribe:
             true
+        case .useFollowNaming:
+            false
         }
     }
 

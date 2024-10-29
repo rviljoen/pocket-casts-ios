@@ -356,8 +356,11 @@ class PodcastHeadingTableCell: ThemeableCell, SubscribeButtonDelegate, Expandabl
     private func setupButtons() {
         guard let podcast = delegate?.displayedPodcast(), let _ = delegate?.isSummaryExpanded() else { return }
 
+        let subscribedLabel = FeatureFlag.useFollowNaming.enabled ? L10n.unfollow : L10n.subscribed
+        let unsubscribedLabel = FeatureFlag.useFollowNaming.enabled ? L10n.follow : L10n.subscribe
+
         subscribeButton.isSelected = podcast.isSubscribed()
-        subscribeButton.accessibilityLabel = podcast.isSubscribed() ? L10n.unfollow : L10n.follow
+        subscribeButton.accessibilityLabel = podcast.isSubscribed() ? subscribedLabel : unsubscribedLabel
         subscribeButton.setBackgroundColors()
         if subscribeButton.isSelected {
             folderButton.isHidden = !showFolderButton()
@@ -506,7 +509,7 @@ class PodcastHeadingTableCell: ThemeableCell, SubscribeButtonDelegate, Expandabl
                 self.layoutIfNeeded()
             }, completion: { _ in
                 self.isAnimatingToSubscribed = false
-                self.subscribeButton.accessibilityLabel = L10n.unfollow
+                self.subscribeButton.accessibilityLabel = FeatureFlag.useFollowNaming.enabled ? L10n.unfollow : L10n.subscribed
             })
         }
     }

@@ -1101,8 +1101,10 @@ internal enum L10n {
   internal static var filesHowToTitle: String { return L10n.tr("Localizable", "files_how_to_title") }
   /// Sort Files
   internal static var filesSort: String { return L10n.tr("Localizable", "files_sort") }
-  /// New podcasts you follow to will be automatically added
+  /// New podcasts you subscribe to will be automatically added
   internal static var filterAutoAddSubtitle: String { return L10n.tr("Localizable", "filter_auto_add_subtitle") }
+  /// New podcasts you follow to will be automatically added
+  internal static var filterAutoAddSubtitleNew: String { return L10n.tr("Localizable", "filter_auto_add_subtitle_new") }
   /// All Your Podcasts
   internal static var filterChipsAllPodcasts: String { return L10n.tr("Localizable", "filter_chips_all_podcasts") }
   /// Duration
@@ -1117,8 +1119,10 @@ internal enum L10n {
   internal static var filterCreateInstructions: String { return L10n.tr("Localizable", "filter_create_instructions") }
   /// No Matching Episodes
   internal static var filterCreateNoEpisodes: String { return L10n.tr("Localizable", "filter_create_no_episodes") }
-  /// The criteria you selected doesn’t match any current episodes in your podcasts
+  /// The criteria you selected doesn’t match any current episodes in your subscriptions
   internal static var filterCreateNoEpisodesDescriptionExplanation: String { return L10n.tr("Localizable", "filter_create_no_episodes_description_explanation") }
+  /// The criteria you selected doesn’t match any current episodes in your podcasts
+  internal static var filterCreateNoEpisodesDescriptionExplanationNew: String { return L10n.tr("Localizable", "filter_create_no_episodes_description_explanation_new") }
   /// Choose different criteria, or save this filter if you think it will match episodes in the future.
   internal static var filterCreateNoEpisodesDescriptionPrompt: String { return L10n.tr("Localizable", "filter_create_no_episodes_description_prompt") }
   /// All Podcasts
@@ -1143,8 +1147,10 @@ internal enum L10n {
   internal static var filterEpisodeStatus: String { return L10n.tr("Localizable", "filter_episode_status") }
   /// Longer than
   internal static var filterLongerThanLabel: String { return L10n.tr("Localizable", "filter_longer_than_label") }
-  /// New podcasts you follow to will not be automatically added
+  /// New podcasts you subscribe to will not be automatically added
   internal static var filterManualAddSubtitle: String { return L10n.tr("Localizable", "filter_manual_add_subtitle") }
+  /// New podcasts you follow to will not be automatically added
+  internal static var filterManualAddSubtitleNew: String { return L10n.tr("Localizable", "filter_manual_add_subtitle_new") }
   /// Media Type
   internal static var filterMediaType: String { return L10n.tr("Localizable", "filter_media_type") }
   /// Audio
@@ -1416,10 +1422,14 @@ internal enum L10n {
   internal static var importInstructionsOvercast: String { return L10n.tr("Localizable", "import_instructions_overcast") }
   /// Import your podcasts from an OPML file using a URL
   internal static var importOpmlFromUrl: String { return L10n.tr("Localizable", "import_opml_from_url") }
-  /// You can import your podcasts to Pocket Casts using the widely supported OPML format. Export the file from another app and choose open in Pocket Casts.
+  /// You can import your podcasts subscriptions to Pocket Casts using the widely supported OPML format. Export the file from another app and choose open in Pocket Casts.
   /// 
   /// Note: You may need to email the OPML file to yourself, long press on the attachment and select Pocket Casts.
   internal static var importPodcastsDescription: String { return L10n.tr("Localizable", "import_podcasts_description") }
+  /// You can import your podcasts to Pocket Casts using the widely supported OPML format. Export the file from another app and choose open in Pocket Casts.
+  /// 
+  /// Note: You may need to email the OPML file to yourself, long press on the attachment and select Pocket Casts.
+  internal static var importPodcastsDescriptionNew: String { return L10n.tr("Localizable", "import_podcasts_description_new") }
   /// IMPORT TO POCKET CASTS
   internal static var importPodcastsTitle: String { return L10n.tr("Localizable", "import_podcasts_title") }
   /// Coming from another app? Import your podcasts and get listening. You can always do this later in settings.

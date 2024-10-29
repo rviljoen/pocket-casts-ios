@@ -1,5 +1,6 @@
 import DifferenceKit
 import PocketCastsDataModel
+import PocketCastsUtils
 import UIKit
 
 class PodcastSettingsViewController: PCViewController {
@@ -98,7 +99,8 @@ class PodcastSettingsViewController: PCViewController {
             }
         }
         let optionPicker = OptionsPicker(title: downloadedCount > 0 ? nil : L10n.areYouSure)
-        let unsubscribeAction = OptionAction(label: L10n.unfollow, icon: nil, action: { [weak self] in
+        let label = FeatureFlag.useFollowNaming.enabled ? L10n.unfollow : L10n.unsubscribe
+        let unsubscribeAction = OptionAction(label: label, icon: nil, action: { [weak self] in
             self?.performUnsubscribe()
         })
         if downloadedCount > 0 {
