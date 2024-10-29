@@ -1754,6 +1754,14 @@ internal enum L10n {
   internal static func playback2024ListeningTimeDescription(_ p1: Any) -> String {
     return L10n.tr("Localizable", "playback_2024_listening_time_description", String(describing: p1))
   }
+  /// It was "%1$@" from "%2$@"
+  internal static func playback2024LongestEpisodeDescription(_ p1: Any, _ p2: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_longest_episode_description", String(describing: p1), String(describing: p2))
+  }
+  /// The longest episode you listened to was %1$@
+  internal static func playback2024LongestEpisodeTitle(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_longest_episode_title", String(describing: p1))
+  }
   /// View My Playback 2024
   internal static var playback2024ViewYear: String { return L10n.tr("Localizable", "playback_2024_view_year") }
   /// All podcasts
