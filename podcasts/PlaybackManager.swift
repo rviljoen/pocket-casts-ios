@@ -4,6 +4,10 @@ import PocketCastsDataModel
 import PocketCastsServer
 import PocketCastsUtils
 import UIKit
+//exclude activitykit from watchos
+#if !os(watchOS)
+import ActivityKit
+#endif
 
 class PlaybackManager: ServerPlaybackDelegate {
     static let shared = PlaybackManager()
@@ -19,6 +23,7 @@ class PlaybackManager: ServerPlaybackDelegate {
     private let chapterManager = ChapterManager()
 
     var sleepTimeRemaining = -1 as TimeInterval
+    var sleepTimerStartedAt: Date?
 
     var numberOfEpisodesToSleepAfter = 0 {
         didSet {
@@ -50,6 +55,7 @@ class PlaybackManager: ServerPlaybackDelegate {
 
     #if !os(watchOS)
         private var backgroundTask = UIBackgroundTaskIdentifier.invalid
+        private var currentActivity: Activity<SleepTimerAttributes>? = nil
     #endif
 
     private var playersToCleanUp = [AnyHashable]()
@@ -249,6 +255,9 @@ class PlaybackManager: ServerPlaybackDelegate {
             self.updateIdleTimer()
 
             self.sleepTimerManager.restartSleepTimerIfNeeded()
+#if !os(watchOS)
+            self.startOrUpdateLiveActivity()
+#endif
         })
     }
 
@@ -278,6 +287,9 @@ class PlaybackManager: ServerPlaybackDelegate {
         deactiveAudioSession()
 
         updateIdleTimer()
+#if !os(watchOS)
+        startOrUpdateLiveActivity()
+#endif
     }
 
     func playPause() {
@@ -1562,6 +1574,9 @@ class PlaybackManager: ServerPlaybackDelegate {
         sleepTimerManager.cancelSleepTimer(userInitiated: userInitiated)
         sleepTimeRemaining = -1
         numberOfEpisodesToSleepAfter = 0
+        #if !os(watchOS)
+        endLiveActivity()
+        #endif
         NotificationCenter.postOnMainThread(notification: Constants.Notifications.sleepTimerChanged)
     }
 
@@ -1575,7 +1590,59 @@ class PlaybackManager: ServerPlaybackDelegate {
         sleepTimeRemaining = stopIn
         NotificationCenter.postOnMainThread(notification: Constants.Notifications.sleepTimerChanged)
         Analytics.track(.playerSleepTimerEnabled, properties: ["time": Int(stopIn)])
+        #if !os(watchOS)
+        startOrUpdateLiveActivity()
+        #endif
     }
+
+#if !os(watchOS)
+    func startOrUpdateLiveActivity() {
+        if sleepTimeRemaining <= 0 {
+            endLiveActivity()
+            return
+        }
+
+        let attributes = SleepTimerAttributes(timerName: "Sleep Timer")
+        let endTime = Date().addingTimeInterval(sleepTimeRemaining)
+        let contentState = SleepTimerAttributes.ContentState(startTime: sleepTimerStartedAt ?? Date(), endTime: endTime, playing: playing())
+        let content = ActivityContent(state: contentState, staleDate: nil)
+
+        guard let activity = currentActivity else {
+            do {
+                sleepTimerStartedAt = Date()
+                currentActivity = try Activity<SleepTimerAttributes>.request(
+                    attributes: attributes,
+                    content: content,
+                    pushType: nil)
+                FileLog.shared.addMessage("Created live activity: \(String(describing: currentActivity?.id))")
+            } catch {
+                print("Error requesting live activity: \(error.localizedDescription)")
+            }
+            return
+        }
+
+        Task {
+            await activity.update(content)
+        }
+    }
+
+    func endLiveActivity() {
+        if currentActivity == nil {
+            return
+        }
+        let now = Date()
+
+        let contentState = SleepTimerAttributes.ContentState(startTime: now, endTime: now, playing: playing())
+        let content = ActivityContent(state: contentState, staleDate: now)
+
+        Task {
+            FileLog.shared.addMessage("Ending live activity: \(String(describing: currentActivity?.id))")
+            await currentActivity?.end(content, dismissalPolicy: .immediate)
+            currentActivity = nil
+            sleepTimerStartedAt = nil
+        }
+    }
+    #endif
 
     func restartSleepTimer() {
         guard sleepTimerActive() else {
@@ -1683,26 +1750,26 @@ class PlaybackManager: ServerPlaybackDelegate {
             return .success
         }
 
-        commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event -> MPRemoteCommandHandlerStatus in
-            guard let strongSelf = self, let _ = strongSelf.currentEpisode() else { return .noActionableNowPlayingItem }
-
-            strongSelf.analyticsPlaybackHelper.currentSource = strongSelf.commandCenterSource
-
-            if let seekEvent = event as? MPChangePlaybackPositionCommandEvent {
-                if Settings.legacyBluetoothModeEnabled(), seekEvent.positionTime < 1 {
-                    FileLog.shared.addMessage("Remote control: ignoring changePlaybackPositionCommand, it's to 0 and legacy bluetooth mode is on")
-                } else {
-                    FileLog.shared.addMessage("Remote control: changePlaybackPositionCommand")
-                    strongSelf.seekTo(time: seekEvent.positionTime)
-                }
-
-                return .success
-            }
-
-            FileLog.shared.addMessage("Remote control: changePlaybackPositionCommand failed")
-
-            return .commandFailed
-        }
+//        commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event -> MPRemoteCommandHandlerStatus in
+//            guard let strongSelf = self, let _ = strongSelf.currentEpisode() else { return .noActionableNowPlayingItem }
+//
+//            strongSelf.analyticsPlaybackHelper.currentSource = strongSelf.commandCenterSource
+//
+//            if let seekEvent = event as? MPChangePlaybackPositionCommandEvent {
+//                if Settings.legacyBluetoothModeEnabled(), seekEvent.positionTime < 1 {
+//                    FileLog.shared.addMessage("Remote control: ignoring changePlaybackPositionCommand, it's to 0 and legacy bluetooth mode is on")
+//                } else {
+//                    FileLog.shared.addMessage("Remote control: changePlaybackPositionCommand")
+//                    strongSelf.seekTo(time: seekEvent.positionTime)
+//                }
+//
+//                return .success
+//            }
+//
+//            FileLog.shared.addMessage("Remote control: changePlaybackPositionCommand failed")
+//
+//            return .commandFailed
+//        }
 
         commandCenter.changePlaybackRateCommand.supportedPlaybackRates = [0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
         commandCenter.changePlaybackRateCommand.addTarget { [weak self] event -> MPRemoteCommandHandlerStatus in
@@ -1866,6 +1933,8 @@ class PlaybackManager: ServerPlaybackDelegate {
         guard let userInfo = notification.userInfo, let changeReason = userInfo[AVAudioSessionRouteChangeReasonKey] as? NSNumber else { return }
 
         let reason = changeReason.uintValue
+        FileLog.shared.addMessage("Route change reason: \(reason)")
+        
         if let currEpisode = currentEpisode(), playingOverAirplay() && playerSwitchRequired() {
             load(episode: currEpisode, autoPlay: true, overrideUpNext: false)
         } else if reason == AVAudioSession.RouteChangeReason.oldDeviceUnavailable.rawValue {

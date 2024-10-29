@@ -528,6 +528,15 @@ class MainTabBarController: UITabBarController, NavigationProtocol {
         }
     }
 
+    func showSleepTimer() {
+        dismissIfNeeded {
+            NavigationManager.sharedManager.miniPlayer?.openFullScreenPlayer() {
+                NavigationManager.sharedManager.miniPlayer?.fullScreenPlayer?.nowPlayingItem.sleepTimerTapped()
+            }
+        }
+    }
+
+
     private func topController() -> UIViewController {
         var topController: UIViewController = self
         while let presentedViewController = topController.presentedViewController {

@@ -61,6 +61,8 @@ class NavigationManager {
     static let endOfYearStories = "endOfYearStories"
     static let onboardingFlow = "onboardingFlow"
 
+    static let sleepTimer = "sleepTimer"
+
     static let sharedManager = NavigationManager()
 
     private weak var mainController: NavigationProtocol?
@@ -210,6 +212,8 @@ class NavigationManager {
         } else if place == NavigationManager.onboardingFlow {
             let flow: OnboardingFlow.Flow? = data?["flow"] as? OnboardingFlow.Flow
             mainController?.showOnboardingFlow(flow: flow)
+        } else if place == NavigationManager.sleepTimer {
+            mainController?.showSleepTimer()
         }
     }
 }

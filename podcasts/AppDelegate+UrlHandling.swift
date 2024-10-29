@@ -87,6 +87,8 @@ extension AppDelegate {
             } else if shortcut == "discover" {
                 NavigationManager.sharedManager.navigateTo(NavigationManager.discoverPageKey, data: nil)
                 AnalyticsHelper.forceTouchDiscover()
+            } else if shortcut == "sleep" {
+                NavigationManager.sharedManager.navigateTo(NavigationManager.sleepTimer, data: nil)
             }
 
             return true

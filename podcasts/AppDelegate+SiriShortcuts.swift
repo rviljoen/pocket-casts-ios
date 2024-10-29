@@ -1,4 +1,5 @@
 import Foundation
+import AppIntents
 import Intents
 import JLRoutes
 import PocketCastsDataModel
@@ -206,5 +207,26 @@ extension AppDelegate {
 
     func handleReferralsDeepLink(url: URL) {
         NavigationManager.sharedManager.navigateTo(NavigationManager.settingsRedeemGuestPassKey, data: [NavigationManager.redeemGuestPassURLKey: url])
+    }
+}
+
+struct PCShortcuts: AppShortcutsProvider {
+    static var appShortcuts: [AppShortcut] {
+        AppShortcut(
+            intent: ResumeIntent(),
+            phrases: [
+                "Resume podcast in \(.applicationName)"
+            ],
+            shortTitle: "Resume podcast",
+            systemImageName: "headphones")
+    }
+}
+
+struct ResumeIntent: AppIntent {
+    static let title: LocalizedStringResource = "Resume Podcast"
+
+    func perform() async throws -> some IntentResult {
+        PlaybackManager.shared.play()
+        return .result()
     }
 }
