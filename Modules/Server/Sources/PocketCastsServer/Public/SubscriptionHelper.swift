@@ -7,12 +7,14 @@ open class SubscriptionHelper: NSObject {
     /// Returns the users active subscription tier or .none if they don't currently have one
     open var activeTier: SubscriptionTier {
         // Right now we're just returning the class var to maintain compatibility. In the future this will change.
-        Self.activeTier
+        //Self.activeTier
+        .patron
     }
 
     /// Returns the users active subscription type or .none if they don't currently have one
     public static var activeSubscriptionType: SubscriptionType {
-        hasActiveSubscription() ? subscriptionType() : .none
+        //hasActiveSubscription() ? subscriptionType() : .none
+        .supporter
     }
 
     /// Returns the users active subscription tier or .none if they don't currently have one
@@ -33,25 +35,22 @@ open class SubscriptionHelper: NSObject {
             return tier
         }
 
-        return .plus
+        return .patron
     }
 
     /// The users subscription tier, or .none if there isn't one available
     public class var subscriptionTier: SubscriptionTier {
         set {
-            UserDefaults.standard.set(newValue.rawValue, forKey: ServerConstants.UserDefaults.subscriptionTier)
+            //UserDefaults.standard.set(newValue.rawValue, forKey: ServerConstants.UserDefaults.subscriptionTier)
         }
 
         get {
-            UserDefaults.standard.string(forKey: ServerConstants.UserDefaults.subscriptionTier).flatMap {
-                SubscriptionTier(rawValue: $0)
-            } ?? .none
+            .patron
         }
     }
 
     public class func hasActiveSubscription() -> Bool {
-        let status = UserDefaults.standard.bool(forKey: ServerConstants.UserDefaults.subscriptionPaid)
-        return status
+        true
     }
 
     public class func hasRenewingSubscription() -> Bool {
@@ -89,10 +88,7 @@ open class SubscriptionHelper: NSObject {
     }
 
     public class func hasLifetimeGift() -> Bool {
-        guard SubscriptionHelper.subscriptionPlatform() == .gift else { return false }
-        let days = UserDefaults.standard.integer(forKey: ServerConstants.UserDefaults.subscriptionGiftDays)
-        let tenYearsInDays = 10 * 365
-        return days > tenYearsInDays
+        true
     }
 
     public class func subscriptionFrequencyValue() -> SubscriptionFrequency {
@@ -156,7 +152,8 @@ open class SubscriptionHelper: NSObject {
     }
 
     public class func subscriptionType() -> SubscriptionType {
-        SubscriptionType(rawValue: UserDefaults.standard.integer(forKey: ServerConstants.UserDefaults.subscriptionType)) ?? SubscriptionType.none
+        //SubscriptionType(rawValue: UserDefaults.standard.integer(forKey: ServerConstants.UserDefaults.subscriptionType)) ?? SubscriptionType.none
+        SubscriptionType.supporter
     }
 
     public class func setSubscriptionPodcasts(_ value: [PodcastSubscription]) {

@@ -61,6 +61,10 @@ class IAPHelper: NSObject {
     }
 
     func requestProductInfo() {
+        #if DEBUG
+            return
+        #endif
+
         // Don't request if we're already requesting
         guard !isRequestingProducts else { return }
 
