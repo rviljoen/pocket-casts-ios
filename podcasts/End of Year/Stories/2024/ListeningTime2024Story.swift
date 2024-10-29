@@ -5,6 +5,7 @@ struct ListeningTime2024Story: ShareableStory {
 
     let listeningTime: Double
 
+    private let foregroundColor = Color.black
     private let backgroundColor = Color(hex: "#EDB0F3")
 
     enum Constants {
@@ -17,22 +18,29 @@ struct ListeningTime2024Story: ShareableStory {
         let description = L10n.playback2024ListeningTimeDescription(components.1)
 
         GeometryReader { geometry in
-            ZStack {
-                VStack {
-                    Text("\(bigNumber)")
-                        .lineLimit(1)
-                        .font(.custom("Humane-Bold", size: geometry.size.height * 0.7))
-                    Text(description)
-                        .font(.system(size: 30, weight: .bold))
-                        .padding(.horizontal, 6)
-                        .minimumScaleFactor(0.8)
+            VStack(alignment: .leading) {
+                ZStack {
+                    VStack {
+                        Spacer()
+                        let isSmallScreen = geometry.size.height <= 500
+                        let sizingFactor = isSmallScreen ? 0.7 : 0.9
+                        Text("\(bigNumber)")
+                            .lineLimit(1)
+                            .font(.custom("Humane-Bold", size: geometry.size.height * sizingFactor))
+                            .minimumScaleFactor(0.5)
+                    }
+                    Image("playback-sticker-way-to-go")
+                        .resizable()
+                        .frame(width: Constants.wayToGoStickerSize.width, height: Constants.wayToGoStickerSize.height)
+                        .position(x: 21, y: 40, for: Constants.wayToGoStickerSize, in: geometry.frame(in: .local), corner: .topLeading)
                 }
-                Image("playback-sticker-way-to-go")
-                    .resizable()
-                    .frame(width: Constants.wayToGoStickerSize.width, height: Constants.wayToGoStickerSize.height)
-                    .position(x: 21, y: 52, for: Constants.wayToGoStickerSize, in: geometry.frame(in: .local), corner: .topLeading)
+                Text(description)
+                    .font(.system(size: 30, weight: .bold))
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 8)
             }
         }
+        .foregroundStyle(foregroundColor)
         .background(backgroundColor)
         .enableProportionalValueScaling()
     }
