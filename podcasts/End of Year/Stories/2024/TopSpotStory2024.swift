@@ -10,6 +10,8 @@ struct TopSpotStory2024: ShareableStory {
 
     @State private var rotation: Double = 360
 
+    let identifier: String = "top_one_podcast"
+
     var body: some View {
         VStack(spacing: 0) {
             Spacer()
@@ -48,6 +50,14 @@ struct TopSpotStory2024: ShareableStory {
         }
         .foregroundStyle(foregroundColor)
         .background(backgroundColor)
+    }
+
+    func onAppear() {
+        Analytics.track(.endOfYearStoryShown, story: identifier)
+    }
+
+    func willShare() {
+        Analytics.track(.endOfYearStoryShare, story: identifier)
     }
 
     func sharingAssets() -> [Any] {
