@@ -5,19 +5,20 @@ import PocketCastsUtils
 struct TopSpotStory2024: ShareableStory {
     let topPodcast: TopPodcast
 
-    let backgroundColor = Color(hex: "#EDB0F3")
+    private let foregroundColor = Color.black
+    private let backgroundColor = Color(hex: "#EDB0F3")
 
     @State private var rotation: Double = 360
 
     var body: some View {
-        ZStack {
+        VStack(spacing: 0) {
+            Spacer()
             GeometryReader { proxy in
-                ZStack(alignment: .top) {
+                ZStack {
                     PodcastImage(uuid: topPodcast.podcast.uuid, size: .page, aspectRatio: nil, contentMode: .fill)
-                        .frame(height: 600)
-                        .frame(maxWidth: proxy.size.width)
+                        .frame(width: proxy.size.width, height: proxy.size.height)
                         .mask {
-                            let maskInset = CGSize(width: 60, height: 60)
+                            let maskInset = CGSize(width: proxy.size.height - 550, height: proxy.size.height - 550)
                             InwardSidesRectangle(inwardAngle: .degrees(5))
                                 .frame(width: proxy.size.width + maskInset.width, height: proxy.size.width + maskInset.height)
                                 .rotationEffect(.degrees(rotation))
@@ -26,32 +27,27 @@ struct TopSpotStory2024: ShareableStory {
                                     rotation = 0
                                 }
                         }
-                        .padding(.top, 40)
-
-                    VStack {
-                        Spacer() // Force footer to bottom
-                        let timeString = topPodcast.totalPlayedTime.storyTimeDescriptionForSharing
-                        let numberPlayed = topPodcast.numberOfPlayedEpisodes
-                        let title = topPodcast.podcast.title ?? "unknown"
-                        StoryFooter2024(title: "This was your top podcast in 2024",
-                                        description: "You listened to \(numberPlayed) episodes for a total of \(timeString) of \"\(title)\"")
-                        .padding(.bottom, 20)
-                        .zIndex(1) // Keep footer on top
-                    }
-
                     Image("playback-sticker-top-spot")
-                        .position(x: 18, y: 90, for: CGSize(width: 213, height: 101), in: proxy.frame(in: .local))
+                        .position(x: 18, y: 20, for: CGSize(width: 213, height: 101), in: proxy.frame(in: .local))
                 }
             }
-        }
-        .ignoresSafeArea()
-        .background(backgroundColor)
-        .enableProportionalValueScaling()
-    }
+            VStack {
+                let timeString = topPodcast.totalPlayedTime.storyTimeDescriptionForSharing
+                let numberPlayed = topPodcast.numberOfPlayedEpisodes
+                let title = topPodcast.podcast.title ?? "unknown"
 
-    // Hide old share button
-    func hideShareButton() -> Bool {
-        true
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("This was your top podcast in 2024")
+                        .font(.system(size: 31, weight: .bold))
+                    Text("You listened to \(numberPlayed) episodes for a total of \(timeString) of \"\(title)\"")
+                        .font(.system(size: 15, weight: .light))
+                }
+                .minimumScaleFactor(0.9)
+                .padding(.horizontal)
+            }
+        }
+        .foregroundStyle(foregroundColor)
+        .background(backgroundColor)
     }
 
     func sharingAssets() -> [Any] {
