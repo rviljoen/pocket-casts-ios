@@ -238,7 +238,7 @@ class PodcastHeadingTableCell: ThemeableCell, SubscribeButtonDelegate, Expandabl
         supporterHeartView.isHidden = !(podcast.isPaid && podcast.isSubscribed())
         supporterView.isHidden = !podcast.isPaid
 
-        let folderImage = (podcast.folderUuid?.isEmpty ?? true) ? "folder-empty" : "folder-check"
+        let folderImage = (podcast.folderUuid?.isEmpty ?? true) ? "folder-create" : "folder-check"
         folderButton.setImage(UIImage(named: folderImage), for: .normal)
 
         if !isAnimatingToSubscribed {
