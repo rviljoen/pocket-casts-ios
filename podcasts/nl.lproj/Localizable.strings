@@ -2221,8 +2221,6 @@ Als je op zoek bent naar inspiratie, probeer dan het tabblad Ontdekken.</string>
     <string>1 podcast geselecteerd</string>
     <key>settings_auto_downloads_subtitle_filters</key>
     <string>Download de bovenste afleveringen in een filter.</string>
-    <key>settings_auto_downloads_subtitle_new_episodes</key>
-    <string>Download nieuwe afleveringen wanneer ze worden uitgegeven.</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>Download afleveringen die zijn toegevoegd aan Hierna.</string>
     <key>settings_badge_filter_header</key>

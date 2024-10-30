@@ -2225,8 +2225,6 @@ Se você estiver buscando inspiração, experimente a guia Explorar.</string>
     <string>1 podcast selecionado</string>
     <key>settings_auto_downloads_subtitle_filters</key>
     <string>Faça download dos primeiros episódios de um filtro.</string>
-    <key>settings_auto_downloads_subtitle_new_episodes</key>
-    <string>Faça download de novos episódios quando eles são lançados.</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>Faça download de episódios adicionados aos Próximos.</string>
     <key>settings_badge_filter_header</key>

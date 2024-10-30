@@ -2225,8 +2225,6 @@ Viele Anregungen findest du im Tab „Entdecken“.</string>
     <string>1 Podcast ausgewählt</string>
     <key>settings_auto_downloads_subtitle_filters</key>
     <string>Die obersten Folgen in einem Filter herunterladen.</string>
-    <key>settings_auto_downloads_subtitle_new_episodes</key>
-    <string>Neue Folgen herunterladen, sobald sie erscheinen.</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>Zur Warteschlange hinzugefügte Folgen herunterladen.</string>
     <key>settings_badge_filter_header</key>

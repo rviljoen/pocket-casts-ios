@@ -257,6 +257,18 @@
     <string>Només afegeix al principi</string>
     <key>auto_download_first</key>
     <string>Descarregar primer automàticament</string>
+    <key>auto_download_limit_auto_downloads</key>
+    <string>Limitar les descàrregues automàtiques</string>
+    <key>auto_download_limit_downloads</key>
+    <string>Limitar les descàrregues</string>
+    <key>auto_download_limit_number_of_episodes</key>
+    <string>%1$@ episodis</string>
+    <key>auto_download_limit_number_of_episodes_show</key>
+    <string>%1$@ Últims episodis per programa</string>
+    <key>auto_download_limit_one_episode</key>
+    <string>últim episodi</string>
+    <key>auto_download_limit_one_episode_show</key>
+    <string>Últim episodi per programa</string>
     <key>auto_download_off_subtitle</key>
     <string>Activa la descàrrega automàtica d'episodis per a aquest filtre</string>
     <key>auto_download_on_plural_format</key>
@@ -735,6 +747,10 @@
     <string>Editar clip</string>
     <key>enable_it_now</key>
     <string>Activar-ho ara</string>
+    <key>eoy_2024_epilogue_description</key>
+    <string>No t'oblidis de compartir-ho amb els amics i fer un reconeixement als teus pòdcasts i creadors favorits.</string>
+    <key>eoy_2024_epilogue_title</key>
+    <string>Gràcies per escoltar amb nosaltres aquest any. Ens veiem el 2025!</string>
     <key>eoy_card_description</key>
     <string>Consulta les teves estadístiques d'escolta, els millors pòdcasts i molt més.</string>
     <key>eoy_create_account_to_see</key>
@@ -1486,6 +1502,16 @@ ACTUALITZACIONS</string>
     <string>Reproduir al final</string>
     <key>play_next</key>
     <string>Reproduir a continuació</string>
+    <key>playback_2024_description</key>
+    <string>Consulta els teus pòdcasts més destacats, categories, estadístiques d'escolta i molt més. Comparteix-ho amb amics i fes que tothom sàpiga quins són els teus creadors preferits!</string>
+    <key>playback_2024_feature_description</key>
+    <string>Veure les teves estadístiques d'escolta, els millors podcasts i més.</string>
+    <key>playback_2024_feature_title</key>
+    <string>El repàs a 2024 ja és aquí!</string>
+    <key>playback_2024_listening_time_description</key>
+    <string>%1$@ total escoltant pòdcasts</string>
+    <key>playback_2024_view_year</key>
+    <string>Veure el meu historial de reproducció de 2024</string>
     <key>playback_effect_all_podcasts</key>
     <string>Tots els pòdcasts</string>
     <key>playback_effect_this_podcast</key>
@@ -1532,6 +1558,12 @@ ACTUALITZACIONS</string>
     <string>Redueix la durada de l'episodi retallant els silencis a les converses.</string>
     <key>player_effects_trim_silence_progress</key>
     <string>En total has estalviat %1$@ emprant aquesta funció.</string>
+    <key>player_episode_download_cancelled</key>
+    <string>S'ha cancel·lat la descàrrega de l'episodi</string>
+    <key>player_episode_queued_for_download</key>
+    <string>Episodi a la cua per a  descarregar</string>
+    <key>player_episode_was_removed</key>
+    <string>L'episodi ha estat eliminat</string>
     <key>player_error_corrupted_file</key>
     <string>És possible que aquest episodi estigui danyat, però pots intentar reproduir-lo una altra vegada.</string>
     <key>player_error_internet_connection</key>
@@ -1942,6 +1974,8 @@ Si vols noves idees, ves a la pestanya Descobrir.</string>
     <string>Si segueixes, acceptes la %1$@política de privacitat%2$@ i els %3$@termes i condicions%4$@</string>
     <key>queue_clear_episode_queue_plural</key>
     <string>Esborrar %1$@ episodis</string>
+    <key>queue_clear_episode_queue_singular</key>
+    <string>Esborrar 1 episodi</string>
     <key>queue_clear_queue</key>
     <string>ESBORRAR LA CUA</string>
     <key>queue_for_later</key>
@@ -2221,7 +2255,7 @@ Si vols noves idees, ves a la pestanya Descobrir.</string>
     <key>settings_auto_downloads_subtitle_filters</key>
     <string>Descarregar els primers episodis d'un filtre.</string>
     <key>settings_auto_downloads_subtitle_new_episodes</key>
-    <string>Descarrega els nous episodis quan es publiquin.</string>
+    <string>Descarrega automàticament nous episodis a mesura que es publiquin, i gestiona l'emmagatzematge establint un límit del número d'episodis que es guarden.</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>Descarrega els episodis afegits a la llista 'Tot seguit'.</string>
     <key>settings_badge_filter_header</key>

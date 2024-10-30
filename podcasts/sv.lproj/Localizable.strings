@@ -2225,8 +2225,6 @@ Om du behöver inspiration så kan du Upptäcka nya podcasts nedan.</string>
     <string>1 podcast vald</string>
     <key>settings_auto_downloads_subtitle_filters</key>
     <string>Ladda ner de avsnitt som är överst i ett filter</string>
-    <key>settings_auto_downloads_subtitle_new_episodes</key>
-    <string>Ladda ner nya avsnitt när de släpps.</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>Ladda ner avsnitt tillagda i Nästa.</string>
     <key>settings_badge_filter_header</key>

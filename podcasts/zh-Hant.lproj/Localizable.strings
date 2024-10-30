@@ -2225,8 +2225,6 @@ Tap the button below to sign into your Pocket Casts account again.</string>
     <string>已選取 1 個 Podcast 節目</string>
     <key>settings_auto_downloads_subtitle_filters</key>
     <string>下載篩選器中最上方的單集。</string>
-    <key>settings_auto_downloads_subtitle_new_episodes</key>
-    <string>在新單集發佈時下載內容。</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>下載新增到「接下來播放」的單集。</string>
     <key>settings_badge_filter_header</key>
