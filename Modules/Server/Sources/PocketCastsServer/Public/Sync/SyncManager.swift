@@ -35,6 +35,7 @@ public class SyncManager {
         NotificationCenter.postOnMainThread(notification: .serverUserWillBeSignedOut, userInfo: ["user_initiated": userInitiated])
 
         clearTokensFromKeyChain()
+        FileLog.shared.addMessage("SyncManager.signout clearTokensFromKeyChain")
 
         ServerSettings.setSyncingEmail(email: nil)
         ServerSettings.userId = nil
