@@ -34,10 +34,13 @@ struct NumberListened2024: ShareableStory {
             PodcastCoverContainer(geometry: geometry, alignment: .center) {
                 VStack(spacing: -28) {
                     let scale = 0.48
-                    podcastMarquee(size: geometry.size, shadow: false, scale: scale * 0.8, indices: [0, 1, 2, 3, 0, 1, 2, 3])
+                    let marqueeItemsCount = 4
+                    let topIndices = (0..<4*2).map { ($0 % marqueeItemsCount) % podcasts.endIndex }
+                    let bottomIndices = (0..<4*2).map { (($0 + marqueeItemsCount) % (marqueeItemsCount + marqueeItemsCount)) % podcasts.endIndex }
+                    podcastMarquee(size: geometry.size, shadow: false, scale: scale * 0.8, indices: topIndices)
                         .offset(x: topRowXOffset)
                         .modifier(animationViewModel.animate($topRowXOffset, to: -300))
-                    podcastMarquee(size: geometry.size, shadow: true, scale: scale, indices: [4, 5, 6, 7, 4, 5, 6, 7])
+                    podcastMarquee(size: geometry.size, shadow: true, scale: scale, indices: bottomIndices)
                         .padding(.leading, geometry.size.width * 0.35)
                         .offset(x: bottomRowXOffset)
                         .modifier(animationViewModel.animate($bottomRowXOffset, to: 300))
