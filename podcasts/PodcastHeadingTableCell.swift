@@ -378,7 +378,7 @@ class PodcastHeadingTableCell: ThemeableCell, SubscribeButtonDelegate, Expandabl
     }
 
     private func showFolderButton() -> Bool {
-        SubscriptionHelper.hasActiveSubscription()
+        return true
     }
 
     @IBAction func manageSupportTapped(_ sender: Any) {
