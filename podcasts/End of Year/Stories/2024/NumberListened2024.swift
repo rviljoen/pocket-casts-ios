@@ -33,10 +33,11 @@ struct NumberListened2024: ShareableStory {
         GeometryReader { geometry in
             PodcastCoverContainer(geometry: geometry, alignment: .center) {
                 VStack(spacing: -28) {
-                    podcastMarquee(size: geometry.size, shadow: false, scale: 0.4, indices: [0, 1, 2, 3, 0, 1, 2, 3])
+                    let scale = 0.48
+                    podcastMarquee(size: geometry.size, shadow: false, scale: scale * 0.8, indices: [0, 1, 2, 3, 0, 1, 2, 3])
                         .offset(x: topRowXOffset)
                         .modifier(animationViewModel.animate($topRowXOffset, to: -300))
-                    podcastMarquee(size: geometry.size, shadow: true, scale: 0.5, indices: [4, 5, 6, 7, 4, 5, 6, 7])
+                    podcastMarquee(size: geometry.size, shadow: true, scale: scale, indices: [4, 5, 6, 7, 4, 5, 6, 7])
                         .padding(.leading, geometry.size.width * 0.35)
                         .offset(x: bottomRowXOffset)
                         .modifier(animationViewModel.animate($bottomRowXOffset, to: 300))
