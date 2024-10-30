@@ -2027,6 +2027,9 @@
 /* Confirmation message to clear the give number of episodes from the queue. '%1$@' is a placeholder for the number of episodes, this will be more than one. */
 "queue_clear_episode_queue_plural" = "Clear %1$@ Episodes";
 
+/* Confirmation message to clear one episode from the queue. */
+"queue_clear_episode_queue_singular" = "Clear 1 Episode";
+
 /* Prompt to allow the user to clear their queue. */
 "queue_clear_queue" = "CLEAR QUEUE";
 
@@ -2304,7 +2307,7 @@
 "settings_auto_downloads_subtitle_filters" = "Download the top episodes in a filter.";
 
 /* Subtitle explaining the toggle to auto download New Episodes. */
-"settings_auto_downloads_subtitle_new_episodes" = "Download new episodes when they are released.";
+"settings_auto_downloads_subtitle_new_episodes" = "Automatically download new episodes as they’re released, and manage your storage by setting a limit on how many episodes are saved.";
 
 /* Subtitle explaining the toggle to auto download items in the Up Next Queue. */
 "settings_auto_downloads_subtitle_up_next" = "Download episodes added to Up Next.";
@@ -3543,6 +3546,21 @@
 /* Label of the End of Year call to action button */
 "eoy_view_year" = "View My 2023";
 
+/* Title for the Playback 2024 feature */
+"playback_2024_feature_title" = "Playback 2024 is here!";
+
+/* Description for the Playback 2024 feature */
+"playback_2024_feature_description" = "See your listening stats, top podcasts, and more.";
+
+/* A description of the Playback 2024 feature */
+"playback_2024_description" = "See your top podcasts, categories, listening stats and more. Share with friends and shout out your favourite creators!";
+
+/* Label of the Playback 2024 call to action buton */
+"playback_2024_view_year" = "View My Playback 2024";
+
+/* A description used to indicate the number of days and hours spent listening to podcasts in the last year */
+"playback_2024_listening_time_description" = "%1$@ total listening to podcasts";
+
 /* Label of the End of Year dismiss button */
 "eoy_not_now" = "Not Now";
 
@@ -3713,6 +3731,12 @@
 
 /* Title of an alert displayed to the user asking if they want to share the current story */
 "eoy_share_this_story_title" = "Share this story?";
+
+/* Title shown on the final End of Year story for 2024 */
+"eoy_2024_epilogue_title" = "Thank you for listening with us this year.\nSee you in 2025!";
+
+/* Description shown on the final End of Year story for 2024 */
+"eoy_2024_epilogue_description" = "Don’t forget to share with friends and give a shout out to your favourite podcasts and creators";
 
 /* Message of an alert displayed to the user asking if they want to share the current story */
 "eoy_share_this_story_message" = "Paste this image to your socials and give a shout out to your favorite shows and creators";
@@ -4478,6 +4502,35 @@
 
 /* week */
 "week" = "week";
+
+/* Auto Downloads Setting - Limits downloads row title*/
+"auto_download_limit_downloads" = "Limit downloads";
+
+/* Auto Downloads Setting - Limits downloads picker title*/
+"auto_download_limit_auto_downloads" = "Limit auto downloads";
+
+/* Auto Downloads Setting - Limits downloads to a number of episodes. `%1$@' is a placeholder for the number of episodes*/
+"auto_download_limit_number_of_episodes" = "%1$@ episodes";
+
+/* Auto Downloads Setting - Limits downloads to one episodes. */
+"auto_download_limit_one_episode" = "latest episode";
+
+/* Auto Downloads Setting - Limits downloads to the latest episode*/
+"auto_download_limit_one_episode_show" = "Latest Episode per Show";
+
+/* Auto Downloads Setting - Limits downloads to a number of show episodes. `%1$@' is a placeholder for the number of episodes*/
+"auto_download_limit_number_of_episodes_show" = "%1$@ Latest Episodes per Show";
+
+/* Toast message when episode download is removed*/
+"player_episode_was_removed" = "Episode was removed";
+
+/* Toast message when episode is queued for download*/
+"player_episode_queued_for_download" = "Episode queued for download";
+
+/* Toast message when episode download is cancelled*/
+"player_episode_download_cancelled" = "Episode download cancelled";
+
+
 
 /* MARK: - InfoPlist.strings */
 

@@ -1,6 +1,7 @@
 import Foundation
 import PocketCastsDataModel
 import PocketCastsServer
+import SwiftUI
 
 /// Build the list of stories for End of Year alongside the data
 class EndOfYearStoriesBuilder {
@@ -53,4 +54,9 @@ protocol StoryModel {
     func story(for storyNumber: Int) -> any StoryView
     func isInteractiveView(for storyNumber: Int) -> Bool
     func isReady() -> Bool
+    func paywallView() -> AnyView
+    /// Overlaid on top of the story
+    func overlaidShareView() -> AnyView?
+    /// Shown at the bottom of the story as an additional safe area
+    func footerShareView() -> AnyView?
 }

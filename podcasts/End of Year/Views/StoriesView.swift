@@ -41,11 +41,15 @@ struct StoriesView: View {
                 // Manually set the zIndex order to ensure we can change the order when needed
                 model.story(index: model.currentStoryIndex)
                     .zIndex(3)
-                    .ignoresSafeArea(edges: .bottom)
+                    .modify {
+                        if model.overlaidShareView() != nil {
+                            $0.ignoresSafeArea(edges: .bottom)
+                        }
+                    }
                     .environment(\.animated, true)
 
                 if model.shouldShowUpsell() {
-                    PaidStoryWallView().zIndex(6).ignoresSafeArea(edges: .bottom).onAppear {
+                    model.paywallView().zIndex(6).onAppear {
                         model.pause()
                     }
                 }
@@ -60,11 +64,20 @@ struct StoriesView: View {
             header
 
             // Hide the share button if needed
-            if model.showShareButton(index: model.currentStoryIndex) && !model.shouldShowUpsell() {
+            if model.showShareButton(index: model.currentStoryIndex) && !model.shouldShowUpsell(), let shareView = model.overlaidShareView() {
                 VStack {
                     Spacer()
-                    shareButton
+                    shareView
                 }
+            }
+        }
+        .modify {
+            if model.showShareButton(index: model.currentStoryIndex) && !model.shouldShowUpsell(), let footerView = model.footerShareView() {
+                $0.safeAreaInset(edge: .bottom) {
+                    footerView
+                }
+            } else {
+                $0
             }
         }
         .background(Color.black)
@@ -73,7 +86,7 @@ struct StoriesView: View {
             Button(L10n.eoyNotNow) { model.start() }
             Button(L10n.share) { model.share() }.keyboardShortcut(.defaultAction)
         } message: {
-            return Text(L10n.eoyShareThisStoryMessage)
+            Text(L10n.eoyShareThisStoryMessage)
         }
     }
 
@@ -204,14 +217,6 @@ struct StoriesView: View {
         )
     }
 
-    var shareButton: some View {
-        Button(L10n.eoyShare) {
-            model.share()
-        }
-        .buttonStyle(ShareButtonStyle())
-        .padding([.leading, .trailing], Constants.shareButtonHorizontalPadding)
-    }
-
     var storiesToPreload: some View {
         ZStack {
             if model.numberOfStoriesToPreload > 0 {
@@ -237,7 +242,6 @@ private extension StoriesView {
         static let closeButtonTopPadding: CGFloat = 5
 
         static let storySwitcherSpacing: CGFloat = 0
-        static let shareButtonHorizontalPadding: CGFloat = 20
 
         static let spaceBetweenShareAndStory: CGFloat = 15
 
@@ -246,31 +250,6 @@ private extension StoriesView {
 }
 
 // MARK: - Custom Buttons
-
-private struct ShareButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        HStack {
-            Spacer()
-            Image("share")
-            configuration.label
-            Spacer()
-        }
-        .font(.custom("DM Sans", size: 14, relativeTo: .body).bold())
-        .foregroundColor(Constants.shareButtonColor)
-
-        .padding([.top, .bottom], Constants.shareButtonVerticalPadding)
-
-        .applyButtonEffect(isPressed: configuration.isPressed)
-        .contentShape(Rectangle())
-    }
-
-    private struct Constants {
-        static let shareButtonColor = Color.white
-        static let shareButtonVerticalPadding: CGFloat = 13
-        static let shareButtonCornerRadius: CGFloat = 12
-        static let shareButtonBorderSize: CGFloat = 2
-    }
-}
 
 private struct CloseButtonStyle: ButtonStyle {
     let showButtonShapes: Bool

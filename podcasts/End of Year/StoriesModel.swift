@@ -234,6 +234,18 @@ class StoriesModel: ObservableObject {
     func shouldShowUpsell() -> Bool {
         currentStoryIsPlus && activeTier() == .none
     }
+
+    func paywallView() -> some View {
+        dataSource.paywallView()
+    }
+
+    func overlaidShareView() -> AnyView? {
+        dataSource.overlaidShareView()
+    }
+
+    func footerShareView() -> AnyView? {
+        dataSource.footerShareView()
+    }
 }
 
 private extension StoriesModel {

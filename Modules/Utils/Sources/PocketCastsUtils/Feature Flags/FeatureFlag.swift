@@ -95,6 +95,12 @@ public enum FeatureFlag: String, CaseIterable {
     /// Enable the Referrals feature
     case referrals
 
+    /// Enables the referrals Send Flow
+    case referralsSend
+
+    /// Enables the referrals Claim Flow
+    case referralsClaim
+
     /// When accessing Stats, it checks if the local stats are behind remote
     /// If it is, it updates it
     /// This is meant to fix an issue for users that were losing stats
@@ -130,6 +136,9 @@ public enum FeatureFlag: String, CaseIterable {
 
     /// Push two auto downloads on subscribe of a podcast
     case autoDownloadOnSubscribe
+
+    /// Replace Subscribe/Unsubscribe with Follow/Unfollow
+    case useFollowNaming
 
     public var enabled: Bool {
         if let overriddenValue = FeatureFlagOverrideStore().overriddenValue(for: self) {
@@ -199,6 +208,10 @@ public enum FeatureFlag: String, CaseIterable {
             true
         case .referrals:
             true
+        case .referralsClaim:
+            true
+        case .referralsSend:
+            false
         case .syncStats:
             true
         case .discoverCollectionView:
@@ -218,6 +231,8 @@ public enum FeatureFlag: String, CaseIterable {
         case .upNextShuffle:
             false
         case .autoDownloadOnSubscribe:
+            true
+        case .useFollowNaming:
             true
         }
     }
