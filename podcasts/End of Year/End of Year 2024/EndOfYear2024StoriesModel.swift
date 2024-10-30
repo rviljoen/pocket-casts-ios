@@ -33,14 +33,14 @@ class EndOfYear2024StoriesModel: StoryModel {
             data.longestEpisodePodcast = podcast
             stories.append(.longestEpisode)
 
-        //TODO: Select 8 random shows
-        // Listened podcasts and episodes
-        let listenedNumbers = dataManager.listenedNumbers(in: Self.year)
-        if listenedNumbers.numberOfEpisodes > 0
-            && listenedNumbers.numberOfPodcasts > 0
-            && !topPodcasts.isEmpty {
-            data.listenedNumbers = listenedNumbers
-            stories.append(.numberOfPodcastsAndEpisodesListened)
+            // Listened podcasts and episodes
+            let listenedNumbers = dataManager.listenedNumbers(in: Self.year)
+            if listenedNumbers.numberOfEpisodes > 0
+                && listenedNumbers.numberOfPodcasts > 0
+                && !topPodcasts.isEmpty {
+                data.listenedNumbers = listenedNumbers
+                stories.append(.numberOfPodcastsAndEpisodesListened)
+            }
         }
     }
 
