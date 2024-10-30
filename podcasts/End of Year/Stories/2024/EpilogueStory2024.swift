@@ -21,38 +21,51 @@ struct EpilogueStory2024: StoryView {
         "Gratki"
     ].map { $0.uppercased() }
 
+    private let separator = Image("playback-24-heart")
+
     var body: some View {
         VStack {
             Spacer()
             VStack {
-                MarqueeTextView(words: words, direction: .leading)
-                MarqueeTextView(words: words, direction: .trailing)
+                MarqueeTextView(words: words, separator: separator, direction: .leading)
+                MarqueeTextView(words: words, separator: separator, direction: .trailing)
             }
             .frame(height: 350)
             .foregroundStyle(marqueeTextColor)
             Spacer()
-            VStack(alignment: .leading, spacing: 16) {
-                Text(L10n.eoy2024EpilogueTitle)
-                    .font(.system(size: 31, weight: .bold))
-                Text(L10n.eoy2024EpilogueDescription)
-                    .font(.system(size: 15, weight: .light))
-                Button(L10n.eoyStoryReplay) {
-                    StoriesController.shared.replay()
-                    Analytics.track(.endOfYearStoryReplayButtonTapped)
-                }
-                .buttonStyle(BasicButtonStyle(textColor: .black, backgroundColor: Color.clear, borderColor: .black))
-            }
-            .padding(.horizontal)
+            footerView()
         }
         .minimumScaleFactor(0.8)
-        .padding(.bottom, 40)
-        .background(backgroundColor)
+        .background {
+            backgroundColor
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
+        }
         .enableProportionalValueScaling()
+    }
+
+    @ViewBuilder func footerView() -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(L10n.eoy2024EpilogueTitle)
+                .font(.system(size: 31, weight: .bold))
+            Text(L10n.eoy2024EpilogueDescription)
+                .font(.system(size: 15, weight: .light))
+            Button(L10n.eoyStoryReplay) {
+                StoriesController.shared.replay()
+                Analytics.track(.endOfYearStoryReplayButtonTapped)
+            }
+            .buttonStyle(BasicButtonStyle(textColor: .black, backgroundColor: Color.clear, borderColor: .black))
+            .allowsHitTesting(true)
+        }
+        .padding(.horizontal, 24)
+        .padding(.vertical, 6)
     }
 }
 
 struct MarqueeTextView: View {
     let words: [String]
+    let separator: Image
+    private(set) var separatorPadding: Double = 0 // Must be mutable for initializer
     let direction: HorizontalEdge
 
     @State private var offset = CGFloat.zero
@@ -66,7 +79,8 @@ struct MarqueeTextView: View {
                     Text(words[idx])
                         .font(.custom("Humane-Medium", size: 227))
                         .padding(.horizontal, -10)
-                    Image("playback-24-heart")
+                    separator
+                        .padding(.horizontal, separatorPadding)
                 }
             }
 
@@ -92,6 +106,8 @@ struct MarqueeTextView: View {
                     startScrolling()
                 }
             }
+            .disabled(true)
+            .allowsHitTesting(false)
         }
     }
 

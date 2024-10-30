@@ -42,6 +42,10 @@ class EndOfYear2024StoriesModel: StoryModel {
                 stories.append(.numberOfPodcastsAndEpisodesListened)
             }
         }
+
+        // Completion Rate
+        data.episodesStartedAndCompleted = dataManager.episodesStartedAndCompleted(in: Self.year)
+        stories.append(.completionRate)
     }
 
     func story(for storyNumber: Int) -> any StoryView {
@@ -56,6 +60,8 @@ class EndOfYear2024StoriesModel: StoryModel {
             return ListeningTime2024Story(listeningTime: data.listeningTime)
         case .longestEpisode:
             return LongestEpisode2024Story(episode: data.longestEpisode, podcast: data.longestEpisodePodcast)
+        case .completionRate:
+            return CompletionRate2024Story(subscriptionTier: SubscriptionHelper.activeTier, startedAndCompleted: data.episodesStartedAndCompleted)
         case .epilogue:
             return EpilogueStory2024()
         }
@@ -87,6 +93,10 @@ class EndOfYear2024StoriesModel: StoryModel {
 
     var numberOfStories: Int {
         stories.count
+    }
+
+    func paywallView() -> AnyView {
+        AnyView(PaidStoryWallView2024(subscriptionTier: SubscriptionHelper.activeTier))
     }
 
     func overlaidShareView() -> AnyView? {
@@ -121,4 +131,6 @@ class EndOfYear2024StoriesData {
     var listenedNumbers: ListenedNumbers!
 
     var top8Podcasts: [Podcast] = []
+
+    var episodesStartedAndCompleted: EpisodesStartedAndCompleted!
 }

@@ -185,6 +185,10 @@ class MockStoriesDataSource: StoriesDataSource {
     func footerShareView() -> AnyView? {
         nil
     }
+
+    func paywallView() -> AnyView {
+        AnyView(EmptyView())
+    }
 }
 
 class MockStoriesWithPlusDataSource: StoriesDataSource {
@@ -227,6 +231,10 @@ class MockStoriesWithPlusDataSource: StoriesDataSource {
 
     func footerShareView() -> AnyView? {
         nil
+    }
+
+    func paywallView() -> AnyView {
+        AnyView(EmptyView())
     }
 }
 

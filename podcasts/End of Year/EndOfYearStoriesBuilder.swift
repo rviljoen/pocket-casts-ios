@@ -54,6 +54,7 @@ protocol StoryModel {
     func story(for storyNumber: Int) -> any StoryView
     func isInteractiveView(for storyNumber: Int) -> Bool
     func isReady() -> Bool
+    func paywallView() -> AnyView
     /// Overlaid on top of the story
     func overlaidShareView() -> AnyView?
     /// Shown at the bottom of the story as an additional safe area
