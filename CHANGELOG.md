@@ -1,6 +1,6 @@
 7.77
 -----
-
+- Use a single icon for folders upsell. [$2362](https://github.com/Automattic/pocket-casts-ios/pull/2362)
 
 7.76
 -----
