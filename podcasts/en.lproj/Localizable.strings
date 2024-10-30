@@ -793,6 +793,9 @@
 /* Message for an unsubscribe message box that informs the user that unsubscribing will remove downloaded files. */
 "downloaded_files_conf_message" = "Unsubscribing will delete all downloaded files in this Podcast, are you sure?";
 
+/* Message for an unfollow message box that informs the user that unfollowing will remove downloaded files. */
+"downloaded_files_conf_message_new" = "Unfollowing will delete all downloaded files in this Podcast, are you sure?";
+
 /* Title for an unsubscribe message box that informs the user that unsubscribing will remove downloaded files. Informs the user how many files have been downloaded. '%1$@' is a placeholder for the number of downloaded files, will be more than one. */
 "downloaded_files_conf_plural_format" = "%1$@ Downloaded Files";
 
@@ -943,6 +946,9 @@
 /* Subtitle informing the user that new podcasts will be automatically added to this filter. */
 "filter_auto_add_subtitle" = "New podcasts you subscribe to will be automatically added";
 
+/* Subtitle informing the user that new podcasts will be automatically added to this filter. */
+"filter_auto_add_subtitle_new" = "New podcasts you follow to will be automatically added";
+
 /* Title for the filter option that indicates all podcasts will be included. */
 "filter_chips_all_podcasts" = "All Your Podcasts";
 
@@ -966,6 +972,9 @@
 
 /* Used on the screen to create a new filter. The description about why the list of filtered episodes is empty. */
 "filter_create_no_episodes_description_explanation" = "The criteria you selected doesn’t match any current episodes in your subscriptions";
+
+/* Used on the screen to create a new filter. The description about why the list of filtered episodes is empty. */
+"filter_create_no_episodes_description_explanation_new" = "The criteria you selected doesn’t match any current episodes in your podcasts";
 
 /* Used on the screen to create a new filter. The prompt about what they can do in order to make sure their filter returns results. */
 "filter_create_no_episodes_description_prompt" = "Choose different criteria, or save this filter if you think it will match episodes in the future.";
@@ -1002,6 +1011,9 @@
 
 /* Subtitle informing the user that new podcasts will not be automatically added to this filter. */
 "filter_manual_add_subtitle" = "New podcasts you subscribe to will not be automatically added";
+
+/* Subtitle informing the user that new podcasts will not be automatically added to this filter. */
+"filter_manual_add_subtitle_new" = "New podcasts you follow to will not be automatically added";
 
 /* Title for filter options related to media type settings. */
 "filter_media_type" = "Media Type";
@@ -1146,6 +1158,9 @@
 
 /* Describes the process about how to import podcasts to Pocket Casts. '\\n\\n' Is a line break format to separate the description from the following note. */
 "import_podcasts_description" = "You can import your podcasts subscriptions to Pocket Casts using the widely supported OPML format. Export the file from another app and choose open in Pocket Casts.\n\nNote: You may need to email the OPML file to yourself, long press on the attachment and select Pocket Casts.";
+
+/* Describes the process about how to import podcasts to Pocket Casts. '\\n\\n' Is a line break format to separate the description from the following note. */
+"import_podcasts_description_new" = "You can import your podcasts to Pocket Casts using the widely supported OPML format. Export the file from another app and choose open in Pocket Casts.\n\nNote: You may need to email the OPML file to yourself, long press on the attachment and select Pocket Casts.";
 
 /* Description for importing opml from URL*/
 "import_opml_from_url" = "Import your podcasts from an OPML file using a URL";
@@ -3009,6 +3024,12 @@
 
 /* Label indicating that the user is currently subscribed to the selected podcast. */
 "subscribed" = "Subscribed";
+
+/* Prompt to follow to the selected podcast. */
+"follow" = "Follow";
+
+/* Label indicating that the user is currently following to the selected podcast. */
+"unfollow" = "Unfollow";
 
 /* Prompt to subscribe to all of the selected podcast. */
 "subscribe_all" = "Subscribe All";
