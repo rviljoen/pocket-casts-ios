@@ -426,9 +426,6 @@ class PodcastViewController: FakeNavViewController, PodcastActionsDelegate, Sync
     @objc private func refreshEpisodes() {
         guard let podcast = podcast else { return }
 
-        if episodesTable.numberOfSections > 0 {
-            episodesTable.reloadSections([0], with: .none)
-        }
         loadLocalEpisodes(podcast: podcast, animated: true)
     }
 
