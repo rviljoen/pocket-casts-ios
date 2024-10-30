@@ -1,6 +1,7 @@
 7.77
 -----
 - Implement shuffle button in Up Next view [#1179](https://github.com/orgs/Automattic/projects/1179/views/1)
+- Use a single icon for folders upsell. [$2362](https://github.com/Automattic/pocket-casts-ios/pull/2362)
 
 7.76
 -----

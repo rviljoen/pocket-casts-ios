@@ -1683,6 +1683,7 @@
 		F56295292C0FC14900C44E8A /* DBTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56295282C0FC14900C44E8A /* DBTestCase.swift */; };
 		F565602F2B7ACD9B003E76D5 /* DataManager+Import.swift in Sources */ = {isa = PBXBuildFile; fileRef = F565602E2B7ACD9B003E76D5 /* DataManager+Import.swift */; };
 		F56ADE562B7FE37500ADFE31 /* SettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AD75442B7FDC2800D65C55 /* SettingsTests.swift */; };
+		F56C030C2CCEEF7100E515FF /* NumberListened2024.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56C030B2CCEEF6700E515FF /* NumberListened2024.swift */; };
 		F57626B62C8B56C7009C8225 /* String+SanitizedFileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57626B52C8B56C7009C8225 /* String+SanitizedFileName.swift */; };
 		F57BAC672C00CD9C007B24BD /* URLSession+Episode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57BAC662C00CD9C007B24BD /* URLSession+Episode.swift */; };
 		F57BAC682C00E7E6007B24BD /* URLSession+Episode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57BAC662C00CD9C007B24BD /* URLSession+Episode.swift */; };
@@ -1691,6 +1692,7 @@
 		F57D8F162C66CBB80004C4DF /* UnsafeTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57D8F152C66CBB80004C4DF /* UnsafeTransfer.swift */; };
 		F57D8F182C66CDF40004C4DF /* View+CVPixelBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57D8F172C66CDF40004C4DF /* View+CVPixelBuffer.swift */; };
 		F581ED422CC6F1A200A19860 /* ListeningTime2024Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = F581ED412CC6F19300A19860 /* ListeningTime2024Story.swift */; };
+		F581ED442CC6F3A900A19860 /* Top5Podcasts2024Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = F581ED432CC6F3A400A19860 /* Top5Podcasts2024Story.swift */; };
 		F586959A2C04320100E0754A /* PodcastManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58695992C04320100E0754A /* PodcastManagerTests.swift */; };
 		F59503B42C93590A007FB3C8 /* ActivityItemSourceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59503B32C93590A007FB3C8 /* ActivityItemSourceItem.swift */; };
 		F5952FCA2C057C6400754BC3 /* FMDatabaseQueue+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5952FC92C057C6400754BC3 /* FMDatabaseQueue+Test.swift */; };
@@ -1720,6 +1722,7 @@
 		F5F6DA702BBE1109009B1934 /* CategoryButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F6DA6F2BBE1109009B1934 /* CategoryButtonStyle.swift */; };
 		F5F6DA822BC0B512009B1934 /* CategoriesModalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F6DA812BC0B512009B1934 /* CategoriesModalPicker.swift */; };
 		F5F884632CC9EAA6002BED2C /* Humane-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5F884622CC9EAA6002BED2C /* Humane-Bold.otf */; };
+		F5F884652CCA86AE002BED2C /* LongestEpisode2024Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F884642CCA86AA002BED2C /* LongestEpisode2024Story.swift */; };
 		F5F89B1E2C88B40A00013118 /* ShareButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F89B1D2C88B40A00013118 /* ShareButton.swift */; };
 		F5F8F3182CC314250071DD0E /* IntroStory2024.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F8F3172CC314250071DD0E /* IntroStory2024.swift */; };
 		F5FE747B2C223A6100DF2EAA /* ShareImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5FF61222BD07E3A00190711 /* ShareImageView.swift */; };
@@ -3620,6 +3623,7 @@
 		F55C4C752BCF064500A10352 /* DiscoverViewController+CategoryRedesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DiscoverViewController+CategoryRedesign.swift"; sourceTree = "<group>"; };
 		F56295282C0FC14900C44E8A /* DBTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DBTestCase.swift; sourceTree = "<group>"; };
 		F565602E2B7ACD9B003E76D5 /* DataManager+Import.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataManager+Import.swift"; sourceTree = "<group>"; };
+		F56C030B2CCEEF6700E515FF /* NumberListened2024.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberListened2024.swift; sourceTree = "<group>"; };
 		F57626B52C8B56C7009C8225 /* String+SanitizedFileName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+SanitizedFileName.swift"; sourceTree = "<group>"; };
 		F57BAC662C00CD9C007B24BD /* URLSession+Episode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSession+Episode.swift"; sourceTree = "<group>"; };
 		F57CD7D82C2624AD0035269A /* MediaTrimView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTrimView.swift; sourceTree = "<group>"; };
@@ -3627,6 +3631,7 @@
 		F57D8F152C66CBB80004C4DF /* UnsafeTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsafeTransfer.swift; sourceTree = "<group>"; };
 		F57D8F172C66CDF40004C4DF /* View+CVPixelBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+CVPixelBuffer.swift"; sourceTree = "<group>"; };
 		F581ED412CC6F19300A19860 /* ListeningTime2024Story.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningTime2024Story.swift; sourceTree = "<group>"; };
+		F581ED432CC6F3A400A19860 /* Top5Podcasts2024Story.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Top5Podcasts2024Story.swift; sourceTree = "<group>"; };
 		F58695992C04320100E0754A /* PodcastManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastManagerTests.swift; sourceTree = "<group>"; };
 		F59503B32C93590A007FB3C8 /* ActivityItemSourceItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityItemSourceItem.swift; sourceTree = "<group>"; };
 		F5952FC92C057C6400754BC3 /* FMDatabaseQueue+Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FMDatabaseQueue+Test.swift"; sourceTree = "<group>"; };
@@ -3657,6 +3662,7 @@
 		F5F6DA6F2BBE1109009B1934 /* CategoryButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryButtonStyle.swift; sourceTree = "<group>"; };
 		F5F6DA812BC0B512009B1934 /* CategoriesModalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesModalPicker.swift; sourceTree = "<group>"; };
 		F5F884622CC9EAA6002BED2C /* Humane-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Humane-Bold.otf"; sourceTree = "<group>"; };
+		F5F884642CCA86AA002BED2C /* LongestEpisode2024Story.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongestEpisode2024Story.swift; sourceTree = "<group>"; };
 		F5F89B1D2C88B40A00013118 /* ShareButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareButton.swift; sourceTree = "<group>"; };
 		F5F8F3172CC314250071DD0E /* IntroStory2024.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroStory2024.swift; sourceTree = "<group>"; };
 		F5FF611F2BD076BA00190711 /* Sharing.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sharing.xcassets; sourceTree = "<group>"; };
@@ -7870,8 +7876,11 @@
 			children = (
 				F5F8F3172CC314250071DD0E /* IntroStory2024.swift */,
 				F53C3E822CC73538004F3581 /* TopSpotStory2024.swift */,
+				F56C030B2CCEEF6700E515FF /* NumberListened2024.swift */,
 				F581ED412CC6F19300A19860 /* ListeningTime2024Story.swift */,
 				F5D527372CC81AA700682CD5 /* EpilogueStory2024.swift */,
+				F5F884642CCA86AA002BED2C /* LongestEpisode2024Story.swift */,
+				F581ED432CC6F3A400A19860 /* Top5Podcasts2024Story.swift */,
 			);
 			path = 2024;
 			sourceTree = "<group>";
@@ -9488,6 +9497,7 @@
 				C7FAFF5D2941844C00329B40 /* CancelConfirmationViewModel.swift in Sources */,
 				BD14CCDF1D7D3CB800DB4547 /* SelectedPodcastCell.swift in Sources */,
 				BD93FDA120157B2000F6EF55 /* PodcastImageView.swift in Sources */,
+				F5F884652CCA86AE002BED2C /* LongestEpisode2024Story.swift in Sources */,
 				BDD5253A20477E4400AAD211 /* NSObject+AppDelegate.swift in Sources */,
 				8B14E3B029B9159B0069B6F2 /* SearchHistoryModel.swift in Sources */,
 				C7080C5D2923070200D7A432 /* PlusAccountUpgradePrompt.swift in Sources */,
@@ -9575,6 +9585,7 @@
 				BD874EF31C9A3A1B00F5B2A5 /* TopLevelSettingsCell.swift in Sources */,
 				C752F28A29D5F8F200681C33 /* StarRatingView.swift in Sources */,
 				BD47E7FA1DD57F7B00C18EE7 /* ShowNotesFormatter.swift in Sources */,
+				F56C030C2CCEEF7100E515FF /* NumberListened2024.swift in Sources */,
 				8B67A26329A7D6B60076886D /* SearchHistoryCell.swift in Sources */,
 				BD9A2B521C851577003BA898 /* NavigationManager.swift in Sources */,
 				BDEC9AB32051118900088D76 /* PCViewController.swift in Sources */,
@@ -10128,6 +10139,7 @@
 				10DFE9382C5A8D1300957D0A /* ABTestProviding.swift in Sources */,
 				C7D8AE632A60818600C9EBAF /* ActionBarStyles.swift in Sources */,
 				8B633D2F2A57294E00526AF0 /* AutoplayWhatsNewHeader.swift in Sources */,
+				F581ED442CC6F3A900A19860 /* Top5Podcasts2024Story.swift in Sources */,
 				FF91A0FA2B6BBFD1002A0590 /* UpgradeCard.swift in Sources */,
 				C73215FB291EA13400AB1FE5 /* PlusPurchaseModal.swift in Sources */,
 				40B26AC7213FED4300386173 /* DiscoverPeekViewController.swift in Sources */,
