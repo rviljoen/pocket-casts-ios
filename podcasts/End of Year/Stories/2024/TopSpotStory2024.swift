@@ -39,9 +39,9 @@ struct TopSpotStory2024: ShareableStory {
                 let title = topPodcast.podcast.title ?? "unknown"
 
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("This was your top podcast in 2024")
+                    Text(L10n.playback2024TopSpotTitle)
                         .font(.system(size: 31, weight: .bold))
-                    Text("You listened to \(numberPlayed) episodes for a total of \(timeString) of \"\(title)\"")
+                    Text(L10n.playback2024TopSpotDescription(numberPlayed, timeString, title))
                         .font(.system(size: 15, weight: .light))
                 }
                 .minimumScaleFactor(0.9)
