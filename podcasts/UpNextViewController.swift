@@ -1,5 +1,6 @@
 import PocketCastsDataModel
 import PocketCastsUtils
+import PocketCastsServer
 import UIKit
 
 class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
@@ -146,8 +147,11 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
 
         if FeatureFlag.upNextShuffle.enabled {
             NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: Constants.Notifications.themeChanged, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(subscriptionStatusDidChange), name: ServerNotifications.subscriptionStatusChanged, object: nil)
             themeDidChange()
-            shuffleButton.isSelected = Settings.upNextShuffleEnabled()
+            if SubscriptionHelper.hasActiveSubscription() {
+               shuffleButton.isSelected = Settings.upNextShuffleEnabled()
+            }
             shuffleButton.addTarget(self, action: #selector(shuffleButtonTapped), for: .touchUpInside)
         } else {
             clearQueueButton.setTitle(L10n.queueClearQueue, for: .normal)
@@ -165,6 +169,7 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateNavBarButtons()
+        themeDidChange()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -213,6 +218,10 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     @objc private func shuffleButtonTapped() {
+        if !SubscriptionHelper.hasActiveSubscription() {
+            NavigationManager.sharedManager.showUpsellView(from: self, source: .upNext)
+            return
+        }
         Settings.upNextShuffleToggle()
         if !showingInTab {
             updateShuffleButtonState()
@@ -221,10 +230,25 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     @objc private func themeDidChange() {
-        let unselected = UIImage(named: "shuffle")?.withTintColor(AppTheme.colorForStyle(.primaryIcon02, themeOverride: themeOverride), renderingMode: .alwaysOriginal)
-        let selected = UIImage(named: "shuffle-enabled")?.withTintColor(AppTheme.colorForStyle(.primaryIcon01, themeOverride: themeOverride), renderingMode: .alwaysOriginal)
-        shuffleButton.setImage(unselected, for: .normal)
-        shuffleButton.setImage(selected, for: .selected)
+        if !SubscriptionHelper.hasActiveSubscription() {
+            shuffleButton.setImage(UIImage(named: "shuffle-plus"), for: .normal)
+        } else {
+            let unselected = UIImage(named: "shuffle")?.withTintColor(AppTheme.colorForStyle(.primaryIcon02, themeOverride: themeOverride), renderingMode: .alwaysOriginal)
+            let selected = UIImage(named: "shuffle-enabled")?.withTintColor(AppTheme.colorForStyle(.primaryIcon01, themeOverride: themeOverride), renderingMode: .alwaysOriginal)
+            shuffleButton.setImage(unselected, for: .normal)
+            shuffleButton.setImage(selected, for: .selected)
+        }
+    }
+
+    @objc private func subscriptionStatusDidChange() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+
+            // Update UI
+            themeDidChange()
+            updateNavBarButtons()
+            reloadTable()
+        }
     }
 
     @objc private func updateShuffleButtonState() {
