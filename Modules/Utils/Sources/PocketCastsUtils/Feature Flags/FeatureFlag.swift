@@ -233,7 +233,7 @@ public enum FeatureFlag: String, CaseIterable {
         case .autoDownloadOnSubscribe:
             true
         case .useFollowNaming:
-            false
+            true
         }
     }
 

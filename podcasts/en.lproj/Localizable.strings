@@ -793,6 +793,9 @@
 /* Message for an unsubscribe message box that informs the user that unsubscribing will remove downloaded files. */
 "downloaded_files_conf_message" = "Unsubscribing will delete all downloaded files in this Podcast, are you sure?";
 
+/* Message for an unfollow message box that informs the user that unfollowing will remove downloaded files. */
+"downloaded_files_conf_message_new" = "Unfollowing will delete all downloaded files in this Podcast, are you sure?";
+
 /* Title for an unsubscribe message box that informs the user that unsubscribing will remove downloaded files. Informs the user how many files have been downloaded. '%1$@' is a placeholder for the number of downloaded files, will be more than one. */
 "downloaded_files_conf_plural_format" = "%1$@ Downloaded Files";
 

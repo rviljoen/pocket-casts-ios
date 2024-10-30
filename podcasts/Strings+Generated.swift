@@ -794,6 +794,8 @@ internal enum L10n {
   internal static var downloadedFilesCleanupConfirmation: String { return L10n.tr("Localizable", "downloaded_files_cleanup_confirmation") }
   /// Unsubscribing will delete all downloaded files in this Podcast, are you sure?
   internal static var downloadedFilesConfMessage: String { return L10n.tr("Localizable", "downloaded_files_conf_message") }
+  /// Unfollowing will delete all downloaded files in this Podcast, are you sure?
+  internal static var downloadedFilesConfMessageNew: String { return L10n.tr("Localizable", "downloaded_files_conf_message_new") }
   /// %1$@ Downloaded Files
   internal static func downloadedFilesConfPluralFormat(_ p1: Any) -> String {
     return L10n.tr("Localizable", "downloaded_files_conf_plural_format", String(describing: p1))
