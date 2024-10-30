@@ -31,6 +31,8 @@ public class SyncManager {
     /// Signs the user out
     /// - Parameter userInitiated: Whether the user initiated the sign out or not
     public class func signout(userInitiated: Bool = false) {
+        FileLog.shared.addMessage("SyncManager.signout – userInitiated: \(userInitiated)")
+
         // Notify any listeners that the user login state will be changing
         NotificationCenter.postOnMainThread(notification: .serverUserWillBeSignedOut, userInfo: ["user_initiated": userInitiated])
 
