@@ -21,7 +21,7 @@ struct CompletionRate2024Story: ShareableStory {
 
     var body: some View {
         GeometryReader { geometry in
-            VStack {
+            VStack(alignment: .leading) {
                 Spacer()
                 chartView()
                 .frame(height: geometry.size.height * 0.5)
@@ -29,7 +29,6 @@ struct CompletionRate2024Story: ShareableStory {
                 .modifier(animationViewModel.animate($chartOpacity, to: 1, after: 0.2))
                 footerView()
                     .padding(.top, 24)
-                Spacer()
             }
         }
         .onAppear {
@@ -95,7 +94,7 @@ struct CompletionRate2024Story: ShareableStory {
                 .font(.system(size: 15, weight: .light))
         }
         .padding(.horizontal, 24)
-        .padding(.bottom, 24)
+        .padding(.bottom, 16)
     }
 
     func onAppear() {
