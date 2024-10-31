@@ -2225,8 +2225,6 @@
     <string>Выбран 1 подкаст</string>
     <key>settings_auto_downloads_subtitle_filters</key>
     <string>Скачивать первые выпуски в фильтре.</string>
-    <key>settings_auto_downloads_subtitle_new_episodes</key>
-    <string>Скачивать новые выпуски по мере выхода.</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>Скачивать выпуски, добавленные в «Следующие».</string>
     <key>settings_badge_filter_header</key>

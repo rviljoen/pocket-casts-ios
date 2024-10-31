@@ -40,6 +40,10 @@ class EndOfYearStoriesDataSource: StoriesDataSource {
         return await isReady()
     }
 
+    func paywallView() -> AnyView {
+        model.paywallView()
+    }
+
     func overlaidShareView() -> AnyView? {
         model.overlaidShareView()
     }

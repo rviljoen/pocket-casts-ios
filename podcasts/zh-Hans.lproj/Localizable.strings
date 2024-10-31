@@ -2225,8 +2225,6 @@
     <string>已选择 1 个播客</string>
     <key>settings_auto_downloads_subtitle_filters</key>
     <string>下载过滤器中的顶部剧集。</string>
-    <key>settings_auto_downloads_subtitle_new_episodes</key>
-    <string>在发布新剧集时进行下载。</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>下载已添加到“接下来播放”的剧集。</string>
     <key>settings_badge_filter_header</key>

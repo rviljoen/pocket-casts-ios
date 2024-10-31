@@ -1683,6 +1683,7 @@
 		F56295292C0FC14900C44E8A /* DBTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56295282C0FC14900C44E8A /* DBTestCase.swift */; };
 		F565602F2B7ACD9B003E76D5 /* DataManager+Import.swift in Sources */ = {isa = PBXBuildFile; fileRef = F565602E2B7ACD9B003E76D5 /* DataManager+Import.swift */; };
 		F56ADE562B7FE37500ADFE31 /* SettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5AD75442B7FDC2800D65C55 /* SettingsTests.swift */; };
+		F56C030C2CCEEF7100E515FF /* NumberListened2024.swift in Sources */ = {isa = PBXBuildFile; fileRef = F56C030B2CCEEF6700E515FF /* NumberListened2024.swift */; };
 		F57626B62C8B56C7009C8225 /* String+SanitizedFileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57626B52C8B56C7009C8225 /* String+SanitizedFileName.swift */; };
 		F57BAC672C00CD9C007B24BD /* URLSession+Episode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57BAC662C00CD9C007B24BD /* URLSession+Episode.swift */; };
 		F57BAC682C00E7E6007B24BD /* URLSession+Episode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57BAC662C00CD9C007B24BD /* URLSession+Episode.swift */; };
@@ -1716,11 +1717,15 @@
 		F5EA21F22CC1CD040043C780 /* EndOfYearDeveloperMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EA21F12CC1CD040043C780 /* EndOfYearDeveloperMenuButton.swift */; };
 		F5EA21F42CC1DBFE0043C780 /* EndOfYear2023StoriesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EA21F32CC1DBFE0043C780 /* EndOfYear2023StoriesModel.swift */; };
 		F5EA21F82CC1DC370043C780 /* EndOfYear2024StoriesModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5EA21F72CC1DC370043C780 /* EndOfYear2024StoriesModel.swift */; };
+		F5F0C9B02CCEA5BE003D295D /* SubscriptionBadge2024.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F0C9AF2CCEA5B5003D295D /* SubscriptionBadge2024.swift */; };
 		F5F479A62C3EF8AB002B4475 /* PlayheadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F479A52C3EF8AB002B4475 /* PlayheadView.swift */; };
 		F5F69D802C07C867000B3C87 /* FMDatabaseQueue+Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F69D7F2C07C867000B3C87 /* FMDatabaseQueue+Test.swift */; };
 		F5F6DA702BBE1109009B1934 /* CategoryButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F6DA6F2BBE1109009B1934 /* CategoryButtonStyle.swift */; };
 		F5F6DA822BC0B512009B1934 /* CategoriesModalPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F6DA812BC0B512009B1934 /* CategoriesModalPicker.swift */; };
 		F5F884632CC9EAA6002BED2C /* Humane-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5F884622CC9EAA6002BED2C /* Humane-Bold.otf */; };
+		F5F884672CCA8F23002BED2C /* CompletionRate2024Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F884662CCA8F1F002BED2C /* CompletionRate2024Story.swift */; };
+		F5F884692CCAE5C5002BED2C /* PaidStoryWallView2024.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F884682CCAE5C5002BED2C /* PaidStoryWallView2024.swift */; };
+		F5F884652CCA86AE002BED2C /* LongestEpisode2024Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F884642CCA86AA002BED2C /* LongestEpisode2024Story.swift */; };
 		F5F89B1E2C88B40A00013118 /* ShareButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F89B1D2C88B40A00013118 /* ShareButton.swift */; };
 		F5F8F3182CC314250071DD0E /* IntroStory2024.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F8F3172CC314250071DD0E /* IntroStory2024.swift */; };
 		F5FE747B2C223A6100DF2EAA /* ShareImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5FF61222BD07E3A00190711 /* ShareImageView.swift */; };
@@ -3621,6 +3626,7 @@
 		F55C4C752BCF064500A10352 /* DiscoverViewController+CategoryRedesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DiscoverViewController+CategoryRedesign.swift"; sourceTree = "<group>"; };
 		F56295282C0FC14900C44E8A /* DBTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DBTestCase.swift; sourceTree = "<group>"; };
 		F565602E2B7ACD9B003E76D5 /* DataManager+Import.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataManager+Import.swift"; sourceTree = "<group>"; };
+		F56C030B2CCEEF6700E515FF /* NumberListened2024.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberListened2024.swift; sourceTree = "<group>"; };
 		F57626B52C8B56C7009C8225 /* String+SanitizedFileName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+SanitizedFileName.swift"; sourceTree = "<group>"; };
 		F57BAC662C00CD9C007B24BD /* URLSession+Episode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLSession+Episode.swift"; sourceTree = "<group>"; };
 		F57CD7D82C2624AD0035269A /* MediaTrimView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTrimView.swift; sourceTree = "<group>"; };
@@ -3654,11 +3660,15 @@
 		F5EA21F12CC1CD040043C780 /* EndOfYearDeveloperMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndOfYearDeveloperMenuButton.swift; sourceTree = "<group>"; };
 		F5EA21F32CC1DBFE0043C780 /* EndOfYear2023StoriesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndOfYear2023StoriesModel.swift; sourceTree = "<group>"; };
 		F5EA21F72CC1DC370043C780 /* EndOfYear2024StoriesModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndOfYear2024StoriesModel.swift; sourceTree = "<group>"; };
+		F5F0C9AF2CCEA5B5003D295D /* SubscriptionBadge2024.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionBadge2024.swift; sourceTree = "<group>"; };
 		F5F479A52C3EF8AB002B4475 /* PlayheadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayheadView.swift; sourceTree = "<group>"; };
 		F5F69D7F2C07C867000B3C87 /* FMDatabaseQueue+Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FMDatabaseQueue+Test.swift"; sourceTree = "<group>"; };
 		F5F6DA6F2BBE1109009B1934 /* CategoryButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryButtonStyle.swift; sourceTree = "<group>"; };
 		F5F6DA812BC0B512009B1934 /* CategoriesModalPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesModalPicker.swift; sourceTree = "<group>"; };
 		F5F884622CC9EAA6002BED2C /* Humane-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Humane-Bold.otf"; sourceTree = "<group>"; };
+		F5F884662CCA8F1F002BED2C /* CompletionRate2024Story.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompletionRate2024Story.swift; sourceTree = "<group>"; };
+		F5F884682CCAE5C5002BED2C /* PaidStoryWallView2024.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaidStoryWallView2024.swift; sourceTree = "<group>"; };
+		F5F884642CCA86AA002BED2C /* LongestEpisode2024Story.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongestEpisode2024Story.swift; sourceTree = "<group>"; };
 		F5F89B1D2C88B40A00013118 /* ShareButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareButton.swift; sourceTree = "<group>"; };
 		F5F8F3172CC314250071DD0E /* IntroStory2024.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroStory2024.swift; sourceTree = "<group>"; };
 		F5FF611F2BD076BA00190711 /* Sharing.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Sharing.xcassets; sourceTree = "<group>"; };
@@ -7870,11 +7880,16 @@
 		F5F8F3162CC314020071DD0E /* 2024 */ = {
 			isa = PBXGroup;
 			children = (
+				F5F0C9AF2CCEA5B5003D295D /* SubscriptionBadge2024.swift */,
+				F5F884682CCAE5C5002BED2C /* PaidStoryWallView2024.swift */,
 				F5F8F3172CC314250071DD0E /* IntroStory2024.swift */,
 				F53C3E822CC73538004F3581 /* TopSpotStory2024.swift */,
+				F56C030B2CCEEF6700E515FF /* NumberListened2024.swift */,
 				F581ED412CC6F19300A19860 /* ListeningTime2024Story.swift */,
 				F5D527372CC81AA700682CD5 /* EpilogueStory2024.swift */,
+				F5F884642CCA86AA002BED2C /* LongestEpisode2024Story.swift */,
 				F581ED432CC6F3A400A19860 /* Top5Podcasts2024Story.swift */,
+				F5F884662CCA8F1F002BED2C /* CompletionRate2024Story.swift */,
 			);
 			path = 2024;
 			sourceTree = "<group>";
@@ -9491,6 +9506,7 @@
 				C7FAFF5D2941844C00329B40 /* CancelConfirmationViewModel.swift in Sources */,
 				BD14CCDF1D7D3CB800DB4547 /* SelectedPodcastCell.swift in Sources */,
 				BD93FDA120157B2000F6EF55 /* PodcastImageView.swift in Sources */,
+				F5F884652CCA86AE002BED2C /* LongestEpisode2024Story.swift in Sources */,
 				BDD5253A20477E4400AAD211 /* NSObject+AppDelegate.swift in Sources */,
 				8B14E3B029B9159B0069B6F2 /* SearchHistoryModel.swift in Sources */,
 				C7080C5D2923070200D7A432 /* PlusAccountUpgradePrompt.swift in Sources */,
@@ -9578,6 +9594,7 @@
 				BD874EF31C9A3A1B00F5B2A5 /* TopLevelSettingsCell.swift in Sources */,
 				C752F28A29D5F8F200681C33 /* StarRatingView.swift in Sources */,
 				BD47E7FA1DD57F7B00C18EE7 /* ShowNotesFormatter.swift in Sources */,
+				F56C030C2CCEEF7100E515FF /* NumberListened2024.swift in Sources */,
 				8B67A26329A7D6B60076886D /* SearchHistoryCell.swift in Sources */,
 				BD9A2B521C851577003BA898 /* NavigationManager.swift in Sources */,
 				BDEC9AB32051118900088D76 /* PCViewController.swift in Sources */,
@@ -9673,6 +9690,7 @@
 				C7F4BABF28DB7F7C001C9785 /* DiscoverItem+Helper.swift in Sources */,
 				462EE0B827024FF3003D67DC /* ApiCredentials.swift in Sources */,
 				BD93FDAD20159CF600F6EF55 /* FilterNameCell.swift in Sources */,
+				F5F0C9B02CCEA5BE003D295D /* SubscriptionBadge2024.swift in Sources */,
 				C7C4CAEB28AB05A800CFC8CF /* AnalyticsLoggingAdapter.swift in Sources */,
 				4007B050230E201A008DDCF5 /* WhatsNewDetailViewController.swift in Sources */,
 				8B907F182AA8E1F100926F4F /* MiniPlayerViewController+TransitionDelegate.swift in Sources */,
@@ -9719,6 +9737,7 @@
 				40FE395F229CF424004526CD /* UserEpisode+Formatting.swift in Sources */,
 				BD14CCD61D7D2BCE00DB4547 /* SharePublishViewController.swift in Sources */,
 				C713D4FB2A04C90500A78468 /* SubscriptionBadge.swift in Sources */,
+				F5F884672CCA8F23002BED2C /* CompletionRate2024Story.swift in Sources */,
 				C7811D8C2A90491000FC68B4 /* Bookmarks+Analytics.swift in Sources */,
 				46737E6A272B2EEC00739C3E /* ReadOnlyTextView.swift in Sources */,
 				8BC862692B71690A000627B9 /* WhatsNewFullView.swift in Sources */,
@@ -10056,6 +10075,7 @@
 				8BD7A23A2C04F63000CF84E8 /* UpNextHistoryModel.swift in Sources */,
 				C7F605112A69C5AB00795F3C /* BookmarksPodcastListView.swift in Sources */,
 				C7C4F8812A71E14E002139B2 /* BookmarkEpisodeListView.swift in Sources */,
+				F5F884692CCAE5C5002BED2C /* PaidStoryWallView2024.swift in Sources */,
 				BD9657582468FAA600873BB5 /* CastToViewController.swift in Sources */,
 				4085299F247C9682007FE8AA /* SupporterContributionsViewController.swift in Sources */,
 				BDB165E0208078D5007B57CD /* DownloadManager+URLSessionDelegate.swift in Sources */,

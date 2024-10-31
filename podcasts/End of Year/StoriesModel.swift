@@ -235,6 +235,10 @@ class StoriesModel: ObservableObject {
         currentStoryIsPlus && activeTier() == .none
     }
 
+    func paywallView() -> some View {
+        dataSource.paywallView()
+    }
+
     func overlaidShareView() -> AnyView? {
         dataSource.overlaidShareView()
     }

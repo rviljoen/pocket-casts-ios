@@ -2225,8 +2225,6 @@ Si vous voulez obtenir des suggestions, essayez l’onglet Découvertes.</string
     <string>1 balado sélectionné</string>
     <key>settings_auto_downloads_subtitle_filters</key>
     <string>Téléchargez les épisodes du haut de la liste dans un filtre.</string>
-    <key>settings_auto_downloads_subtitle_new_episodes</key>
-    <string>Téléchargez les nouveaux épisodes lorsqu’ils sont publiés.</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>Téléchargez les épisodes ajoutés aux Prochains épisodes.</string>
     <key>settings_badge_filter_header</key>

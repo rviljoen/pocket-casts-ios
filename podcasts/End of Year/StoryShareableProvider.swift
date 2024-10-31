@@ -8,7 +8,7 @@ import SwiftUI
 /// avoid blocking the main thread and the share sheet
 /// having a delay when appearing.
 class StoryShareableProvider: UIActivityItemProvider {
-    static var shared: StoryShareableProvider!
+    static var shared: StoryShareableProvider = StoryShareableProvider()
 
     var generatedItem: Any?
 
