@@ -3599,6 +3599,11 @@
 /* A description shown in the Completion Rate screen for Playback 2024 */
 "playback_2024_completion_rate_description" = "From the %1$@ episodes you started you listened fully to a total of %2$@";
 
+/*A title used for the Playback 2024 Top Podcast screen */
+"playback_2024_top_spot_title" = "This was your top podcast in 2024";
+
+"playback_2024_top_spot_description" = "You listened to %1$@ episodes for a total of %2$@ of \"%3$@\"";
+
 /* Label of the End of Year dismiss button */
 "eoy_not_now" = "Not Now";
 
