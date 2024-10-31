@@ -342,9 +342,8 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
         } else if !isMultiSelectEnabled, PlaybackManager.shared.queue.upNextCount() > 0 {
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: L10n.select, style: .plain, target: self, action: #selector(selectTapped))
             if showingInTab {
-                if FeatureFlag.upNextShuffle.enabled {
+                if FeatureFlag.upNextShuffle.enabled, PlaybackManager.shared.queue.upNextCount() > 0 {
                     navigationItem.leftBarButtonItem = UIBarButtonItem(title: L10n.clear, style: .plain, target: self, action: #selector(clearQueueTapped))
-                    navigationItem.leftBarButtonItem?.isEnabled = PlaybackManager.shared.queue.upNextCount() > 0
                 } else {
                     navigationItem.leftBarButtonItem = nil
                 }
