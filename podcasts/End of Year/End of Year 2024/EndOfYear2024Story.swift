@@ -1,6 +1,7 @@
 enum EndOfYear2024Story: CaseIterable {
     case intro
     case numberOfPodcastsAndEpisodesListened
+    case topSpot
     case top5Podcasts
     case listeningTime
     case longestEpisode

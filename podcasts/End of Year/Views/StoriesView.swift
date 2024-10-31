@@ -62,6 +62,7 @@ struct StoriesView: View {
             }
 
             header
+                .foregroundStyle(model.indicatorColor)
 
             // Hide the share button if needed
             if model.showShareButton(index: model.currentStoryIndex) && !model.shouldShowUpsell(), let shareView = model.overlaidShareView() {
@@ -97,16 +98,17 @@ struct StoriesView: View {
 
             VStack(spacing: 15) {
                 let progress = syncProgressModel.progress
-                CircularProgressView(value: progress, stroke: Color.white, strokeWidth: 6)
+                CircularProgressView(value: progress, stroke: model.indicatorColor, strokeWidth: 6)
                     .frame(width: 40, height: 40)
                 Text(L10n.loading)
-                    .foregroundColor(.white)
+                    .foregroundColor(model.indicatorColor)
                     .font(style: .body)
             }
 
             storySwitcher
             header
         }
+        .background(model.primaryBackgroundColor)
     }
 
     var failed: some View {
@@ -114,11 +116,12 @@ struct StoriesView: View {
             Spacer()
 
             Text(L10n.eoyStoriesFailed)
-                .foregroundColor(.white)
+                .foregroundColor(model.indicatorColor)
 
             storySwitcher
             header
         }
+        .background(model.primaryBackgroundColor)
         .onAppear {
             Analytics.track(.endOfYearStoriesFailedToLoad)
         }
@@ -256,8 +259,8 @@ private struct CloseButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         Image("eoy-close")
+            .renderingMode(.template)
             .font(style: .body, maxSizeCategory: .extraExtraExtraLarge)
-            .foregroundColor(.white)
             .padding(Constants.closeButtonPadding)
             .background(showButtonShapes ? Color.white.opacity(0.2) : nil)
             .cornerRadius(Constants.closeButtonRadius)

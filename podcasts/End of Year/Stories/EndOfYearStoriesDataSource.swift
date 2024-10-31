@@ -51,6 +51,14 @@ class EndOfYearStoriesDataSource: StoriesDataSource {
     func footerShareView() -> AnyView? {
         model.footerShareView()
     }
+
+    var indicatorColor: Color {
+        model.indicatorColor
+    }
+
+    var primaryBackgroundColor: Color {
+        model.primaryBackgroundColor
+    }
 }
 
 extension Array where Element: CaseIterable & Equatable {

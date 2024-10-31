@@ -1790,6 +1790,12 @@ internal enum L10n {
   internal static var playback2024PlusUpsellDescription: String { return L10n.tr("Localizable", "playback_2024_plus_upsell_description") }
   /// There's more!
   internal static var playback2024PlusUpsellTitle: String { return L10n.tr("Localizable", "playback_2024_plus_upsell_title") }
+  /// You listened to %1$@ episodes for a total of %2$@ of "%3$@"
+  internal static func playback2024TopSpotDescription(_ p1: Any, _ p2: Any, _ p3: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_top_spot_description", String(describing: p1), String(describing: p2), String(describing: p3))
+  }
+  /// This was your top podcast in 2024
+  internal static var playback2024TopSpotTitle: String { return L10n.tr("Localizable", "playback_2024_top_spot_title") }
   /// View My Playback 2024
   internal static var playback2024ViewYear: String { return L10n.tr("Localizable", "playback_2024_view_year") }
   /// Aaaah... there’s a life to be lived, right?

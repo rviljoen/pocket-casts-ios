@@ -151,6 +151,10 @@ class StoriesModelTests: XCTestCase {
 }
 
 class MockStoriesDataSource: StoriesDataSource {
+    var indicatorColor: Color = .white
+
+    var primaryBackgroundColor: Color = .black
+
     var numberOfStories: Int = 2
 
     var didCallStoryForWithStoryNumber: Int?
@@ -192,6 +196,10 @@ class MockStoriesDataSource: StoriesDataSource {
 }
 
 class MockStoriesWithPlusDataSource: StoriesDataSource {
+    var indicatorColor: Color = .white
+
+    var primaryBackgroundColor: Color = .black
+
     var numberOfStories: Int = 4
 
     var didCallStoryForWithStoryNumber: Int?
