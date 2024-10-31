@@ -17,6 +17,7 @@ class EndOfYear2024StoriesModel: StoryModel {
             data.top8Podcasts = Array(topPodcasts.suffix(8)).map { $0.podcast }.reversed()
             data.topPodcasts = Array(topPodcasts.prefix(5))
             stories.append(.top5Podcasts)
+            stories.append(.topSpot)
         }
 
         // Listening time
@@ -54,6 +55,8 @@ class EndOfYear2024StoriesModel: StoryModel {
             return IntroStory2024()
         case .numberOfPodcastsAndEpisodesListened:
             return NumberListened2024(listenedNumbers: data.listenedNumbers, podcasts: data.top8Podcasts)
+        case .topSpot:
+            return TopSpotStory2024(topPodcast: data.topPodcasts.first!)
         case .top5Podcasts:
             return Top5Podcasts2024Story(top5Podcasts: data.topPodcasts)
         case .listeningTime:
