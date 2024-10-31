@@ -103,6 +103,24 @@ struct YearOverYearCompare2024Story: ShareableStory {
         case down(Double)
         case up(Double)
         case same
+
+        init(in2023: Double, in2024: Double) {
+            guard in2023 != 0 else {
+                // Any missing 2023 values will be treated as >500% increase
+                self = .up(Double.greatestFiniteMagnitude)
+                return
+            }
+
+            let difference = in2024/in2023
+            // If the difference between them is < 10% in either direction, return .same:
+           if abs(1 - difference) <= 0.1 {
+                self = .same
+            } else if difference > 1 {
+                self = .up(difference)
+            } else {
+                self = .down(difference)
+            }
+        }
     }
 
     private func circleOffset(leading: Bool, parentSize: CGSize) -> (x: CGFloat, y: CGFloat) {
@@ -132,7 +150,7 @@ struct YearOverYearCompare2024Story: ShareableStory {
     }
 
     private var comparison: Comparison {
-        comparison(in2023: listeningTime.totalPlayedTimeLastYear, in2024: listeningTime.totalPlayedTimeThisYear)
+        .init(in2023: listeningTime.totalPlayedTimeLastYear, in2024: listeningTime.totalPlayedTimeThisYear)
     }
 
     var isSame: Bool {
@@ -167,18 +185,6 @@ struct YearOverYearCompare2024Story: ShareableStory {
             return (small, big)
         case .same:
             return (0.025, 0.025)
-        }
-    }
-
-    private func comparison(in2023: Double, in2024: Double) -> Comparison {
-        // If the difference between them is < 10% in either direction, return .same:
-        let difference = in2024 - in2023
-        if abs(difference) < 0.1 {
-            return .same
-        } else if difference < 1 {
-            return .up(difference)
-        } else {
-            return .down(difference)
         }
     }
 
