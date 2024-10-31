@@ -5,6 +5,8 @@ import PocketCastsDataModel
 struct YearOverYearCompare2024Story: ShareableStory {
     @Environment(\.animated) var animated: Bool
 
+    let plusOnly = true
+
     let subscriptionTier: SubscriptionTier
     let listeningTime: YearOverYearListeningTime
 
@@ -70,7 +72,7 @@ struct YearOverYearCompare2024Story: ShareableStory {
 
     @ViewBuilder func footerView() -> some View {
         VStack(alignment: .leading, spacing: 16) {
-            SubscriptionBadge(tier: subscriptionTier)
+            SubscriptionBadge2024(subscriptionTier: subscriptionTier)
             Text(title)
                 .font(.system(size: 31, weight: .bold))
             Text(description)
