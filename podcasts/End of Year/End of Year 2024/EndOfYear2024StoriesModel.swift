@@ -7,6 +7,10 @@ class EndOfYear2024StoriesModel: StoryModel {
     var stories = [EndOfYear2024Story]()
     var data = EndOfYear2024StoriesData()
 
+    var indicatorColor: Color {
+        .black
+    }
+
     required init() { }
 
     func populate(with dataManager: DataManager) {

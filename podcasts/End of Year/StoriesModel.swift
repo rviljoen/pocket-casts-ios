@@ -246,6 +246,10 @@ class StoriesModel: ObservableObject {
     func footerShareView() -> AnyView? {
         dataSource.footerShareView()
     }
+
+    var indicatorColor: Color {
+        dataSource.indicatorColor
+    }
 }
 
 private extension StoriesModel {
