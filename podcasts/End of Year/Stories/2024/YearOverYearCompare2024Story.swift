@@ -5,10 +5,11 @@ import PocketCastsDataModel
 struct YearOverYearCompare2024Story: ShareableStory {
     @Environment(\.animated) var animated: Bool
 
-    let plusOnly = true
-
     let subscriptionTier: SubscriptionTier
     let listeningTime: YearOverYearListeningTime
+
+    let plusOnly = true
+    let identifier: String = "year_over_year"
 
     private let foregroundColor = Color.black
     private let backgroundColor = Color(hex: "#EEB1F4")
@@ -85,6 +86,10 @@ struct YearOverYearCompare2024Story: ShareableStory {
         .minimumScaleFactor(0.8)
         .padding(.horizontal, 24)
         .padding(.bottom, 12)
+    }
+
+    func onAppear() {
+        Analytics.track(.endOfYearStoryShown, story: identifier)
     }
 
     func sharingAssets() -> [Any] {
