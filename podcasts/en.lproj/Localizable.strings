@@ -3599,6 +3599,36 @@
 /* A description shown in the Completion Rate screen for Playback 2024 */
 "playback_2024_completion_rate_description" = "From the %1$@ episodes you started you listened fully to a total of %2$@";
 
+/* A title shown on the Year over Year Comparison screen for a small decrease in listening time from 2023 in Playback 2024 */
+"playback_2024_year_over_year_compare_title_down_little" = "Compared to 2023, your listening time went down a little";
+
+/* A title shown on the Year over Year Comparison screen for a small increase in listening time from 2023 in Playback 2024 */
+"playback_2024_year_over_year_compare_title_up_little" = "Compared to 2023, your listening time went up a little";
+
+/* A title shown on the Year over Year Comparison screen for a large increase in listening time from 2023 in Playback 2024 */
+"playback_2024_year_over_year_compare_title_up_lot" = "Compared to 2023, your listening time went up a whopping %1$@";
+
+/* A title shown on the Year over Year Comparison screen for a large decrease in listening time from 2023 in Playback 2024 */
+"playback_2024_year_over_year_compare_title_down_lot" = "Compared to 2023, your listening time went down a whopping %1$@";
+
+/* A title shown on the Year over Year Comparison screen for a large increase in listening time from 2023 which exceeds 500% in Playback 2024 */
+"playback_2024_year_over_year_compare_title_up_over_500" = "Compared to 2023, your listening time went up more than %1$@";
+
+/* A title shown on the Year over Year Comparison screen for a large decrease in listening time from 2023 which exceeds 500% in Playback 2024 */
+"playback_2024_year_over_year_compare_title_down_over_500" = "Compared to 2023, your listening time went down more than %1$@";
+
+/* A title shown on the Year over Year Comparison screen for listening time which stayed the same from 2023 in Playback 2024 */
+"playback_2024_year_over_year_compare_title_same" = "Compared to 2023, your listening time stayed pretty consistent";
+
+/* A description shown on the Year over Year Comparison screen for listening time which stayed the same from 2023 in Playback 2024 */
+"playback_2024_year_over_year_compare_description_same" = "And they say consistency is the key to success... or something like that!";
+
+/* A title shown on the Year over Year Comparison screen for listening time which stayed the same from 2023 in Playback 2024 */
+"playback_2024_year_over_year_compare_description_down" = "Aaaah... there’s a life to be lived, right?";
+
+/* A title shown on the Year over Year Comparison screen for listening time which stayed the same from 2023 in Playback 2024 */
+"playback_2024_year_over_year_compare_description_up" = "Ready to top it in 2025?";
+
 /* Label of the End of Year dismiss button */
 "eoy_not_now" = "Not Now";
 

@@ -43,6 +43,14 @@ class EndOfYear2024StoriesModel: StoryModel {
             }
         }
 
+        // Year over year listening time
+        let yearOverYearListeningTime = dataManager.yearOverYearListeningTime(in: Self.year)
+        if yearOverYearListeningTime.totalPlayedTimeThisYear != 0 ||
+            yearOverYearListeningTime.totalPlayedTimeLastYear != 0 {
+            data.yearOverYearListeningTime = yearOverYearListeningTime
+            stories.append(.yearOverYearListeningTime)
+        }
+
         // Completion Rate
         data.episodesStartedAndCompleted = dataManager.episodesStartedAndCompleted(in: Self.year)
         stories.append(.completionRate)
@@ -60,6 +68,8 @@ class EndOfYear2024StoriesModel: StoryModel {
             return ListeningTime2024Story(listeningTime: data.listeningTime)
         case .longestEpisode:
             return LongestEpisode2024Story(episode: data.longestEpisode, podcast: data.longestEpisodePodcast)
+        case .yearOverYearListeningTime:
+            return YearOverYearCompare2024Story(subscriptionTier: SubscriptionHelper.activeTier, listeningTime: data.yearOverYearListeningTime)
         case .completionRate:
             return CompletionRate2024Story(subscriptionTier: SubscriptionHelper.activeTier, startedAndCompleted: data.episodesStartedAndCompleted)
         case .epilogue:
@@ -133,4 +143,6 @@ class EndOfYear2024StoriesData {
     var top8Podcasts: [Podcast] = []
 
     var episodesStartedAndCompleted: EpisodesStartedAndCompleted!
+
+    var yearOverYearListeningTime: YearOverYearListeningTime!
 }
