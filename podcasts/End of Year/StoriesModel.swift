@@ -250,6 +250,10 @@ class StoriesModel: ObservableObject {
     var indicatorColor: Color {
         dataSource.indicatorColor
     }
+
+    var primaryBackgroundColor: Color {
+        dataSource.primaryBackgroundColor
+    }
 }
 
 private extension StoriesModel {

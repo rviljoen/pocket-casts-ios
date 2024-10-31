@@ -55,6 +55,10 @@ class EndOfYearStoriesDataSource: StoriesDataSource {
     var indicatorColor: Color {
         model.indicatorColor
     }
+
+    var primaryBackgroundColor: Color {
+        model.primaryBackgroundColor
+    }
 }
 
 extension Array where Element: CaseIterable & Equatable {

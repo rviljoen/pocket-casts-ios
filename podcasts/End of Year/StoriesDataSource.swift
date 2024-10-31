@@ -38,7 +38,11 @@ protocol StoriesDataSource {
     /// Shown at the bottom of the story as an additional safe area
     func footerShareView() -> AnyView?
 
+    /// Color of the top Story progress indicator
     var indicatorColor: Color { get }
+
+    /// Color of the primary background
+    var primaryBackgroundColor: Color { get }
 }
 
 extension StoriesDataSource {
