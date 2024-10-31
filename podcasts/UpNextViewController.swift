@@ -219,7 +219,7 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
 
     @objc private func shuffleButtonTapped() {
         if !SubscriptionHelper.hasActiveSubscription() {
-            NavigationManager.sharedManager.showUpsellView(from: self, source: .upNext)
+            NavigationManager.sharedManager.showUpsellView(from: self, source: .upNextShuffle)
             return
         }
         Settings.upNextShuffleToggle()

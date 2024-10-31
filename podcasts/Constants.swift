@@ -374,7 +374,7 @@ enum PlusUpgradeViewSource: String {
     case endOfYear
     case promoCode
     case promotionFinished
-    case upNext
+    case upNextShuffle
 
     /// Converts the enum into a Firebase promotionId, this matches the values set on Android
     func promotionId() -> String {
