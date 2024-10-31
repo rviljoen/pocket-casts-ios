@@ -62,6 +62,7 @@ struct StoriesView: View {
             }
 
             header
+                .foregroundStyle(model.indicatorColor)
 
             // Hide the share button if needed
             if model.showShareButton(index: model.currentStoryIndex) && !model.shouldShowUpsell(), let shareView = model.overlaidShareView() {
@@ -256,8 +257,8 @@ private struct CloseButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         Image("eoy-close")
+            .renderingMode(.template)
             .font(style: .body, maxSizeCategory: .extraExtraExtraLarge)
-            .foregroundColor(.white)
             .padding(Constants.closeButtonPadding)
             .background(showButtonShapes ? Color.white.opacity(0.2) : nil)
             .cornerRadius(Constants.closeButtonRadius)
