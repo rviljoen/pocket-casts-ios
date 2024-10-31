@@ -42,7 +42,7 @@ struct Top5Podcasts2024Story: ShareableStory {
                 .disabled(!isSmallScreen) // Disable scrolling on larger where we shouldn't be clipping.
                 .frame(height: geometry.size.height * 0.65)
 
-                Text("And you were big on these shows too!")
+                Text(L10n.eoyStoryTopPodcastsTitle)
                     .font(.system(size: 30, weight: .bold))
             }
             .padding()
