@@ -59,6 +59,10 @@ class EndOfYearStoriesDataSource: StoriesDataSource {
     var primaryBackgroundColor: Color {
         model.primaryBackgroundColor
     }
+
+    func sharingSnapshotModifier(_ view: AnyView) -> AnyView {
+        model.sharingSnapshotModifier(view)
+    }
 }
 
 extension Array where Element: CaseIterable & Equatable {

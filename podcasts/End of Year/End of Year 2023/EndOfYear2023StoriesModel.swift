@@ -152,6 +152,13 @@ class EndOfYear2023StoriesModel: StoryModel {
     func footerShareView() -> AnyView? {
         nil
     }
+
+    func sharingSnapshotModifier(_ view: AnyView) -> AnyView {
+        AnyView(ZStack {
+            view
+            StoryLogoView().zIndex(4)
+        })
+    }
 }
 
 /// An entity that holds data to present EoY 2023 stories

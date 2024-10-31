@@ -64,4 +64,5 @@ protocol StoryModel {
     func footerShareView() -> AnyView?
     var indicatorColor: Color { get }
     var primaryBackgroundColor: Color { get }
+    func sharingSnapshotModifier(_ view: AnyView) -> AnyView
 }

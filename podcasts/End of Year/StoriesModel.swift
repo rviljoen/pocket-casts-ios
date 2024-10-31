@@ -221,7 +221,7 @@ class StoriesModel: ObservableObject {
         guard let assets = sharingAssets() else { return }
 
         pause()
-        EndOfYear.share(assets: assets, storyIdentifier: currentStoryIdentifier, onDismiss: { [weak self] in
+        EndOfYear.share(assets: assets, model: self, storyIdentifier: currentStoryIdentifier, onDismiss: { [weak self] in
             self?.start()
         })
     }
@@ -253,6 +253,10 @@ class StoriesModel: ObservableObject {
 
     var primaryBackgroundColor: Color {
         dataSource.primaryBackgroundColor
+    }
+
+    func sharingSnapshotModifier(_ view: AnyView) -> AnyView {
+        dataSource.sharingSnapshotModifier(view)
     }
 }
 
