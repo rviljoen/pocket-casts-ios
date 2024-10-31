@@ -11,6 +11,10 @@ class EndOfYear2023StoriesModel: StoryModel {
         .white
     }
 
+    var primaryBackgroundColor: Color {
+        .black
+    }
+
     required init() {}
 
     func populate(with dataManager: DataManager) {

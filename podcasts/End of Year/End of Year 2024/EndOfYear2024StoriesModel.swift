@@ -11,6 +11,10 @@ class EndOfYear2024StoriesModel: StoryModel {
         .black
     }
 
+    var primaryBackgroundColor: Color {
+        Color(hex: "EE661C")
+    }
+
     required init() { }
 
     func populate(with dataManager: DataManager) {

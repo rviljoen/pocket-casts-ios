@@ -98,16 +98,17 @@ struct StoriesView: View {
 
             VStack(spacing: 15) {
                 let progress = syncProgressModel.progress
-                CircularProgressView(value: progress, stroke: Color.white, strokeWidth: 6)
+                CircularProgressView(value: progress, stroke: model.indicatorColor, strokeWidth: 6)
                     .frame(width: 40, height: 40)
                 Text(L10n.loading)
-                    .foregroundColor(.white)
+                    .foregroundColor(model.indicatorColor)
                     .font(style: .body)
             }
 
             storySwitcher
             header
         }
+        .background(model.primaryBackgroundColor)
     }
 
     var failed: some View {
@@ -115,11 +116,12 @@ struct StoriesView: View {
             Spacer()
 
             Text(L10n.eoyStoriesFailed)
-                .foregroundColor(.white)
+                .foregroundColor(model.indicatorColor)
 
             storySwitcher
             header
         }
+        .background(model.primaryBackgroundColor)
         .onAppear {
             Analytics.track(.endOfYearStoriesFailedToLoad)
         }

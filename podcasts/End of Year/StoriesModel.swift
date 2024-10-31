@@ -69,7 +69,7 @@ class StoriesModel: ObservableObject {
 
     func start() {
         cancellable = publisher.autoconnect().sink(receiveValue: { _ in
-            guard self.numberOfStories > 0 else {
+            guard self.currentStory != nil, self.numberOfStories > 0 else {
                 return
             }
 
@@ -249,6 +249,10 @@ class StoriesModel: ObservableObject {
 
     var indicatorColor: Color {
         dataSource.indicatorColor
+    }
+
+    var primaryBackgroundColor: Color {
+        dataSource.primaryBackgroundColor
     }
 }
 
