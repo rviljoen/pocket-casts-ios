@@ -14,7 +14,7 @@ struct YearOverYearCompare2024Story: ShareableStory {
     private let backgroundColor = Color(hex: "#EEB1F4")
 
     @ObservedObject private var animationViewModel = PlayPauseAnimationViewModel(duration: 0.8, animation: Animation.spring(_:))
-    @State private var scale: Double = 1
+    @State private var scale: Double = 1 // Will be set to 0 on appear
 
     var body: some View {
         GeometryReader { geometry in
@@ -31,6 +31,7 @@ struct YearOverYearCompare2024Story: ShareableStory {
         }
         .onAppear {
             if animated {
+                scale = 0
                 animationViewModel.play()
             }
         }
@@ -84,6 +85,13 @@ struct YearOverYearCompare2024Story: ShareableStory {
         .minimumScaleFactor(0.8)
         .padding(.horizontal, 24)
         .padding(.bottom, 12)
+    }
+
+    func sharingAssets() -> [Any] {
+        [
+            StoryShareableProvider.new(AnyView(self)),
+            StoryShareableText(L10n.eoyYearOverShareText)
+        ]
     }
 
     enum Comparison {
