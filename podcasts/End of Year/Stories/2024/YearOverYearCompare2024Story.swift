@@ -23,8 +23,9 @@ struct YearOverYearCompare2024Story: ShareableStory {
                 ZStack {
                     circles(parentSize: geometry.size)
                 }
-                .frame(width: geometry.size.width)//, height: geometry.size.height * 0.5)
+                .frame(width: geometry.size.width)
                 .modifier(animationViewModel.animate($scale, to: 1, after: 0.2))
+                Spacer()
                 footerView()
             }
         }
@@ -48,6 +49,7 @@ struct YearOverYearCompare2024Story: ShareableStory {
                     .frame(width: parentSize.width * circleSizes.0)
                     .foregroundStyle(primaryColor)
                 Text("2023")
+                    .offset(y: isSame ? -60 : 0)
                     .font(.custom("Humane-Medium", fixedSize: fontSizes.0))
                     .foregroundStyle(isSame ? primaryColor : backgroundColor)
             }
@@ -61,6 +63,7 @@ struct YearOverYearCompare2024Story: ShareableStory {
                     .frame(width: parentSize.width * circleSizes.1)
                     .foregroundStyle(primaryColor)
                 Text("2024")
+                    .offset(y: isSame ? -60 : 0)
                     .font(.custom("Humane-Medium", fixedSize: fontSizes.1))
                     .foregroundStyle(isSame ? primaryColor : backgroundColor)
             }
@@ -90,8 +93,8 @@ struct YearOverYearCompare2024Story: ShareableStory {
     }
 
     private func circleOffset(leading: Bool, parentSize: CGSize) -> (x: CGFloat, y: CGFloat) {
-        let greater = -(parentSize.height * 0.15)
-        let lesser = parentSize.height * 0.025
+        let greater = -(parentSize.height * 0.10)
+        let lesser = parentSize.height * 0.015
         switch comparison {
         case .down:
             if leading {
@@ -101,24 +104,22 @@ struct YearOverYearCompare2024Story: ShareableStory {
             }
         case .up:
             if leading {
-                return (20, greater - 100)
+                return (20, greater - 30)
             } else {
-                return (-80, -40)
+                return (-80, 0)
             }
         case .same:
             if leading {
-                return (20, -20)
+                return (-parentSize.height * 0.05, -parentSize.height * 0.01)
             } else {
-                return (-20, 20)
+                return (parentSize.height * 0.02, parentSize.height * 0.25)
             }
+
         }
     }
 
     private var comparison: Comparison {
         comparison(in2023: listeningTime.totalPlayedTimeLastYear, in2024: listeningTime.totalPlayedTimeThisYear)
-//        .up(0.1)
-//        .down(0.1)
-//        .same
     }
 
     var isSame: Bool {
@@ -130,7 +131,7 @@ struct YearOverYearCompare2024Story: ShareableStory {
         }
     }
 
-    func fontSizes() -> (Double, Double) {
+    private func fontSizes() -> (Double, Double) {
         let big: Double = 128
         let small: Double = 108
         switch comparison {
@@ -143,7 +144,7 @@ struct YearOverYearCompare2024Story: ShareableStory {
         }
     }
 
-    func circleSizes() -> (Double, Double) {
+    private func circleSizes() -> (Double, Double) {
         let big: Double = 0.95
         let small: Double = 0.70
         switch comparison {
@@ -152,11 +153,11 @@ struct YearOverYearCompare2024Story: ShareableStory {
         case .up:
             return (small, big)
         case .same:
-            return (0.01, 0.01)
+            return (0.025, 0.025)
         }
     }
 
-    func comparison(in2023: Double, in2024: Double) -> Comparison {
+    private func comparison(in2023: Double, in2024: Double) -> Comparison {
         // If the difference between them is < 10% in either direction, return .same:
         let difference = in2024 - in2023
         if abs(difference) < 0.1 {
