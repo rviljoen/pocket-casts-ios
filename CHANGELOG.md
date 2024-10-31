@@ -1,19 +1,18 @@
 7.77
 -----
-
+- Implement shuffle button in Up Next view [#1179](https://github.com/orgs/Automattic/projects/1179/views/1)
 
 7.76
 -----
 - Implements a new stream and download mechanism to address playback skipping issues [#2247](https://github.com/Automattic/pocket-casts-ios/pull/2247)
 - Implement limits for auto-downloads of new episodes. [#2318](https://github.com/Automattic/pocket-casts-ios/pull/2318)
-- Implement shuffle button in Up Next view [#1179](https://github.com/orgs/Automattic/projects/1179/views/1)
 - Adds limits configuration for auto-downloads of new episodes. [#2318](https://github.com/Automattic/pocket-casts-ios/pull/2318)
 - Fix crashing issues when syncing with an Apple Watch. [#2242](https://github.com/Automattic/pocket-casts-ios/issues/2242)
 
 7.75
 -----
 - Refactors the Discover view to improve impressions tracking [#2104](https://github.com/Automattic/pocket-casts-ios/issues/2104)
-- Attempt to fix the crash when a device run oout of space [#2275](https://github.com/Automattic/pocket-casts-ios/pull/2275)
+- Attempt to fix the crash when a device run out of space [#2275](https://github.com/Automattic/pocket-casts-ios/pull/2275)
 - Fix Share Extension in iOS 18 [#2263](https://github.com/Automattic/pocket-casts-ios/issues/2263)
 - Adding Referrals feature [#2083](https://github.com/Automattic/pocket-casts-ios/issues/2083)
 - New Custom playback settings [#2253](https://github.com/Automattic/pocket-casts-ios/issues/2253)
