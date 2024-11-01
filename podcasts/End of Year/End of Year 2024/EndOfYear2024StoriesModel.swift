@@ -144,6 +144,17 @@ class EndOfYear2024StoriesModel: StoryModel {
         AnyView(shareView())
     }
 
+    func sharingSnapshotModifier(_ view: AnyView) -> AnyView {
+        AnyView(view
+        .safeAreaInset(edge: .bottom) {
+            Image("logo_pill")
+                .resizable()
+                .frame(width: 153, height: 36)
+                .padding(.top, 16)
+                .padding(.bottom, 26)
+        })
+    }
+
     @ViewBuilder func shareView() -> some View {
         Button(L10n.eoyShare) {
             StoriesController.shared.share()

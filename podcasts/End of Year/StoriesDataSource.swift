@@ -43,6 +43,9 @@ protocol StoriesDataSource {
 
     /// Color of the primary background
     var primaryBackgroundColor: Color { get }
+
+	/// Modifier applied to the sharing button
+    func sharingSnapshotModifier(_ view: AnyView) -> AnyView
 }
 
 extension StoriesDataSource {

@@ -1667,8 +1667,8 @@
 		F52B4F8E2BB4A9ED00E87BE4 /* CategoriesSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F52B4F8D2BB4A9ED00E87BE4 /* CategoriesSelectorView.swift */; };
 		F533F19D2C24B8CB00EDE9AA /* ShareDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = F533F19C2C24B8CB00EDE9AA /* ShareDestination.swift */; };
 		F53C3E832CC73549004F3581 /* TopSpotStory2024.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53C3E822CC73538004F3581 /* TopSpotStory2024.swift */; };
-		F53EFEEA2CD42AE400F4561B /* Ratings2024Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53EFEE92CD42ADF00F4561B /* Ratings2024Story.swift */; };
 		F53EFEE82CD405DA00F4561B /* YearOverYearCompareTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53EFEE72CD405DA00F4561B /* YearOverYearCompareTests.swift */; };
+		F53EFEEA2CD42AE400F4561B /* Ratings2024Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53EFEE92CD42ADF00F4561B /* Ratings2024Story.swift */; };
 		F543F6A42C0804FA00FEC8B6 /* AnyPublisher+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = F543F6A32C0804FA00FEC8B6 /* AnyPublisher+Async.swift */; };
 		F54E0F542CC764C0006D4DA2 /* PositionModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54E0F532CC764C0006D4DA2 /* PositionModifier.swift */; };
 		F54E72192CA722A000CD5C86 /* Array+DiscoverItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F54E72182CA722A000CD5C86 /* Array+DiscoverItem.swift */; };
@@ -3618,8 +3618,8 @@
 		F52B4F8D2BB4A9ED00E87BE4 /* CategoriesSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesSelectorView.swift; sourceTree = "<group>"; };
 		F533F19C2C24B8CB00EDE9AA /* ShareDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareDestination.swift; sourceTree = "<group>"; };
 		F53C3E822CC73538004F3581 /* TopSpotStory2024.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopSpotStory2024.swift; sourceTree = "<group>"; };
-		F53EFEE92CD42ADF00F4561B /* Ratings2024Story.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ratings2024Story.swift; sourceTree = "<group>"; };
 		F53EFEE72CD405DA00F4561B /* YearOverYearCompareTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YearOverYearCompareTests.swift; sourceTree = "<group>"; };
+		F53EFEE92CD42ADF00F4561B /* Ratings2024Story.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ratings2024Story.swift; sourceTree = "<group>"; };
 		F543F6A32C0804FA00FEC8B6 /* AnyPublisher+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnyPublisher+Async.swift"; sourceTree = "<group>"; };
 		F54E0F532CC764C0006D4DA2 /* PositionModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionModifier.swift; sourceTree = "<group>"; };
 		F54E72182CA722A000CD5C86 /* Array+DiscoverItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+DiscoverItem.swift"; sourceTree = "<group>"; };
@@ -7895,16 +7895,16 @@
 				F5F0C9AF2CCEA5B5003D295D /* SubscriptionBadge2024.swift */,
 				F5F884682CCAE5C5002BED2C /* PaidStoryWallView2024.swift */,
 				F5F8F3172CC314250071DD0E /* IntroStory2024.swift */,
-				F53C3E822CC73538004F3581 /* TopSpotStory2024.swift */,
-				F5CA25902CC9C30F0013DFF2 /* StoryFooter2024.swift */,
 				F56C030B2CCEEF6700E515FF /* NumberListened2024.swift */,
-				F581ED412CC6F19300A19860 /* ListeningTime2024Story.swift */,
-				F5D527372CC81AA700682CD5 /* EpilogueStory2024.swift */,
-				F5F884642CCA86AA002BED2C /* LongestEpisode2024Story.swift */,
-				F53EFEE92CD42ADF00F4561B /* Ratings2024Story.swift */,
+				F53C3E822CC73538004F3581 /* TopSpotStory2024.swift */,
 				F581ED432CC6F3A400A19860 /* Top5Podcasts2024Story.swift */,
-				F5F884662CCA8F1F002BED2C /* CompletionRate2024Story.swift */,
+				F53EFEE92CD42ADF00F4561B /* Ratings2024Story.swift */,
+				F581ED412CC6F19300A19860 /* ListeningTime2024Story.swift */,
+				F5F884642CCA86AA002BED2C /* LongestEpisode2024Story.swift */,
 				F52987E82CD2ED7000628016 /* YearOverYearCompare2024Story.swift */,
+				F5F884662CCA8F1F002BED2C /* CompletionRate2024Story.swift */,
+				F5CA25902CC9C30F0013DFF2 /* StoryFooter2024.swift */,
+				F5D527372CC81AA700682CD5 /* EpilogueStory2024.swift */,
 			);
 			path = 2024;
 			sourceTree = "<group>";

@@ -156,7 +156,7 @@ struct EndOfYear {
         Analytics.track(.endOfYearStoriesShown, properties: ["source": source.rawValue])
     }
 
-    static func share(assets: [Any], storyIdentifier: String = "unknown", onDismiss: (() -> Void)? = nil) {
+    static func share(assets: [Any], model: StoriesModel, storyIdentifier: String = "unknown", onDismiss: (() -> Void)? = nil) {
         let presenter = FeatureFlag.newPlayerTransition.enabled ? SceneHelper.rootViewController() : SceneHelper.rootViewController()?.presentedViewController
 
         let fakeViewController = FakeViewController()
@@ -184,7 +184,7 @@ struct EndOfYear {
                 // After the share sheet is presented we take the snapshot
                 // This action needs to happen on the main thread because
                 // the view needs to be rendered.
-                StoryShareableProvider.shared.snapshot()
+                StoryShareableProvider.shared.snapshot(viewModifier: model.sharingSnapshotModifier)
             }
         }
     }

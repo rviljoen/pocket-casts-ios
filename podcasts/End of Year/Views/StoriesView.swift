@@ -284,20 +284,6 @@ private struct CloseButtonStyle: ButtonStyle {
     }
 }
 
-struct StoryViewContainer<Content: View>: View {
-    private var content: () -> Content
-
-    init(@ViewBuilder _ content: @escaping () -> Content) {
-        self.content = content
-    }
-    var body: some View {
-        ZStack {
-            content()
-            StoryLogoView().zIndex(4)
-        }
-    }
-}
-
 // MARK: - Preview Provider
 
 struct StoriesView_Previews: PreviewProvider {

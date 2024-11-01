@@ -48,7 +48,7 @@ struct ListeningTime2024Story: ShareableStory {
     func sharingAssets() -> [Any] {
         [
             StoryShareableProvider.new(AnyView(self)),
-            StoryShareableText(L10n.eoyStoryListenedToShareText(listeningTime.storyTimeDescriptionForSharing))
+            StoryShareableText(L10n.eoyStoryListenedToShareText(listeningTime.formattedTime() ?? ""))
         ]
     }
 }
@@ -56,13 +56,22 @@ struct ListeningTime2024Story: ShareableStory {
 fileprivate extension Double {
     private func dateComponents() -> DateComponents {
         let calendar = Calendar.current
-        let seconds = Int(self)
-        let referenceDate = Date(timeIntervalSinceReferenceDate: TimeInterval(seconds))
+        let referenceDate = Date(timeIntervalSinceReferenceDate: TimeInterval(self))
 
-        return calendar.dateComponents([.day, .hour, .minute, .second], from: referenceDate)
+        return calendar.dateComponents([.day, .hour, .minute, .second], from: Date(timeIntervalSinceReferenceDate: 0), to: referenceDate)
     }
 
     func components() -> (String, String) {
+        guard let timeString = formattedTime() else {
+            return ("0", "Unknown time")
+        }
+
+        let stringComponents = timeString.components(separatedBy: " ")
+        let modifiedComponents = stringComponents.suffix(from: 1).joined(separator: " ")
+        return (stringComponents.first ?? "0", modifiedComponents.replacingOccurrences(of: ",", with: ""))
+    }
+
+    func formattedTime() -> String? {
         let components = dateComponents()
         let formatter = DateComponentsFormatter()
         formatter.unitsStyle = .full
@@ -84,13 +93,7 @@ fileprivate extension Double {
             formatter.allowedUnits = [.second]
         }
 
-        if let timeString = formatter.string(from: components) {
-            let stringComponents = timeString.components(separatedBy: " ")
-            let modifiedComponents = stringComponents.suffix(from: 1).joined(separator: " ")
-            return (stringComponents.first ?? "0", modifiedComponents.replacingOccurrences(of: ",", with: ""))
-        } else {
-            return ("0", "Unknown time")
-        }
+        return formatter.string(from: components)
     }
 }
 

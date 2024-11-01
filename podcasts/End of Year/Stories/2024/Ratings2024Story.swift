@@ -112,16 +112,19 @@ struct Ratings2024Story: ShareableStory {
     }
 
     private func descriptionText() -> String {
-        let maxRatingCategory = ratings.max(by: { $0.value < $1.value })?.key ?? 0
-        switch maxRatingCategory {
+        switch mostCommonRating {
         case 1...3:
             return L10n.playback2024RatingsDescription1To3
         case 4...5:
-            return L10n.playback2024RatingsDescription4To5(maxRatingCategory)
+            return L10n.playback2024RatingsDescription4To5(mostCommonRating)
         default:
             return ""
         }
 
+    }
+
+    private var mostCommonRating: UInt32 {
+        ratings.max(by: { $0.value < $1.value })?.key ?? 0
     }
 
     @ViewBuilder func footerView() -> some View {
@@ -136,9 +139,10 @@ struct Ratings2024Story: ShareableStory {
     }
 
     func sharingAssets() -> [Any] {
-        [
+        let totalRatings = ratings.values.reduce(0, +)
+        return [
             StoryShareableProvider.new(AnyView(self)),
-            StoryShareableText(L10n.eoyYearCompletionRateShareText)
+            StoryShareableText(L10n.eoyYearRatingsShareText(totalRatings, "2024", mostCommonRating))
         ]
     }
 
