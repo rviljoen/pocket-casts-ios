@@ -32,6 +32,7 @@ struct Ratings2024Story: ShareableStory {
                 }
             }
         }
+        .padding(.top, 24)
         .onAppear {
             if animated {
                 setInitialCoverOffsetForAnimation()
@@ -59,7 +60,7 @@ struct Ratings2024Story: ShareableStory {
                 MarqueeTextView(words: words, separator: separator, direction: .leading)
                 MarqueeTextView(words: words, separator: separator, direction: .trailing)
             }
-            .frame(height: 350)
+            .frame(height: 400)
             Spacer()
             emptyFooterView()
         }
@@ -79,6 +80,7 @@ struct Ratings2024Story: ShareableStory {
             .buttonStyle(BasicButtonStyle(textColor: .black, backgroundColor: Color.clear, borderColor: .black))
             .allowsHitTesting(true)
         }
+        .minimumScaleFactor(0.5)
         .sheet(isPresented: $openURL, onDismiss: {
             pauseState.togglePause()
             openURL = false
@@ -130,7 +132,7 @@ struct Ratings2024Story: ShareableStory {
                 .font(.system(size: 15, weight: .light))
         }
         .padding(.horizontal, 24)
-        .padding(.bottom, 24)
+        .padding(.bottom, 12)
     }
 
     func sharingAssets() -> [Any] {
