@@ -38,8 +38,8 @@ class EndOfYear2024StoriesModel: StoryModel {
         // Ratings
         if let ratings = dataManager.summarizedRatings(in: Self.year) {
             data.ratings = ratings
-            stories.append(.ratings)
         }
+        stories.append(.ratings) // Gets added regardless of the count since we have a fallback empty screen
 
         // Longest episode
         if let longestEpisode = dataManager.longestEpisode(in: Self.year),
