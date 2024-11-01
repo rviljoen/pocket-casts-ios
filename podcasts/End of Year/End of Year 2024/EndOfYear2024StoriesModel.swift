@@ -109,7 +109,9 @@ class EndOfYear2024StoriesModel: StoryModel {
         }
     }
 
-    func hasLoadedData(in dataManager: DataManager) -> Bool {
+    func shouldLoadData(in dataManager: DataManager) -> Bool {
+        // Load data if our `ratings` property is empty
+        // Other data is handled in `EndOfYearStoriesBuilder`
         dataManager.ratings.ratings == nil
     }
 

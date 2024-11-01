@@ -112,7 +112,7 @@ class EndOfYear2023StoriesModel: StoryModel {
         }
     }
 
-    func hasLoadedData(in dataManager: DataManager) -> Bool {
+    func shouldLoadData(in dataManager: DataManager) -> Bool {
         true // Default data load of episodes is enough
     }
 
