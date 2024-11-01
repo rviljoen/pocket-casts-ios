@@ -68,9 +68,9 @@ struct NumberListened2024: ShareableStory {
 
     @ViewBuilder func footerView() -> some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("You listened to \(listenedNumbers.numberOfPodcasts) different shows and \(listenedNumbers.numberOfEpisodes) episodes in total")
+            Text(L10n.eoyStoryListenedToNumbers(listenedNumbers.numberOfPodcasts, listenedNumbers.numberOfEpisodes))
                 .font(.system(size: 31, weight: .bold))
-            Text("But there was one show you kept coming back to...")
+            Text(L10n.eoyStoryListenedToNumbersSubtitle)
                 .font(.system(size: 15, weight: .light))
         }
         .padding(.horizontal, 24)
