@@ -145,21 +145,7 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
         remainingLabel.style = .primaryText02
         remainingLabel.themeOverride = themeOverride
 
-        if FeatureFlag.upNextShuffle.enabled {
-            NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: Constants.Notifications.themeChanged, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(subscriptionStatusDidChange), name: ServerNotifications.subscriptionStatusChanged, object: nil)
-            themeDidChange()
-            if SubscriptionHelper.hasActiveSubscription() {
-               shuffleButton.isSelected = Settings.upNextShuffleEnabled()
-            }
-            shuffleButton.addTarget(self, action: #selector(shuffleButtonTapped), for: .touchUpInside)
-        } else {
-            clearQueueButton.setTitle(L10n.queueClearQueue, for: .normal)
-            clearQueueButton.setTitleColor(AppTheme.colorForStyle(.primaryText02, themeOverride: themeOverride), for: .normal)
-            clearQueueButton.setTitleColor(AppTheme.colorForStyle(.primaryText02, themeOverride: themeOverride).withAlphaComponent(0.5), for: .disabled)
-            clearQueueButton.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .bold)
-            clearQueueButton.addTarget(self, action: #selector(clearQueueTapped), for: .touchUpInside)
-        }
+        setupActionButtonsIfNecessary()
 
         contentInseter.setupInsetAdjustmentsForMiniPlayer(scrollView: upNextTable)
 
@@ -169,7 +155,10 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateNavBarButtons()
-        themeDidChange()
+        setupActionButtonsIfNecessary()
+        if FeatureFlag.upNextShuffle.enabled {
+            themeDidChange()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -230,7 +219,7 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
     }
 
     @objc private func themeDidChange() {
-        if !SubscriptionHelper.hasActiveSubscription() {
+        if !SubscriptionHelper.hasActiveSubscription() || !SyncManager.isUserLoggedIn() {
             shuffleButton.setImage(UIImage(named: "shuffle-plus"), for: .normal)
         } else {
             let unselected = UIImage(named: "shuffle")?.withTintColor(AppTheme.colorForStyle(.primaryIcon02, themeOverride: themeOverride), renderingMode: .alwaysOriginal)
@@ -243,11 +232,33 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
     @objc private func subscriptionStatusDidChange() {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
+            if FeatureFlag.upNextShuffle.enabled {
+                // Update UI
+                setupActionButtonsIfNecessary()
+                themeDidChange()
+                updateNavBarButtons()
+                reloadTable()
+            }
+        }
+    }
 
-            // Update UI
+    private func setupActionButtonsIfNecessary() {
+        if FeatureFlag.upNextShuffle.enabled {
+            guard shuffleButton.allTargets.isEmpty else { return }
+            NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: Constants.Notifications.themeChanged, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(subscriptionStatusDidChange), name: ServerNotifications.subscriptionStatusChanged, object: nil)
             themeDidChange()
-            updateNavBarButtons()
-            reloadTable()
+            if SubscriptionHelper.hasActiveSubscription() {
+                shuffleButton.isSelected = Settings.upNextShuffleEnabled()
+            }
+            shuffleButton.addTarget(self, action: #selector(shuffleButtonTapped), for: .touchUpInside)
+        } else {
+            guard clearQueueButton.allTargets.isEmpty else { return }
+            clearQueueButton.setTitle(L10n.queueClearQueue, for: .normal)
+            clearQueueButton.setTitleColor(AppTheme.colorForStyle(.primaryText02, themeOverride: themeOverride), for: .normal)
+            clearQueueButton.setTitleColor(AppTheme.colorForStyle(.primaryText02, themeOverride: themeOverride).withAlphaComponent(0.5), for: .disabled)
+            clearQueueButton.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .bold)
+            clearQueueButton.addTarget(self, action: #selector(clearQueueTapped), for: .touchUpInside)
         }
     }
 
