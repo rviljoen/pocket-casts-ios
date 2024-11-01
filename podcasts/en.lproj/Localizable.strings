@@ -3808,6 +3808,9 @@
 /* Title for the completion rate. %1$@ is the total of episodes listened this year, %2$@ is the total of episodes fully listened to. */
 "eoy_year_completion_rate_subtitle" = "From the %1$@ episodes you started you listened fully to a total of %2$@";
 
+/* Text for when a user shares the Ratings story summarizing their podcast ratings from the last year */
+"eoy_year_ratings_share_text" = "I rated %1$@ different podcasts in %2$@, with %3$@ as my most used rating";
+
 /* Title of the story paywall. Telling the users that there are more stories to check. */
 "eoy_theres_more" = "There’s more!";
 

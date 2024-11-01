@@ -1006,6 +1006,10 @@ internal enum L10n {
   internal static func eoyYearOverYearTitleWentUp(_ p1: Any) -> String {
     return L10n.tr("Localizable", "eoy_year_over_year_title_went_up", String(describing: p1))
   }
+  /// I rated %1$@ different podcasts in %2$@, with %3$@ as my most used rating
+  internal static func eoyYearRatingsShareText(_ p1: Any, _ p2: Any, _ p3: Any) -> String {
+    return L10n.tr("Localizable", "eoy_year_ratings_share_text", String(describing: p1), String(describing: p2), String(describing: p3))
+  }
   /// Episode
   internal static var episode: String { return L10n.tr("Localizable", "episode") }
   /// %1$@ episodes
