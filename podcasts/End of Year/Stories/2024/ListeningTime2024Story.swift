@@ -48,7 +48,7 @@ struct ListeningTime2024Story: ShareableStory {
     func sharingAssets() -> [Any] {
         [
             StoryShareableProvider.new(AnyView(self)),
-            StoryShareableText(L10n.eoyStoryListenedToShareText(listeningTime.storyTimeDescriptionForSharing))
+            StoryShareableText(L10n.eoyStoryListenedToShareText(listeningTime.formattedTime() ?? ""))
         ]
     }
 }
@@ -63,6 +63,16 @@ fileprivate extension Double {
     }
 
     func components() -> (String, String) {
+        guard let timeString = formattedTime() else {
+            return ("0", "Unknown time")
+        }
+
+        let stringComponents = timeString.components(separatedBy: " ")
+        let modifiedComponents = stringComponents.suffix(from: 1).joined(separator: " ")
+        return (stringComponents.first ?? "0", modifiedComponents.replacingOccurrences(of: ",", with: ""))
+    }
+
+    func formattedTime() -> String? {
         let components = dateComponents()
         let formatter = DateComponentsFormatter()
         formatter.unitsStyle = .full
@@ -84,13 +94,7 @@ fileprivate extension Double {
             formatter.allowedUnits = [.second]
         }
 
-        if let timeString = formatter.string(from: components) {
-            let stringComponents = timeString.components(separatedBy: " ")
-            let modifiedComponents = stringComponents.suffix(from: 1).joined(separator: " ")
-            return (stringComponents.first ?? "0", modifiedComponents.replacingOccurrences(of: ",", with: ""))
-        } else {
-            return ("0", "Unknown time")
-        }
+        return formatter.string(from: components)
     }
 }
 
