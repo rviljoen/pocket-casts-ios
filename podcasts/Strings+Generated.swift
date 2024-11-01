@@ -1812,6 +1812,34 @@ internal enum L10n {
   internal static var playback2024TopSpotTitle: String { return L10n.tr("Localizable", "playback_2024_top_spot_title") }
   /// View My Playback 2024
   internal static var playback2024ViewYear: String { return L10n.tr("Localizable", "playback_2024_view_year") }
+  /// Aaaah... there’s a life to be lived, right?
+  internal static var playback2024YearOverYearCompareDescriptionDown: String { return L10n.tr("Localizable", "playback_2024_year_over_year_compare_description_down") }
+  /// And they say consistency is the key to success... or something like that!
+  internal static var playback2024YearOverYearCompareDescriptionSame: String { return L10n.tr("Localizable", "playback_2024_year_over_year_compare_description_same") }
+  /// Ready to top it in 2025?
+  internal static var playback2024YearOverYearCompareDescriptionUp: String { return L10n.tr("Localizable", "playback_2024_year_over_year_compare_description_up") }
+  /// Compared to 2023, your listening time went down a little
+  internal static var playback2024YearOverYearCompareTitleDownLittle: String { return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_down_little") }
+  /// Compared to 2023, your listening time went down a whopping %1$@
+  internal static func playback2024YearOverYearCompareTitleDownLot(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_down_lot", String(describing: p1))
+  }
+  /// Compared to 2023, your listening time went down more than %1$@
+  internal static func playback2024YearOverYearCompareTitleDownOver500(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_down_over_500", String(describing: p1))
+  }
+  /// Compared to 2023, your listening time stayed pretty consistent
+  internal static var playback2024YearOverYearCompareTitleSame: String { return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_same") }
+  /// Compared to 2023, your listening time went up a little
+  internal static var playback2024YearOverYearCompareTitleUpLittle: String { return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_up_little") }
+  /// Compared to 2023, your listening time went up a whopping %1$@
+  internal static func playback2024YearOverYearCompareTitleUpLot(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_up_lot", String(describing: p1))
+  }
+  /// Compared to 2023, your listening time went up more than %1$@
+  internal static func playback2024YearOverYearCompareTitleUpOver500(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_up_over_500", String(describing: p1))
+  }
   /// All podcasts
   internal static var playbackEffectAllPodcasts: String { return L10n.tr("Localizable", "playback_effect_all_podcasts") }
   /// This podcast

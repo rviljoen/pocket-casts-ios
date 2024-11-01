@@ -60,6 +60,7 @@ struct PaidStoryWallView2024: View {
         }
         .background {
             backgroundColor
+                .ignoresSafeArea()
                 .allowsHitTesting(false)
         }
         .onAppear {
