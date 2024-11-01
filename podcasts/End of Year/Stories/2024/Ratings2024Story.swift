@@ -74,6 +74,8 @@ struct Ratings2024Story: ShareableStory {
                 let safariViewController = SFSafariViewController(with: ratingsBlogPostURL)
                 safariViewController.modalPresentationStyle = .formSheet
                 SceneHelper.rootViewController()?.present(safariViewController, animated: true, completion: nil)
+
+                Analytics.track(.endOfYearLearnRatingsShown)
             }
             .buttonStyle(BasicButtonStyle(textColor: .black, backgroundColor: Color.clear, borderColor: .black))
             .allowsHitTesting(true)
