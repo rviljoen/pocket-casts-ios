@@ -115,6 +115,25 @@ extension EnvironmentValues {
     }
 }
 
+class PauseState: ObservableObject {
+    @Published private(set) var isPaused: Bool = false
+
+    func togglePause() {
+        isPaused.toggle()
+    }
+}
+
+struct PauseStateKey: EnvironmentKey {
+    static let defaultValue: PauseState = PauseState()
+}
+
+extension EnvironmentValues {
+    var pauseState: PauseState {
+        get { self[PauseStateKey.self] }
+        set { self[PauseStateKey.self] = newValue }
+    }
+}
+
 
 // MARK: - Shareable Stories
 typealias ShareableStory = StoryView & StorySharing

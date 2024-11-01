@@ -27,7 +27,9 @@ class EndOfYearStoriesBuilder {
             let modelType = type(of: model)
 
             // Check if the user has the full listening history for this year
-            if SyncManager.isUserLoggedIn(), !Settings.hasSyncedEpisodesForPlayback(year: modelType.year) || (Settings.hasSyncedEpisodesForPlayback(year: modelType.year) && Settings.hasSyncedEpisodesForPlaybackAsPlusUser(year: modelType.year) != hasActiveSubscription()) {
+            if SyncManager.isUserLoggedIn(),
+               !Settings.hasSyncedEpisodesForPlayback(year: modelType.year) ||
+                (Settings.hasSyncedEpisodesForPlayback(year: modelType.year) && Settings.hasSyncedEpisodesForPlaybackAsPlusUser(year: modelType.year) != hasActiveSubscription()) || model.shouldLoadData(in: dataManager) {
                 let syncedWithSuccess = sync?()
 
                 if syncedWithSuccess == true {
@@ -53,6 +55,7 @@ protocol StoryModel {
     func populate(with dataManager: DataManager)
     func story(for storyNumber: Int) -> any StoryView
     func isInteractiveView(for storyNumber: Int) -> Bool
+    func shouldLoadData(in dataManager: DataManager) -> Bool
     func isReady() -> Bool
     func paywallView() -> AnyView
     /// Overlaid on top of the story

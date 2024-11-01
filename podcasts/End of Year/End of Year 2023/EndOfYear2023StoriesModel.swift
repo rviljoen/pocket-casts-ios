@@ -112,6 +112,10 @@ class EndOfYear2023StoriesModel: StoryModel {
         }
     }
 
+    func shouldLoadData(in dataManager: DataManager) -> Bool {
+        false // Default data load of episodes is enough and we don't need to load additional data
+    }
+
     func isReady() -> Bool {
         if !stories.isEmpty {
             stories.append(.intro)

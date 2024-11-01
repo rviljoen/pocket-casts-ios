@@ -3602,6 +3602,15 @@
 /*A title used for the Playback 2024 Top Podcast screen */
 "playback_2024_top_spot_title" = "This was your top podcast in 2024";
 
+/* A title shown on the Ratings Playback 2024 screen showing a bar chart of your ratings */
+"playback_2024_ratings_title" = "Let’s see your ratings!";
+
+/* A description shown in Playback 2024 when the user has made ratings of 4-5/5 for Podcasts */
+"playback_2024_ratings_description_4_to_5" = "Wow, so many %1$@ star ratings! Thanks for sharing the love with your favorite creators.";
+
+/* A description shown in Playback 2024 when the user has only made ratings of 1-3/5 for Podcasts */
+"playback_2024_ratings_description_1_to_3" = "Thanks for sharing your feedback with the creator community";
+
 "playback_2024_top_spot_description" = "You listened to %1$@ episodes for a total of %2$@ of \"%3$@\"";
 
 /* A title shown on the Year over Year Comparison screen for a small decrease in listening time from 2023 in Playback 2024 */
@@ -3633,6 +3642,12 @@
 
 /* A title shown on the Year over Year Comparison screen for listening time which stayed the same from 2023 in Playback 2024 */
 "playback_2024_year_over_year_compare_description_up" = "Ready to top it in 2025?";
+
+/* A title shown in Playback 2024 when the user has not made any ratings. */
+"playback_2024_ratings_empty_title" = "Oh-oh! No podcast ratings to show you yet";
+
+/* A description shown in Playback 2024 to describe the new Podcast Ratings feature */
+"playback_2024_ratings_empty_description" = "Did you know that you can rate shows now? Share the love for your favorite creators and help them get noticed!";
 
 /* Label of the End of Year dismiss button */
 "eoy_not_now" = "Not Now";
@@ -4603,4 +4618,5 @@
 /* Toast message when episode download is cancelled*/
 "player_episode_download_cancelled" = "Episode download cancelled";
 
-
+/* A title shown on a button to open information about the Podcast Ratings feature */
+"learn_about_ratings" = "Learn about ratings";

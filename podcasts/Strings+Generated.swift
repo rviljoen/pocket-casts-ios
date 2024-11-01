@@ -1475,6 +1475,8 @@ internal enum L10n {
   internal static var kidsProfileThankyouText: String { return L10n.tr("Localizable", "kids_profile_thankyou_text") }
   /// Thank you for your interest
   internal static var kidsProfileThankyouTitle: String { return L10n.tr("Localizable", "kids_profile_thankyou_title") }
+  /// Learn about ratings
+  internal static var learnAboutRatings: String { return L10n.tr("Localizable", "learn_about_ratings") }
   /// Learn More
   internal static var learnMore: String { return L10n.tr("Localizable", "learn_more") }
   /// Listening History
@@ -1790,6 +1792,18 @@ internal enum L10n {
   internal static var playback2024PlusUpsellDescription: String { return L10n.tr("Localizable", "playback_2024_plus_upsell_description") }
   /// There's more!
   internal static var playback2024PlusUpsellTitle: String { return L10n.tr("Localizable", "playback_2024_plus_upsell_title") }
+  /// Thanks for sharing your feedback with the creator community
+  internal static var playback2024RatingsDescription1To3: String { return L10n.tr("Localizable", "playback_2024_ratings_description_1_to_3") }
+  /// Wow, so many %1$@ star ratings! Thanks for sharing the love with your favorite creators.
+  internal static func playback2024RatingsDescription4To5(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_ratings_description_4_to_5", String(describing: p1))
+  }
+  /// Did you know that you can rate shows now? Share the love for your favorite creators and help them get noticed!
+  internal static var playback2024RatingsEmptyDescription: String { return L10n.tr("Localizable", "playback_2024_ratings_empty_description") }
+  /// Oh-oh! No podcast ratings to show you yet
+  internal static var playback2024RatingsEmptyTitle: String { return L10n.tr("Localizable", "playback_2024_ratings_empty_title") }
+  /// Let’s see your ratings!
+  internal static var playback2024RatingsTitle: String { return L10n.tr("Localizable", "playback_2024_ratings_title") }
   /// You listened to %1$@ episodes for a total of %2$@ of "%3$@"
   internal static func playback2024TopSpotDescription(_ p1: Any, _ p2: Any, _ p3: Any) -> String {
     return L10n.tr("Localizable", "playback_2024_top_spot_description", String(describing: p1), String(describing: p2), String(describing: p3))
