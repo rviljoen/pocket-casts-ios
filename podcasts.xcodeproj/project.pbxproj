@@ -7899,12 +7899,12 @@
 				F53C3E822CC73538004F3581 /* TopSpotStory2024.swift */,
 				F581ED432CC6F3A400A19860 /* Top5Podcasts2024Story.swift */,
 				F53EFEE92CD42ADF00F4561B /* Ratings2024Story.swift */,
-				F5CA25902CC9C30F0013DFF2 /* StoryFooter2024.swift */,
 				F581ED412CC6F19300A19860 /* ListeningTime2024Story.swift */,
-				F5D527372CC81AA700682CD5 /* EpilogueStory2024.swift */,
 				F5F884642CCA86AA002BED2C /* LongestEpisode2024Story.swift */,
-				F5F884662CCA8F1F002BED2C /* CompletionRate2024Story.swift */,
 				F52987E82CD2ED7000628016 /* YearOverYearCompare2024Story.swift */,
+				F5F884662CCA8F1F002BED2C /* CompletionRate2024Story.swift */,
+				F5CA25902CC9C30F0013DFF2 /* StoryFooter2024.swift */,
+				F5D527372CC81AA700682CD5 /* EpilogueStory2024.swift */,
 			);
 			path = 2024;
 			sourceTree = "<group>";
