@@ -156,6 +156,7 @@ struct DashedRectangle: View {
                         .frame(height: 1)
                 }
             }
+            .frame(maxHeight: .infinity, alignment: .bottom)
         }
     }
 }
