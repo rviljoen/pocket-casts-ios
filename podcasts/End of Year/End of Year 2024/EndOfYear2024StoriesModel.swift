@@ -35,6 +35,12 @@ class EndOfYear2024StoriesModel: StoryModel {
             data.listeningTime = listeningTime
         }
 
+        // Ratings
+        if let ratings = dataManager.summarizedRatings(in: Self.year) {
+            data.ratings = ratings
+            stories.append(.ratings)
+        }
+
         // Longest episode
         if let longestEpisode = dataManager.longestEpisode(in: Self.year),
            let podcast = longestEpisode.parentPodcast() {
@@ -67,6 +73,8 @@ class EndOfYear2024StoriesModel: StoryModel {
             return TopSpotStory2024(topPodcast: data.topPodcasts.first!)
         case .top5Podcasts:
             return Top5Podcasts2024Story(top5Podcasts: data.topPodcasts)
+        case .ratings:
+            return Ratings2024Story(ratings: data.ratings)
         case .listeningTime:
             return ListeningTime2024Story(listeningTime: data.listeningTime)
         case .longestEpisode:
@@ -84,9 +92,15 @@ class EndOfYear2024StoriesModel: StoryModel {
             return true
         case .top5Podcasts:
             return true
+        case .ratings:
+            return true
         default:
             return false
         }
+    }
+
+    func hasLoadedData(in dataManager: DataManager) -> Bool {
+        dataManager.ratings.ratings == nil
     }
 
     func isReady() -> Bool {
@@ -144,4 +158,6 @@ class EndOfYear2024StoriesData {
     var top8Podcasts: [Podcast] = []
 
     var episodesStartedAndCompleted: EpisodesStartedAndCompleted!
+
+    var ratings: [UInt32: Int] = [:]
 }
