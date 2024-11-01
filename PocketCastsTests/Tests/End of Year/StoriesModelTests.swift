@@ -193,6 +193,10 @@ class MockStoriesDataSource: StoriesDataSource {
     func paywallView() -> AnyView {
         AnyView(EmptyView())
     }
+
+    func sharingSnapshotModifier(_ view: AnyView) -> AnyView {
+        view
+    }
 }
 
 class MockStoriesWithPlusDataSource: StoriesDataSource {
@@ -243,6 +247,10 @@ class MockStoriesWithPlusDataSource: StoriesDataSource {
 
     func paywallView() -> AnyView {
         AnyView(EmptyView())
+    }
+
+    func sharingSnapshotModifier(_ view: AnyView) -> AnyView {
+        view
     }
 }
 
