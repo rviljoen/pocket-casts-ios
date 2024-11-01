@@ -17,6 +17,8 @@ struct StoriesView: View {
         self.syncProgressModel = syncProgressModel
     }
 
+    @StateObject private var pauseState = PauseState()
+
     @ViewBuilder
     var body: some View {
         if model.isReady {
@@ -47,6 +49,7 @@ struct StoriesView: View {
                         }
                     }
                     .environment(\.animated, true)
+                    .environment(\.pauseState, pauseState)
 
                 if model.shouldShowUpsell() {
                     model.paywallView().zIndex(6).onAppear {
@@ -88,6 +91,13 @@ struct StoriesView: View {
             Button(L10n.share) { model.share() }.keyboardShortcut(.defaultAction)
         } message: {
             Text(L10n.eoyShareThisStoryMessage)
+        }
+        .onChange(of: pauseState.isPaused) { isPaused in
+            if isPaused {
+                model.pause()
+            } else {
+                model.start()
+            }
         }
     }
 

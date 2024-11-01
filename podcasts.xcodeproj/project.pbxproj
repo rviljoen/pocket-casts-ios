@@ -1713,6 +1713,7 @@
 		F5D3A0D92B70950100EED067 /* MockURLHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D3A0D82B70950100EED067 /* MockURLHandler.swift */; };
 		F5D527382CC81AAD00682CD5 /* EpilogueStory2024.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5D527372CC81AA700682CD5 /* EpilogueStory2024.swift */; };
 		F5DBA58A2B756A8700AED77F /* PodcastSettings+ImportUserDefaultsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5DBA5892B756A8700AED77F /* PodcastSettings+ImportUserDefaultsTests.swift */; };
+		F5E16FE72CD47DE800C0372F /* SFSafariView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E16FE62CD47DE800C0372F /* SFSafariView.swift */; };
 		F5E3DAA72BDD5567002BD4E4 /* PCBundleDoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E3DAA62BDD5567002BD4E4 /* PCBundleDoc.swift */; };
 		F5E431D62B50888500A71DB3 /* PlusLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E431D52B50888500A71DB3 /* PlusLabel.swift */; };
 		F5E949DA2B61762E002DAFC3 /* TokenHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E949D92B61762E002DAFC3 /* TokenHelperTests.swift */; };
@@ -3658,6 +3659,7 @@
 		F5D3A0D82B70950100EED067 /* MockURLHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockURLHandler.swift; sourceTree = "<group>"; };
 		F5D527372CC81AA700682CD5 /* EpilogueStory2024.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpilogueStory2024.swift; sourceTree = "<group>"; };
 		F5DBA5892B756A8700AED77F /* PodcastSettings+ImportUserDefaultsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PodcastSettings+ImportUserDefaultsTests.swift"; sourceTree = "<group>"; };
+		F5E16FE62CD47DE800C0372F /* SFSafariView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSafariView.swift; sourceTree = "<group>"; };
 		F5E3DAA62BDD5567002BD4E4 /* PCBundleDoc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCBundleDoc.swift; sourceTree = "<group>"; };
 		F5E431D52B50888500A71DB3 /* PlusLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusLabel.swift; sourceTree = "<group>"; };
 		F5E949D92B61762E002DAFC3 /* TokenHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenHelperTests.swift; sourceTree = "<group>"; };
@@ -6970,6 +6972,7 @@
 		C74887782919DC7B00EBC926 /* SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				F5E16FE62CD47DE800C0372F /* SFSafariView.swift */,
 				F54E0F532CC764C0006D4DA2 /* PositionModifier.swift */,
 				C7B3C60B2919DCC800054145 /* ActionView.swift */,
 				C7A110F8291F66C700887A90 /* Confetti.swift */,
@@ -9557,6 +9560,7 @@
 				F54E721D2CA7359800CD5C86 /* DiscoverCellType.swift in Sources */,
 				F51D90742C71A0A100F0A232 /* SharingFooterView.swift in Sources */,
 				BD240C43231F46F400FB2CDD /* PCSearchBarController+TextFieldDelegate.swift in Sources */,
+				F5E16FE72CD47DE800C0372F /* SFSafariView.swift in Sources */,
 				4053CDF9214F3583001C92B1 /* PodcastFilterOverlayController.swift in Sources */,
 				BDF5FD1E1FD8D38900F2A339 /* DownloadsViewController+Table.swift in Sources */,
 				C72CED32289DA1900017883A /* TracksAdapter.swift in Sources */,

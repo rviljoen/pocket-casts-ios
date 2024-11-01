@@ -1,5 +1,4 @@
 import SwiftUI
-import SafariServices
 
 struct Ratings2024Story: ShareableStory {
 
@@ -12,8 +11,10 @@ struct Ratings2024Story: ShareableStory {
 
     @ObservedObject private var animationViewModel = PlayPauseAnimationViewModel(duration: 0.8, animation: Animation.spring(_:))
     @Environment(\.animated) var animated: Bool
+    @Environment(\.pauseState) var pauseState
 
     @State var scale: Double = 1
+    @State var openURL = false
 
     var body: some View {
         Group {
@@ -38,8 +39,11 @@ struct Ratings2024Story: ShareableStory {
             }
         }
         .foregroundStyle(foregroundColor)
-        .background(backgroundColor)
-        .allowsHitTesting(false)
+        .background(
+            backgroundColor
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
+        )
     }
 
     private func setInitialCoverOffsetForAnimation() {
@@ -68,18 +72,19 @@ struct Ratings2024Story: ShareableStory {
             Text(L10n.playback2024RatingsEmptyDescription)
                 .font(.system(size: 15, weight: .light))
             Button(L10n.learnAboutRatings) {
-                //TODO: Pause
-
-                // Open ratings blog post in SFSafariViewController
-                let safariViewController = SFSafariViewController(with: ratingsBlogPostURL)
-                safariViewController.modalPresentationStyle = .formSheet
-                SceneHelper.rootViewController()?.present(safariViewController, animated: true, completion: nil)
-
+                pauseState.togglePause()
+                openURL = true
                 Analytics.track(.endOfYearLearnRatingsShown)
             }
             .buttonStyle(BasicButtonStyle(textColor: .black, backgroundColor: Color.clear, borderColor: .black))
             .allowsHitTesting(true)
         }
+        .sheet(isPresented: $openURL, onDismiss: {
+            pauseState.togglePause()
+            openURL = false
+        }, content: {
+            SFSafariView(url: ratingsBlogPostURL)
+        })
         .padding(.horizontal, 24)
         .padding(.vertical, 6)
     }
