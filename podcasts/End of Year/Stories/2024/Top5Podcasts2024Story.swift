@@ -3,6 +3,7 @@ import PocketCastsDataModel
 
 struct Top5Podcasts2024Story: ShareableStory {
     @Environment(\.renderForSharing) var renderForSharing: Bool
+    @Environment(\.animated) var animated: Bool
 
     let top5Podcasts: [TopPodcast]
 
@@ -17,26 +18,30 @@ struct Top5Podcasts2024Story: ShareableStory {
 
     @ObservedObject private var animationViewModel = PlayPauseAnimationViewModel(duration: 0.8, animation: Animation.spring(_:))
 
-    @State private var visible = false
-
-    @State private var itemScale: Double = 0
-    @State private var itemOpacity: Double = 0
+    @State private var itemScale: Double = 1 // This will be set in `setInitialAnimationValues`
+    @State private var itemOpacity: Double = 1 // This will be set in `setInitialAnimationValues`
 
     var body: some View {
         GeometryReader { geometry in
             let isSmallScreen = geometry.size.height <= 700
             VStack(alignment: .leading) {
-                ScrollView(.vertical) {
-                    VStack(alignment: .leading) {
-                        podcastList()
-                            .modifier(animationViewModel.animate($itemOpacity, to: 1, after: 0.1))
-                            .modifier(animationViewModel.animate($itemScale, to: 1))
-                    }
+                VStack(alignment: .leading) {
+                    podcastList()
+                        .modifier(animationViewModel.animate($itemOpacity, to: 1, after: 0.1))
+                        .modifier(animationViewModel.animate($itemScale, to: 1))
                 }
-                .modify {
-                    if #available(iOS 16.4, *) {
-                        $0.scrollIndicators(.never)
-                          .scrollBounceBehavior(.basedOnSize)
+                .modify { view in
+                    if renderForSharing {
+                        view
+                    } else {
+                        ScrollView(.vertical) {
+                            if #available(iOS 16.4, *) {
+                                view.scrollIndicators(.never)
+                                    .scrollBounceBehavior(.basedOnSize)
+                            } else {
+                                view
+                            }
+                        }
                     }
                 }
                 .disabled(!isSmallScreen) // Disable scrolling on larger where we shouldn't be clipping.
@@ -49,7 +54,6 @@ struct Top5Podcasts2024Story: ShareableStory {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .ignoresSafeArea()
-        .enableProportionalValueScaling()
         .background(
             Rectangle()
                 .fill(backgroundColor)
@@ -57,7 +61,10 @@ struct Top5Podcasts2024Story: ShareableStory {
                 .allowsHitTesting(false)
         )
         .onAppear {
-            animationViewModel.play()
+            if animated {
+                setInitialAnimationValues()
+                animationViewModel.play()
+            }
         }
     }
 
@@ -110,6 +117,11 @@ struct Top5Podcasts2024Story: ShareableStory {
 
     func onResume() {
         animationViewModel.play()
+    }
+
+    private func setInitialAnimationValues() {
+        itemScale = 0
+        itemOpacity = 0
     }
 
     func sharingAssets() -> [Any] {
