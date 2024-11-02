@@ -11,6 +11,7 @@ struct Top5Podcasts2024Story: ShareableStory {
 
     private let shapeColor = Color.green
 
+    private let foregroundColor = Color.black
     private let backgroundColor = Color(hex: "#E0EFAD")
     private let shapeImages = ["playback-2024-shape-pentagon",
                                "playback-2024-shape-two-ovals",
@@ -54,6 +55,7 @@ struct Top5Podcasts2024Story: ShareableStory {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .ignoresSafeArea()
+        .foregroundStyle(foregroundColor)
         .background(
             Rectangle()
                 .fill(backgroundColor)

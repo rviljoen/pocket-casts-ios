@@ -17,8 +17,9 @@ struct PaidStoryWallView2024: View {
 
     private let separator = Image("playback-24-union")
 
+    private let foregroundColor = Color.black
     private let backgroundColor = Color(hex: "#EFECAD")
-    private let foregroundColor = Color(hex: "#F9BC48")
+    private let marqueeColor = Color(hex: "#F9BC48")
 
     var body: some View {
         GeometryReader { geometry in
@@ -31,7 +32,7 @@ struct PaidStoryWallView2024: View {
                         MarqueeTextView(words: words, separator: separator, separatorPadding: separatorPadding, direction: .trailing)
                     }
                     .minimumScaleFactor(0.9)
-                    .foregroundStyle(foregroundColor)
+                    .foregroundStyle(marqueeColor)
                     .rotationEffect(.degrees(-15))
                     .frame(width: geometry.size.width + 200, height: geometry.size.width - 50)
                     .offset(x: -50)
@@ -58,6 +59,7 @@ struct PaidStoryWallView2024: View {
                 .padding(.bottom, 6)
             }
         }
+        .foregroundStyle(foregroundColor)
         .background {
             backgroundColor
                 .ignoresSafeArea()

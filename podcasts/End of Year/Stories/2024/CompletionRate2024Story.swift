@@ -13,6 +13,7 @@ struct CompletionRate2024Story: ShareableStory {
 
     let identifier: String = "completion_rate"
 
+    private let foregroundColor = Color.black
     private let backgroundColor = Color(hex: "#E0EFAD")
 
     @ObservedObject private var animationViewModel = PlayPauseAnimationViewModel(duration: 0.3, animation: Animation.linear(duration:))
@@ -36,6 +37,7 @@ struct CompletionRate2024Story: ShareableStory {
                 animationViewModel.play()
             }
         }
+        .foregroundStyle(foregroundColor)
         .background(backgroundColor)
     }
 
