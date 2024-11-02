@@ -13,6 +13,8 @@ struct Ratings2024Story: ShareableStory {
     @Environment(\.animated) var animated: Bool
     @Environment(\.pauseState) var pauseState
 
+    let identifier: String = "ratings"
+
     @State var scale: Double = 1
     @State var openURL = false
 
@@ -136,6 +138,10 @@ struct Ratings2024Story: ShareableStory {
         }
         .padding(.horizontal, 24)
         .padding(.bottom, 12)
+    }
+
+    func onAppear() {
+        Analytics.track(.endOfYearStoryShown, story: identifier)
     }
 
     func sharingAssets() -> [Any] {

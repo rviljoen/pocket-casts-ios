@@ -20,6 +20,8 @@ struct PaidStoryWallView2024: View {
     private let backgroundColor = Color(hex: "#EFECAD")
     private let foregroundColor = Color(hex: "#F9BC48")
 
+    let identifier = "plus_interstitial"
+
     var body: some View {
         GeometryReader { geometry in
             VStack {
@@ -65,6 +67,7 @@ struct PaidStoryWallView2024: View {
         }
         .onAppear {
             Analytics.track(.endOfYearUpsellShown)
+            Analytics.track(.endOfYearStoryShown, story: identifier)
         }
     }
 }
