@@ -10,8 +10,9 @@ struct StoryShareButton: View {
 
 struct EpilogueStory2024: StoryView {
 
-    let marqueeTextColor = Color(hex: "#EEB1F4")
-    let backgroundColor = Color(hex: "#EE661C")
+    private let foregroundColor = Color.black
+    private let marqueeTextColor = Color(hex: "#EEB1F4")
+    private let backgroundColor = Color(hex: "#EE661C")
 
     private let words = [
         "Thanks",
@@ -36,6 +37,7 @@ struct EpilogueStory2024: StoryView {
             footerView()
         }
         .minimumScaleFactor(0.8)
+        .foregroundStyle(foregroundColor)
         .background {
             backgroundColor
                 .ignoresSafeArea()
