@@ -144,6 +144,10 @@ struct Ratings2024Story: ShareableStory {
         Analytics.track(.endOfYearStoryShown, story: identifier)
     }
 
+    func willShare() {
+        Analytics.track(.endOfYearStoryShare, story: identifier)
+    }
+
     func sharingAssets() -> [Any] {
         let totalRatings = ratings.values.reduce(0, +)
         return [

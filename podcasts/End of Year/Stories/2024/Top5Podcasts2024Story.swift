@@ -119,6 +119,10 @@ struct Top5Podcasts2024Story: ShareableStory {
         animationViewModel.play()
     }
 
+    func willShare() {
+        Analytics.track(.endOfYearStoryShare, story: identifier)
+    }
+
     private func setInitialAnimationValues() {
         itemScale = 0
         itemOpacity = 0
