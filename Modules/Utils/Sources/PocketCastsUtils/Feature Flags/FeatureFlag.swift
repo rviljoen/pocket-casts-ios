@@ -208,7 +208,7 @@ public enum FeatureFlag: String, CaseIterable {
         case .referralsClaim:
             true
         case .referralsSend:
-            false
+            true
         case .syncStats:
             true
         case .discoverCollectionView:
