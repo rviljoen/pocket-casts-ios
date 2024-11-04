@@ -321,7 +321,9 @@ class Settings: NSObject {
     }
 
     class func upNextShuffleEnabled() -> Bool {
-        guard FeatureFlag.upNextShuffle.enabled else { return false }
+        if !FeatureFlag.upNextShuffle.enabled || !SubscriptionHelper.hasActiveSubscription() {
+            return false
+        }
         return UserDefaults.standard.bool(forKey: Settings.upNextShuffleKey)
     }
 
