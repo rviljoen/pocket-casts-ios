@@ -221,6 +221,7 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
     @objc private func themeDidChange() {
         if !SubscriptionHelper.hasActiveSubscription() || !SyncManager.isUserLoggedIn() {
             shuffleButton.setImage(UIImage(named: "shuffle-plus"), for: .normal)
+            shuffleButton.isSelected = false
         } else {
             let unselected = UIImage(named: "shuffle")?.withTintColor(AppTheme.colorForStyle(.primaryIcon02, themeOverride: themeOverride), renderingMode: .alwaysOriginal)
             let selected = UIImage(named: "shuffle-enabled")?.withTintColor(AppTheme.colorForStyle(.primaryIcon01, themeOverride: themeOverride), renderingMode: .alwaysOriginal)
