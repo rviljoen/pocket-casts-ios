@@ -103,6 +103,10 @@ struct CompletionRate2024Story: ShareableStory {
         Analytics.track(.endOfYearStoryShown, story: identifier)
     }
 
+    func willShare() {
+        Analytics.track(.endOfYearStoryShare, story: identifier)
+    }
+
     func onPause() {
         animationViewModel.pause()
     }

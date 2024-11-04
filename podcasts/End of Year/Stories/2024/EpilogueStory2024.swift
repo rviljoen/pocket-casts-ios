@@ -24,6 +24,8 @@ struct EpilogueStory2024: StoryView {
 
     private let separator = Image("playback-24-heart")
 
+    var identifier: String = "ending"
+
     var body: some View {
         VStack {
             Spacer()
@@ -61,6 +63,10 @@ struct EpilogueStory2024: StoryView {
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 6)
+    }
+
+    func onAppear() {
+        Analytics.track(.endOfYearStoryShown, story: identifier)
     }
 }
 

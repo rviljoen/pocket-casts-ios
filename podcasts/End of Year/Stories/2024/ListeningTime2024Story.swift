@@ -8,6 +8,8 @@ struct ListeningTime2024Story: ShareableStory {
     private let foregroundColor = Color.black
     private let backgroundColor = Color(hex: "#EDB0F3")
 
+    let identifier: String = "total_time"
+
     enum Constants {
         static let wayToGoStickerSize: CGSize = .init(width: 197, height: 165)
     }
@@ -43,6 +45,14 @@ struct ListeningTime2024Story: ShareableStory {
         .foregroundStyle(foregroundColor)
         .background(backgroundColor)
         .enableProportionalValueScaling()
+    }
+
+    func onAppear() {
+        Analytics.track(.endOfYearStoryShown, story: identifier)
+    }
+
+    func willShare() {
+        Analytics.track(.endOfYearStoryShare, story: identifier)
     }
 
     func sharingAssets() -> [Any] {

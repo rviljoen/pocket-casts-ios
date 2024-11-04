@@ -7,7 +7,7 @@ struct Top5Podcasts2024Story: ShareableStory {
 
     let top5Podcasts: [TopPodcast]
 
-    let identifier: String = "top_five_podcast"
+    let identifier: String = "top_5_shows"
 
     private let shapeColor = Color.green
 
@@ -119,6 +119,10 @@ struct Top5Podcasts2024Story: ShareableStory {
 
     func onResume() {
         animationViewModel.play()
+    }
+
+    func willShare() {
+        Analytics.track(.endOfYearStoryShare, story: identifier)
     }
 
     private func setInitialAnimationValues() {

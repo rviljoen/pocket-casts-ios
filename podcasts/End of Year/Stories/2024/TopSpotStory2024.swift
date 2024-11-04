@@ -10,7 +10,7 @@ struct TopSpotStory2024: ShareableStory {
 
     @State private var rotation: Double = 360
 
-    let identifier: String = "top_one_podcast"
+    let identifier: String = "top_1_show"
 
     var body: some View {
         VStack(spacing: 0) {

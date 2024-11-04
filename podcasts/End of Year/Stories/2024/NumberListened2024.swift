@@ -16,7 +16,7 @@ struct NumberListened2024: ShareableStory {
 
     private let foregroundColor = Color.black
     private let backgroundColor = Color(hex: "#EFECAD")
-    let identifier: String = "number_of_podcasts_and_episodes_listened"
+    let identifier: String = "number_of_shows"
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -93,6 +93,10 @@ struct NumberListened2024: ShareableStory {
 
     func onAppear() {
         Analytics.track(.endOfYearStoryShown, story: identifier)
+    }
+
+    func willShare() {
+        Analytics.track(.endOfYearStoryShare, story: identifier)
     }
 
     func sharingAssets() -> [Any] {
