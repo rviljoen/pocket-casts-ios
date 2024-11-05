@@ -375,6 +375,7 @@ enum PlusUpgradeViewSource: String {
     case promoCode
     case promotionFinished
     case upNextShuffle
+    case onboarding
 
     /// Converts the enum into a Firebase promotionId, this matches the values set on Android
     func promotionId() -> String {
@@ -393,6 +394,24 @@ enum PlusUpgradeViewSource: String {
         default:
             return "Upgrade to Plus for \(rawValue)"
         }
+    }
+
+    func isEligibleForExperiment() -> Bool {
+        switch self {
+        case .profile, .onboarding:
+            return true
+        default:
+            return false
+        }
+    }
+
+    func paywallHeadline() -> String? {
+        return nil
+    }
+
+    static func from(string: String?) -> PlusUpgradeViewSource {
+        guard let string else { return .unknown }
+        return PlusUpgradeViewSource(rawValue: string) ?? .unknown
     }
 }
 
