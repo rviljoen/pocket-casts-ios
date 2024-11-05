@@ -206,7 +206,11 @@ struct YearOverYearCompare2024Story: ShareableStory {
         case .up(let difference):
             if difference > 1 {
                 let formatted = min(difference, maximumDifference).formatted(formatStyle)
-                return L10n.playback2024YearOverYearCompareTitleUpLot(formatted)
+                if difference > maximumDifference {
+                    return L10n.playback2024YearOverYearCompareTitleUpAboveMaximum(formatted)
+                } else {
+                    return L10n.playback2024YearOverYearCompareTitleUpLot(formatted)
+                }
             } else {
                 return L10n.playback2024YearOverYearCompareTitleUpLittle
             }
