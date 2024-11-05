@@ -207,7 +207,7 @@ struct EndOfYear {
 }
 
 extension EndOfYear {
-    static var defaultDuration = {
+    static var defaultDuration: TimeInterval {
         switch currentYear {
         case .y2024: return 10.seconds
         default: return 7.seconds
