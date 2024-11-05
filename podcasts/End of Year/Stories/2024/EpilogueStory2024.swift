@@ -31,9 +31,9 @@ struct EpilogueStory2024: StoryView {
             Spacer()
             VStack(spacing: 32) {
                 MarqueeTextView(words: words, separator: separator, direction: .leading)
-                MarqueeTextView(words: words, separator: separator, direction: .trailing)                
+                MarqueeTextView(words: words, separator: separator, direction: .trailing)
             }
-            .frame(height: 350)
+            .frame(height: 360)
             .foregroundStyle(marqueeTextColor)
             Spacer()
             footerView()

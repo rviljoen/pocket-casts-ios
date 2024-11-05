@@ -62,7 +62,7 @@ struct Ratings2024Story: ShareableStory {
                 MarqueeTextView(words: words, separator: separator, direction: .leading)
                 MarqueeTextView(words: words, separator: separator, direction: .trailing)
             }
-            .frame(height: 336)
+            .frame(height: 350)
             Spacer()
             emptyFooterView()
         }
