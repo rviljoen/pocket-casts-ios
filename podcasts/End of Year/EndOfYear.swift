@@ -206,6 +206,10 @@ struct EndOfYear {
     }
 }
 
+extension EndOfYear {
+    static var defaultDuration = 10.seconds
+}
+
 class StoriesHostingController<ContentView: View>: UIHostingController<ContentView> {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         .lightContent
