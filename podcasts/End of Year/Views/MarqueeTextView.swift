@@ -79,5 +79,5 @@ struct MarqueeTextView: View {
 }
 
 #Preview("Marquee Trailing") {
-    MarqueeTextView(words: ["Pockete", "Castse", "2024e"].map({$0.uppercased()}), separator: Image("playback-24-heart"), direction: .trailing)
+    MarqueeTextView(words: ["Pocket", "Casts", "2024"].map({$0.uppercased()}), separator: Image("playback-24-heart"), direction: .trailing)
 }
