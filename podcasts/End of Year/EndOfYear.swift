@@ -207,12 +207,20 @@ struct EndOfYear {
 }
 
 extension EndOfYear {
-    static var defaultDuration = 10.seconds
+    static var defaultDuration = {
+        switch currentYear {
+        case .y2024: return 10.seconds
+        default: return 7.seconds
+        }
+    }
 }
 
 class StoriesHostingController<ContentView: View>: UIHostingController<ContentView> {
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        .darkContent
+        switch EndOfYear.currentYear {
+        case .y2024: return .darkContent
+        default: return .lightContent
+        }
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
