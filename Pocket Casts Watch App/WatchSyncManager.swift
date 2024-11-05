@@ -211,6 +211,7 @@ class WatchSyncManager {
 
     private func periodicRefresh() {
         if DateUtil.hasEnoughTimePassed(since: ServerSettings.lastRefreshEndTime(), time: WatchSyncManager.watchMinTimeBetweenPeriodicRefreshes) {
+            FileLog.shared.addMessage("Periodic Refresh - Starting")
             RefreshManager.shared.refreshPodcasts(forceEvenIfRefreshedRecently: false)
         }
     }
