@@ -70,6 +70,10 @@ struct EpilogueStory2024: StoryView {
     }
 }
 
+#Preview("Marquee Trailing") {
+    MarqueeTextView(words: ["Pockete", "Castse", "2024e"].map({$0.uppercased()}), separator: Image("playback-24-heart"), direction: .trailing)
+}
+
 struct MarqueeTextView: View {
     let words: [String]
     let separator: Image
@@ -80,23 +84,31 @@ struct MarqueeTextView: View {
     @State private var screenWidth: CGFloat = 0
     @State private var contentWidth: CGFloat = 0
 
+    var font: UIFont {
+        return UIFont(name: "Humane-Medium", size: 227) ?? UIFont.systemFont(ofSize: 227)
+    }
+
+    var textVerticalOffset: CGFloat {
+        let imageAdjustment = CGFloat(5)
+        return ((font.lineHeight - font.capHeight) / 2) - imageAdjustment
+    }
+
     var body: some View {
         GeometryReader { geometry in
-            let baseText = HStack(spacing: 20) {
+            let baseText = HStack(alignment: .center, spacing: 8) {
                 ForEach(0..<words.count, id: \.self) { idx in
                     Text(words[idx])
-                        .font(.custom("Humane-Medium", size: 227))
-                        .padding(.horizontal, -10)
+                        .font(Font(font))
+                        .offset(x: 0, y: textVerticalOffset)
                     separator
                         .padding(.horizontal, separatorPadding)
                 }
             }
-
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 0) {
+                LazyHStack(alignment: .center, spacing: 0) {
                     ForEach(0..<50000) { _ in
                         baseText
-                            .padding(.horizontal, 6)
+                            .padding(.horizontal, 4)
                     }
                 }
                 .background(
