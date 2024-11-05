@@ -212,7 +212,7 @@ extension EndOfYear {
 
 class StoriesHostingController<ContentView: View>: UIHostingController<ContentView> {
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        .lightContent
+        .darkContent
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
