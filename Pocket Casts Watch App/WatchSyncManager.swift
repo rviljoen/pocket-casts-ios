@@ -79,9 +79,12 @@ class WatchSyncManager {
         if updateLoginDetailsIfRequired() {
             return
         } else {
-            if isPlusUser(), WKApplication.shared().applicationState == .background, compareUpNextLists() == .watchNeedsUpdate, !SyncManager.isFirstSyncInProgress() {
-                let subscribedPodcasts = DataManager.sharedManager.allPodcasts(includeUnsubscribed: false)
-                BackgroundSyncManager.shared.performBackgroundRefresh(subscribedPodcasts: subscribedPodcasts)
+            if isPlusUser(),
+               WKApplication.shared().applicationState == .background,
+               compareUpNextLists() == .watchNeedsUpdate,
+               !SyncManager.isFirstSyncInProgress() {
+               let subscribedPodcasts = DataManager.sharedManager.allPodcasts(includeUnsubscribed: false)
+               BackgroundSyncManager.shared.performBackgroundRefresh(subscribedPodcasts: subscribedPodcasts)
             } else {
                 loginAndRefreshIfRequired()
             }
