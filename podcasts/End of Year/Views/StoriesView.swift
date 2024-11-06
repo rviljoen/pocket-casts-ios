@@ -154,6 +154,7 @@ struct StoriesView: View {
             .padding(.trailing, Constants.storyIndicatorVerticalPadding)
 
             closeButton
+                .foregroundColor(model.indicatorColor)
         }
         .padding(.top, Constants.headerTopPadding)
     }
