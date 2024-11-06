@@ -23,6 +23,7 @@ struct StoryFooter2024: View {
             if let description {
                 Text(description)
                     .font(.system(size: 15, weight: .light))
+                    .lineSpacing(UIFont.systemFont(ofSize: 15, weight: .light).lineHeight*0.3)
             }
         }
         .minimumScaleFactor(0.9)
