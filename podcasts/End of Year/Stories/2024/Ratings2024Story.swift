@@ -58,11 +58,11 @@ struct Ratings2024Story: ShareableStory {
         let separator = Image("star")
         VStack {
             Spacer()
-            VStack {
+            VStack(spacing: 16) {
                 MarqueeTextView(words: words, separator: separator, direction: .leading)
                 MarqueeTextView(words: words, separator: separator, direction: .trailing)
             }
-            .frame(height: 400)
+            .frame(height: 350)
             Spacer()
             emptyFooterView()
         }

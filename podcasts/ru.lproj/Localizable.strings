@@ -257,6 +257,18 @@
     <string>Добавлять только в начало</string>
     <key>auto_download_first</key>
     <string>Автоматическое скачивание сначала</string>
+    <key>auto_download_limit_auto_downloads</key>
+    <string>Ограничить автоматические загрузки</string>
+    <key>auto_download_limit_downloads</key>
+    <string>Ограничить загрузки</string>
+    <key>auto_download_limit_number_of_episodes</key>
+    <string>Выпусков: %1$@</string>
+    <key>auto_download_limit_number_of_episodes_show</key>
+    <string>%1$@ последних выпусков шоу</string>
+    <key>auto_download_limit_one_episode</key>
+    <string>последний выпуск</string>
+    <key>auto_download_limit_one_episode_show</key>
+    <string>Последний выпуск шоу</string>
     <key>auto_download_off_subtitle</key>
     <string>Включите для автоматического скачивания выпусков в этом фильтре</string>
     <key>auto_download_on_plural_format</key>
@@ -735,6 +747,11 @@
     <string>Редактировать клип</string>
     <key>enable_it_now</key>
     <string>Включить</string>
+    <key>eoy_2024_epilogue_description</key>
+    <string>Не забудьте поделиться с друзьями и рассказать о любимых подкастах и подкастерах</string>
+    <key>eoy_2024_epilogue_title</key>
+    <string>Благодарим за то, что вы слушали вместе с нами в этом году.
+Увидимся в 2025-м!</string>
     <key>eoy_card_description</key>
     <string>Просмотрите свой топ подкастов, статистику прослушивания и другие показатели.</string>
     <key>eoy_create_account_to_see</key>
@@ -1490,6 +1507,16 @@
     <string>Воспроизвести последний</string>
     <key>play_next</key>
     <string>Воспроизвести следующий</string>
+    <key>playback_2024_description</key>
+    <string>Просмотрите свой топ подкастов и рубрик, статистику прослушивания и другие показатели. Поделитесь с друзьями и поблагодарите любимых подкастеров.</string>
+    <key>playback_2024_feature_description</key>
+    <string>Просмотрите свой топ подкастов, статистику прослушивания и другие показатели.</string>
+    <key>playback_2024_feature_title</key>
+    <string>Ваша история прослушиваний за 2024 год уже готова!</string>
+    <key>playback_2024_listening_time_description</key>
+    <string>Общее время прослушивания подкастов: %1$@</string>
+    <key>playback_2024_view_year</key>
+    <string>Что я слушал(а) в 2024 году</string>
     <key>playback_effect_all_podcasts</key>
     <string>Все подкасты</string>
     <key>playback_effect_this_podcast</key>
@@ -1536,6 +1563,12 @@
     <string>Сокращает длину выпуска, вырезая паузы в разговорах.</string>
     <key>player_effects_trim_silence_progress</key>
     <string>С помощью этой функции вы сэкономили %1$@.</string>
+    <key>player_episode_download_cancelled</key>
+    <string>Скачивание выпуска отменено</string>
+    <key>player_episode_queued_for_download</key>
+    <string>Выпуск в очереди на скачивание</string>
+    <key>player_episode_was_removed</key>
+    <string>Выпуск удалён</string>
     <key>player_error_corrupted_file</key>
     <string>Выпуск может быть поврежден, но вы можете попробовать прослушать его снова.</string>
     <key>player_error_internet_connection</key>
@@ -1947,6 +1980,8 @@
     <string>Продолжая, вы принимаете нашу %1$@Политику конфиденциальности%2$@ и %3$@Условия предоставления услуг%4$@</string>
     <key>queue_clear_episode_queue_plural</key>
     <string>Убрать выпуски (%1$@)</string>
+    <key>queue_clear_episode_queue_singular</key>
+    <string>Удалить 1 выпуск</string>
     <key>queue_clear_queue</key>
     <string>ОЧИСТИТЬ ОЧЕРЕДЬ</string>
     <key>queue_for_later</key>
@@ -2225,6 +2260,8 @@
     <string>Выбран 1 подкаст</string>
     <key>settings_auto_downloads_subtitle_filters</key>
     <string>Скачивать первые выпуски в фильтре.</string>
+    <key>settings_auto_downloads_subtitle_new_episodes</key>
+    <string>Автоматически загружайте новые выпуски по мере выхода и управляйте магазином, устанавливая ограничения на сохранение выпусков.</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>Скачивать выпуски, добавленные в «Следующие».</string>
     <key>settings_badge_filter_header</key>

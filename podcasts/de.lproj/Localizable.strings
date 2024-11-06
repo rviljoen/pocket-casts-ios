@@ -257,6 +257,18 @@ Tippe auf den Button unten, um dich erneut in deinem Pocket Casts-Konto anzumeld
     <string>Nur am Anfang hinzufügen</string>
     <key>auto_download_first</key>
     <string>Automatischer Download zuerst</string>
+    <key>auto_download_limit_auto_downloads</key>
+    <string>Anzahl automatischer Downloads begrenzen</string>
+    <key>auto_download_limit_downloads</key>
+    <string>Anzahl an Downloads begrenzen</string>
+    <key>auto_download_limit_number_of_episodes</key>
+    <string>%1$@ Folgen</string>
+    <key>auto_download_limit_number_of_episodes_show</key>
+    <string>%1$@ neuesten Folgen pro Podcast</string>
+    <key>auto_download_limit_one_episode</key>
+    <string>Neueste Folge</string>
+    <key>auto_download_limit_one_episode_show</key>
+    <string>Neueste Folge pro Podcast</string>
     <key>auto_download_off_subtitle</key>
     <string>Aktiviere diese Option, um Folgen in diesem Filter automatisch herunterzuladen</string>
     <key>auto_download_on_plural_format</key>
@@ -735,6 +747,11 @@ Tippe auf den Button unten, um dich erneut in deinem Pocket Casts-Konto anzumeld
     <string>Clip bearbeiten</string>
     <key>enable_it_now</key>
     <string>Jetzt aktivieren</string>
+    <key>eoy_2024_epilogue_description</key>
+    <string>Vergiss nicht, sie mit deinen Freunden zu teilen und deine bevorzugten Podcasts und Ersteller dankend zu erwähnen</string>
+    <key>eoy_2024_epilogue_title</key>
+    <string>Vielen Dank, dass du dieses Jahr dein Audioerlebnis mit uns genossen hast.
+Wir hören uns 2025!</string>
     <key>eoy_card_description</key>
     <string>Schau dir deine Audiostatistiken, Top-Podcasts und mehr an.</string>
     <key>eoy_create_account_to_see</key>
@@ -1490,6 +1507,16 @@ UM UPDATES ZU ERHALTEN</string>
     <string>Als letzten Titel abspielen</string>
     <key>play_next</key>
     <string>Als nächsten Titel abspielen</string>
+    <key>playback_2024_description</key>
+    <string>Schau dir deine Top-Podcasts, Kategorien, Hörstatistiken und mehr an. Teile sie mit Freunden und danke deinen bevorzugten Erstellern!</string>
+    <key>playback_2024_feature_description</key>
+    <string>Schau dir deine Audiostatistiken, Top-Podcasts und mehr an.</string>
+    <key>playback_2024_feature_title</key>
+    <string>Deine Wiedergabeliste 2024 ist endlich verfügbar!</string>
+    <key>playback_2024_listening_time_description</key>
+    <string>%1$@ gehörte Podcasts gesamt</string>
+    <key>playback_2024_view_year</key>
+    <string>Meine Wiedergabeliste 2024 anzeigen</string>
     <key>playback_effect_all_podcasts</key>
     <string>Alle Podcasts</string>
     <key>playback_effect_this_podcast</key>
@@ -1536,6 +1563,12 @@ UM UPDATES ZU ERHALTEN</string>
     <string>Reduziert die Länge einer Folge, indem Stille in Unterhaltungen gekürzt wird.</string>
     <key>player_effects_trim_silence_progress</key>
     <string>Mit diesem Feature hast du insgesamt %1$@ gespart.</string>
+    <key>player_episode_download_cancelled</key>
+    <string>Download der Folge abgebrochen</string>
+    <key>player_episode_queued_for_download</key>
+    <string>Folge in die Download-Warteschlange gestellt</string>
+    <key>player_episode_was_removed</key>
+    <string>Folge wurde entfernt</string>
     <key>player_error_corrupted_file</key>
     <string>Die Folge ist möglicherweise beschädigt, aber du kannst versuchen, sie erneut abzuspielen.</string>
     <key>player_error_internet_connection</key>
@@ -1947,6 +1980,8 @@ Viele Anregungen findest du im Tab „Entdecken“.</string>
     <string>Indem du fortfährst, erklärst du dich mit unserer %1$@Datenschutzerklärung%2$@ und den %3$@Geschäftsbedingungen%4$@ einverstanden</string>
     <key>queue_clear_episode_queue_plural</key>
     <string>%1$@ Folgen löschen</string>
+    <key>queue_clear_episode_queue_singular</key>
+    <string>1 Episode löschen</string>
     <key>queue_clear_queue</key>
     <string>WARTESCHLANGE LÖSCHEN</string>
     <key>queue_for_later</key>
@@ -2225,6 +2260,8 @@ Viele Anregungen findest du im Tab „Entdecken“.</string>
     <string>1 Podcast ausgewählt</string>
     <key>settings_auto_downloads_subtitle_filters</key>
     <string>Die obersten Folgen in einem Filter herunterladen.</string>
+    <key>settings_auto_downloads_subtitle_new_episodes</key>
+    <string>Du kannst die neuesten Folgen direkt nach der Veröffentlichung automatisch herunterladen. Zudem kannst du deinen Speicher verwalten, indem du festlegst, wie viele Folgen gespeichert werden sollen.</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>Zur Warteschlange hinzugefügte Folgen herunterladen.</string>
     <key>settings_badge_filter_header</key>
