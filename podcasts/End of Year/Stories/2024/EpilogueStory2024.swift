@@ -49,20 +49,18 @@ struct EpilogueStory2024: StoryView {
     }
 
     @ViewBuilder func footerView() -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(L10n.eoy2024EpilogueTitle)
-                .font(.system(size: 31, weight: .bold))
-            Text(L10n.eoy2024EpilogueDescription)
-                .font(.system(size: 15, weight: .light))
+        VStack(spacing: 0) {
+            StoryFooter2024(title: "Thank You"/*L10n.eoy2024EpilogueTitle*/, description: L10n.eoy2024EpilogueDescription)
             Button(L10n.eoyStoryReplay) {
                 StoriesController.shared.replay()
                 Analytics.track(.endOfYearStoryReplayButtonTapped)
             }
             .buttonStyle(BasicButtonStyle(textColor: .black, backgroundColor: Color.clear, borderColor: .black))
             .allowsHitTesting(true)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 6)
         }
-        .padding(.horizontal, 24)
-        .padding(.vertical, 6)
+
     }
 
     func onAppear() {

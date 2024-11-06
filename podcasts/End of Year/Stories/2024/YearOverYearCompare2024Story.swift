@@ -76,16 +76,7 @@ struct YearOverYearCompare2024Story: ShareableStory {
     }
 
     @ViewBuilder func footerView() -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            SubscriptionBadge2024(subscriptionTier: subscriptionTier)
-            Text(title)
-                .font(.system(size: 31, weight: .bold))
-            Text(description)
-                .font(.system(size: 15, weight: .light))
-        }
-        .minimumScaleFactor(0.8)
-        .padding(.horizontal, 24)
-        .padding(.bottom, 12)
+        StoryFooter2024(title: title, description: description, subscriptionTier: subscriptionTier)
     }
 
     func onAppear() {
