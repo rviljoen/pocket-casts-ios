@@ -13,7 +13,8 @@ class PlusLandingViewModel: PlusPurchaseModel {
     let viewSource: PlusUpgradeViewSource
 
     init(source: Source, viewSource: PlusUpgradeViewSource = .unknown, config: Config? = nil, purchaseHandler: IAPHelper = .shared) {
-        self.displayedProducts = config?.products ?? [.plus, .patron]
+        let plus = UpgradeTier.plus.update(header: viewSource.paywallHeadline())
+        self.displayedProducts = config?.products ?? [plus, .patron]
         self.initialProduct = config?.displayProduct
         self.continuePurchasing = config?.continuePurchasing
         self.source = source

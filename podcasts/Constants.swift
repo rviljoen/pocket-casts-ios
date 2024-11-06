@@ -405,8 +405,23 @@ enum PlusUpgradeViewSource: String {
         }
     }
 
-    func paywallHeadline() -> String? {
-        return nil
+    func paywallHeadline() -> String {
+        switch self {
+        case .folders:
+            return "Organize your podcasts with Pocket Casts Plus, and more"
+        case .upNextShuffle:
+            return "Shuffle your episodes with Pocket Casts Plus, and more"
+        case .themes:
+            return "Get exclusive themes with Pocket Casts Plus, and more"
+        case .watch:
+            return "Listen from your watch with Pocket Casts Plus, and more"
+        case .icons:
+            return "Get exclusive app icons with Pocket Casts Plus, and more"
+        case .files:
+            return "Upload your files with Pocket Casts Plus, and more"
+        default:
+            return L10n.plusMarketingTitle
+        }
     }
 
     static func from(string: String?) -> PlusUpgradeViewSource {
