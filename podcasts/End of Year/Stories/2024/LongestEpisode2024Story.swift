@@ -26,6 +26,7 @@ struct LongestEpisode2024Story: ShareableStory {
     var body: some View {
         GeometryReader { geometry in
             let isSmallScreen = geometry.size.height <= 600
+            let timeString = episode.playedUpTo.storyTimeDescriptionForSharing
             VStack(alignment: .leading) {
                 Spacer()
                 ZStack {
@@ -38,15 +39,8 @@ struct LongestEpisode2024Story: ShareableStory {
                 }
                 .frame(width: geometry.size.width * 0.9)
                 .padding(.top, isSmallScreen ? 0 : 20)
-                VStack(alignment: .leading, spacing: isSmallScreen ? 4 : 16) {
-                    let timeString = episode.playedUpTo.storyTimeDescriptionForSharing
-                    Text(L10n.playback2024LongestEpisodeTitle(timeString))
-                        .font(.system(size: 31, weight: .bold))
-                    Text(L10n.playback2024LongestEpisodeDescription(episode.title ?? "unknown", podcast.title ?? "unknown"))
-                        .font(.system(size: 15, weight: .light))
-                }
-                .padding(.horizontal, 24)
-                .padding(.bottom, isSmallScreen ? 4 : 16)
+                StoryFooter2024(title: L10n.playback2024LongestEpisodeTitle(timeString),
+                                description: L10n.playback2024LongestEpisodeDescription(episode.title ?? "unknown", podcast.title ?? "unknown"))
             }
         }
         .background(backgroundColor)

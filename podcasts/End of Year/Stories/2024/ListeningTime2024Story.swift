@@ -21,25 +21,24 @@ struct ListeningTime2024Story: ShareableStory {
 
         GeometryReader { geometry in
             VStack(alignment: .leading) {
+                Spacer()
                 ZStack {
                     VStack {
-                        Spacer()
                         let isSmallScreen = geometry.size.height <= 500
                         let sizingFactor = isSmallScreen ? 0.7 : 0.9
+                        let font = UIFont(name: "Humane-Bold", size: geometry.size.height * sizingFactor) ?? UIFont.systemFont(ofSize: geometry.size.height * sizingFactor)
                         Text("\(bigNumber)")
                             .lineLimit(1)
-                            .font(.custom("Humane-Bold", size: geometry.size.height * sizingFactor))
+                            .font(Font(font as CTFont))
                             .minimumScaleFactor(0.5)
+                            .offset(x: 0, y: font.lineHeight - font.capHeight)
                     }
                     Image("playback-sticker-way-to-go")
                         .resizable()
                         .frame(width: Constants.wayToGoStickerSize.width, height: Constants.wayToGoStickerSize.height)
                         .position(x: 21, y: 40, for: Constants.wayToGoStickerSize, in: geometry.frame(in: .local), corner: .topLeading)
                 }
-                Text(description)
-                    .font(.system(size: 30, weight: .bold))
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 8)
+                StoryFooter2024(title: description, description: nil)
             }
         }
         .foregroundStyle(foregroundColor)

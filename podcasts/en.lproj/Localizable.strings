@@ -4623,3 +4623,7 @@
 
 /* A title shown on a button to open information about the Podcast Ratings feature */
 "learn_about_ratings" = "Learn about ratings";
+
+/* A title shown on the Year over Year Comparison screen for a increase more than 500$ in listening time from 2023 in Playback 2024 */
+"playback_2024_year_over_year_compare_title_up_above_maximum" = "Compared to 2023, your listening time went up more than %1$@";
+

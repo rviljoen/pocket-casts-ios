@@ -130,14 +130,7 @@ struct Ratings2024Story: ShareableStory {
     }
 
     @ViewBuilder func footerView() -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(L10n.playback2024RatingsTitle)
-                .font(.system(size: 31, weight: .bold))
-            Text(descriptionText())
-                .font(.system(size: 15, weight: .light))
-        }
-        .padding(.horizontal, 24)
-        .padding(.bottom, 12)
+        StoryFooter2024(title: L10n.playback2024RatingsTitle, description: descriptionText())
     }
 
     func onAppear() {
