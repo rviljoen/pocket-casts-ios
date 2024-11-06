@@ -50,7 +50,7 @@ struct EpilogueStory2024: StoryView {
 
     @ViewBuilder func footerView() -> some View {
         VStack(spacing: 0) {
-            StoryFooter2024(title: "Thank You"/*L10n.eoy2024EpilogueTitle*/, description: L10n.eoy2024EpilogueDescription)
+            StoryFooter2024(title: L10n.eoy2024EpilogueTitle, description: L10n.eoy2024EpilogueDescription)
             Button(L10n.eoyStoryReplay) {
                 StoriesController.shared.replay()
                 Analytics.track(.endOfYearStoryReplayButtonTapped)
