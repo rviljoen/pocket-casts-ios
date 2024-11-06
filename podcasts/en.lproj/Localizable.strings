@@ -4623,3 +4623,21 @@
 
 /* A title shown on a button to open information about the Podcast Ratings feature */
 "learn_about_ratings" = "Learn about ratings";
+
+/* Paywall header for when the view is presented from the folder source */
+"paywall_dynamic_headline_folder" = "Organize your podcasts with Pocket Casts Plus, and more";
+
+/* Paywall header for when the view is presented from the Up Next Shuffle source */
+"paywall_dynamic_headline_up_next_shuffle" = "Shuffle your episodes with Pocket Casts Plus, and more";
+
+/* Paywall header for when the view is presented from the themes source */
+"paywall_dynamic_headline_themes" = "Get exclusive themes with Pocket Casts Plus, and more";
+
+/* Paywall header for when the view is presented from the watch source */
+"paywall_dynamic_headline_watch" = "Listen from your watch with Pocket Casts Plus, and more";
+
+/* Paywall header for when the view is presented from the icons source */
+"paywall_dynamic_headline_icons" = "Get exclusive app icons with Pocket Casts Plus, and more";
+
+/* Paywall header for when the view is presented from the files source */
+"paywall_dynamic_headline_files" = "Upload your files with Pocket Casts Plus, and more";

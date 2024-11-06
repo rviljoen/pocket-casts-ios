@@ -408,17 +408,17 @@ enum PlusUpgradeViewSource: String {
     func paywallHeadline() -> String {
         switch self {
         case .folders:
-            return "Organize your podcasts with Pocket Casts Plus, and more"
+            return L10n.paywallDynamicHeadlineFolder
         case .upNextShuffle:
-            return "Shuffle your episodes with Pocket Casts Plus, and more"
+            return L10n.paywallDynamicHeadlineUpNextShuffle
         case .themes:
-            return "Get exclusive themes with Pocket Casts Plus, and more"
+            return L10n.paywallDynamicHeadlineThemes
         case .watch:
-            return "Listen from your watch with Pocket Casts Plus, and more"
+            return L10n.paywallDynamicHeadlineWatch
         case .icons:
-            return "Get exclusive app icons with Pocket Casts Plus, and more"
+            return L10n.paywallDynamicHeadlineIcons
         case .files:
-            return "Upload your files with Pocket Casts Plus, and more"
+            return L10n.paywallDynamicHeadlineFiles
         default:
             return L10n.plusMarketingTitle
         }
