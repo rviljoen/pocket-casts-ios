@@ -257,6 +257,18 @@
     <string>一番上にのみ追加</string>
     <key>auto_download_first</key>
     <string>自動ダウンロードする最初のエピソード件数</string>
+    <key>auto_download_limit_auto_downloads</key>
+    <string>自動ダウンロードを制限</string>
+    <key>auto_download_limit_downloads</key>
+    <string>ダウンロードを制限</string>
+    <key>auto_download_limit_number_of_episodes</key>
+    <string>%1$@件のエピソード</string>
+    <key>auto_download_limit_number_of_episodes_show</key>
+    <string>番組ごとの%1$@件の最新エピソード</string>
+    <key>auto_download_limit_one_episode</key>
+    <string>最新エピソード</string>
+    <key>auto_download_limit_one_episode_show</key>
+    <string>番組ごとの最新エピソード</string>
     <key>auto_download_off_subtitle</key>
     <string>有効化するとこのフィルターのエピソードを自動ダウンロードできます</string>
     <key>auto_download_on_plural_format</key>
@@ -735,6 +747,11 @@
     <string>クリップを編集</string>
     <key>enable_it_now</key>
     <string>すぐに有効化</string>
+    <key>eoy_2024_epilogue_description</key>
+    <string>友達と共有したり、お気に入りのポッドキャストやクリエイターにエールを送ったりしましょう</string>
+    <key>eoy_2024_epilogue_title</key>
+    <string>本年もお聴きいただきありがとうございました。
+2025年にお会いしましょう !</string>
     <key>eoy_card_description</key>
     <string>視聴統計、人気のポッドキャストなどを確認します。</string>
     <key>eoy_create_account_to_see</key>
@@ -1490,6 +1507,16 @@ Pocket Casts で共有すればここに表示されるようになります</st
     <string>最後に再生</string>
     <key>play_next</key>
     <string>次に再生</string>
+    <key>playback_2024_description</key>
+    <string>人気のポッドキャスト、カテゴリー、聴取統計などを確認します。 友達と共有したり、お気に入りのクリエイターにエールを送ったりしましょう。</string>
+    <key>playback_2024_feature_description</key>
+    <string>聴取統計、人気のポッドキャストなどを確認します。</string>
+    <key>playback_2024_feature_title</key>
+    <string>プレイバック2024はこちら !</string>
+    <key>playback_2024_listening_time_description</key>
+    <string>ポッドキャストを聴いた合計: %1$@</string>
+    <key>playback_2024_view_year</key>
+    <string>マイプレイバック2024を表示</string>
     <key>playback_effect_all_podcasts</key>
     <string>すべてのポッドキャスト</string>
     <key>playback_effect_this_podcast</key>
@@ -1536,6 +1563,12 @@ Pocket Casts で共有すればここに表示されるようになります</st
     <string>会話の間にある沈黙時間をカットしてエピソードを短縮します。</string>
     <key>player_effects_trim_silence_progress</key>
     <string>この機能を使用して合計%1$@節約しました。</string>
+    <key>player_episode_download_cancelled</key>
+    <string>エピソードのダウンロードをキャンセルしました</string>
+    <key>player_episode_queued_for_download</key>
+    <string>エピソードをダウンロード待機リストに追加しました</string>
+    <key>player_episode_was_removed</key>
+    <string>エピソードが削除されました</string>
     <key>player_error_corrupted_file</key>
     <string>エピソードが破損している可能性がありますが、後ほど、もう一度お試しください。</string>
     <key>player_error_internet_connection</key>
@@ -1947,6 +1980,8 @@ Pocket Casts で共有すればここに表示されるようになります</st
     <string>続行すると、%1$@プライバシーポリシー%2$@と%3$@利用規約%4$@に同意したことになります。</string>
     <key>queue_clear_episode_queue_plural</key>
     <string>%1$@件のエピソードをクリア</string>
+    <key>queue_clear_episode_queue_singular</key>
+    <string>1件のエピソードをクリア</string>
     <key>queue_clear_queue</key>
     <string>待機リストをクリア</string>
     <key>queue_for_later</key>
@@ -2225,6 +2260,8 @@ Pocket Casts で共有すればここに表示されるようになります</st
     <string>1件のポッドキャストを選択済み</string>
     <key>settings_auto_downloads_subtitle_filters</key>
     <string>フィルターの上位エピソードをダウンロードします。</string>
+    <key>settings_auto_downloads_subtitle_new_episodes</key>
+    <string>新しいエピソードがリリースされると自動でダウンロードし、保存するエピソード数に制限を設定することでストレージを管理します。</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>次のエピソードに追加された項目をダウンロードします。</string>
     <key>settings_badge_filter_header</key>
