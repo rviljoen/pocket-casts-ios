@@ -84,18 +84,18 @@ fileprivate extension Double {
         let components = dateComponents()
         let formatter = DateComponentsFormatter()
         formatter.unitsStyle = .full
-        formatter.maximumUnitCount = 2
+        formatter.maximumUnitCount = 3
         formatter.allowsFractionalUnits = false
         formatter.allowedUnits = [.day, .hour, .minute, .second]
 
-        if let days = components.day, days != 0 {
-            if let hours = components.hour, hours != 0 {
-                formatter.allowedUnits = [.day, .hour]
+        if let days = components.day {
+            if days > 3 {
+                formatter.allowedUnits = [.day, .hour, .minute]
             } else {
-                formatter.allowedUnits = [.day]
+                formatter.allowedUnits = [.hour, .minute]
             }
         } else if let hours = components.hour, hours != 0 {
-            formatter.allowedUnits = [.hour]
+            formatter.allowedUnits = [.hour, .minute]
         } else if let minutes = components.minute, minutes != 0 {
             formatter.allowedUnits = [.minute]
         } else if let seconds = components.second, seconds != 0 {
@@ -107,9 +107,29 @@ fileprivate extension Double {
 }
 
 #Preview("Days") {
-    ListeningTime2024Story(listeningTime: 500*60)
+    ListeningTime2024Story(listeningTime: 4.day + 5.hour + 20.minutes)
+}
+
+#Preview("Days hour min") {
+    ListeningTime2024Story(listeningTime: 1.day + 5.hour + 20.minutes)
+}
+
+#Preview("Day and min") {
+    ListeningTime2024Story(listeningTime: 1.day + 20.minutes)
 }
 
 #Preview("Hours") {
+    ListeningTime2024Story(listeningTime: 5.hours + 20.minutes)
+}
+
+#Preview("Minutes") {
     ListeningTime2024Story(listeningTime: 60)
+}
+
+#Preview("Seconds") {
+    ListeningTime2024Story(listeningTime: 30)
+}
+
+#Preview("Zero") {
+    ListeningTime2024Story(listeningTime: 0)
 }
