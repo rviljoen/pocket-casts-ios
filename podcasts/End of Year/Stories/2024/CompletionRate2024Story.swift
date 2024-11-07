@@ -20,6 +20,9 @@ struct CompletionRate2024Story: ShareableStory {
 
     @State private var chartOpacity: Double = 1
 
+    @ObservedObject private var animationChartViewModel = PlayPauseAnimationViewModel(duration: 0.8, animation: Animation.spring(_:))
+    @State var scale: Double = 0
+
     var body: some View {
         GeometryReader { geometry in
             VStack(alignment: .leading) {
@@ -28,6 +31,7 @@ struct CompletionRate2024Story: ShareableStory {
                 .frame(height: geometry.size.height * 0.5)
                 .opacity(chartOpacity)
                 .modifier(animationViewModel.animate($chartOpacity, to: 1, after: 0.2))
+                .modifier(animationChartViewModel.animate($scale, to: 1, after: 0.2))
                 footerView()
                     .padding(.top, 24)
             }
@@ -35,6 +39,7 @@ struct CompletionRate2024Story: ShareableStory {
         .onAppear {
             if animated {
                 animationViewModel.play()
+                animationChartViewModel.play()
             }
         }
         .foregroundStyle(foregroundColor)
@@ -63,10 +68,12 @@ struct CompletionRate2024Story: ShareableStory {
                             .foregroundStyle(.black)
                         chartRectangle(size: geometry.size)
                             .foregroundStyle(.black)
+                            .scaleEffect(x: 1, y: scale, anchor: .bottom)
                     }
                 } else {
                     ZStack(alignment: .bottomTrailing) {
                         chartRectangle(size: geometry.size)
+                            .scaleEffect(x: 1, y: scale, anchor: .bottom)
                         chartLabel()
                             .foregroundStyle(backgroundColor)
                             .padding(.trailing, 19)
@@ -103,10 +110,12 @@ struct CompletionRate2024Story: ShareableStory {
 
     func onPause() {
         animationViewModel.pause()
+        animationChartViewModel.pause()
     }
 
     func onResume() {
         animationViewModel.play()
+        animationChartViewModel.play()
     }
 
     func sharingAssets() -> [Any] {
