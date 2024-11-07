@@ -3649,6 +3649,9 @@
 /* A description shown in Playback 2024 to describe the new Podcast Ratings feature */
 "playback_2024_ratings_empty_description" = "Did you know that you can rate shows now? Share the love for your favorite creators and help them get noticed!";
 
+/* A title shown on the Year over Year Comparison screen for a increase more than 500$ in listening time from 2023 in Playback 2024 */
+"playback_2024_year_over_year_compare_title_up_above_maximum" = "Compared to 2023, your listening time went up more than %1$@";
+
 /* Label of the End of Year dismiss button */
 "eoy_not_now" = "Not Now";
 
@@ -4601,10 +4604,10 @@
 "auto_download_limit_auto_downloads" = "Limit auto downloads";
 
 /* Auto Downloads Setting - Limits downloads to a number of episodes. `%1$@' is a placeholder for the number of episodes*/
-"auto_download_limit_number_of_episodes" = "%1$@ episodes";
+"auto_download_limit_number_of_episodes" = "%1$@ Episodes";
 
 /* Auto Downloads Setting - Limits downloads to one episodes. */
-"auto_download_limit_one_episode" = "latest episode";
+"auto_download_limit_one_episode" = "Latest Episode";
 
 /* Auto Downloads Setting - Limits downloads to the latest episode*/
 "auto_download_limit_one_episode_show" = "Latest Episode per Show";

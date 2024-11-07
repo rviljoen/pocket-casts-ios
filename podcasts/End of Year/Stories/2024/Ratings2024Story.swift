@@ -13,6 +13,8 @@ struct Ratings2024Story: ShareableStory {
     @Environment(\.animated) var animated: Bool
     @Environment(\.pauseState) var pauseState
 
+    let identifier: String = "ratings"
+
     @State var scale: Double = 1
     @State var openURL = false
 
@@ -56,11 +58,11 @@ struct Ratings2024Story: ShareableStory {
         let separator = Image("star")
         VStack {
             Spacer()
-            VStack {
+            VStack(spacing: 16) {
                 MarqueeTextView(words: words, separator: separator, direction: .leading)
                 MarqueeTextView(words: words, separator: separator, direction: .trailing)
             }
-            .frame(height: 400)
+            .frame(height: 350)
             Spacer()
             emptyFooterView()
         }
@@ -128,14 +130,15 @@ struct Ratings2024Story: ShareableStory {
     }
 
     @ViewBuilder func footerView() -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(L10n.playback2024RatingsTitle)
-                .font(.system(size: 31, weight: .bold))
-            Text(descriptionText())
-                .font(.system(size: 15, weight: .light))
-        }
-        .padding(.horizontal, 24)
-        .padding(.bottom, 12)
+        StoryFooter2024(title: L10n.playback2024RatingsTitle, description: descriptionText())
+    }
+
+    func onAppear() {
+        Analytics.track(.endOfYearStoryShown, story: identifier)
+    }
+
+    func willShare() {
+        Analytics.track(.endOfYearStoryShare, story: identifier)
     }
 
     func sharingAssets() -> [Any] {

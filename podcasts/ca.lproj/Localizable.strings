@@ -2391,7 +2391,7 @@ Si vols noves idees, ves a la pestanya Descobrir.</string>
     <key>settings_general_remove_groups_apply_all</key>
     <string>Vols canviar tots els teus pòdcasts actuals perquè no s'agrupin?</string>
     <key>settings_general_row_action</key>
-    <string>Acció per files</string>
+    <string>Acció de les files</string>
     <key>settings_general_selected_group_apply_all</key>
     <string>Vols canviar tots els teus pòdcasts actuals i que s'agrupin per %1$@?</string>
     <key>settings_general_show</key>

@@ -16,7 +16,7 @@ struct NumberListened2024: ShareableStory {
 
     private let foregroundColor = Color.black
     private let backgroundColor = Color(hex: "#EFECAD")
-    let identifier: String = "number_of_podcasts_and_episodes_listened"
+    let identifier: String = "number_of_shows"
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -67,14 +67,8 @@ struct NumberListened2024: ShareableStory {
     }
 
     @ViewBuilder func footerView() -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text(L10n.eoyStoryListenedToNumbers(listenedNumbers.numberOfPodcasts, listenedNumbers.numberOfEpisodes))
-                .font(.system(size: 31, weight: .bold))
-            Text(L10n.eoyStoryListenedToNumbersSubtitle)
-                .font(.system(size: 15, weight: .light))
-        }
-        .padding(.horizontal, 24)
-        .padding(.vertical, 6)
+        StoryFooter2024(title: L10n.eoyStoryListenedToNumbers(listenedNumbers.numberOfPodcasts, listenedNumbers.numberOfEpisodes),
+                        description: L10n.eoyStoryListenedToNumbersSubtitle)
     }
 
     @ViewBuilder
@@ -93,6 +87,10 @@ struct NumberListened2024: ShareableStory {
 
     func onAppear() {
         Analytics.track(.endOfYearStoryShown, story: identifier)
+    }
+
+    func willShare() {
+        Analytics.track(.endOfYearStoryShare, story: identifier)
     }
 
     func sharingAssets() -> [Any] {

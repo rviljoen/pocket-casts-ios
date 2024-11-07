@@ -7,7 +7,7 @@ struct Top5Podcasts2024Story: ShareableStory {
 
     let top5Podcasts: [TopPodcast]
 
-    let identifier: String = "top_five_podcast"
+    let identifier: String = "top_5_shows"
 
     private let shapeColor = Color.green
 
@@ -45,13 +45,13 @@ struct Top5Podcasts2024Story: ShareableStory {
                         }
                     }
                 }
+                .padding(.horizontal, 24)
                 .disabled(!isSmallScreen) // Disable scrolling on larger where we shouldn't be clipping.
                 .frame(height: geometry.size.height * 0.65)
-
-                Text(L10n.eoyStoryTopPodcastsTitle)
-                    .font(.system(size: 30, weight: .bold))
+                VStack {
+                    StoryFooter2024(title: L10n.eoyStoryTopPodcastsTitle, description: nil)
+                }
             }
-            .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .ignoresSafeArea()
@@ -119,6 +119,10 @@ struct Top5Podcasts2024Story: ShareableStory {
 
     func onResume() {
         animationViewModel.play()
+    }
+
+    func willShare() {
+        Analytics.track(.endOfYearStoryShare, story: identifier)
     }
 
     private func setInitialAnimationValues() {

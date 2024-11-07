@@ -76,20 +76,15 @@ struct YearOverYearCompare2024Story: ShareableStory {
     }
 
     @ViewBuilder func footerView() -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            SubscriptionBadge2024(subscriptionTier: subscriptionTier)
-            Text(title)
-                .font(.system(size: 31, weight: .bold))
-            Text(description)
-                .font(.system(size: 15, weight: .light))
-        }
-        .minimumScaleFactor(0.8)
-        .padding(.horizontal, 24)
-        .padding(.bottom, 12)
+        StoryFooter2024(title: title, description: description, subscriptionTier: subscriptionTier)
     }
 
     func onAppear() {
         Analytics.track(.endOfYearStoryShown, story: identifier)
+    }
+
+    func willShare() {
+        Analytics.track(.endOfYearStoryShare, story: identifier)
     }
 
     func sharingAssets() -> [Any] {
@@ -202,7 +197,11 @@ struct YearOverYearCompare2024Story: ShareableStory {
         case .up(let difference):
             if difference > 1 {
                 let formatted = min(difference, maximumDifference).formatted(formatStyle)
-                return L10n.playback2024YearOverYearCompareTitleUpLot(formatted)
+                if difference > maximumDifference {
+                    return L10n.playback2024YearOverYearCompareTitleUpAboveMaximum(formatted)
+                } else {
+                    return L10n.playback2024YearOverYearCompareTitleUpLot(formatted)
+                }
             } else {
                 return L10n.playback2024YearOverYearCompareTitleUpLittle
             }

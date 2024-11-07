@@ -10,7 +10,7 @@ struct TopSpotStory2024: ShareableStory {
 
     @State private var rotation: Double = 360
 
-    let identifier: String = "top_one_podcast"
+    let identifier: String = "top_1_show"
 
     var body: some View {
         VStack(spacing: 0) {
@@ -37,15 +37,7 @@ struct TopSpotStory2024: ShareableStory {
                 let timeString = topPodcast.totalPlayedTime.storyTimeDescriptionForSharing
                 let numberPlayed = topPodcast.numberOfPlayedEpisodes
                 let title = topPodcast.podcast.title ?? "unknown"
-
-                VStack(alignment: .leading, spacing: 16) {
-                    Text(L10n.playback2024TopSpotTitle)
-                        .font(.system(size: 31, weight: .bold))
-                    Text(L10n.playback2024TopSpotDescription(numberPlayed, timeString, title))
-                        .font(.system(size: 15, weight: .light))
-                }
-                .minimumScaleFactor(0.9)
-                .padding(.horizontal)
+                StoryFooter2024(title: L10n.playback2024TopSpotTitle, description: L10n.playback2024TopSpotDescription(numberPlayed, timeString, title))
             }
         }
         .foregroundStyle(foregroundColor)

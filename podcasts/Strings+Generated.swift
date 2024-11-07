@@ -282,7 +282,7 @@ internal enum L10n {
   internal static var autoDownloadLimitAutoDownloads: String { return L10n.tr("Localizable", "auto_download_limit_auto_downloads") }
   /// Limit downloads
   internal static var autoDownloadLimitDownloads: String { return L10n.tr("Localizable", "auto_download_limit_downloads") }
-  /// %1$@ episodes
+  /// %1$@ Episodes
   internal static func autoDownloadLimitNumberOfEpisodes(_ p1: Any) -> String {
     return L10n.tr("Localizable", "auto_download_limit_number_of_episodes", String(describing: p1))
   }
@@ -290,7 +290,7 @@ internal enum L10n {
   internal static func autoDownloadLimitNumberOfEpisodesShow(_ p1: Any) -> String {
     return L10n.tr("Localizable", "auto_download_limit_number_of_episodes_show", String(describing: p1))
   }
-  /// latest episode
+  /// Latest Episode
   internal static var autoDownloadLimitOneEpisode: String { return L10n.tr("Localizable", "auto_download_limit_one_episode") }
   /// Latest Episode per Show
   internal static var autoDownloadLimitOneEpisodeShow: String { return L10n.tr("Localizable", "auto_download_limit_one_episode_show") }
@@ -1850,6 +1850,10 @@ internal enum L10n {
   }
   /// Compared to 2023, your listening time stayed pretty consistent
   internal static var playback2024YearOverYearCompareTitleSame: String { return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_same") }
+  /// Compared to 2023, your listening time went up more than %1$@
+  internal static func playback2024YearOverYearCompareTitleUpAboveMaximum(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_up_above_maximum", String(describing: p1))
+  }
   /// Compared to 2023, your listening time went up a little
   internal static var playback2024YearOverYearCompareTitleUpLittle: String { return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_up_little") }
   /// Compared to 2023, your listening time went up a whopping %1$@

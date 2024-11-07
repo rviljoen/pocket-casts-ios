@@ -88,19 +88,17 @@ struct CompletionRate2024Story: ShareableStory {
     }
 
     @ViewBuilder func footerView() -> some View {
-        VStack(alignment: .leading, spacing: 16) {
-            SubscriptionBadge2024(subscriptionTier: subscriptionTier)
-            Text(L10n.eoyYearCompletionRateTitle(formattedPercentage))
-                .font(.system(size: 31, weight: .bold))
-            Text(L10n.playback2024CompletionRateDescription(startedAndCompleted.started, startedAndCompleted.completed))
-                .font(.system(size: 15, weight: .light))
-        }
-        .padding(.horizontal, 24)
-        .padding(.bottom, 16)
+        StoryFooter2024(title: L10n.eoyYearCompletionRateTitle(formattedPercentage),
+                        description: L10n.playback2024CompletionRateDescription(startedAndCompleted.started, startedAndCompleted.completed),
+                        subscriptionTier: subscriptionTier)
     }
 
     func onAppear() {
         Analytics.track(.endOfYearStoryShown, story: identifier)
+    }
+
+    func willShare() {
+        Analytics.track(.endOfYearStoryShare, story: identifier)
     }
 
     func onPause() {

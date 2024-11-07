@@ -21,6 +21,8 @@ struct PaidStoryWallView2024: View {
     private let backgroundColor = Color(hex: "#EFECAD")
     private let marqueeColor = Color(hex: "#F9BC48")
 
+    let identifier = "plus_interstitial"
+
     var body: some View {
         GeometryReader { geometry in
             VStack {
@@ -39,12 +41,8 @@ struct PaidStoryWallView2024: View {
                 }
                 .frame(width: geometry.size.width, height: geometry.size.width)
 
-                VStack(alignment: .leading, spacing: 16) {
-                    SubscriptionBadge2024(subscriptionTier: .plus)
-                    Text(L10n.playback2024PlusUpsellTitle)
-                        .font(.system(size: 31, weight: .bold))
-                    Text(L10n.playback2024PlusUpsellDescription)
-                        .font(.system(size: 15, weight: .light))
+                VStack(alignment: .leading, spacing: 0) {
+                    StoryFooter2024(title: L10n.playback2024PlusUpsellTitle, description: L10n.playback2024PlusUpsellDescription, subscriptionTier: .plus)
                     Button(L10n.playback2024PlusUpsellButtonTitle) {
                         guard let storiesViewController = FeatureFlag.newPlayerTransition.enabled ? SceneHelper.rootViewController() : SceneHelper.rootViewController()?.presentedViewController else {
                             return
@@ -54,9 +52,9 @@ struct PaidStoryWallView2024: View {
                     }
                     .allowsHitTesting(true)
                     .buttonStyle(BasicButtonStyle(textColor: .black, backgroundColor: Color.clear, borderColor: .black))
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 6)
                 }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 6)
             }
         }
         .foregroundStyle(foregroundColor)
@@ -67,6 +65,7 @@ struct PaidStoryWallView2024: View {
         }
         .onAppear {
             Analytics.track(.endOfYearUpsellShown)
+            Analytics.track(.endOfYearStoryShown, story: identifier)
         }
     }
 }
