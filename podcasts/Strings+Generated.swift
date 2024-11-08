@@ -1758,6 +1758,18 @@ internal enum L10n {
   internal static var patronUnlocking: String { return L10n.tr("Localizable", "patron_unlocking") }
   /// Pause
   internal static var pause: String { return L10n.tr("Localizable", "pause") }
+  /// Upload your files with Pocket Casts Plus, and more
+  internal static var paywallDynamicHeadlineFiles: String { return L10n.tr("Localizable", "paywall_dynamic_headline_files") }
+  /// Organize your podcasts with Pocket Casts Plus, and more
+  internal static var paywallDynamicHeadlineFolder: String { return L10n.tr("Localizable", "paywall_dynamic_headline_folder") }
+  /// Get exclusive app icons with Pocket Casts Plus, and more
+  internal static var paywallDynamicHeadlineIcons: String { return L10n.tr("Localizable", "paywall_dynamic_headline_icons") }
+  /// Get exclusive themes with Pocket Casts Plus, and more
+  internal static var paywallDynamicHeadlineThemes: String { return L10n.tr("Localizable", "paywall_dynamic_headline_themes") }
+  /// Shuffle your episodes with Pocket Casts Plus, and more
+  internal static var paywallDynamicHeadlineUpNextShuffle: String { return L10n.tr("Localizable", "paywall_dynamic_headline_up_next_shuffle") }
+  /// Listen from your watch with Pocket Casts Plus, and more
+  internal static var paywallDynamicHeadlineWatch: String { return L10n.tr("Localizable", "paywall_dynamic_headline_watch") }
   /// Phone
   internal static var phone: String { return L10n.tr("Localizable", "phone") }
   /// Play

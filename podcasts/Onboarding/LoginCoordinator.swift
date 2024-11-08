@@ -208,6 +208,7 @@ extension LoginCoordinator: SyncSigninDelegate, CreateAccountDelegate {
 
         let controller = PlusLandingViewModel.make(in: navigationController,
                                                    from: source,
+                                                   viewSource: .onboarding,
                                                    config: .init(continuePurchasing: continuePurchasing))
         navigationController?.setViewControllers([controller], animated: true)
     }
