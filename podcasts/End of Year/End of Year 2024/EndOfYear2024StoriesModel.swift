@@ -18,6 +18,7 @@ class EndOfYear2024StoriesModel: StoryModel {
     required init() { }
 
     func populate(with dataManager: DataManager) {
+        var stories = [EndOfYear2024Story]()
         // First, search for top 5 podcasts
         let topPodcasts = dataManager.topPodcasts(in: Self.year, limit: 10)
 
@@ -69,6 +70,8 @@ class EndOfYear2024StoriesModel: StoryModel {
         // Completion Rate
         data.episodesStartedAndCompleted = dataManager.episodesStartedAndCompleted(in: Self.year)
         stories.append(.completionRate)
+
+        self.stories = stories
     }
 
     func story(for storyNumber: Int) -> any StoryView {
