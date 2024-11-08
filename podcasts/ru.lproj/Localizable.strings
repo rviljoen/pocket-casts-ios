@@ -264,11 +264,11 @@
     <key>auto_download_limit_number_of_episodes</key>
     <string>Выпусков: %1$@</string>
     <key>auto_download_limit_number_of_episodes_show</key>
-    <string>%1$@ последних выпусков шоу</string>
+    <string>%1$@ последних выпусков программы</string>
     <key>auto_download_limit_one_episode</key>
     <string>последний выпуск</string>
     <key>auto_download_limit_one_episode_show</key>
-    <string>Последний выпуск шоу</string>
+    <string>Последний выпуск программы</string>
     <key>auto_download_off_subtitle</key>
     <string>Включите для автоматического скачивания выпусков в этом фильтре</string>
     <key>auto_download_on_plural_format</key>
@@ -751,7 +751,7 @@
     <string>Не забудьте поделиться с друзьями и рассказать о любимых подкастах и подкастерах</string>
     <key>eoy_2024_epilogue_title</key>
     <string>Благодарим за то, что вы слушали вместе с нами в этом году.
-Увидимся в 2025-м!</string>
+Увидимся в 2025 году!</string>
     <key>eoy_card_description</key>
     <string>Просмотрите свой топ подкастов, статистику прослушивания и другие показатели.</string>
     <key>eoy_create_account_to_see</key>
@@ -1516,7 +1516,7 @@
     <key>playback_2024_listening_time_description</key>
     <string>Общее время прослушивания подкастов: %1$@</string>
     <key>playback_2024_view_year</key>
-    <string>Что я слушал(а) в 2024 году</string>
+    <string>Посмотрите свою историю прослушиваний в 2024 году</string>
     <key>playback_effect_all_podcasts</key>
     <string>Все подкасты</string>
     <key>playback_effect_this_podcast</key>

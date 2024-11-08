@@ -264,9 +264,9 @@ Toque no botão abaixo para entrar novamente na sua conta do Pocket Casts.</stri
     <key>auto_download_limit_number_of_episodes</key>
     <string>%1$@ episódios</string>
     <key>auto_download_limit_number_of_episodes_show</key>
-    <string>Últimos episódios por programa %1$@</string>
+    <string>Últimos %1$@ episódios por programa</string>
     <key>auto_download_limit_one_episode</key>
-    <string>episódio mais recente</string>
+    <string>último episódio</string>
     <key>auto_download_limit_one_episode_show</key>
     <string>Último episódio por programa</string>
     <key>auto_download_off_subtitle</key>
@@ -748,7 +748,7 @@ Toque no botão abaixo para entrar novamente na sua conta do Pocket Casts.</stri
     <key>enable_it_now</key>
     <string>Ativar agora</string>
     <key>eoy_2024_epilogue_description</key>
-    <string>Não esqueça de compartilhar com os amigos e agradecer a seus criadores favoritos</string>
+    <string>Não esqueça de compartilhar com os amigos e marcar seus criadores e podcasts favoritos</string>
     <key>eoy_2024_epilogue_title</key>
     <string>Agradecemos por nos escolher este ano.
 Nos vemos em 2025!</string>
@@ -1512,9 +1512,9 @@ ATUALIZAÇÕES</string>
     <key>playback_2024_feature_description</key>
     <string>Veja suas estatísticas, principais podcasts e muito mais.</string>
     <key>playback_2024_feature_title</key>
-    <string>A retrospectiva 2024 chegou!</string>
+    <string>A retrospectiva de 2024 chegou!</string>
     <key>playback_2024_listening_time_description</key>
-    <string>%1$@ total ouvindo podcasts</string>
+    <string>Total de %1$@ ouvindo podcasts</string>
     <key>playback_2024_view_year</key>
     <string>Ver minha retrospectiva de 2024</string>
     <key>playback_effect_all_podcasts</key>
