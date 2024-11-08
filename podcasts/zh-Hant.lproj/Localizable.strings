@@ -1508,7 +1508,7 @@ Tap the button below to sign into your Pocket Casts account again.</string>
     <key>play_next</key>
     <string>播放下一集</string>
     <key>playback_2024_description</key>
-    <string>查看你最熱門的 Podcast、分類、收聽統計等資料。 與朋友分享，並向你最喜愛的創作者表達敬意！</string>
+    <string>查看你最熱播的 Podcast、分類、收聽統計等資料。 與朋友分享，並向你最喜愛的創作者表達敬意！</string>
     <key>playback_2024_feature_description</key>
     <string>看看你的收聽統計和最愛 Podcast 等資料吧。</string>
     <key>playback_2024_feature_title</key>
@@ -2261,7 +2261,7 @@ Tap the button below to sign into your Pocket Casts account again.</string>
     <key>settings_auto_downloads_subtitle_filters</key>
     <string>下載篩選器中最上方的單集。</string>
     <key>settings_auto_downloads_subtitle_new_episodes</key>
-    <string>在新單集發佈時自動下載，並藉由設定單集的儲存數量上限，藉此管理你的儲存空間。</string>
+    <string>在新單集發佈時自動下載，並藉由設定單集的儲存數量上限，嚴加管理你的儲存空間。</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>下載新增到「接下來播放」的單集。</string>
     <key>settings_badge_filter_header</key>
