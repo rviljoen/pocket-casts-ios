@@ -8,7 +8,7 @@ import SwiftUI
 /// avoid blocking the main thread and the share sheet
 /// having a delay when appearing.
 class StoryShareableProvider: UIActivityItemProvider {
-    static var shared: StoryShareableProvider!
+    static var shared: StoryShareableProvider = StoryShareableProvider()
 
     var generatedItem: Any?
 
@@ -33,16 +33,15 @@ class StoryShareableProvider: UIActivityItemProvider {
     // This method is called when the share sheet appeared
     // So we can go ahead and snapshot the view
     @MainActor
-    func snapshot() {
+    func snapshot(viewModifier: (AnyView) -> some View) {
         guard let view else {
             return
         }
 
-        let snapshot = StoryViewContainer {
-            AnyView(view)
-        }
+        let snapshot = AnyView(view)
+        .modify(viewModifier)
         .environment(\.renderForSharing, true)
-        .frame(width: 370, height: 658)
+        .frame(width: 370, height: 800)
         .snapshot()
 
         generatedItem = snapshot

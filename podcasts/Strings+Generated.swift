@@ -794,6 +794,8 @@ internal enum L10n {
   internal static var downloadedFilesCleanupConfirmation: String { return L10n.tr("Localizable", "downloaded_files_cleanup_confirmation") }
   /// Unsubscribing will delete all downloaded files in this Podcast, are you sure?
   internal static var downloadedFilesConfMessage: String { return L10n.tr("Localizable", "downloaded_files_conf_message") }
+  /// Unfollowing will delete all downloaded files in this Podcast, are you sure?
+  internal static var downloadedFilesConfMessageNew: String { return L10n.tr("Localizable", "downloaded_files_conf_message_new") }
   /// %1$@ Downloaded Files
   internal static func downloadedFilesConfPluralFormat(_ p1: Any) -> String {
     return L10n.tr("Localizable", "downloaded_files_conf_plural_format", String(describing: p1))
@@ -976,8 +978,10 @@ internal enum L10n {
   internal static var eoyViewYear: String { return L10n.tr("Localizable", "eoy_view_year") }
   /// completion rate
   internal static var eoyYearCompletionRate: String { return L10n.tr("Localizable", "eoy_year_completion_rate") }
-  /// My 2023 completion rate
-  internal static var eoyYearCompletionRateShareText: String { return L10n.tr("Localizable", "eoy_year_completion_rate_share_text") }
+  /// My %1$@ completion rate
+  internal static func eoyYearCompletionRateShareText(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "eoy_year_completion_rate_share_text", String(describing: p1))
+  }
   /// From the %1$@ episodes you started you listened fully to a total of %2$@
   internal static func eoyYearCompletionRateSubtitle(_ p1: Any, _ p2: Any) -> String {
     return L10n.tr("Localizable", "eoy_year_completion_rate_subtitle", String(describing: p1), String(describing: p2))
@@ -986,8 +990,10 @@ internal enum L10n {
   internal static func eoyYearCompletionRateTitle(_ p1: Any) -> String {
     return L10n.tr("Localizable", "eoy_year_completion_rate_title", String(describing: p1))
   }
-  /// My 2023 listening time compared to 2022
-  internal static var eoyYearOverShareText: String { return L10n.tr("Localizable", "eoy_year_over_share_text") }
+  /// My %1$@ listening time compared to %2$@
+  internal static func eoyYearOverShareText(_ p1: Any, _ p2: Any) -> String {
+    return L10n.tr("Localizable", "eoy_year_over_share_text", String(describing: p1), String(describing: p2))
+  }
   /// And they say consistency is the key to success... or something like that!
   internal static var eoyYearOverYearSubtitleFlat: String { return L10n.tr("Localizable", "eoy_year_over_year_subtitle_flat") }
   /// Aaaah... there’s a life to be lived, right?
@@ -1003,6 +1009,10 @@ internal enum L10n {
   /// Compared to 2022, your listening time went up a whopping %1$@%
   internal static func eoyYearOverYearTitleWentUp(_ p1: Any) -> String {
     return L10n.tr("Localizable", "eoy_year_over_year_title_went_up", String(describing: p1))
+  }
+  /// I rated %1$@ different podcasts in %2$@, with %3$@ as my most used rating
+  internal static func eoyYearRatingsShareText(_ p1: Any, _ p2: Any, _ p3: Any) -> String {
+    return L10n.tr("Localizable", "eoy_year_ratings_share_text", String(describing: p1), String(describing: p2), String(describing: p3))
   }
   /// Episode
   internal static var episode: String { return L10n.tr("Localizable", "episode") }
@@ -1103,6 +1113,8 @@ internal enum L10n {
   internal static var filesSort: String { return L10n.tr("Localizable", "files_sort") }
   /// New podcasts you subscribe to will be automatically added
   internal static var filterAutoAddSubtitle: String { return L10n.tr("Localizable", "filter_auto_add_subtitle") }
+  /// New podcasts you follow to will be automatically added
+  internal static var filterAutoAddSubtitleNew: String { return L10n.tr("Localizable", "filter_auto_add_subtitle_new") }
   /// All Your Podcasts
   internal static var filterChipsAllPodcasts: String { return L10n.tr("Localizable", "filter_chips_all_podcasts") }
   /// Duration
@@ -1119,6 +1131,8 @@ internal enum L10n {
   internal static var filterCreateNoEpisodes: String { return L10n.tr("Localizable", "filter_create_no_episodes") }
   /// The criteria you selected doesn’t match any current episodes in your subscriptions
   internal static var filterCreateNoEpisodesDescriptionExplanation: String { return L10n.tr("Localizable", "filter_create_no_episodes_description_explanation") }
+  /// The criteria you selected doesn’t match any current episodes in your podcasts
+  internal static var filterCreateNoEpisodesDescriptionExplanationNew: String { return L10n.tr("Localizable", "filter_create_no_episodes_description_explanation_new") }
   /// Choose different criteria, or save this filter if you think it will match episodes in the future.
   internal static var filterCreateNoEpisodesDescriptionPrompt: String { return L10n.tr("Localizable", "filter_create_no_episodes_description_prompt") }
   /// All Podcasts
@@ -1145,6 +1159,8 @@ internal enum L10n {
   internal static var filterLongerThanLabel: String { return L10n.tr("Localizable", "filter_longer_than_label") }
   /// New podcasts you subscribe to will not be automatically added
   internal static var filterManualAddSubtitle: String { return L10n.tr("Localizable", "filter_manual_add_subtitle") }
+  /// New podcasts you follow to will not be automatically added
+  internal static var filterManualAddSubtitleNew: String { return L10n.tr("Localizable", "filter_manual_add_subtitle_new") }
   /// Media Type
   internal static var filterMediaType: String { return L10n.tr("Localizable", "filter_media_type") }
   /// Audio
@@ -1247,6 +1263,8 @@ internal enum L10n {
   internal static var foldersHistory: String { return L10n.tr("Localizable", "folders_history") }
   /// A list of podcasts that were removed from folders as a result of a sync.
   internal static var foldersHistoryExplanation: String { return L10n.tr("Localizable", "folders_history_explanation") }
+  /// Follow
+  internal static var follow: String { return L10n.tr("Localizable", "follow") }
   /// No Payment Now – Cancel Anytime
   internal static var freeTrialDetailLabel: String { return L10n.tr("Localizable", "free_trial_detail_label") }
   /// %1$@ FREE
@@ -1418,6 +1436,10 @@ internal enum L10n {
   /// 
   /// Note: You may need to email the OPML file to yourself, long press on the attachment and select Pocket Casts.
   internal static var importPodcastsDescription: String { return L10n.tr("Localizable", "import_podcasts_description") }
+  /// You can import your podcasts to Pocket Casts using the widely supported OPML format. Export the file from another app and choose open in Pocket Casts.
+  /// 
+  /// Note: You may need to email the OPML file to yourself, long press on the attachment and select Pocket Casts.
+  internal static var importPodcastsDescriptionNew: String { return L10n.tr("Localizable", "import_podcasts_description_new") }
   /// IMPORT TO POCKET CASTS
   internal static var importPodcastsTitle: String { return L10n.tr("Localizable", "import_podcasts_title") }
   /// Coming from another app? Import your podcasts and get listening. You can always do this later in settings.
@@ -1461,6 +1483,8 @@ internal enum L10n {
   internal static var kidsProfileThankyouText: String { return L10n.tr("Localizable", "kids_profile_thankyou_text") }
   /// Thank you for your interest
   internal static var kidsProfileThankyouTitle: String { return L10n.tr("Localizable", "kids_profile_thankyou_title") }
+  /// Learn about ratings
+  internal static var learnAboutRatings: String { return L10n.tr("Localizable", "learn_about_ratings") }
   /// Learn More
   internal static var learnMore: String { return L10n.tr("Localizable", "learn_more") }
   /// Listening History
@@ -1734,6 +1758,18 @@ internal enum L10n {
   internal static var patronUnlocking: String { return L10n.tr("Localizable", "patron_unlocking") }
   /// Pause
   internal static var pause: String { return L10n.tr("Localizable", "pause") }
+  /// Upload your files with Pocket Casts Plus, and more
+  internal static var paywallDynamicHeadlineFiles: String { return L10n.tr("Localizable", "paywall_dynamic_headline_files") }
+  /// Organize your podcasts with Pocket Casts Plus, and more
+  internal static var paywallDynamicHeadlineFolder: String { return L10n.tr("Localizable", "paywall_dynamic_headline_folder") }
+  /// Get exclusive app icons with Pocket Casts Plus, and more
+  internal static var paywallDynamicHeadlineIcons: String { return L10n.tr("Localizable", "paywall_dynamic_headline_icons") }
+  /// Get exclusive themes with Pocket Casts Plus, and more
+  internal static var paywallDynamicHeadlineThemes: String { return L10n.tr("Localizable", "paywall_dynamic_headline_themes") }
+  /// Shuffle your episodes with Pocket Casts Plus, and more
+  internal static var paywallDynamicHeadlineUpNextShuffle: String { return L10n.tr("Localizable", "paywall_dynamic_headline_up_next_shuffle") }
+  /// Listen from your watch with Pocket Casts Plus, and more
+  internal static var paywallDynamicHeadlineWatch: String { return L10n.tr("Localizable", "paywall_dynamic_headline_watch") }
   /// Phone
   internal static var phone: String { return L10n.tr("Localizable", "phone") }
   /// Play
@@ -1744,6 +1780,14 @@ internal enum L10n {
   internal static var playLast: String { return L10n.tr("Localizable", "play_last") }
   /// Play Next
   internal static var playNext: String { return L10n.tr("Localizable", "play_next") }
+  /// From the %1$@ episodes you started you listened fully to a total of %2$@
+  internal static func playback2024CompletionRateDescription(_ p1: Any, _ p2: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_completion_rate_description", String(describing: p1), String(describing: p2))
+  }
+  /// You completion rate this year was %1$@
+  internal static func playback2024CompletionRateTitle(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_completion_rate_title", String(describing: p1))
+  }
   /// See your top podcasts, categories, listening stats and more. Share with friends and shout out your favourite creators!
   internal static var playback2024Description: String { return L10n.tr("Localizable", "playback_2024_description") }
   /// See your listening stats, top podcasts, and more.
@@ -1754,8 +1798,72 @@ internal enum L10n {
   internal static func playback2024ListeningTimeDescription(_ p1: Any) -> String {
     return L10n.tr("Localizable", "playback_2024_listening_time_description", String(describing: p1))
   }
+  /// It was "%1$@" from "%2$@"
+  internal static func playback2024LongestEpisodeDescription(_ p1: Any, _ p2: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_longest_episode_description", String(describing: p1), String(describing: p2))
+  }
+  /// The longest episode you listened to was %1$@
+  internal static func playback2024LongestEpisodeTitle(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_longest_episode_title", String(describing: p1))
+  }
+  /// Check out Pocket Casts Plus
+  internal static var playback2024PlusUpsellButtonTitle: String { return L10n.tr("Localizable", "playback_2024_plus_upsell_button_title") }
+  /// Support Pocket Casts subscribing to Plus and get more stats, plus Premium features like bookmarks, folders or preselect chapters!
+  internal static var playback2024PlusUpsellDescription: String { return L10n.tr("Localizable", "playback_2024_plus_upsell_description") }
+  /// There's more!
+  internal static var playback2024PlusUpsellTitle: String { return L10n.tr("Localizable", "playback_2024_plus_upsell_title") }
+  /// Thanks for sharing your feedback with the creator community
+  internal static var playback2024RatingsDescription1To3: String { return L10n.tr("Localizable", "playback_2024_ratings_description_1_to_3") }
+  /// Wow, so many %1$@ star ratings! Thanks for sharing the love with your favorite creators.
+  internal static func playback2024RatingsDescription4To5(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_ratings_description_4_to_5", String(describing: p1))
+  }
+  /// Did you know that you can rate shows now? Share the love for your favorite creators and help them get noticed!
+  internal static var playback2024RatingsEmptyDescription: String { return L10n.tr("Localizable", "playback_2024_ratings_empty_description") }
+  /// Oh-oh! No podcast ratings to show you yet
+  internal static var playback2024RatingsEmptyTitle: String { return L10n.tr("Localizable", "playback_2024_ratings_empty_title") }
+  /// Let’s see your ratings!
+  internal static var playback2024RatingsTitle: String { return L10n.tr("Localizable", "playback_2024_ratings_title") }
+  /// You listened to %1$@ episodes for a total of %2$@ of "%3$@"
+  internal static func playback2024TopSpotDescription(_ p1: Any, _ p2: Any, _ p3: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_top_spot_description", String(describing: p1), String(describing: p2), String(describing: p3))
+  }
+  /// This was your top podcast in 2024
+  internal static var playback2024TopSpotTitle: String { return L10n.tr("Localizable", "playback_2024_top_spot_title") }
   /// View My Playback 2024
   internal static var playback2024ViewYear: String { return L10n.tr("Localizable", "playback_2024_view_year") }
+  /// Aaaah... there’s a life to be lived, right?
+  internal static var playback2024YearOverYearCompareDescriptionDown: String { return L10n.tr("Localizable", "playback_2024_year_over_year_compare_description_down") }
+  /// And they say consistency is the key to success... or something like that!
+  internal static var playback2024YearOverYearCompareDescriptionSame: String { return L10n.tr("Localizable", "playback_2024_year_over_year_compare_description_same") }
+  /// Ready to top it in 2025?
+  internal static var playback2024YearOverYearCompareDescriptionUp: String { return L10n.tr("Localizable", "playback_2024_year_over_year_compare_description_up") }
+  /// Compared to 2023, your listening time went down a little
+  internal static var playback2024YearOverYearCompareTitleDownLittle: String { return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_down_little") }
+  /// Compared to 2023, your listening time went down a whopping %1$@
+  internal static func playback2024YearOverYearCompareTitleDownLot(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_down_lot", String(describing: p1))
+  }
+  /// Compared to 2023, your listening time went down more than %1$@
+  internal static func playback2024YearOverYearCompareTitleDownOver500(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_down_over_500", String(describing: p1))
+  }
+  /// Compared to 2023, your listening time stayed pretty consistent
+  internal static var playback2024YearOverYearCompareTitleSame: String { return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_same") }
+  /// Compared to 2023, your listening time went up more than %1$@
+  internal static func playback2024YearOverYearCompareTitleUpAboveMaximum(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_up_above_maximum", String(describing: p1))
+  }
+  /// Compared to 2023, your listening time went up a little
+  internal static var playback2024YearOverYearCompareTitleUpLittle: String { return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_up_little") }
+  /// Compared to 2023, your listening time went up a whopping %1$@
+  internal static func playback2024YearOverYearCompareTitleUpLot(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_up_lot", String(describing: p1))
+  }
+  /// Compared to 2023, your listening time went up more than %1$@
+  internal static func playback2024YearOverYearCompareTitleUpOver500(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "playback_2024_year_over_year_compare_title_up_over_500", String(describing: p1))
+  }
   /// All podcasts
   internal static var playbackEffectAllPodcasts: String { return L10n.tr("Localizable", "playback_effect_all_podcasts") }
   /// This podcast
@@ -3303,6 +3411,8 @@ internal enum L10n {
   internal static var tryItNow: String { return L10n.tr("Localizable", "try_it_now") }
   /// Unarchive
   internal static var unarchive: String { return L10n.tr("Localizable", "unarchive") }
+  /// Unfollow
+  internal static var unfollow: String { return L10n.tr("Localizable", "unfollow") }
   /// ? m
   internal static var unknownDuration: String { return L10n.tr("Localizable", "unknown_duration") }
   /// Unstar
