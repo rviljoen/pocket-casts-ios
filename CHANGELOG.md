@@ -1,3 +1,7 @@
+7.78
+-----
+
+
 7.77
 -----
 - Implement shuffle button in Up Next view [#1179](https://github.com/orgs/Automattic/projects/1179/views/1)
