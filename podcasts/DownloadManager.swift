@@ -259,7 +259,8 @@ class DownloadManager: NSObject, FilePathProtocol {
               !episode.videoPodcast(),
               !episode.isUserEpisode,
               let urlAsset = playbackItem.asset as? AVURLAsset,
-              !urlAsset.url.isFileURL // only  start download if it's a remote file that we are playing
+              !urlAsset.url.isFileURL, // only  start download if it's a remote file that we are playing
+              (FileManager.deviceRemainingFreeSpaceInBytes ?? 0) > episode.sizeInBytes
         else {
             return playbackItem
         }
