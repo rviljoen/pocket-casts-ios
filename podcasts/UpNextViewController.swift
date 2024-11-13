@@ -208,7 +208,15 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
 
     @objc private func shuffleButtonTapped() {
         if !SubscriptionHelper.hasActiveSubscription() {
-            NavigationManager.sharedManager.showUpsellView(from: self, source: .upNextShuffle)
+            // Edge case where the UpNext is presented by the player container with a free user.
+            // In this case we need to dismiss the UpNext to present the paywall
+            if let mainTabBar = presentingViewController?.presentingViewController, presentingViewController is PlayerContainerViewController {
+                dismiss(animated: true) {
+                    NavigationManager.sharedManager.showUpsellView(from: mainTabBar, source: .upNextShuffle)
+                }
+            } else {
+                NavigationManager.sharedManager.showUpsellView(from: self, source: .upNextShuffle)
+            }
             return
         }
         Settings.upNextShuffleToggle()
