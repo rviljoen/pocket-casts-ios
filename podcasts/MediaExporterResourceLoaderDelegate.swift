@@ -132,7 +132,7 @@ final class MediaExporterResourceLoaderDelegate: NSObject, AVAssetResourceLoader
             return
         }
 
-        if bufferData.isEmpty == false {
+        if !bufferData.isEmpty {
             do {
                 try fileHandle.append(data: bufferData)
             } catch {
