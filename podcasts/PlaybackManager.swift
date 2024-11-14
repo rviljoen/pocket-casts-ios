@@ -784,11 +784,12 @@ class PlaybackManager: ServerPlaybackDelegate {
     }
 
     func effects() -> PlaybackEffects {
-        if currentEffects == nil {
-            currentEffects = loadEffects()
+        if let currentEffects {
+            return currentEffects
         }
-
-        return currentEffects!
+        let effects = loadEffects()
+        currentEffects = effects
+        return effects
     }
 
     func applyCurrentEffect() {
