@@ -139,7 +139,7 @@ public enum FeatureFlag: String, CaseIterable {
 
     /// Replace Subscribe/Unsubscribe with Follow/Unfollow
     case useFollowNaming
-    
+
     /// Use a cookie to manage `MTAudioProcessingTap` deallocation
     case useDefaultPlayerTapCookie
 

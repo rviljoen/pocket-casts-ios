@@ -284,6 +284,16 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
         }
     }
 
+    private static func unretainedDefaultPlayer(for tap: MTAudioProcessingTap) -> DefaultPlayer? {
+        if FeatureFlag.useDefaultPlayerTapCookie.enabled {
+            let cookie = Unmanaged<AudioProcessingTapProxy>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
+            guard let player = cookie.input else { return nil }
+            return player
+        } else {
+            return Unmanaged<DefaultPlayer>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
+        }
+    }
+
         private func createAudioMix() {
             guard audioMix == nil else { return }
 
@@ -319,13 +329,8 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
         let tapInit: MTAudioProcessingTapInitCallback = { tap, clientInfo, tapStorageOut in
             tapStorageOut.pointee = clientInfo
 
-            let referenceToSelf: DefaultPlayer
-            if FeatureFlag.useDefaultPlayerTapCookie.enabled {
-                let cookie = Unmanaged<AudioProcessingTapProxy>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
-                guard let player = cookie.input else { return }
-                referenceToSelf = player
-            } else {
-                referenceToSelf = Unmanaged<DefaultPlayer>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
+            guard let referenceToSelf = DefaultPlayer.unretainedDefaultPlayer(for: tap) else {
+                return
             }
 
             referenceToSelf.peakLimiter = nil
@@ -341,16 +346,11 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
         }
 
         let tapPrepare: MTAudioProcessingTapPrepareCallback = { tap, maxFrames, processingFormat in
-            let referenceToSelf: DefaultPlayer
-            if FeatureFlag.useDefaultPlayerTapCookie.enabled {
-                let cookie = Unmanaged<AudioProcessingTapProxy>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
-                guard let player = cookie.input else { return }
-                referenceToSelf = player
-            } else {
-                referenceToSelf = Unmanaged<DefaultPlayer>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
+            guard let referenceToSelf = DefaultPlayer.unretainedDefaultPlayer(for: tap) else {
+                return
             }
 
-            guard let filter = referenceToSelf.createHighPassFilter(maxFrames: maxFrames, processingFormat: processingFormat.pointee) else {
+            guard let referenceToSelf = DefaultPlayer.unretainedDefaultPlayer(for: tap), let filter = referenceToSelf.createHighPassFilter(maxFrames: maxFrames, processingFormat: processingFormat.pointee) else {
                 referenceToSelf.handlePlaybackError("Setup high pass filter failed")
                 return
             }
@@ -364,14 +364,10 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
         }
 
         let tapUnprepare: MTAudioProcessingTapUnprepareCallback = { tap in
-            let referenceToSelf: DefaultPlayer
-            if FeatureFlag.useDefaultPlayerTapCookie.enabled {
-                let cookie = Unmanaged<AudioProcessingTapProxy>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
-                guard let player = cookie.input else { return }
-                referenceToSelf = player
-            } else {
-                referenceToSelf = Unmanaged<DefaultPlayer>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
+            guard let referenceToSelf = DefaultPlayer.unretainedDefaultPlayer(for: tap) else {
+                return
             }
+
             if let peakLimiter = referenceToSelf.peakLimiter {
                 AudioUnitUninitialize(peakLimiter)
                 AudioComponentInstanceDispose(peakLimiter)
@@ -386,13 +382,8 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
         }
 
         let tapProcess: MTAudioProcessingTapProcessCallback = { tap, numberFrames, _, bufferListInOut, numberFramesOut, flagsOut in
-            let referenceToSelf: DefaultPlayer
-            if FeatureFlag.useDefaultPlayerTapCookie.enabled {
-                let cookie = Unmanaged<AudioProcessingTapProxy>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
-                guard let player = cookie.input else { return }
-                referenceToSelf = player
-            } else {
-                referenceToSelf = Unmanaged<DefaultPlayer>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
+            guard let referenceToSelf = DefaultPlayer.unretainedDefaultPlayer(for: tap) else {
+                return
             }
 
             let currentSampleCount = referenceToSelf.sampleCount
