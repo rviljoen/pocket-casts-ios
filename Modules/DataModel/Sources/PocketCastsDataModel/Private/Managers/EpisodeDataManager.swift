@@ -728,16 +728,15 @@ class EpisodeDataManager {
     }
 
     func markAllSynced(episodes: [Episode], dbQueue: FMDatabaseQueue) {
-        if episodes.count == 0 { return }
+        guard !episodes.isEmpty else {
+            return
+        }
 
         dbQueue.inDatabase { db in
             do {
                 db.beginTransaction()
-
-                for episode in episodes {
-                    try db.executeUpdate("UPDATE \(DataManager.episodeTableName) SET playingStatusModified = 0, playedUpToModified = 0, durationModified = 0, keepEpisodeModified = 0, archivedModified = 0 WHERE id = ?", values: [episode.id])
-                }
-
+                let ids = episodes.map({"\($0.id)"})
+                try db.executeUpdate("UPDATE \(DataManager.episodeTableName) SET playingStatusModified = 0, playedUpToModified = 0, durationModified = 0, keepEpisodeModified = 0, archivedModified = 0 WHERE id IN (\(ids.joined(separator: ",")))", values: nil)
                 db.commit()
             } catch {
                 FileLog.shared.addMessage("EpisodeDataManager.markAllSynced error: \(error)")
