@@ -728,7 +728,7 @@ class EpisodeDataManager {
     }
 
     func markAllSynced(episodes: [Episode], dbQueue: FMDatabaseQueue) {
-        guard !episodes.isEmpty else {
+        if episodes.isEmpty {
             return
         }
 
