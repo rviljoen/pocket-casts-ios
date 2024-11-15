@@ -113,6 +113,8 @@ class DownloadsViewController: PCViewController {
 
         title = L10n.downloads
 
+        showManageDownloads()
+
         Analytics.track(.downloadsShown)
     }
 
@@ -139,12 +141,26 @@ class DownloadsViewController: PCViewController {
 
     func showManageDownloads() {
         guard FeatureFlag.manageDownloadedEpisodes.enabled else {
+            downloadsTable.tableHeaderView = nil
             return
         }
-        let banner = DownloadsManageBannerView(dataModel: DownloadsManageModel(initialSize: "")).themedUIView
-        banner.frame.size.height = 116
-        downloadsTable.tableHeaderView = banner
+
+        downloadsTable.tableHeaderView = bannerView
     }
+
+    lazy var bannerView: UIView = {
+        let banner = DownloadsManageBannerView(dataModel: DownloadsManageModel(initialSize: "")).themedUIView
+        banner.translatesAutoresizingMaskIntoConstraints = false
+        let wrapperView = UIView(frame: CGRect(x: 116, y: 0, width: 200, height: 132))
+        wrapperView.addSubview(banner)
+        NSLayoutConstraint.activate([
+            banner.leadingAnchor.constraint(equalTo: wrapperView.leadingAnchor, constant: 16),
+            banner.trailingAnchor.constraint(equalTo: wrapperView.trailingAnchor, constant: -16),
+            banner.topAnchor.constraint(equalTo: wrapperView.topAnchor, constant: 16),
+            banner.bottomAnchor.constraint(equalTo: wrapperView.bottomAnchor, constant: 0),
+            ])
+        return wrapperView
+    }()
 
     // MARK: - App Backgrounding
 
