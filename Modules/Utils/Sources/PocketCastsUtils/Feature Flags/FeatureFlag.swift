@@ -140,6 +140,9 @@ public enum FeatureFlag: String, CaseIterable {
     /// Replace Subscribe/Unsubscribe with Follow/Unfollow
     case useFollowNaming
 
+    /// Enable the winback screen and flow
+    case winback
+
     public var enabled: Bool {
         if let overriddenValue = FeatureFlagOverrideStore().overriddenValue(for: self) {
             return overriddenValue
@@ -234,6 +237,8 @@ public enum FeatureFlag: String, CaseIterable {
             true
         case .useFollowNaming:
             true
+        case .winback:
+            false
         }
     }
 
