@@ -127,7 +127,7 @@ class DownloadsViewController: PCViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
+        showManageDownloads()
         addEventObservers()
     }
 
@@ -135,6 +135,15 @@ class DownloadsViewController: PCViewController {
         super.viewDidDisappear(animated)
 
         removeAllCustomObservers()
+    }
+
+    func showManageDownloads() {
+        guard FeatureFlag.manageDownloadedEpisodes.enabled else {
+            return
+        }
+        let banner = DownloadsManageBannerView(dataModel: DownloadsManageModel(initialSize: "")).themedUIView
+        banner.frame.size.height = 116
+        downloadsTable.tableHeaderView = banner
     }
 
     // MARK: - App Backgrounding
