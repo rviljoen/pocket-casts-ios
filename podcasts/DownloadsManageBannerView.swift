@@ -23,6 +23,13 @@ class DownloadsManageModel: ObservableObject {
             }
         }
     }
+
+    static var shouldShowBanner: Bool {
+        guard let percentage = FileManager.devicePercentageFreeSpace else {
+            return false
+        }
+        return percentage < 0.1
+    }
 }
 
 struct DownloadsManageBannerView: View {

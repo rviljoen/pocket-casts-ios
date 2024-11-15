@@ -140,7 +140,9 @@ class DownloadsViewController: PCViewController {
     }
 
     func showManageDownloads() {
-        guard FeatureFlag.manageDownloadedEpisodes.enabled else {
+        guard FeatureFlag.manageDownloadedEpisodes.enabled,
+              DownloadsManageModel.shouldShowBanner
+        else {
             downloadsTable.tableHeaderView = nil
             return
         }
