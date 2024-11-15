@@ -261,8 +261,12 @@ Tryck på knappen nedan för att logga in på ditt Pocket Casts-konto igen.</str
     <string>Begränsa automatiska nedladdningar</string>
     <key>auto_download_limit_downloads</key>
     <string>Begränsa nedladdningar</string>
+    <key>auto_download_limit_number_of_episodes</key>
+    <string>%1$@ avsnitt</string>
     <key>auto_download_limit_number_of_episodes_show</key>
     <string>De %1$@ senaste avsnitten per show</string>
+    <key>auto_download_limit_one_episode</key>
+    <string>Det senaste avsnittet</string>
     <key>auto_download_limit_one_episode_show</key>
     <string>Det senaste avsnittet per show</string>
     <key>auto_download_off_subtitle</key>
@@ -855,14 +859,10 @@ du lyssnade på var
     <string>Visa mitt 2023</string>
     <key>eoy_year_completion_rate</key>
     <string>slutförandegrad</string>
-    <key>eoy_year_completion_rate_share_text</key>
-    <string>Min slutförandegrad för 2023</string>
     <key>eoy_year_completion_rate_subtitle</key>
     <string>Du lyssnade sammanlagt klart på %2$@ av de %1$@ avsnitt du började lyssna på</string>
     <key>eoy_year_completion_rate_title</key>
     <string>Din slutförandegrad i år var %1$@</string>
-    <key>eoy_year_over_share_text</key>
-    <string>Min lyssningstid för 2023 jämfört med 2022</string>
     <key>eoy_year_over_year_subtitle_flat</key>
     <string>Och det sägs att kontinuitet är nyckeln till framgång ... eller något i den stilen!</string>
     <key>eoy_year_over_year_subtitle_went_down</key>
@@ -1106,6 +1106,8 @@ När du har delat dem med Pocket Casts så kommer de att visas här.</string>
     <string>Mapphistorik</string>
     <key>folders_history_explanation</key>
     <string>En lista över podcaster som togs bort från mappar till följd av en synkronisering.</string>
+    <key>follow</key>
+    <string>Följ</string>
     <key>free_trial_detail_label</key>
     <string>Ingen betalning nu – Avbryt när som helst</string>
     <key>free_trial_duration_free</key>
@@ -2878,6 +2880,8 @@ Din e-postadress, ditt lösenord eller annan känslig information delas aldrig.<
     <string>Prova nu</string>
     <key>unarchive</key>
     <string>Avarkivera</string>
+    <key>unfollow</key>
+    <string>Sluta följ</string>
     <key>unknown_duration</key>
     <string>? m</string>
     <key>unstar</key>
