@@ -143,6 +143,9 @@ public enum FeatureFlag: String, CaseIterable {
     /// Use a cookie to manage `MTAudioProcessingTap` deallocation
     case useDefaultPlayerTapCookie
 
+    /// Use single update query to mark all episodes selected synced
+    case markAllSyncedInSingleStatement
+
     public var enabled: Bool {
         if let overriddenValue = FeatureFlagOverrideStore().overriddenValue(for: self) {
             return overriddenValue
@@ -238,6 +241,8 @@ public enum FeatureFlag: String, CaseIterable {
         case .useFollowNaming:
             true
         case .useDefaultPlayerTapCookie:
+            true
+        case .markAllSyncedInSingleStatement:
             true
         }
     }
