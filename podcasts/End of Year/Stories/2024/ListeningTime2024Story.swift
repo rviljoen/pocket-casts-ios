@@ -57,7 +57,7 @@ struct ListeningTime2024Story: ShareableStory {
     func sharingAssets() -> [Any] {
         [
             StoryShareableProvider.new(AnyView(self)),
-            StoryShareableText(L10n.eoyStoryListenedToShareText(listeningTime.formattedTime() ?? ""))
+            StoryShareableText(L10n.eoyStoryListenedToShareText(listeningTime.formattedTime() ?? ""), year: .y2024)
         ]
     }
 }
