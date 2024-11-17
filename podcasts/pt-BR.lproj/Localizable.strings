@@ -859,14 +859,10 @@ que você ouviu foi
     <string>Ver meu 2023</string>
     <key>eoy_year_completion_rate</key>
     <string>taxa de conclusão</string>
-    <key>eoy_year_completion_rate_share_text</key>
-    <string>Minha taxa de conclusão em 2023</string>
     <key>eoy_year_completion_rate_subtitle</key>
     <string>Dos %1$@ episódios que você começou, você concluiu um total de %2$@</string>
     <key>eoy_year_completion_rate_title</key>
     <string>Sua taxa de conclusão este ano foi de %1$@</string>
-    <key>eoy_year_over_share_text</key>
-    <string>Meu tempo de streaming em 2023 em comparação com 2022</string>
     <key>eoy_year_over_year_subtitle_flat</key>
     <string>E dizem que consistência é a chave do sucesso… ou algo parecido.</string>
     <key>eoy_year_over_year_subtitle_went_down</key>
@@ -1110,6 +1106,8 @@ Compartilhe-os com o Pocket Casts, e eles aparecerão aqui</string>
     <string>Histórico de pastas</string>
     <key>folders_history_explanation</key>
     <string>Uma lista de podcasts removidos das pastas como resultado de uma sincronização.</string>
+    <key>follow</key>
+    <string>Seguir</string>
     <key>free_trial_detail_label</key>
     <string>Sem pagamento por enquanto, cancele quando quiser</string>
     <key>free_trial_duration_free</key>
@@ -2882,6 +2880,8 @@ Seu endereço de e-mail, senha e outros dados confidenciais jamais são comparti
     <string>Experimente já</string>
     <key>unarchive</key>
     <string>Desarquivar</string>
+    <key>unfollow</key>
+    <string>Deixar de seguir</string>
     <key>unknown_duration</key>
     <string>? min</string>
     <key>unstar</key>

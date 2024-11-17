@@ -22,6 +22,8 @@ struct EpilogueStory2024: StoryView {
         "Gratki"
     ].map { $0.uppercased() }
 
+    var duration: TimeInterval = 0.01
+
     private let separator = Image("playback-24-heart")
 
     var identifier: String = "ending"

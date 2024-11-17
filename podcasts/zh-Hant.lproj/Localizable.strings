@@ -859,14 +859,10 @@ Tap the button below to sign into your Pocket Casts account again.</string>
     <string>檢視我的 2023 年</string>
     <key>eoy_year_completion_rate</key>
     <string>完成率</string>
-    <key>eoy_year_completion_rate_share_text</key>
-    <string>我的 2023 年完成率</string>
     <key>eoy_year_completion_rate_subtitle</key>
     <string>從你開始收聽的 %1$@ 集起，你完整收聽了 %2$@ 集</string>
     <key>eoy_year_completion_rate_title</key>
     <string>你今年的完成率為 %1$@</string>
-    <key>eoy_year_over_share_text</key>
-    <string>我在 2023 年與 2022 年的收聽時間比較</string>
     <key>eoy_year_over_year_subtitle_flat</key>
     <string>大家都說，成功的關鍵在於持之以恆...大概是這樣吧！</string>
     <key>eoy_year_over_year_subtitle_went_down</key>
@@ -1110,6 +1106,8 @@ Tap the button below to sign into your Pocket Casts account again.</string>
     <string>資料夾紀錄</string>
     <key>folders_history_explanation</key>
     <string>因同步處理而自資料夾移除的 Podcast 清單。</string>
+    <key>follow</key>
+    <string>追蹤</string>
     <key>free_trial_detail_label</key>
     <string>現在無需付費，可隨時取消</string>
     <key>free_trial_duration_free</key>
@@ -2882,6 +2880,8 @@ Tap the button below to sign into your Pocket Casts account again.</string>
     <string>立即試試</string>
     <key>unarchive</key>
     <string>取消封存</string>
+    <key>unfollow</key>
+    <string>停止追蹤</string>
     <key>unknown_duration</key>
     <string>未知時長</string>
     <key>unstar</key>

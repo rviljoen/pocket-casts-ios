@@ -261,8 +261,12 @@ Tik op de onderstaande knop om opnieuw in te loggen bij je Pocket Casts-account.
     <string>Limiet automatische downloads</string>
     <key>auto_download_limit_downloads</key>
     <string>Limiet downloads</string>
+    <key>auto_download_limit_number_of_episodes</key>
+    <string>%1$@ afleveringen</string>
     <key>auto_download_limit_number_of_episodes_show</key>
     <string>%1$@ Nieuwste aflevering per programma</string>
+    <key>auto_download_limit_one_episode</key>
+    <string>Nieuwste aflevering</string>
     <key>auto_download_limit_one_episode_show</key>
     <string>Nieuwste aflevering per programma</string>
     <key>auto_download_off_subtitle</key>
@@ -855,14 +859,10 @@ waar je naar hebt geluisterd was
     <string>Mijn 2023 bekijken</string>
     <key>eoy_year_completion_rate</key>
     <string>afrondingspercentage</string>
-    <key>eoy_year_completion_rate_share_text</key>
-    <string>Mijn afrondingspercentage van 2023</string>
     <key>eoy_year_completion_rate_subtitle</key>
     <string>Van de %1$@ afleveringen waar je aan bent begonnen, heb je er %2$@ helemaal afgekeken </string>
     <key>eoy_year_completion_rate_title</key>
     <string>Je afrondingspercentage dit jaar was %1$@</string>
-    <key>eoy_year_over_share_text</key>
-    <string>Mijn luistertijd in 2023, ten opzichte van 2022</string>
     <key>eoy_year_over_year_subtitle_flat</key>
     <string>Consistentie is de sleutel tot succes … of zoiets!</string>
     <key>eoy_year_over_year_subtitle_went_down</key>
@@ -1106,6 +1106,8 @@ Deel ze met Pocket Casts en ze verschijnen hier</string>
     <string>Mapgeschiedenis</string>
     <key>folders_history_explanation</key>
     <string>Een lijst met podcasts die verwijderd zijn uit een map dankzij synchronisatie.</string>
+    <key>follow</key>
+    <string>Volgen</string>
     <key>free_trial_detail_label</key>
     <string>Nu geen betaling - Annuleer wanneer je wilt</string>
     <key>free_trial_duration_free</key>
@@ -2874,6 +2876,8 @@ Je e-mailadres, wachtwoord en andere gevoelige gegevens worden nooit gedeeld.</s
     <string>Probeer het nu</string>
     <key>unarchive</key>
     <string>Dearchiveren</string>
+    <key>unfollow</key>
+    <string>Niet meer volgen</string>
     <key>unknown_duration</key>
     <string>? m</string>
     <key>unstar</key>
