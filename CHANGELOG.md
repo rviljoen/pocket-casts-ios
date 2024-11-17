@@ -7,6 +7,8 @@
 - Implement shuffle button in Up Next view [#1179](https://github.com/orgs/Automattic/projects/1179/views/1)
 - Use a single icon for folders upsell. [#2362](https://github.com/Automattic/pocket-casts-ios/pull/2362)
 - Adds Playback 2024 [#2250](https://github.com/Automattic/pocket-casts-ios/issues/2250)
+- Attempt to fix the DefaultPlayer main crash [#2420](https://github.com/Automattic/pocket-casts-ios/pull/2420)
+- Improve Apple Watch sync [#2425](https://github.com/Automattic/pocket-casts-ios/pull/2425)
 
 7.76
 -----
