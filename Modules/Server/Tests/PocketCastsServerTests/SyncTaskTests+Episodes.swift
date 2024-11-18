@@ -22,12 +22,16 @@ final class SyncTaskTests_EpisodeImport: XCTestCase {
         let beforeUnsynced = DataManager.sharedManager.unsyncedEpisodes(limit: ServerConstants.Limits.maxEpisodesToSync)
         XCTAssertEqual(beforeUnsynced.count, 0)
 
-        let episode = addEpisode()
-        episode.playingStatusModified = 1
-        DataManager.sharedManager.save(episode: episode)
+        let episodeCount = 5
+
+        (0..<episodeCount).forEach { _ in
+            let episode = addEpisode()
+            episode.playingStatusModified = 1
+            DataManager.sharedManager.save(episode: episode)
+        }
 
         let afterUnsynced = DataManager.sharedManager.unsyncedEpisodes(limit: ServerConstants.Limits.maxEpisodesToSync)
-        XCTAssertEqual(afterUnsynced.count, 1)
+        XCTAssertEqual(afterUnsynced.count, episodeCount)
 
         let response = Api_SyncUpdateResponse.episodesResponse(episodes: afterUnsynced)
         syncTask.processServerData(response: response)
@@ -40,8 +44,8 @@ final class SyncTaskTests_EpisodeImport: XCTestCase {
 
 private extension SyncTaskTests_EpisodeImport {
     @discardableResult
-    func addEpisode(episodeUuid: String = "episode-1",
-                     podcastUuid: String = "podcast-uuid") -> Episode {
+    func addEpisode(episodeUuid: String = "episode-\(UUID().uuidString)",
+                     podcastUuid: String = "podcast-\(UUID().uuidString)") -> Episode {
         let episode = Episode()
         episode.addedDate = Date()
         episode.podcast_id = 0
