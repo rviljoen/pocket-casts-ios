@@ -49,7 +49,7 @@ struct ManageDownloadsBannerView: View {
                 Text(L10n.manageDownloadsTitle)
                     .font(.system(size: 15, weight: .medium))
                     .foregroundColor(theme.primaryText01)
-                Text(L10n.manageDownloadsDetail(dataModel.sizeOccupied)+L10n.manageDownloadsDetail(dataModel.sizeOccupied))
+                Text(L10n.manageDownloadsDetail(dataModel.sizeOccupied))
                     .lineLimit(nil)
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.leading)
