@@ -146,12 +146,15 @@ class DownloadsViewController: PCViewController {
             downloadsTable.tableHeaderView = nil
             return
         }
-
+        Analytics.track(.freeUpSpaceBannerShown)
         downloadsTable.tableHeaderView = bannerView
     }
 
     lazy var bannerView: UIView = {
-        let banner = DownloadsManageBannerView(dataModel: DownloadsManageModel(initialSize: "")).themedUIView
+        let banner = DownloadsManageBannerView(dataModel: DownloadsManageModel(initialSize: "", onManageTap: { [weak self] in
+            Analytics.track(.freeUpSpaceManageDownloadsTapped)
+            self?.navigationController?.pushViewController(DownloadedFilesViewController(), animated: true)
+        })).themedUIView
         banner.translatesAutoresizingMaskIntoConstraints = false
         let wrapperView = UIView(frame: CGRect(x: 116, y: 0, width: 200, height: 132))
         wrapperView.addSubview(banner)

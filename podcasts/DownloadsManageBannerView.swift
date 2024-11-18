@@ -6,8 +6,11 @@ class DownloadsManageModel: ObservableObject {
 
     @Published var sizeOccupied: String = ""
 
-    init(initialSize: String) {
+    let onManageTap: (() -> ())?
+
+    init(initialSize: String, onManageTap: (() -> ())? = nil) {
         _sizeOccupied = .init(initialValue: initialSize)
+        self.onManageTap = onManageTap
         loadData()
     }
 
@@ -53,7 +56,7 @@ struct DownloadsManageBannerView: View {
                     .font(.system(size: 14))
                     .foregroundColor(theme.secondaryText02)
                 Button() {
-
+                    dataModel.onManageTap?()
                 } label: {
                     Text(L10n.manageDownloadsAction)
                         .font(.system(size: 14, weight: .medium))
