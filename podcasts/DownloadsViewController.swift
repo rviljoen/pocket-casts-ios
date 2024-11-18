@@ -113,7 +113,7 @@ class DownloadsViewController: PCViewController {
 
         title = L10n.downloads
 
-        showManageDownloads()
+        showManageDownloadsBanner()
 
         Analytics.track(.downloadsShown)
     }
@@ -129,7 +129,7 @@ class DownloadsViewController: PCViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        showManageDownloads()
+        showManageDownloadsBanner()
         addEventObservers()
     }
 
@@ -139,7 +139,7 @@ class DownloadsViewController: PCViewController {
         removeAllCustomObservers()
     }
 
-    func showManageDownloads() {
+    func showManageDownloadsBanner() {
         guard FeatureFlag.manageDownloadedEpisodes.enabled,
               DownloadsManageModel.shouldShowBanner
         else {
