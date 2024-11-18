@@ -2,7 +2,7 @@ import SwiftUI
 import PocketCastsUtils
 import Combine
 
-class DownloadsManageModel: ObservableObject {
+class ManageDownloadsBannerModel: ObservableObject {
 
     @Published var sizeOccupied: String = ""
 
@@ -35,11 +35,11 @@ class DownloadsManageModel: ObservableObject {
     }
 }
 
-struct DownloadsManageBannerView: View {
+struct ManageDownloadsBannerView: View {
 
     @EnvironmentObject var theme: Theme
 
-    @ObservedObject var dataModel: DownloadsManageModel
+    @ObservedObject var dataModel: ManageDownloadsBannerModel
 
     var body: some View {
         HStack(alignment: .top) {
@@ -77,14 +77,14 @@ struct DownloadsManageBannerView: View {
 }
 
 #Preview("Light") {
-    DownloadsManageBannerView(dataModel: .init(initialSize: "100 MB"))
+    ManageDownloadsBannerView(dataModel: .init(initialSize: "100 MB"))
         .environmentObject(Theme(previewTheme: .light))
         .padding(16)
         .frame(height: 132)
 }
 
 #Preview("Dark") {
-    DownloadsManageBannerView(dataModel: .init(initialSize: "100 MB"))
+    ManageDownloadsBannerView(dataModel: .init(initialSize: "100 MB"))
         .environmentObject(Theme(previewTheme: .dark))
         .padding(16)
         .frame(height: 132)

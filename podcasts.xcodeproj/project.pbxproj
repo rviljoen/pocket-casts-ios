@@ -1749,7 +1749,7 @@
 		FF06AFA72CB692D30099EC9B /* MediaFileHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF06AFA62CB692D30099EC9B /* MediaFileHandle.swift */; };
 		FF06AFA82CB692D30099EC9B /* MediaFileHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF06AFA62CB692D30099EC9B /* MediaFileHandle.swift */; };
 		FF09982E2CDA996D00C1647B /* MarqueeTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF09982D2CDA996D00C1647B /* MarqueeTextView.swift */; };
-		FF0998302CE79C8F00C1647B /* DownloadsManageBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF09982F2CE79C7500C1647B /* DownloadsManageBannerView.swift */; };
+		FF0998302CE79C8F00C1647B /* ManageDownloadsBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF09982F2CE79C7500C1647B /* ManageDownloadsBannerView.swift */; };
 		FF0A1D522C580CF5003931E6 /* TranscriptsDataRetriever.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6BBCF12C578CE600604A01 /* TranscriptsDataRetriever.swift */; };
 		FF1D0CB82C9CE11300F600C6 /* ReferralsMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF1D0CB72C9CE11300F600C6 /* ReferralsMessageView.swift */; };
 		FF1D0CBA2C9DC62200F600C6 /* ReferralsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF1D0CB92C9DC62200F600C6 /* ReferralsCoordinator.swift */; };
@@ -3694,7 +3694,7 @@
 		FF06AFA22CB6928B0099EC9B /* MediaExporterResourceLoaderDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaExporterResourceLoaderDelegate.swift; sourceTree = "<group>"; };
 		FF06AFA62CB692D30099EC9B /* MediaFileHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaFileHandle.swift; sourceTree = "<group>"; };
 		FF09982D2CDA996D00C1647B /* MarqueeTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarqueeTextView.swift; sourceTree = "<group>"; };
-		FF09982F2CE79C7500C1647B /* DownloadsManageBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsManageBannerView.swift; sourceTree = "<group>"; };
+		FF09982F2CE79C7500C1647B /* ManageDownloadsBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageDownloadsBannerView.swift; sourceTree = "<group>"; };
 		FF1D0CB72C9CE11300F600C6 /* ReferralsMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferralsMessageView.swift; sourceTree = "<group>"; };
 		FF1D0CB92C9DC62200F600C6 /* ReferralsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferralsCoordinator.swift; sourceTree = "<group>"; };
 		FF1DF0192C8A206E0028B8D8 /* ReferralCardAnimatedGradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferralCardAnimatedGradientView.swift; sourceTree = "<group>"; };
@@ -5946,7 +5946,7 @@
 		BD7516E01C0FC8180099F53E /* Downloads */ = {
 			isa = PBXGroup;
 			children = (
-				FF09982F2CE79C7500C1647B /* DownloadsManageBannerView.swift */,
+				FF09982F2CE79C7500C1647B /* ManageDownloadsBannerView.swift */,
 				BDA2065E1BB3D4D600D38389 /* DownloadsViewController.swift */,
 				BDF5FD1D1FD8D38900F2A339 /* DownloadsViewController+Table.swift */,
 				BDDF8AA7240CEBF9009BA263 /* DownloadsViewController+Swipe.swift */,
@@ -10128,7 +10128,7 @@
 				403B5B0021796F2F00821A54 /* DownloadFilterOverlayController.swift in Sources */,
 				102141152C7E12CB0065D34A /* PlusPaywallReviewsStars.swift in Sources */,
 				4041FEA7218FF3B80089D4A1 /* AddCell.swift in Sources */,
-				FF0998302CE79C8F00C1647B /* DownloadsManageBannerView.swift in Sources */,
+				FF0998302CE79C8F00C1647B /* ManageDownloadsBannerView.swift in Sources */,
 				BD4BBFA21D221FDA001BEE4D /* Queue.swift in Sources */,
 				8B99197729A686BA00A5C81C /* SearchResultsView.swift in Sources */,
 				40E1B4CA2255856C006C96CE /* FiltersShortcutsViewController.swift in Sources */,
