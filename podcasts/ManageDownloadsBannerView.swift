@@ -21,7 +21,7 @@ class ManageDownloadsBannerModel: ObservableObject {
             totalSize += EpisodeManager.downloadSizeOfInProgressEpisodes(includeStarred: true)
             totalSize += EpisodeManager.downloadSizeOfPlayedEpisodes(includeStarred: true)
             let sizeAsStr = SizeFormatter.shared.noDecimalFormat(bytes: Int64(totalSize))
-            Task { @MainActor in
+            await MainActor.run { [weak self] in
                 self?.sizeOccupied = sizeAsStr
             }
         }
