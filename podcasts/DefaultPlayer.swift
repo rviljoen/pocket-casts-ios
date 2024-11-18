@@ -271,17 +271,44 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
     }
 
     // MARK: - Audio Mix
+#if !os(watchOS)
+    private class AudioProcessingTapProxy {
+        weak var input: DefaultPlayer?
 
-    #if !os(watchOS)
+        init(input: DefaultPlayer) {
+            self.input = input
+        }
+
+        deinit {
+            FileLog.shared.console("[AudioProcessingTapProxy] Deinit proxy")
+        }
+    }
+
+    private static func unretainedDefaultPlayer(for tap: MTAudioProcessingTap) -> DefaultPlayer? {
+        if FeatureFlag.useDefaultPlayerTapCookie.enabled {
+            let cookie = Unmanaged<AudioProcessingTapProxy>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
+            guard let player = cookie.input else { return nil }
+            return player
+        } else {
+            return Unmanaged<DefaultPlayer>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
+        }
+    }
+
         private func createAudioMix() {
             guard audioMix == nil else { return }
 
             let mutableMix = AVMutableAudioMix()
             let audioMixInputParameters = AVMutableAudioMixInputParameters(track: assetTrack)
 
+            var clientInfo = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
+            if FeatureFlag.useDefaultPlayerTapCookie.enabled {
+                let tapCookie = AudioProcessingTapProxy(input: self)
+                clientInfo = UnsafeMutableRawPointer(Unmanaged.passRetained(tapCookie).toOpaque())
+            }
+
             var callbacks = MTAudioProcessingTapCallbacks(
                 version: kMTAudioProcessingTapCallbacksVersion_0,
-                clientInfo: UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque()),
+                clientInfo: clientInfo,
                 init: tapInit,
                 finalize: tapFinalize,
                 prepare: tapPrepare,
@@ -302,18 +329,28 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
         let tapInit: MTAudioProcessingTapInitCallback = { tap, clientInfo, tapStorageOut in
             tapStorageOut.pointee = clientInfo
 
-            let referenceToSelf = Unmanaged<DefaultPlayer>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
+            guard let referenceToSelf = DefaultPlayer.unretainedDefaultPlayer(for: tap) else {
+                return
+            }
+
             referenceToSelf.peakLimiter = nil
             referenceToSelf.highPassFilter = nil
             referenceToSelf.sampleCount = 0
         }
 
-        let tapFinalize: MTAudioProcessingTapFinalizeCallback = { _ in }
+        let tapFinalize: MTAudioProcessingTapFinalizeCallback = { tap in
+            if FeatureFlag.useDefaultPlayerTapCookie.enabled {
+                FileLog.shared.console("[AudioProcessingTapProxy] Finalize tap: \(tap)\n")
+                Unmanaged<AudioProcessingTapProxy>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).release()
+            }
+        }
 
         let tapPrepare: MTAudioProcessingTapPrepareCallback = { tap, maxFrames, processingFormat in
-            var referenceToSelf = Unmanaged<DefaultPlayer>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
+            guard let referenceToSelf = DefaultPlayer.unretainedDefaultPlayer(for: tap) else {
+                return
+            }
 
-            guard let filter = referenceToSelf.createHighPassFilter(maxFrames: maxFrames, processingFormat: processingFormat.pointee) else {
+            guard let referenceToSelf = DefaultPlayer.unretainedDefaultPlayer(for: tap), let filter = referenceToSelf.createHighPassFilter(maxFrames: maxFrames, processingFormat: processingFormat.pointee) else {
                 referenceToSelf.handlePlaybackError("Setup high pass filter failed")
                 return
             }
@@ -327,7 +364,10 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
         }
 
         let tapUnprepare: MTAudioProcessingTapUnprepareCallback = { tap in
-            var referenceToSelf = Unmanaged<DefaultPlayer>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
+            guard let referenceToSelf = DefaultPlayer.unretainedDefaultPlayer(for: tap) else {
+                return
+            }
+
             if let peakLimiter = referenceToSelf.peakLimiter {
                 AudioUnitUninitialize(peakLimiter)
                 AudioComponentInstanceDispose(peakLimiter)
@@ -342,7 +382,9 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
         }
 
         let tapProcess: MTAudioProcessingTapProcessCallback = { tap, numberFrames, _, bufferListInOut, numberFramesOut, flagsOut in
-            var referenceToSelf = Unmanaged<DefaultPlayer>.fromOpaque(MTAudioProcessingTapGetStorage(tap)).takeUnretainedValue()
+            guard let referenceToSelf = DefaultPlayer.unretainedDefaultPlayer(for: tap) else {
+                return
+            }
 
             let currentSampleCount = referenceToSelf.sampleCount
             referenceToSelf.sampleCount += Float64(numberFrames)
@@ -352,7 +394,6 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
                     referenceToSelf.handlePlaybackError("MTAudioProcessingTapGetSourceAudio failed")
                     return
                 }
-
                 return
             }
 
