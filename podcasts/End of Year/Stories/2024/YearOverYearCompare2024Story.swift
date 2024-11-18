@@ -90,7 +90,7 @@ struct YearOverYearCompare2024Story: ShareableStory {
     func sharingAssets() -> [Any] {
         [
             StoryShareableProvider.new(AnyView(self)),
-            StoryShareableText(L10n.eoyYearOverShareText("2024", "2023"))
+            StoryShareableText(L10n.eoyYearOverShareText("2024", "2023"), year: .y2024)
         ]
     }
 

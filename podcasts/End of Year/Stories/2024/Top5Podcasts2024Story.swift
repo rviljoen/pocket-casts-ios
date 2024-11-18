@@ -132,7 +132,7 @@ struct Top5Podcasts2024Story: ShareableStory {
     func sharingAssets() -> [Any] {
         [
             StoryShareableProvider.new(AnyView(self)),
-            StoryShareableText(L10n.eoyStoryTopPodcastsShareText("%1$@"), podcasts: top5Podcasts.map { $0.podcast })
+            StoryShareableText(L10n.eoyStoryTopPodcastsShareText("%1$@"), podcasts: top5Podcasts.map { $0.podcast }, year: .y2024)
         ]
     }
 }
