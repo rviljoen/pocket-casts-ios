@@ -1499,6 +1499,14 @@ internal enum L10n {
   internal static var loginSubtitle: String { return L10n.tr("Localizable", "login_subtitle") }
   /// Discover your next favorite podcast
   internal static var loginTitle: String { return L10n.tr("Localizable", "login_title") }
+  /// Manage downloads
+  internal static var manageDownloadsAction: String { return L10n.tr("Localizable", "manage_downloads_action") }
+  /// Save %1$@ by removing played episodes.
+  internal static func manageDownloadsDetail(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "manage_downloads_detail", String(describing: p1))
+  }
+  /// Need to free up space?
+  internal static var manageDownloadsTitle: String { return L10n.tr("Localizable", "manage_downloads_title") }
   /// Mark as Played
   internal static var markPlayed: String { return L10n.tr("Localizable", "mark_played") }
   /// Mark Played
