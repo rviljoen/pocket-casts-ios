@@ -55,7 +55,8 @@ class DownloadedFilesViewController: PCViewController, UITableViewDelegate, UITa
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: checkboxCellId, for: indexPath) as! CheckboxSubtitleCell
 
-            if indexPath.row == 0 {
+            switch indexPath.row {
+            case 0:
                 cell.titleLabel.text = L10n.statusUnplayed
                 cell.setSelectedState(deleteUnplayed)
                 cell.selectButton.removeTarget(self, action: #selector(DownloadedFilesViewController.unplayedToggled(_:)), for: .touchUpInside)
@@ -63,7 +64,7 @@ class DownloadedFilesViewController: PCViewController, UITableViewDelegate, UITa
 
                 let sizeAsStr = SizeFormatter.shared.noDecimalFormat(bytes: Int64(unplayedSize))
                 cell.subtitleLabel.text = sizeAsStr == "" ? SizeFormatter.shared.placeholder : sizeAsStr
-            } else if indexPath.row == 1 {
+            case 1:
                 cell.titleLabel.text = L10n.inProgress
                 cell.setSelectedState(deleteInProgress)
                 cell.selectButton.removeTarget(self, action: #selector(DownloadedFilesViewController.inProgressToggled(_:)), for: .touchUpInside)
@@ -71,7 +72,7 @@ class DownloadedFilesViewController: PCViewController, UITableViewDelegate, UITa
 
                 let sizeAsStr = SizeFormatter.shared.noDecimalFormat(bytes: Int64(inProgressSize))
                 cell.subtitleLabel.text = sizeAsStr == "" ? SizeFormatter.shared.placeholder : sizeAsStr
-            } else if indexPath.row == 2 {
+            case 2:
                 cell.titleLabel.text = L10n.statusPlayed
                 cell.setSelectedState(deletePlayed)
                 cell.selectButton.removeTarget(self, action: #selector(DownloadedFilesViewController.playedToggled(_:)), for: .touchUpInside)
@@ -79,6 +80,8 @@ class DownloadedFilesViewController: PCViewController, UITableViewDelegate, UITa
 
                 let sizeAsStr = SizeFormatter.shared.noDecimalFormat(bytes: Int64(playedSize))
                 cell.subtitleLabel.text = sizeAsStr == "" ? SizeFormatter.shared.placeholder : sizeAsStr
+            default:
+                break
             }
             return cell
         case 1:
@@ -106,7 +109,7 @@ class DownloadedFilesViewController: PCViewController, UITableViewDelegate, UITa
             return cell
         default:
             return UITableViewCell()
-        }        
+        }
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
