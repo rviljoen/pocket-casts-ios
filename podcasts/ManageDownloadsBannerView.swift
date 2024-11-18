@@ -7,10 +7,12 @@ class ManageDownloadsBannerModel: ObservableObject {
     @Published var sizeOccupied: String = ""
 
     let onManageTap: (() -> ())?
+    let onNotNowTap: (() -> ())?
 
-    init(initialSize: String, onManageTap: (() -> ())? = nil) {
+    init(initialSize: String, onManageTap: (() -> ())? = nil, onNotNowTap: (() -> ())? = nil) {
         _sizeOccupied = .init(initialValue: initialSize)
         self.onManageTap = onManageTap
+        self.onNotNowTap = onNotNowTap
         loadData()
     }
 
