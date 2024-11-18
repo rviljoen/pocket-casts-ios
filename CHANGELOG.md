@@ -1,6 +1,6 @@
 7.78
 -----
-
+- File downloads use switch instead of check box for include starred [#2455](https://github.com/Automattic/pocket-casts-ios/pull/2455)
 
 7.77
 -----
