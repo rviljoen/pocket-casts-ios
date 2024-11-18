@@ -24,6 +24,7 @@
 
 /* Begin PBXBuildFile section */
 		10097D282CC7DADA00E682A3 /* UpNext.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 10097D272CC7DADA00E682A3 /* UpNext.xcassets */; };
+		100C99552CE7B801008D73E9 /* CancelSubscriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100C99542CE7B801008D73E9 /* CancelSubscriptionView.swift */; };
 		102141132C7E09860065D34A /* PlusPaywallReviewsPlusFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102141122C7E09860065D34A /* PlusPaywallReviewsPlusFeatures.swift */; };
 		102141152C7E12CB0065D34A /* PlusPaywallReviewsStars.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102141142C7E12CB0065D34A /* PlusPaywallReviewsStars.swift */; };
 		102141172C7E25AC0065D34A /* PlusPaywallReviewCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102141162C7E25AC0065D34A /* PlusPaywallReviewCard.swift */; };
@@ -44,6 +45,7 @@
 		107836232C5CDD5000DA3FF0 /* GiveRatingsWhatsNewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 107836222C5CDD5000DA3FF0 /* GiveRatingsWhatsNewHeader.swift */; };
 		107836262C62816900DA3FF0 /* ABTestProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 107836252C62816900DA3FF0 /* ABTestProviderTests.swift */; };
 		107AF94C2C77947600DD0FA7 /* PlusPaywallReviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 107AF94B2C77947600DD0FA7 /* PlusPaywallReviews.swift */; };
+		109446762CEB3A8100977161 /* CancelSubscriptionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 109446752CEB3A7E00977161 /* CancelSubscriptionViewModel.swift */; };
 		10980CAE2CB6DD55002C8779 /* Widget+Accentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10980CAD2CB6DD55002C8779 /* Widget+Accentable.swift */; };
 		1099A4AA2CA5A3C1001B96A9 /* Variation+CustomTreatment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1099A4A92CA5A3AE001B96A9 /* Variation+CustomTreatment.swift */; };
 		10A4F7532C515D720084D783 /* KidsProfile.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 10A4F7522C515D720084D783 /* KidsProfile.xcassets */; };
@@ -1990,6 +1992,7 @@
 		0A1708DEC0501FB8417E31BE /* Pods_NotificationExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NotificationExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C2912CCAD9A1CEDF0484604 /* Pods-PocketCasts-podcasts.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PocketCasts-podcasts.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PocketCasts-podcasts/Pods-PocketCasts-podcasts.debug.xcconfig"; sourceTree = "<group>"; };
 		10097D272CC7DADA00E682A3 /* UpNext.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = UpNext.xcassets; sourceTree = "<group>"; };
+		100C99542CE7B801008D73E9 /* CancelSubscriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelSubscriptionView.swift; sourceTree = "<group>"; };
 		102141122C7E09860065D34A /* PlusPaywallReviewsPlusFeatures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusPaywallReviewsPlusFeatures.swift; sourceTree = "<group>"; };
 		102141142C7E12CB0065D34A /* PlusPaywallReviewsStars.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusPaywallReviewsStars.swift; sourceTree = "<group>"; };
 		102141162C7E25AC0065D34A /* PlusPaywallReviewCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusPaywallReviewCard.swift; sourceTree = "<group>"; };
@@ -2004,6 +2007,7 @@
 		107836222C5CDD5000DA3FF0 /* GiveRatingsWhatsNewHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiveRatingsWhatsNewHeader.swift; sourceTree = "<group>"; };
 		107836252C62816900DA3FF0 /* ABTestProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ABTestProviderTests.swift; sourceTree = "<group>"; };
 		107AF94B2C77947600DD0FA7 /* PlusPaywallReviews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusPaywallReviews.swift; sourceTree = "<group>"; };
+		109446752CEB3A7E00977161 /* CancelSubscriptionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelSubscriptionViewModel.swift; sourceTree = "<group>"; };
 		10980CAD2CB6DD55002C8779 /* Widget+Accentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Widget+Accentable.swift"; sourceTree = "<group>"; };
 		1099A4A92CA5A3AE001B96A9 /* Variation+CustomTreatment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Variation+CustomTreatment.swift"; sourceTree = "<group>"; };
 		10A4F7522C515D720084D783 /* KidsProfile.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = KidsProfile.xcassets; sourceTree = "<group>"; };
@@ -3889,6 +3893,15 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		100C99512CE7B7A2008D73E9 /* Cancel Subscription */ = {
+			isa = PBXGroup;
+			children = (
+				109446752CEB3A7E00977161 /* CancelSubscriptionViewModel.swift */,
+				100C99542CE7B801008D73E9 /* CancelSubscriptionView.swift */,
+			);
+			path = "Cancel Subscription";
+			sourceTree = "<group>";
+		};
 		102141102C7E09030065D34A /* Features */ = {
 			isa = PBXGroup;
 			children = (
@@ -4181,6 +4194,7 @@
 		40542E292265600200046330 /* Account Management */ = {
 			isa = PBXGroup;
 			children = (
+				100C99512CE7B7A2008D73E9 /* Cancel Subscription */,
 				C7FAFF592941839A00329B40 /* Cancel */,
 				4051A57322819FB200C13C12 /* Cells */,
 				40542E2B2265604700046330 /* AccountViewController.swift */,
@@ -10277,8 +10291,10 @@
 				BDD71CF41BA935E8006D2CE3 /* NetworkViewController.swift in Sources */,
 				8B723755291185B300FA8219 /* Analytics+story.swift in Sources */,
 				FF2142D42C07369200672D8D /* MediaExporter.swift in Sources */,
+				109446762CEB3A8100977161 /* CancelSubscriptionViewModel.swift in Sources */,
 				8B44446429785947007E0AA8 /* SocialLogin.swift in Sources */,
 				BD44A4452302DAC6004F55B2 /* CommonUpNextItem.swift in Sources */,
+				100C99552CE7B801008D73E9 /* CancelSubscriptionView.swift in Sources */,
 				F555980B2C50242800C02EEB /* VideoExporter.swift in Sources */,
 				BDA2065D1BB3AF5D00D38389 /* DownloadProgress.swift in Sources */,
 				407083C625423F0A002FC9F8 /* EpisodePreviewCell.swift in Sources */,
