@@ -152,7 +152,7 @@ class DownloadsViewController: PCViewController {
 
     lazy var bannerView: UIView = {
         let banner = ManageDownloadsBannerView(dataModel: ManageDownloadsBannerModel(initialSize: "", onManageTap: { [weak self] in
-            Analytics.track(.freeUpSpaceManageDownloadsTapped)
+            Analytics.track(.freeUpSpaceManageDownloadsTapped, properties: ["source": "downloads"])
             self?.navigationController?.pushViewController(DownloadedFilesViewController(), animated: true)
         })).themedUIView
         banner.translatesAutoresizingMaskIntoConstraints = false
