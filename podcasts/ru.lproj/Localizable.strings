@@ -859,14 +859,10 @@
     <string>Моя статистика за 2023 год</string>
     <key>eoy_year_completion_rate</key>
     <string>процент завершения</string>
-    <key>eoy_year_completion_rate_share_text</key>
-    <string>Мои итоги 2023 года</string>
     <key>eoy_year_completion_rate_subtitle</key>
     <string>Из %1$@ запущенных выпусков всего вы дослушали до конца %2$@</string>
     <key>eoy_year_completion_rate_title</key>
     <string>Ваш процент завершения в этом году равен %1$@</string>
-    <key>eoy_year_over_share_text</key>
-    <string>Время прослушивания в 2023 году по сравнению с 2022 годом</string>
     <key>eoy_year_over_year_subtitle_flat</key>
     <string>Говорят, постоянство — ключ к успеху… или что-то в этом роде!</string>
     <key>eoy_year_over_year_subtitle_went_down</key>
@@ -1110,6 +1106,8 @@
     <string>История папок</string>
     <key>folders_history_explanation</key>
     <string>Список подкастов, удалённых из папок в результате синхронизации.</string>
+    <key>follow</key>
+    <string>Подписаться</string>
     <key>free_trial_detail_label</key>
     <string>Пользуйтесь бесплатно или отмените в любой момент</string>
     <key>free_trial_duration_free</key>
@@ -2882,6 +2880,8 @@
     <string>Попробовать</string>
     <key>unarchive</key>
     <string>Из&amp;nbsp;архива</string>
+    <key>unfollow</key>
+    <string>Отменить подписку</string>
     <key>unknown_duration</key>
     <string>? мин</string>
     <key>unstar</key>

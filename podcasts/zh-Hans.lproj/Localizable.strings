@@ -859,14 +859,10 @@
     <string>查看我的 2023</string>
     <key>eoy_year_completion_rate</key>
     <string>完成率</string>
-    <key>eoy_year_completion_rate_share_text</key>
-    <string>我在 2023 年的完成率</string>
     <key>eoy_year_completion_rate_subtitle</key>
     <string>从最初收听的 %1$@ 集开始，您总共完整收听的时长为 %2$@</string>
     <key>eoy_year_completion_rate_title</key>
     <string>您今年的完成率为 %1$@</string>
-    <key>eoy_year_over_share_text</key>
-    <string>我的 2023 年收听时长与 2022 年的比较情况</string>
     <key>eoy_year_over_year_subtitle_flat</key>
     <string>人们常说，一致性是成功的关键…或诸如此类的话！</string>
     <key>eoy_year_over_year_subtitle_went_down</key>
@@ -1110,6 +1106,8 @@
     <string>文件夹历史</string>
     <key>folders_history_explanation</key>
     <string>因同步而从文件夹中移除的播客列表。</string>
+    <key>follow</key>
+    <string>关注</string>
     <key>free_trial_detail_label</key>
     <string>现在无需付款 - 可随时取消</string>
     <key>free_trial_duration_free</key>
@@ -2882,6 +2880,8 @@
     <string>立即试用</string>
     <key>unarchive</key>
     <string>取消存档</string>
+    <key>unfollow</key>
+    <string>取消关注</string>
     <key>unknown_duration</key>
     <string>? 分钟</string>
     <key>unstar</key>

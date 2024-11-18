@@ -140,6 +140,12 @@ public enum FeatureFlag: String, CaseIterable {
     /// Replace Subscribe/Unsubscribe with Follow/Unfollow
     case useFollowNaming
 
+    /// Use a cookie to manage `MTAudioProcessingTap` deallocation
+    case useDefaultPlayerTapCookie
+
+    /// Use single update query to mark all episodes selected synced
+    case markAllSyncedInSingleStatement
+
     /// Enable the winback screen and flow
     case winback
 
@@ -236,6 +242,10 @@ public enum FeatureFlag: String, CaseIterable {
         case .autoDownloadOnSubscribe:
             true
         case .useFollowNaming:
+            true
+        case .useDefaultPlayerTapCookie:
+            true
+        case .markAllSyncedInSingleStatement:
             true
         case .winback:
             false

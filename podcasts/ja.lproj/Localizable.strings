@@ -859,14 +859,10 @@
     <string>マイ2023を表示</string>
     <key>eoy_year_completion_rate</key>
     <string>完了率</string>
-    <key>eoy_year_completion_rate_share_text</key>
-    <string>My 2023完了率</string>
     <key>eoy_year_completion_rate_subtitle</key>
     <string>開始した%1$@件のエピソードから合計%2$@件を最後まで聴きました</string>
     <key>eoy_year_completion_rate_title</key>
     <string>今年の完了率は%1$@ です</string>
-    <key>eoy_year_over_share_text</key>
-    <string>2023年と2022年の聴取時間の比較</string>
     <key>eoy_year_over_year_subtitle_flat</key>
     <string>一貫性が成功の鍵であるとかなんとか言われています。</string>
     <key>eoy_year_over_year_subtitle_went_down</key>
@@ -1110,6 +1106,8 @@ Pocket Casts で共有すればここに表示されるようになります</st
     <string>フォルダー履歴</string>
     <key>folders_history_explanation</key>
     <string>同期の結果としてフォルダーから削除されたポッドキャストのリスト。</string>
+    <key>follow</key>
+    <string>フォロー</string>
     <key>free_trial_detail_label</key>
     <string>無料でお試ししていつでもキャンセル可能</string>
     <key>free_trial_duration_free</key>
@@ -2878,6 +2876,8 @@ Pocket Casts で共有すればここに表示されるようになります</st
     <string>今すぐお試しください</string>
     <key>unarchive</key>
     <string>アーカイブを解除</string>
+    <key>unfollow</key>
+    <string>フォロー解除</string>
     <key>unknown_duration</key>
     <string>? 分</string>
     <key>unstar</key>

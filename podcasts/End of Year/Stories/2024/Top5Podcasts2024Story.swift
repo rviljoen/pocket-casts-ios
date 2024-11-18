@@ -48,9 +48,8 @@ struct Top5Podcasts2024Story: ShareableStory {
                 .padding(.horizontal, 24)
                 .disabled(!isSmallScreen) // Disable scrolling on larger where we shouldn't be clipping.
                 .frame(height: geometry.size.height * 0.65)
-                VStack {
-                    StoryFooter2024(title: L10n.eoyStoryTopPodcastsTitle, description: nil)
-                }
+                StoryFooter2024(title: L10n.eoyStoryTopPodcastsTitle, description: nil)
+                .padding(.bottom, 2)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }

@@ -859,14 +859,10 @@ Folge dauerte
     <string>Mein 2023 anzeigen</string>
     <key>eoy_year_completion_rate</key>
     <string>Abschlussquote</string>
-    <key>eoy_year_completion_rate_share_text</key>
-    <string>Meine Abschlussquote 2023</string>
     <key>eoy_year_completion_rate_subtitle</key>
     <string>Von deinen %1$@ angefangenen Episoden hast du insgesamt %2$@ vollständig angehört</string>
     <key>eoy_year_completion_rate_title</key>
     <string>Deine Abschlussquote lag dieses Jahr bei %1$@</string>
-    <key>eoy_year_over_share_text</key>
-    <string>Meine Audiozeit in 2023 im Vergleich zu 2022</string>
     <key>eoy_year_over_year_subtitle_flat</key>
     <string>Man sagt, Beständigkeit ist der Schlüssel zum Erfolg … oder so ähnlich!</string>
     <key>eoy_year_over_year_subtitle_went_down</key>
@@ -1110,6 +1106,8 @@ Teile sie mit Pocket Casts, dann werden sie hier angezeigt.</string>
     <string>Ordnerverlauf</string>
     <key>folders_history_explanation</key>
     <string>Eine Liste von Podcasts, die aufgrund einer Synchronisierung aus Ordnern entfernt wurden.</string>
+    <key>follow</key>
+    <string>Folgen</string>
     <key>free_trial_detail_label</key>
     <string>Jetzt keine Zahlung – jederzeit kündbar</string>
     <key>free_trial_duration_free</key>
@@ -2882,6 +2880,8 @@ Deine E-Mail-Adresse, dein Passwort und andere sensible Daten werden nicht getei
     <string>Jetzt ausprobieren</string>
     <key>unarchive</key>
     <string>Wiederherstellen</string>
+    <key>unfollow</key>
+    <string>Nicht mehr folgen</string>
     <key>unknown_duration</key>
     <string>? Min.</string>
     <key>unstar</key>
