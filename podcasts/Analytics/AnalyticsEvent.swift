@@ -162,6 +162,10 @@ enum AnalyticsEvent: String {
     case downloadsShown
     case downloadsOptionsButtonTapped
     case downloadsOptionsModalOptionTapped
+    case freeUpSpaceBannerShown
+    case freeUpSpaceManageDownloadsTapped
+    case freeUpSpaceModalShown
+    case freeUpSpaceMaybeLaterTapped
 
     case downloadsMultiSelectEntered
     case downloadsSelectAllButtonTapped

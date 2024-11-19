@@ -1,6 +1,8 @@
 7.78
 -----
 - Fix background sync when more than 2000 episodes are changed [#2448](https://github.com/Automattic/pocket-casts-ios/pull/2448)
+- File downloads use switch instead of check box for include starred [#2455](https://github.com/Automattic/pocket-casts-ios/pull/2455)
+- Show download management banner and modal when running low in disk space [#2430](https://github.com/Automattic/pocket-casts-ios/pull/2430)
 
 7.77
 -----
