@@ -251,12 +251,12 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
 
     private func showManageDownloadsModal() {
         guard FeatureFlag.manageDownloadedEpisodes.enabled,
-              ManageDownloadsBannerModel.shouldShowBanner
+              ManageDownloadsModel.shouldShowBanner
         else {
             return
         }
         Analytics.track(.freeUpSpaceModalShown, properties: ["source": "auto_download"])
-        let modalView = ManageDownloadsBannerModel(initialSize: "", onManageTap: { [weak self] in
+        let modalView = ManageDownloadsModel(initialSize: "", onManageTap: { [weak self] in
             Analytics.track(.freeUpSpaceManageDownloadsTapped, properties: ["source": "auto_download"])
             self?.dismiss(animated: true, completion: {
                 self?.navigationController?.pushViewController(DownloadedFilesViewController(), animated: true)

@@ -141,7 +141,7 @@ class DownloadsViewController: PCViewController {
 
     private func showManageDownloadsBanner() {
         guard FeatureFlag.manageDownloadedEpisodes.enabled,
-              ManageDownloadsBannerModel.shouldShowBanner
+              ManageDownloadsModel.shouldShowBanner
         else {
             downloadsTable.tableHeaderView = nil
             return
@@ -151,7 +151,7 @@ class DownloadsViewController: PCViewController {
     }
 
     private lazy var bannerView: UIView = {
-        let banner = ManageDownloadsBannerView(dataModel: ManageDownloadsBannerModel(initialSize: "", onManageTap: { [weak self] in
+        let banner = ManageDownloadsBannerView(dataModel: ManageDownloadsModel(initialSize: "", onManageTap: { [weak self] in
             Analytics.track(.freeUpSpaceManageDownloadsTapped, properties: ["source": "downloads"])
             self?.navigationController?.pushViewController(DownloadedFilesViewController(), animated: true)
         })).themedUIView

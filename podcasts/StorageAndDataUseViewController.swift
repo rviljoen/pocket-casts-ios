@@ -89,12 +89,12 @@ class StorageAndDataUseViewController: PCViewController, UITableViewDelegate, UI
 
     private func showManageDownloadsModal() {
         guard FeatureFlag.manageDownloadedEpisodes.enabled,
-              ManageDownloadsBannerModel.shouldShowBanner
+              ManageDownloadsModel.shouldShowBanner
         else {
             return
         }
         Analytics.track(.freeUpSpaceModalShown, properties: ["source": "storage_and_data_usage"])
-        let modalView = ManageDownloadsBannerModel(initialSize: "", onManageTap: { [weak self] in
+        let modalView = ManageDownloadsModel(initialSize: "", onManageTap: { [weak self] in
             Analytics.track(.freeUpSpaceManageDownloadsTapped, properties: ["source": "storage_and_data_usage"])
             self?.dismiss(animated: true, completion: {
                 self?.navigationController?.pushViewController(DownloadedFilesViewController(), animated: true)

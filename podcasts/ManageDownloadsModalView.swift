@@ -6,7 +6,7 @@ struct ManageDownloadsModalView: View {
 
     @EnvironmentObject var theme: Theme
 
-    @ObservedObject var dataModel: ManageDownloadsBannerModel
+    @ObservedObject var dataModel: ManageDownloadsModel
 
     var body: some View {
         VStack(alignment: .center, spacing: 8) {
