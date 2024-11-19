@@ -149,6 +149,9 @@ public enum FeatureFlag: String, CaseIterable {
     /// Enable the winback screen and flow
     case winback
 
+    /// Show Manage Downloaded episode banner/modal when running in low space in the device
+    case manageDownloadedEpisodes
+
     public var enabled: Bool {
         if let overriddenValue = FeatureFlagOverrideStore().overriddenValue(for: self) {
             return overriddenValue
@@ -248,6 +251,8 @@ public enum FeatureFlag: String, CaseIterable {
         case .markAllSyncedInSingleStatement:
             true
         case .winback:
+            false
+        case .manageDownloadedEpisodes:
             false
         }
     }

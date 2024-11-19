@@ -19,4 +19,22 @@ extension FileManager {
             return nil
         }
     }
+
+    static var deviceTotalSpaceInBytes: Int64? {
+        let fileURL = URL(fileURLWithPath: NSHomeDirectory() as String)
+        do {
+            let values = try fileURL.resourceValues(forKeys: [.volumeTotalCapacityKey])
+            return Int64(values.volumeTotalCapacity ?? 0)
+        } catch {
+            return nil
+        }
+    }
+
+    static var devicePercentageFreeSpace: Double? {
+        guard let total = deviceTotalSpaceInBytes,
+              let free = deviceRemainingFreeSpaceInBytes else {
+            return nil
+        }
+        return Double(free) / Double(total)
+    }
 }
