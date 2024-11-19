@@ -256,8 +256,11 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
             return
         }
         Analytics.track(.freeUpSpaceModalShown, properties: ["source": "auto_download"])
-        let modalView = ManageDownloadsBannerModel(initialSize: "", onManageTap: {
+        let modalView = ManageDownloadsBannerModel(initialSize: "", onManageTap: { [weak self] in
             Analytics.track(.freeUpSpaceManageDownloadsTapped, properties: ["source": "auto_download"])
+            self?.dismiss(animated: true, completion: {
+                self?.navigationController?.pushViewController(DownloadedFilesViewController(), animated: true)
+            })
         }, onNotNowTap: { [weak self] in
             Analytics.track(.freeUpSpaceMaybeLaterTapped)
             self?.dismiss(animated: true)
