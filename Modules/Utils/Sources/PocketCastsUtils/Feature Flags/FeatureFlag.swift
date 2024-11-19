@@ -253,7 +253,7 @@ public enum FeatureFlag: String, CaseIterable {
         case .winback:
             false
         case .manageDownloadedEpisodes:
-            false
+            true
         }
     }
 
