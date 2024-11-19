@@ -15,15 +15,21 @@ struct CancelSubscriptionView: View {
             case .available:
                 ScrollView {
                     LazyVStack(spacing: 0) {
-                        Text("Before you cancel, check out these offers")
+                        Text(L10n.cancelSubscriptionTitle)
                             .font(size: 28.0, style: .body, weight: .bold)
                             .foregroundStyle(theme.primaryText01)
                             .multilineTextAlignment(.center)
                             .padding(.top, 48.0)
                             .padding(.horizontal, 34.0)
 
-                        if let price = viewModel.monthlyPrice() {
-                            Text(price)
+                        ForEach(CancelSubscriptionOption.allCases, id: \.id) { option in
+                            if case .promotion = option, let price = viewModel.monthlyPrice() {
+                                CancelSubscriptionViewRow(option: .promotion(price: price),
+                                                          viewModel: viewModel)
+                            } else {
+                                CancelSubscriptionViewRow(option: option,
+                                                          viewModel: viewModel)
+                            }
                         }
                     }
                 }
@@ -31,7 +37,7 @@ struct CancelSubscriptionView: View {
                 Button(action: {
                     viewModel.cancelSubscriptionTap()
                 }, label: {
-                    Text("Continue to Cancellation")
+                    Text(L10n.cancelSubscriptionContinueButton)
                         .font(size: 18.0, style: .body, weight: .bold)
                         .foregroundStyle(theme.primaryText01)
                         .multilineTextAlignment(.center)
@@ -42,7 +48,7 @@ struct CancelSubscriptionView: View {
             case .loading, .unknown:
                 ProgressView()
             case .failed:
-                Text("An error occurred. Please try again later.")
+                Text(L10n.cancelSubscriptionGenericError)
                     .font(size: 18.0, style: .body, weight: .bold)
                     .foregroundStyle(theme.primaryText01)
                     .multilineTextAlignment(.center)

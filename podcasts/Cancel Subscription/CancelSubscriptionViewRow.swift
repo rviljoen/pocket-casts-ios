@@ -14,35 +14,46 @@ enum CancelSubscriptionOption: CaseIterable, Hashable, Identifiable {
     var title: String {
         switch self {
         case .promotion:
-            return "Get your next month free"
+            return L10n.cancelSubscriptionPromotionTitle
         case .newPlan:
-            return "Looking for a different plan?"
+            return L10n.cancelSubscriptionNewPlanTitle
         case .help:
-            return "Need help with Pocket Casts?"
+            return L10n.cancelSubscriptionHelpTitle
         }
     }
 
     var subtitle: String {
         switch self {
         case .promotion(let price):
-            return "Save \(price) with your next month on us."
+            return L10n.cancelSubscriptionPromotionDescription(price)
         case .newPlan:
-            return "Find the plan that’s right for you."
+            return L10n.cancelSubscriptionNewPlanDescription
         case .help:
-            return "Struggling with any features or having issues."
+            return L10n.cancelSubscriptionHelpDescription
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .promotion:
+            return "heart"
+        case .newPlan:
+            return "skipbackward"
+        case .help:
+            return "help"
         }
     }
 }
 
 struct CancelSubscriptionViewRow: View {
     let option: CancelSubscriptionOption
-    let price: String?
+    let viewModel: CancelSubscriptionViewModel
 
     @EnvironmentObject var theme: Theme
 
-    init(option: CancelSubscriptionOption, price: String? = nil) {
+    init(option: CancelSubscriptionOption, viewModel: CancelSubscriptionViewModel) {
         self.option = option
-        self.price = price
+        self.viewModel = viewModel
     }
 
     var separator: some View {
@@ -52,12 +63,45 @@ struct CancelSubscriptionViewRow: View {
             .background(theme.primaryUi05)
     }
 
+    var claimButton: some View {
+        Button(action: viewModel.claimOffer) {
+            Text(L10n.cancelSubscriptionClaimOfferButton)
+                .font(size: 13.0, style: .body, weight: .medium)
+                .foregroundStyle(theme.primaryInteractive02)
+                .frame(height: 32.0)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(
+                        cornerRadius: 8.0,
+                        style: .continuous
+                    )
+                    .fill(theme.primaryInteractive01)
+                )
+        }
+    }
+
+    var icon: some View {
+        Image(option.icon)
+            .renderingMode(.template)
+            .foregroundStyle(theme.primaryIcon01)
+            .frame(width: 24, height: 24)
+    }
+
+    var chevron: some View {
+        HStack {
+            Spacer()
+            Image("chevron-small-right")
+                .renderingMode(.template)
+                .foregroundStyle(theme.primaryIcon02)
+                .frame(width: 24, height: 24)
+        }
+    }
+
     var body: some View {
         ZStack {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .top, spacing: 0) {
-                    Rectangle()
-                        .frame(width: 24, height: 24)
+                    icon
                         .padding(.leading, 18.0)
                         .padding(.trailing, 12.0)
 
@@ -72,21 +116,8 @@ struct CancelSubscriptionViewRow: View {
                             .foregroundStyle(theme.secondaryText02)
 
                         if case .promotion = option {
-                            Button(action: test) {
-                                Text("Claim offer")
-                                    .font(size: 13.0, style: .body, weight: .medium)
-                                    .foregroundStyle(theme.primaryInteractive02)
-                                    .frame(height: 32.0)
-                                    .frame(maxWidth: .infinity)
-                                    .background(
-                                        RoundedRectangle(
-                                            cornerRadius: 8.0,
-                                            style: .continuous
-                                        )
-                                        .fill(theme.primaryInteractive01)
-                                    )
-                            }
-                            .padding(.top, 12.0)
+                            claimButton
+                                .padding(.top, 12.0)
                         }
 
                         Spacer()
@@ -104,30 +135,22 @@ struct CancelSubscriptionViewRow: View {
             .padding(.top, 24.0)
 
             if option == .newPlan || option == .help {
-                HStack {
-                    Spacer()
-                    Rectangle()
-                        .background(.red)
-                        .frame(width: 24, height: 24)
-                        .padding(.trailing, 20.0)
-                }
+                chevron
+                    .padding(.trailing, 20.0)
             }
         }
-    }
-
-    func test() {
-
     }
 }
 
 struct CancelSubscriptionViewRow_Previews: PreviewProvider {
+    static var viewModel = CancelSubscriptionViewModel(navigationController: UINavigationController())
     static var previews: some View {
         VStack(spacing: 0) {
-            CancelSubscriptionViewRow(option: .promotion(price: "$3.99"))
+            CancelSubscriptionViewRow(option: .promotion(price: "$3.99"), viewModel: viewModel)
                 .environmentObject(Theme.sharedTheme)
-            CancelSubscriptionViewRow(option: .newPlan)
+            CancelSubscriptionViewRow(option: .newPlan, viewModel: viewModel)
                 .environmentObject(Theme.sharedTheme)
-            CancelSubscriptionViewRow(option: .help)
+            CancelSubscriptionViewRow(option: .help, viewModel: viewModel)
                 .environmentObject(Theme.sharedTheme)
         }
     }

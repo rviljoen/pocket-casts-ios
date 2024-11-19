@@ -28,6 +28,10 @@ class CancelSubscriptionViewModel: PlusPurchaseModel {
         navigationController.pushViewController(viewController, animated: true)
     }
 
+    func claimOffer() {
+        //TODO: Apply one month free
+    }
+
     override func didAppear() {
         //TODO: Implement analytics
     }

@@ -386,6 +386,28 @@ internal enum L10n {
   internal static var cancelFailed: String { return L10n.tr("Localizable", "cancel_failed") }
   /// Cancel Subscription
   internal static var cancelSubscription: String { return L10n.tr("Localizable", "cancel_subscription") }
+  /// Claim offer
+  internal static var cancelSubscriptionClaimOfferButton: String { return L10n.tr("Localizable", "cancel_subscription_claim_offer_button") }
+  /// Continue to Cancellation
+  internal static var cancelSubscriptionContinueButton: String { return L10n.tr("Localizable", "cancel_subscription_continue_button") }
+  /// An error occurred. Please try again later.
+  internal static var cancelSubscriptionGenericError: String { return L10n.tr("Localizable", "cancel_subscription_generic_error") }
+  /// Struggling with any features or having issues.
+  internal static var cancelSubscriptionHelpDescription: String { return L10n.tr("Localizable", "cancel_subscription_help_description") }
+  /// Need help with Pocket Casts?
+  internal static var cancelSubscriptionHelpTitle: String { return L10n.tr("Localizable", "cancel_subscription_help_title") }
+  /// Find the plan that’s right for you.
+  internal static var cancelSubscriptionNewPlanDescription: String { return L10n.tr("Localizable", "cancel_subscription_new_plan_description") }
+  /// Looking for a different plan?
+  internal static var cancelSubscriptionNewPlanTitle: String { return L10n.tr("Localizable", "cancel_subscription_new_plan_title") }
+  /// Save %@ with your next month on us.
+  internal static func cancelSubscriptionPromotionDescription(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "cancel_subscription_promotion_description", String(describing: p1))
+  }
+  /// Get your next month free
+  internal static var cancelSubscriptionPromotionTitle: String { return L10n.tr("Localizable", "cancel_subscription_promotion_title") }
+  /// Before you cancel, check out these offers
+  internal static var cancelSubscriptionTitle: String { return L10n.tr("Localizable", "cancel_subscription_title") }
   /// Canceling...
   internal static var canceling: String { return L10n.tr("Localizable", "canceling") }
   /// %1$@ of %2$@. %3$@
