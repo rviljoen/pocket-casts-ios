@@ -255,10 +255,11 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
         else {
             return
         }
-        Analytics.track(.freeUpSpaceBannerShown)
+        Analytics.track(.freeUpSpaceModalShown, properties: ["source": "auto_download"])
         let modalView = ManageDownloadsBannerModel(initialSize: "", onManageTap: {
-
+            Analytics.track(.freeUpSpaceManageDownloadsTapped, properties: ["source": "auto_download"])
         }, onNotNowTap: { [weak self] in
+            Analytics.track(.freeUpSpaceMaybeLaterTapped)
             self?.dismiss(animated: true)
         })
         let vc = ThemedHostingController(rootView: ManageDownloadsModalView(dataModel: modalView))
