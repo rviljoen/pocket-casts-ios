@@ -25,6 +25,7 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
         NotificationCenter.default.addObserver(self, selector: #selector(podcastUpdated(_:)), name: Constants.Notifications.podcastUpdated, object: nil)
         insetAdjuster.setupInsetAdjustmentsForMiniPlayer(scrollView: settingsTable)
         Analytics.track(.settingsAutoDownloadShown)
+        showManageDownloadsModal()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -247,6 +248,27 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
         }
         return data
     }
+
+    private func showManageDownloadsModal() {
+        guard FeatureFlag.manageDownloadedEpisodes.enabled,
+              ManageDownloadsBannerModel.shouldShowBanner
+        else {
+            return
+        }
+        Analytics.track(.freeUpSpaceBannerShown)
+        let modalView = ManageDownloadsBannerModel(initialSize: "", onManageTap: {
+
+        }, onNotNowTap: { [weak self] in
+            self?.dismiss(animated: true)
+        })
+        let vc = ThemedHostingController(rootView: ManageDownloadsModalView(dataModel: modalView))
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+        }
+        present(vc, animated: true)
+    }
+
 }
 
 extension AutoDownloadLimit {
