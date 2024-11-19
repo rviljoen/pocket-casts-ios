@@ -1,19 +1,38 @@
 import SwiftUI
+import PocketCastsServer
 
-class CancelSubscriptionViewModel {
+class CancelSubscriptionViewModel: PlusPurchaseModel {
     let navigationController: UINavigationController
 
-    init(navigationController: UINavigationController) {
+    init(purchaseHandler: IAPHelper = .shared, navigationController: UINavigationController) {
         self.navigationController = navigationController
-    }
-}
 
-extension CancelSubscriptionViewModel: OnboardingModel {
-    func didAppear() {
+        super.init(purchaseHandler: purchaseHandler)
+
+        self.loadPrices()
+    }
+
+    func monthlyPrice() -> String? {
+        switch SubscriptionHelper.activeTier {
+        case .plus:
+            return pricingInfo.products.first { $0.identifier == .monthly }?.rawPrice
+        case .patron:
+            return pricingInfo.products.first { $0.identifier == .patronMonthly }?.rawPrice
+        case .none:
+            return nil
+        }
+    }
+
+    func cancelSubscriptionTap() {
+        let viewController = CancelConfirmationViewModel.make(in: navigationController)
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    override func didAppear() {
         //TODO: Implement analytics
     }
 
-    func didDismiss(type: OnboardingDismissType) {
+    override func didDismiss(type: OnboardingDismissType) {
         // Since the view can only be dismissed via swipe, only check for that
         guard type == .swipe else { return }
 

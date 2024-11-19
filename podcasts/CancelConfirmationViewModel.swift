@@ -24,8 +24,12 @@ class CancelConfirmationViewModel: OnboardingModel {
     func cancelTapped() {
         Analytics.track(.cancelConfirmationCancelButtonTapped)
 
-        let controller = CancelInfoViewController()
-        navigationController.pushViewController(controller, animated: true)
+        if FeatureFlag.winback.enabled {
+            //TODO: Add Apple API
+        } else {
+            let controller = CancelInfoViewController()
+            navigationController.pushViewController(controller, animated: true)
+        }
     }
 
     // MARK: - Show / Hide
