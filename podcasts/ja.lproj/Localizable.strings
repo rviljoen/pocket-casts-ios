@@ -725,6 +725,8 @@
     <string>これらのダウンロードされたファイルを削除してもよろしいですか ?</string>
     <key>downloaded_files_conf_message</key>
     <string>フォローを解除すると、このポッドキャストのダウンロード済みファイルは削除されます。よろしいですか ?</string>
+    <key>downloaded_files_conf_message_new</key>
+    <string>フォローを解除すると、このポッドキャストのダウンロード済みファイルはすべて削除されます。よろしいですか ?</string>
     <key>downloaded_files_conf_plural_format</key>
     <string>%1$@件のダウンロード済みファイル</string>
     <key>downloaded_files_conf_singular</key>
@@ -859,10 +861,14 @@
     <string>マイ2023を表示</string>
     <key>eoy_year_completion_rate</key>
     <string>完了率</string>
+    <key>eoy_year_completion_rate_share_text</key>
+    <string>%1$@の完了率</string>
     <key>eoy_year_completion_rate_subtitle</key>
     <string>開始した%1$@件のエピソードから合計%2$@件を最後まで聴きました</string>
     <key>eoy_year_completion_rate_title</key>
     <string>今年の完了率は%1$@ です</string>
+    <key>eoy_year_over_share_text</key>
+    <string>%1$@と%2$@の聴取時間の比較</string>
     <key>eoy_year_over_year_subtitle_flat</key>
     <string>一貫性が成功の鍵であるとかなんとか言われています。</string>
     <key>eoy_year_over_year_subtitle_went_down</key>
@@ -877,6 +883,8 @@
     <string>2022年と比較して、聴取時間が少し減りました</string>
     <key>eoy_year_over_year_title_went_up</key>
     <string>2022年と比較して、聴取時間が%1$@% に急増しました</string>
+    <key>eoy_year_ratings_share_text</key>
+    <string>%2$@は%1$@個のポッドキャストを評価し、最もよく使った評価は%3$@でした</string>
     <key>episode</key>
     <string>エピソード</string>
     <key>episode_count_plural_format</key>
@@ -966,6 +974,8 @@ Pocket Casts で共有すればここに表示されるようになります</st
     <string>ファイルを並び替え</string>
     <key>filter_auto_add_subtitle</key>
     <string>新たにフォローするポッドキャストは自動的に追加されます</string>
+    <key>filter_auto_add_subtitle_new</key>
+    <string>新たにフォローするポッドキャストは自動的に追加されます</string>
     <key>filter_chips_all_podcasts</key>
     <string>すべてのポッドキャスト</string>
     <key>filter_chips_duration</key>
@@ -982,6 +992,8 @@ Pocket Casts で共有すればここに表示されるようになります</st
     <string>一致するエピソードがありません</string>
     <key>filter_create_no_episodes_description_explanation</key>
     <string>選択した基準に一致する最新エピソードがサブスクリプションにありません</string>
+    <key>filter_create_no_episodes_description_explanation_new</key>
+    <string>選択した基準に一致する最新エピソードがポッドキャストにありません</string>
     <key>filter_create_no_episodes_description_prompt</key>
     <string>別の基準を選択してください。将来のエピソードと一致すると思われる場合はこのフィルターを保存してください。</string>
     <key>filter_create_podcasts_all_podcasts</key>
@@ -1007,6 +1019,8 @@ Pocket Casts で共有すればここに表示されるようになります</st
     <key>filter_longer_than_label</key>
     <string>次の再生時間より長い</string>
     <key>filter_manual_add_subtitle</key>
+    <string>新たにフォローするポッドキャストは自動的に追加されません</string>
+    <key>filter_manual_add_subtitle_new</key>
     <string>新たにフォローするポッドキャストは自動的に追加されません</string>
     <key>filter_media_type</key>
     <string>メディアの種類</string>
@@ -1239,6 +1253,10 @@ Pocket Casts で共有すればここに表示されるようになります</st
     <string>幅広くサポートされている OPML 形式を使用して、ポッドキャストのサブスクリプションを Pocket Casts にインポートできます。 別のアプリからファイルをエクスポートして、Pocket Casts で「開く」を選択します。
 
 注意: 自分宛てに OPML ファイルをメールで送信し、添付ファイルを長押しして Pocket Casts を選択する必要がある場合があります。</string>
+    <key>import_podcasts_description_new</key>
+    <string>幅広くサポートされている OPML 形式を使用して、ポッドキャストを Pocket Casts にインポートできます。 別のアプリからファイルをエクスポートして、Pocket Casts で「開く」を選択します。
+
+注意: 自分宛てに OPML ファイルをメールで送信し、添付ファイルを長押しして Pocket Casts を選択する必要がある場合があります。</string>
     <key>import_podcasts_title</key>
     <string>Pocket Casts へのインポート</string>
     <key>import_subtitle</key>
@@ -1282,6 +1300,8 @@ Pocket Casts で共有すればここに表示されるようになります</st
     <string>新しいキッズプロフィールの準備ができたら、アプリから通知が届きます ! ご覧になりたいものは何ですか ?</string>
     <key>kids_profile_thankyou_title</key>
     <string>ご検討いただきありがとうございます</string>
+    <key>learn_about_ratings</key>
+    <string>評価について</string>
     <key>learn_more</key>
     <string>もっと詳しく知る</string>
     <key>listening_history</key>
@@ -1495,6 +1515,18 @@ Pocket Casts で共有すればここに表示されるようになります</st
     <string>ロックを解除中</string>
     <key>pause</key>
     <string>一時停止</string>
+    <key>paywall_dynamic_headline_files</key>
+    <string>Pocket Casts Plus でファイルのアップロードなどを利用しましょう</string>
+    <key>paywall_dynamic_headline_folder</key>
+    <string>Pocket Casts Plus でポッドキャストの整理などを利用しましょう</string>
+    <key>paywall_dynamic_headline_icons</key>
+    <string>Pocket Casts Plus で専用アプリアイコンの取得などを利用しましょう</string>
+    <key>paywall_dynamic_headline_themes</key>
+    <string>Pocket Casts Plus で専用テーマの取得などを利用しましょう</string>
+    <key>paywall_dynamic_headline_up_next_shuffle</key>
+    <string>Pocket Casts Plus でエピソードのシャッフルなどを利用しましょう</string>
+    <key>paywall_dynamic_headline_watch</key>
+    <string>Pocket Casts Plus でスマートウォッチからの聴取などを利用しましょう</string>
     <key>phone</key>
     <string>スマートフォン</string>
     <key>play</key>
@@ -1505,6 +1537,10 @@ Pocket Casts で共有すればここに表示されるようになります</st
     <string>最後に再生</string>
     <key>play_next</key>
     <string>次に再生</string>
+    <key>playback_2024_completion_rate_description</key>
+    <string>開始した%1$@件のエピソードから合計%2$@件を最後まで聴きました</string>
+    <key>playback_2024_completion_rate_title</key>
+    <string>今年の完了率は%1$@ です</string>
     <key>playback_2024_description</key>
     <string>人気のポッドキャスト、カテゴリー、聴取統計などを確認します。 友達と共有したり、お気に入りのクリエイターにエールを送ったりしましょう。</string>
     <key>playback_2024_feature_description</key>
@@ -1513,8 +1549,54 @@ Pocket Casts で共有すればここに表示されるようになります</st
     <string>プレイバック2024はこちら !</string>
     <key>playback_2024_listening_time_description</key>
     <string>ポッドキャストを聴いた合計: %1$@</string>
+    <key>playback_2024_longest_episode_description</key>
+    <string>「%2$@」の「%1$@」でした</string>
+    <key>playback_2024_longest_episode_title</key>
+    <string>お聴きになった最長のエピソードは %1$@ でした</string>
+    <key>playback_2024_plus_upsell_button_title</key>
+    <string>Pocket Casts Plus をチェック</string>
+    <key>playback_2024_plus_upsell_description</key>
+    <string>Plus にサブスクリプションして Pocket Casts をサポートし、より多くの統計情報や、ブックマーク、フォルダー、チャプターの事前選択などのプレミアム機能を手に入れましょう。</string>
+    <key>playback_2024_plus_upsell_title</key>
+    <string>多くの機能をチェック !</string>
+    <key>playback_2024_ratings_description_1_to_3</key>
+    <string>クリエイターコミュニティにフィードバックを共有していただき、ありがとうございます</string>
+    <key>playback_2024_ratings_description_4_to_5</key>
+    <string>%1$@つ星評価がとても多いですね ! お気に入りのクリエイターへの熱い思いを共有していただき、ありがとうございます。</string>
+    <key>playback_2024_ratings_empty_description</key>
+    <string>番組を評価できるようになったことをご存知ですか ? お気に入りのクリエイターへの熱い思いを共有し、そのクリエイターが注目されるよう支援しましょう。</string>
+    <key>playback_2024_ratings_empty_title</key>
+    <string>おっと ! 表示するポッドキャストの評価はまだありません</string>
+    <key>playback_2024_ratings_title</key>
+    <string>あなたの評価を確認しましょう。</string>
+    <key>playback_2024_top_spot_description</key>
+    <string>「%3$@」の合計%2$@件のエピソードで計%1$@件を聴きました</string>
+    <key>playback_2024_top_spot_title</key>
+    <string>こちらが2024年にあなたが一番再生したポッドキャストです</string>
     <key>playback_2024_view_year</key>
     <string>マイプレイバック2024を表示</string>
+    <key>playback_2024_year_over_year_compare_description_down</key>
+    <string>…生きてこその人生ですね。</string>
+    <key>playback_2024_year_over_year_compare_description_same</key>
+    <string>一貫性が成功の鍵であるとかなんとか言われています。</string>
+    <key>playback_2024_year_over_year_compare_description_up</key>
+    <string>2025年でこの記録を上回る準備はできていますか ?</string>
+    <key>playback_2024_year_over_year_compare_title_down_little</key>
+    <string>2023年と比較して、聴取時間が少し減りました</string>
+    <key>playback_2024_year_over_year_compare_title_down_lot</key>
+    <string>2023年と比較して、聴取時間が%1$@急減しました</string>
+    <key>playback_2024_year_over_year_compare_title_down_over_500</key>
+    <string>2023年と比較して、聴取時間が%1$@以上減少しました</string>
+    <key>playback_2024_year_over_year_compare_title_same</key>
+    <string>2023年と比較して、聴取時間は一定していました</string>
+    <key>playback_2024_year_over_year_compare_title_up_above_maximum</key>
+    <string>2023年と比較して、聴取時間が%1$@以上増加しました</string>
+    <key>playback_2024_year_over_year_compare_title_up_little</key>
+    <string>2023年と比較して、聴取時間が少し増えました</string>
+    <key>playback_2024_year_over_year_compare_title_up_lot</key>
+    <string>2023年と比較して、聴取時間が%1$@急増しました</string>
+    <key>playback_2024_year_over_year_compare_title_up_over_500</key>
+    <string>2023年と比較して、聴取時間が%1$@以上増加しました</string>
     <key>playback_effect_all_podcasts</key>
     <string>すべてのポッドキャスト</string>
     <key>playback_effect_this_podcast</key>

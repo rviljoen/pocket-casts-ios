@@ -725,6 +725,8 @@
     <string>是否确定要删除这些下载的文件？</string>
     <key>downloaded_files_conf_message</key>
     <string>取消订阅将删除此播客中下载的所有文件，是否确定？</string>
+    <key>downloaded_files_conf_message_new</key>
+    <string>取消关注将删除此播客中下载的所有文件，是否确定？</string>
     <key>downloaded_files_conf_plural_format</key>
     <string>%1$@ 个已下载的文件</string>
     <key>downloaded_files_conf_singular</key>
@@ -859,10 +861,14 @@
     <string>查看我的 2023</string>
     <key>eoy_year_completion_rate</key>
     <string>完成率</string>
+    <key>eoy_year_completion_rate_share_text</key>
+    <string>我在 %1$@ 年的完成率</string>
     <key>eoy_year_completion_rate_subtitle</key>
     <string>从最初收听的 %1$@ 集开始，您总共完整收听的时长为 %2$@</string>
     <key>eoy_year_completion_rate_title</key>
     <string>您今年的完成率为 %1$@</string>
+    <key>eoy_year_over_share_text</key>
+    <string>我的 %1$@ 年收听时长与 %2$@ 年的比较情况</string>
     <key>eoy_year_over_year_subtitle_flat</key>
     <string>人们常说，一致性是成功的关键…或诸如此类的话！</string>
     <key>eoy_year_over_year_subtitle_went_down</key>
@@ -877,6 +883,8 @@
     <string>相比于 2022 年，您的收听时长略微减少</string>
     <key>eoy_year_over_year_title_went_up</key>
     <string>相比于 2022 年，您的收听时长激增 %1$@%</string>
+    <key>eoy_year_ratings_share_text</key>
+    <string>我在 %2$@ 年对 %1$@ 个不同的播客进行了评级，%3$@ 是我最常用的评级</string>
     <key>episode</key>
     <string>剧集</string>
     <key>episode_count_plural_format</key>
@@ -966,6 +974,8 @@
     <string>排列文件</string>
     <key>filter_auto_add_subtitle</key>
     <string>您订阅的新播客不会自动添加</string>
+    <key>filter_auto_add_subtitle_new</key>
+    <string>您关注的新播客将会自动添加</string>
     <key>filter_chips_all_podcasts</key>
     <string>您的所有播客</string>
     <key>filter_chips_duration</key>
@@ -982,6 +992,8 @@
     <string>无匹配的剧集</string>
     <key>filter_create_no_episodes_description_explanation</key>
     <string>您选择的条件与您订阅中的任何当前剧集都不匹配。</string>
+    <key>filter_create_no_episodes_description_explanation_new</key>
+    <string>您选择的条件与您播客中的任何当前剧集都不匹配</string>
     <key>filter_create_no_episodes_description_prompt</key>
     <string>请选择其他条件，或者如果您认为它将匹配将来的剧集，请保存此过滤器。</string>
     <key>filter_create_podcasts_all_podcasts</key>
@@ -1008,6 +1020,8 @@
     <string>长于</string>
     <key>filter_manual_add_subtitle</key>
     <string>您订阅的新播客不会自动添加</string>
+    <key>filter_manual_add_subtitle_new</key>
+    <string>您关注的新播客不会自动添加</string>
     <key>filter_media_type</key>
     <string>媒体类型</string>
     <key>filter_media_type_audio</key>
@@ -1239,6 +1253,10 @@
     <string>您可以使用广受支持的 OPML 格式将播客订阅导入到 Pocket casts。 从另一个应用程序导出文件并选择在 Pocket casts 中打开。
 
 注意：您可能需要通过电子邮件将 OPML 文件发送给自己，请长按附件并选择 Pocket Casts。</string>
+    <key>import_podcasts_description_new</key>
+    <string>您可以使用广受支持的 OPML 格式将播客导入到 Pocket Casts。 从另一个应用程序导出文件并选择在 Pocket Casts 中打开。
+
+注意：您可能需要通过电子邮件将 OPML 文件发送给自己，请长按附件并选择 Pocket Casts。</string>
     <key>import_podcasts_title</key>
     <string>导入到 POCKET CASTS</string>
     <key>import_subtitle</key>
@@ -1282,6 +1300,8 @@
     <string>当新的儿童个人资料准备就绪时，您会通过应用程序收到通知！ 想告诉我们您想看到的内容？</string>
     <key>kids_profile_thankyou_title</key>
     <string>感谢您的关注</string>
+    <key>learn_about_ratings</key>
+    <string>了解评分</string>
     <key>learn_more</key>
     <string>了解更多</string>
     <key>listening_history</key>
@@ -1495,6 +1515,18 @@
     <string>正在解锁</string>
     <key>pause</key>
     <string>暂停</string>
+    <key>paywall_dynamic_headline_files</key>
+    <string>通过 Pocket Casts Plus 上传文件，并享用更多功能</string>
+    <key>paywall_dynamic_headline_folder</key>
+    <string>通过 Pocket Casts Plus 整理您的播客，并享用更多功能</string>
+    <key>paywall_dynamic_headline_icons</key>
+    <string>通过 Pocket Casts Plus 获取独家应用程序图标，并享用更多功能</string>
+    <key>paywall_dynamic_headline_themes</key>
+    <string>通过 Pocket Casts Plus 获取专属主题，并享用更多功能</string>
+    <key>paywall_dynamic_headline_up_next_shuffle</key>
+    <string>通过 Pocket Casts Plus 随机排列您的剧集，并享用更多功能</string>
+    <key>paywall_dynamic_headline_watch</key>
+    <string>通过 Pocket Casts Plus 在手表上收听播客，并享用更多功能</string>
     <key>phone</key>
     <string>电话</string>
     <key>play</key>
@@ -1505,6 +1537,10 @@
     <string>播放最后一个</string>
     <key>play_next</key>
     <string>播放下一个</string>
+    <key>playback_2024_completion_rate_description</key>
+    <string>从最初收听的 %1$@ 集开始，您总共完整收听的时长为 %2$@</string>
+    <key>playback_2024_completion_rate_title</key>
+    <string>您今年的完成率为 %1$@</string>
     <key>playback_2024_description</key>
     <string>查看您的热门播客、分类、收听统计数据等。 共享给朋友，告诉他们您最喜欢的创作者！</string>
     <key>playback_2024_feature_description</key>
@@ -1513,8 +1549,54 @@
     <string>在此查看 2024 年播放记录！</string>
     <key>playback_2024_listening_time_description</key>
     <string>总共收听播客 %1$@ 次</string>
+    <key>playback_2024_longest_episode_description</key>
+    <string>它是来自“%2$@”的“%1$@”</string>
+    <key>playback_2024_longest_episode_title</key>
+    <string>您收听的最长一集为 %1$@</string>
+    <key>playback_2024_plus_upsell_button_title</key>
+    <string>了解 Pocket Casts Plus</string>
+    <key>playback_2024_plus_upsell_description</key>
+    <string>通过订阅 Plus 为 Pocket Casts 提供支持，并获得更多统计信息，以及书签、文件夹或预选章节等高级功能！</string>
+    <key>playback_2024_plus_upsell_title</key>
+    <string>还有更多精彩内容！</string>
+    <key>playback_2024_ratings_description_1_to_3</key>
+    <string>感谢您与创作者社区分享反馈意见</string>
+    <key>playback_2024_ratings_description_4_to_5</key>
+    <string>哇，这么多 %1$@ 星评价！ 感谢您对您所喜爱的创作者表达欣赏。</string>
+    <key>playback_2024_ratings_empty_description</key>
+    <string>您知道吗？现在可以对节目进行评级了。 对您所喜爱的创作者表达欣赏，并帮助他们获得关注！</string>
+    <key>playback_2024_ratings_empty_title</key>
+    <string>哎呀！ 暂无可向您展示的播客评级</string>
+    <key>playback_2024_ratings_title</key>
+    <string>让我们看看您的评级！</string>
+    <key>playback_2024_top_spot_description</key>
+    <string>您收听了 %1$@ 集“%3$@”节目，总时长为 %2$@</string>
+    <key>playback_2024_top_spot_title</key>
+    <string>这是您在 2024 年的热门播客</string>
     <key>playback_2024_view_year</key>
     <string>查看我的 2024 年播放记录</string>
+    <key>playback_2024_year_over_year_compare_description_down</key>
+    <string>啊哈…生活还得继续，不是吗？</string>
+    <key>playback_2024_year_over_year_compare_description_same</key>
+    <string>人们常说，一致性是成功的关键…或诸如此类的话！</string>
+    <key>playback_2024_year_over_year_compare_description_up</key>
+    <string>准备在 2025 年进一步提升？</string>
+    <key>playback_2024_year_over_year_compare_title_down_little</key>
+    <string>与 2023 年相比，您的收听时长略有减少</string>
+    <key>playback_2024_year_over_year_compare_title_down_lot</key>
+    <string>与 2023 年相比，您的收听时长锐减了 %1$@</string>
+    <key>playback_2024_year_over_year_compare_title_down_over_500</key>
+    <string>与 2023 年相比，您的收听时长减少了 %1$@ 以上</string>
+    <key>playback_2024_year_over_year_compare_title_same</key>
+    <string>与 2023 年相比，您的收听时长保持一致</string>
+    <key>playback_2024_year_over_year_compare_title_up_above_maximum</key>
+    <string>与 2023 年相比，您的收听时长增加了 %1$@ 以上</string>
+    <key>playback_2024_year_over_year_compare_title_up_little</key>
+    <string>与 2023 年相比，您的收听时长略有增加</string>
+    <key>playback_2024_year_over_year_compare_title_up_lot</key>
+    <string>与 2023 年相比，您的收听时长激增了 %1$@</string>
+    <key>playback_2024_year_over_year_compare_title_up_over_500</key>
+    <string>与 2023 年相比，您的收听时长增加了 %1$@ 以上</string>
     <key>playback_effect_all_podcasts</key>
     <string>所有播客</string>
     <key>playback_effect_this_podcast</key>
