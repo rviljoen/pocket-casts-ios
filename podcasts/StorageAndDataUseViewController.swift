@@ -19,7 +19,7 @@ class StorageAndDataUseViewController: PCViewController, UITableViewDelegate, UI
 
         title = L10n.settingsStorage
         Analytics.track(.settingsStorageShown)
-        showManageDownloadsModal()
+        ManageDownloadsCoordinator.showModalIfNeeded(from: self, source: "storage_and_data_usage")
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -85,29 +85,5 @@ class StorageAndDataUseViewController: PCViewController, UITableViewDelegate, UI
 
     @objc private func warnWhenNotOnWifiToggled(_ sender: UISwitch) {
         Settings.setMobileDataAllowed(!sender.isOn, userInitiated: true)
-    }
-
-    private func showManageDownloadsModal() {
-        guard FeatureFlag.manageDownloadedEpisodes.enabled,
-              ManageDownloadsModel.shouldShowBanner
-        else {
-            return
-        }
-        Analytics.track(.freeUpSpaceModalShown, properties: ["source": "storage_and_data_usage"])
-        let modalView = ManageDownloadsModel(initialSize: "", onManageTap: { [weak self] in
-            Analytics.track(.freeUpSpaceManageDownloadsTapped, properties: ["source": "storage_and_data_usage"])
-            self?.dismiss(animated: true, completion: {
-                self?.navigationController?.pushViewController(DownloadedFilesViewController(), animated: true)
-            })
-        }, onNotNowTap: { [weak self] in
-            Analytics.track(.freeUpSpaceMaybeLaterTapped)
-            self?.dismiss(animated: true)
-        })
-        let vc = ThemedHostingController(rootView: ManageDownloadsModalView(dataModel: modalView))
-        if let sheet = vc.sheetPresentationController {
-            sheet.detents = [.medium()]
-            sheet.prefersGrabberVisible = true
-        }
-        present(vc, animated: true)
     }
 }
