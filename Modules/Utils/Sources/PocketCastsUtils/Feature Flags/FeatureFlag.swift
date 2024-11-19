@@ -146,6 +146,9 @@ public enum FeatureFlag: String, CaseIterable {
     /// Use single update query to mark all episodes selected synced
     case markAllSyncedInSingleStatement
 
+    /// Enable the winback screen and flow
+    case winback
+
     /// Show Manage Downloaded episode banner/modal when running in low space in the device
     case manageDownloadedEpisodes
 
@@ -247,6 +250,8 @@ public enum FeatureFlag: String, CaseIterable {
             true
         case .markAllSyncedInSingleStatement:
             true
+        case .winback:
+            false
         case .manageDownloadedEpisodes:
             false
         }
