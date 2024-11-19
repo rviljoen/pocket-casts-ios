@@ -10,9 +10,11 @@ struct ManageDownloadsModalView: View {
 
     var body: some View {
         VStack(alignment: .center, spacing: 8) {
+            Spacer()
             Image("cleanup")
-                .foregroundColor(theme.primaryText02Selected)
+                .resizable()
                 .frame(width: 40, height: 40)
+                .foregroundColor(theme.primaryText02Selected)
             Text(L10n.manageDownloadsTitle)
                 .font(.system(size: 23, weight: .bold))
                 .foregroundColor(theme.primaryText01)
@@ -38,6 +40,8 @@ struct ManageDownloadsModalView: View {
                     .foregroundColor(theme.primaryText01)
             }.frame(height: 56)
         }
+        .padding()
+        .ignoresSafeArea()
         .background(theme.primaryUi01)
     }
 }
@@ -46,12 +50,10 @@ struct ManageDownloadsModalView: View {
     ManageDownloadsModalView(dataModel: .init(initialSize: "100 MB"))
         .environmentObject(Theme(previewTheme: .light))
         .padding(16)
-        .frame(height: 132)
 }
 
 #Preview("Dark") {
     ManageDownloadsModalView(dataModel: .init(initialSize: "100 MB"))
         .environmentObject(Theme(previewTheme: .dark))
         .padding(16)
-        .frame(height: 132)
 }
