@@ -8,6 +8,8 @@ Before anything else, please take a moment to read our [Code of Conduct](CODE-OF
 
 ## Reporting Bugs, Asking Questions, and Suggesting Features
 
+Have a suggestion or feedback? Please visit the [Pocket Casts Forum](https://forums.pocketcasts.com).
+
 For bugs, please head to [Issues](https://github.com/Automattic/pocket-casts-ios/issues) and [open a new issue](https://github.com/Automattic/pocket-casts-ios/issues/new). Screenshots help us resolve issues and answer questions faster, so thanks for including some if you can.
 
 ## Translating
