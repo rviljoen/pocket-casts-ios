@@ -3586,7 +3586,7 @@
 "playback_2024_longest_episode_title" = "The longest episode you listened to was %1$@";
 
 /* A description shown on the Longest Episode screen of Playback 2024 with the episode title and podcast title */
-"playback_2024_longest_episode_description" = "It was \"%1$@\" from \"%2$@\"";
+"playback_2024_longest_episode_description" = "It was \"%1$@\" from \"%2$@\".";
 
 /* A title shown in the button on the upsell screen to check out Pocket Casts Plus */
 "playback_2024_plus_upsell_button_title" = "Check out Pocket Casts Plus";
@@ -3601,7 +3601,7 @@
 "playback_2024_completion_rate_title" = "You completion rate this year was %1$@";
 
 /* A description shown in the Completion Rate screen for Playback 2024 */
-"playback_2024_completion_rate_description" = "From the %1$@ episodes you started you listened fully to a total of %2$@";
+"playback_2024_completion_rate_description" = "From the %1$@ episodes you started you listened fully to a total of %2$@.";
 
 /*A title used for the Playback 2024 Top Podcast screen */
 "playback_2024_top_spot_title" = "This was your top podcast in 2024";
@@ -3615,7 +3615,7 @@
 /* A description shown in Playback 2024 when the user has only made ratings of 1-3/5 for Podcasts */
 "playback_2024_ratings_description_1_to_3" = "Thanks for sharing your feedback with the creator community";
 
-"playback_2024_top_spot_description" = "You listened to %1$@ episodes for a total of %2$@ of \"%3$@\"";
+"playback_2024_top_spot_description" = "You listened to %1$@ episodes for a total of %2$@ of \"%3$@\".";
 
 /* A title shown on the Year over Year Comparison screen for a small decrease in listening time from 2023 in Playback 2024 */
 "playback_2024_year_over_year_compare_title_down_little" = "Compared to 2023, your listening time went down a little";
@@ -3648,7 +3648,7 @@
 "playback_2024_year_over_year_compare_description_up" = "Ready to top it in 2025?";
 
 /* A title shown in Playback 2024 when the user has not made any ratings. */
-"playback_2024_ratings_empty_title" = "Oh-oh! No podcast ratings to show you yet";
+"playback_2024_ratings_empty_title" = "Oh-oh! No podcast ratings to show you yet.";
 
 /* A description shown in Playback 2024 to describe the new Podcast Ratings feature */
 "playback_2024_ratings_empty_description" = "Did you know that you can rate shows now? Share the love for your favorite creators and help them get noticed!";
@@ -3834,7 +3834,7 @@
 "eoy_2024_epilogue_title" = "Thank you for listening with us this year.\nSee you in 2025!";
 
 /* Description shown on the final End of Year story for 2024 */
-"eoy_2024_epilogue_description" = "Don’t forget to share with friends and give a shout out to your favourite podcasts and creators";
+"eoy_2024_epilogue_description" = "Don’t forget to share with friends and give a shout out to your favourite podcasts and creators.";
 
 /* Message of an alert displayed to the user asking if they want to share the current story */
 "eoy_share_this_story_message" = "Paste this image to your socials and give a shout out to your favorite shows and creators";
