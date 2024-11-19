@@ -20,6 +20,9 @@ EXTRACTED_RELEASE_NOTES_PATH = File.join(RESOURCES_FOLDER, 'release_notes.txt')
 SENTRY_ORG_SLUG = 'a8c'
 SENTRY_PROJECT_SLUG = 'pocket-casts-ios'
 
+APP_STORE_CONNECT_BUILD_OUTPUT_NAME = 'podcast'
+APP_STORE_XCARCHIVE_PATH = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.xcarchive")
+
 ENV_FILE_NAME = 'pocket-casts-ios.env'
 USER_ENV_FILE_PATH = File.join(Dir.home, '.a8c-apps', ENV_FILE_NAME)
 
@@ -588,7 +591,17 @@ platform :ios do
       export_options: {
         method: 'app-store',
         manageAppVersionAndBuildNumber: false
-      }
+      },
+      # The options below might seem redundant but are currently all necessary to have predictable artifact paths to use in other lanes.
+      #
+      # - archive_path sets the full path for the xcarchive.
+      # - output_directory and output_name set the path and basename for the ipa and dSYM.
+      #
+      # We could have used 'build_path: OUTPUT_DIRECTORY_PATH' for the xcarchive...
+      # ...but doing so would append a timestamp and unnecessarily complicate other logic to get the path
+      archive_path: APP_STORE_XCARCHIVE_PATH,
+      output_directory: ARTIFACTS_FOLDER,
+      output_name: APP_STORE_CONNECT_BUILD_OUTPUT_NAME
     )
   end
 
