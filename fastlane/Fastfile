@@ -28,6 +28,7 @@ TEAM_ID_ENTERPRISE = '99KV9Z6BKV'
 
 APP_STORE_CONNECT_BUILD_OUTPUT_NAME = 'pocket-casts'
 APP_STORE_CONNECT_XCARCHIVE_PATH = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.xcarchive")
+APP_STORE_CONNECT_XCARCHIVE_ZIP_PATH = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.xcarchive.zip")
 APP_STORE_CONNECT_BUILD_IPA_PATH = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.ipa")
 APP_STORE_CONNECT_BUILD_DSYMS_PATH = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.app.dSYM.zip")
 
@@ -536,53 +537,11 @@ platform :ios do
 
     build_app_store_connect
 
-    ipa_path = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.ipa")
-    UI.user_error!("Could not find ipa at #{ipa_path}!") unless File.exist?(ipa_path)
+    upload_app_store_connect_build_to_testflight
 
-    dsym_path = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.app.dSYM.zip")
-    UI.user_error!("Could not find dSYM at #{dsym_path}!") unless File.exist?(ipa_path)
+    symbols_upload
 
-    upload_app_store_connect_build_to_testflight(
-      ipa_path: ipa_path,
-    )
-
-    symbols_upload(dsym_path: dsym_path)
-
-    next unless create_release
-
-    archive_zip_path = File.join(PROJECT_ROOT_FOLDER, 'PocketCasts.xcarchive.zip')
-    zip(path: lane_context[SharedValues::XCODEBUILD_ARCHIVE], output_path: archive_zip_path)
-
-    app_version = release_version_current
-    build_version = build_code_current
-    version = beta_release ? build_version : app_version
-
-    UI.message("Creating #{version} release on GitHub...")
-    set_github_release(
-      repository_name: GHHELPER_REPO,
-      api_token: get_required_env!('GITHUB_TOKEN'),
-      name: version,
-      tag_name: version,
-      description: begin
-        File.read(File.join(RESOURCES_FOLDER, 'release_notes.txt'))
-      rescue StandardError
-        'No changelog provided'
-      end,
-      commitish: Git.open(PROJECT_ROOT_FOLDER).log.first.sha,
-      upload_assets: [archive_zip_path.to_s],
-      is_draft: !beta_release,
-      is_prerelease: beta_release
-    )
-
-    UI.message('Sending message to Slack...')
-    slack(
-      pretext: slack_message(version: app_version, build_number: build_version, is_beta: beta_release),
-      default_payloads: [],
-      slack_url: get_required_env!('SLACK_WEBHOOK'),
-      fail_on_error: false
-    )
-
-    FileUtils.rm_rf(archive_zip_path)
+    create_release_on_github(beta_release: beta_release) if create_release
   end
 
   desc 'Builds for distribution to App Store Connect'
@@ -609,6 +568,10 @@ platform :ios do
       output_directory: ARTIFACTS_FOLDER,
       output_name: APP_STORE_CONNECT_BUILD_OUTPUT_NAME
     )
+
+    # It's convenient to have a ZIP available here for later steps.
+    UI.message("Zipping #{APP_STORE_CONNECT_XCARCHIVE_PATH} to #{APP_STORE_CONNECT_XCARCHIVE_ZIP_PATH}...")
+    zip(path: APP_STORE_CONNECT_XCARCHIVE_PATH, output_path: APP_STORE_CONNECT_XCARCHIVE_ZIP_PATH)
   end
 
   desc 'Builds and distributes via Enterprise account (Prototype Build)'
@@ -680,6 +643,39 @@ platform :ios do
       org_slug: SENTRY_ORG_SLUG,
       project_slug: SENTRY_PROJECT_SLUG,
       path: symbols_path
+    )
+  end
+
+  lane :create_release_on_github do |beta_release: true, archive_zip_path: APP_STORE_CONNECT_XCARCHIVE_ZIP_PATH|
+    require_env_vars!('GITHUB_TOKEN', 'SLACK_WEBHOOK')
+
+    app_version = release_version_current
+    build_version = build_code_current
+    version = beta_release ? build_version : app_version
+
+    UI.message("Creating #{version} release on GitHub...")
+    set_github_release(
+      repository_name: GHHELPER_REPO,
+      api_token: get_required_env!('GITHUB_TOKEN'),
+      name: version,
+      tag_name: version,
+      description: begin
+        File.read(File.join(RESOURCES_FOLDER, 'release_notes.txt'))
+      rescue StandardError
+        'No changelog provided.'
+      end,
+      commitish: Git.open(PROJECT_ROOT_FOLDER).log.first.sha,
+      upload_assets: [archive_zip_path.to_s],
+      is_draft: !beta_release,
+      is_prerelease: beta_release
+    )
+
+    UI.message('Sending message to Slack...')
+    slack(
+      pretext: slack_message(version: app_version, build_number: build_version, is_beta: beta_release),
+      default_payloads: [],
+      slack_url: get_required_env!('SLACK_WEBHOOK'),
+      fail_on_error: false
     )
   end
 
