@@ -36,11 +36,11 @@ enum CancelSubscriptionOption: CaseIterable, Hashable, Identifiable {
     var icon: String {
         switch self {
         case .promotion:
-            return "heart"
+            return "cs-heart"
         case .newPlan:
-            return "skipbackward"
+            return "cs-skipbackward"
         case .help:
-            return "help"
+            return "cs-help"
         }
     }
 }
