@@ -113,7 +113,7 @@ struct CancelSubscriptionViewRow: View {
 
                         Text(option.subtitle)
                             .font(size: 12.0, style: .body, weight: .semibold)
-                            .foregroundStyle(theme.secondaryText02)
+                            .foregroundStyle(theme.primaryText02)
 
                         if case .promotion = option {
                             claimButton
