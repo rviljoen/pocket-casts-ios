@@ -665,11 +665,11 @@ platform :ios do
     require_env_vars!('SENTRY_AUTH_TOKEN')
 
     symbols_path = dsym_path || lane_context[SharedValues::DSYM_OUTPUT_PATH]
-    sentry_upload_dsym(
+    sentry_debug_files_upload(
       auth_token: get_required_env!('SENTRY_AUTH_TOKEN'),
       org_slug: SENTRY_ORG_SLUG,
       project_slug: SENTRY_PROJECT_SLUG,
-      dsym_path: symbols_path
+      path: symbols_path
     )
   end
 
