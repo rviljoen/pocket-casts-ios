@@ -2491,6 +2491,13 @@ internal enum L10n {
   internal static var referralsShareNoGuestPassMessage: String { return L10n.tr("Localizable", "referrals_share_no_guest_pass_message") }
   /// You've shared all yours guest passes!
   internal static var referralsShareNoGuestPassTitle: String { return L10n.tr("Localizable", "referrals_share_no_guest_pass_title") }
+  /// Hi there!
+  /// 
+  /// Here is a %1$@ guest pass for Pocket Casts Plus–my favorite podcast player. It's packed with unique features like bookmarks, folders, and more that you won't find anywhere else. I think you'll love it too!
+  /// 
+  internal static func referralsSharePassLongMessage(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "referrals_share_pass_long_message", String(describing: p1))
+  }
   /// Hey! Use the link below to claim your %1$@ guest pass for Pocket Casts Plus and enjoy podcasts across all your devices!
   internal static func referralsSharePassMessage(_ p1: Any) -> String {
     return L10n.tr("Localizable", "referrals_share_pass_message", String(describing: p1))
