@@ -1,5 +1,6 @@
 import Foundation
 import LinkPresentation
+import SwiftUI
 
 class ReferralSendPassVC: ThemedHostingController<ReferralSendPassView> {
 
@@ -36,6 +37,7 @@ class ReferralSendPassVC: ThemedHostingController<ReferralSendPassView> {
             if let url = viewModel.referralURL {
                 items.append(url)
             }
+            items.append(snapshot())
             let viewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
             viewController.completionWithItemsHandler = { _, completed, _, _ in
                 if completed {
@@ -59,6 +61,12 @@ class ReferralSendPassVC: ThemedHostingController<ReferralSendPassView> {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         popoverVC?.sourceRect = centerBottomSourceRect
+    }
+
+    func snapshot() -> UIImage {
+        return ReferralCardView(offerDuration: viewModel.offerInfo.localizedOfferDurationAdjective)
+            .frame(width: ReferralCardView.Constants.defaultCardSize.width, height: ReferralCardView.Constants.defaultCardSize.height)
+            .snapshot(scale: 2)
     }
 }
 
