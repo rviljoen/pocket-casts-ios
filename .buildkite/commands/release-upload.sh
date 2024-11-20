@@ -1,12 +1,13 @@
 #!/bin/bash -eu
 
-"$(dirname "${BASH_SOURCE[0]}")/shared_setup.sh"
-
 echo "--- :arrow_down: Downloading Artifacts"
 ARTIFACTS_DIR='artifacts' # Defined in Fastlane, see ARTIFACTS_FOLDER
 STEP=testflight_build
 buildkite-agent artifact download "$ARTIFACTS_DIR/*.ipa" . --step $STEP
 buildkite-agent artifact download "$ARTIFACTS_DIR/*.zip" . --step $STEP
+
+echo "--- :rubygems: Setting up Gems"
+install_gems
 
 echo "--- :closed_lock_with_key: Installing Secrets"
 bundle exec fastlane run configure_apply
