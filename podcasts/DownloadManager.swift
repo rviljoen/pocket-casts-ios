@@ -294,7 +294,7 @@ class DownloadManager: NSObject, FilePathProtocol {
         }
         downloadingEpisodesCache[downloadTaskUUID] = episode
         episode.downloadTaskId = downloadTaskUUID
-
+        episode.lastDownloadAttemptDate = Date.now
         DataManager.sharedManager.save(episode: episode)
         NotificationCenter.postOnMainThread(notification: Constants.Notifications.episodeDownloadStatusChanged, object: episode.uuid)
 
