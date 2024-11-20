@@ -23,9 +23,11 @@ struct CancelSubscriptionView: View {
                             .padding(.horizontal, 34.0)
 
                         ForEach(CancelSubscriptionOption.allCases, id: \.id) { option in
-                            if case .promotion = option, let price = viewModel.monthlyPrice() {
-                                CancelSubscriptionViewRow(option: .promotion(price: price),
-                                                          viewModel: viewModel)
+                            if case .promotion = option {
+                                if viewModel.isEligibleForOffer, case .promotion = option, let price = viewModel.monthlyPrice() {
+                                    CancelSubscriptionViewRow(option: .promotion(price: price),
+                                                              viewModel: viewModel)
+                                }
                             } else {
                                 CancelSubscriptionViewRow(option: option,
                                                           viewModel: viewModel)
