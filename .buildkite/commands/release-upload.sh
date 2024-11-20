@@ -22,6 +22,7 @@ set -e
 
 if [[ $SENTRY_UPLOAD_STATUS -ne 0 ]]; then
   echo "^^^ +++ Failed to upload dSYM to Sentry! Make sure to download dSYM from the build step artifacts and upload manually."
+  buildkite-agent annotate --style error --context sentry-failure 'Failed to upload dSYM to Sentry! Make sure to download dSYM from the build step artifacts and upload manually.'
 fi
 
 echo "--- :github: Creating GitHub Release"
