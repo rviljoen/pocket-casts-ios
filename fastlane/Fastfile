@@ -534,13 +534,20 @@ platform :ios do
 
     build_app_store_connect
 
+    ipa_path = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.ipa")
+    UI.user_error!("Could not find ipa at #{ipa_path}!") unless File.exist?(ipa_path)
+
+    dsym_path = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.app.dSYM.zip")
+    UI.user_error!("Could not find dSYM at #{dsym_path}!") unless File.exist?(ipa_path)
+
     upload_to_testflight(
+      ipa: ipa_path,
       skip_waiting_for_build_processing: true,
       team_id: TEAM_ID_APP_STORE,
       api_key: app_store_connect_api_key
     )
 
-    symbols_upload
+    symbols_upload(dsym_path: dsym_path)
 
     next unless create_release
 
