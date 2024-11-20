@@ -17,4 +17,4 @@ steps:
     priority: 1
     plugins: [$CI_TOOLKIT]
     notify:
-    - slack: "#build-and-ship"
+      - slack: "#build-and-ship"
