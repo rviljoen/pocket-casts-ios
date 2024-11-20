@@ -1330,6 +1330,18 @@ class Settings: NSObject {
         }
     }
 
+    // MARK: - Manage Downloads
+
+    class var manageDownloadsLastCheckDate: Date? {
+        set {
+            UserDefaults.standard.set(newValue, forKey: Constants.UserDefaults.manageDownloads.lastCheckDate)
+        }
+
+        get {
+            UserDefaults.standard.object(forKey: Constants.UserDefaults.manageDownloads.lastCheckDate) as? Date
+        }
+    }
+
     // MARK: - Database (internal)
 
     class var upgradedIndexes: Bool {

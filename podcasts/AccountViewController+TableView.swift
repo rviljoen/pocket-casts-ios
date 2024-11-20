@@ -1,6 +1,7 @@
 import PocketCastsDataModel
 import SafariServices
 import PocketCastsServer
+import PocketCastsUtils
 import UIKit
 
 extension AccountViewController: UITableViewDataSource, UITableViewDelegate {
@@ -198,8 +199,12 @@ extension AccountViewController: UITableViewDataSource, UITableViewDelegate {
         case .deleteAccount:
             deleteAccountTapped()
         case .cancelSubscription:
-            let controller = CancelConfirmationViewModel.make()
-
+            let controller: UIViewController
+            if FeatureFlag.winback.enabled {
+                controller = CancelSubscriptionViewModel.make()
+            } else {
+                controller = CancelConfirmationViewModel.make()
+            }
             present(controller, animated: true, completion: nil)
             Analytics.track(.accountDetailsCancelTapped)
         case .privacyPolicy:
