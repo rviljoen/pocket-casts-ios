@@ -725,6 +725,8 @@ Tap the button below to sign into your Pocket Casts account again.</string>
     <string>Voulez-vous vraiment supprimer ces fichiers téléchargés ?</string>
     <key>downloaded_files_conf_message</key>
     <string>Le désabonnement supprimera tous les fichiers téléchargés dans ce podcast, confirmez-vous ?</string>
+    <key>downloaded_files_conf_message_new</key>
+    <string>Le désabonnement supprimera tous les fichiers téléchargés dans ce podcast, confirmez-vous ?</string>
     <key>downloaded_files_conf_plural_format</key>
     <string>%1$@ fichiers téléchargés</string>
     <key>downloaded_files_conf_singular</key>
@@ -859,10 +861,14 @@ que vous avez écouté était
     <string>Voir Mon année 2023</string>
     <key>eoy_year_completion_rate</key>
     <string>taux d’achèvement</string>
+    <key>eoy_year_completion_rate_share_text</key>
+    <string>Mon taux d’achèvement en %1$@</string>
     <key>eoy_year_completion_rate_subtitle</key>
     <string>Sur les %1$@ épisodes que vous avez commencés, vous en avez écouté %2$@ en totalité</string>
     <key>eoy_year_completion_rate_title</key>
     <string>Cette année, votre taux d’achèvement s’élève à %1$@</string>
+    <key>eoy_year_over_share_text</key>
+    <string>Mon temps d’écoute en %1$@ par rapport à %2$@</string>
     <key>eoy_year_over_year_subtitle_flat</key>
     <string>On dit que la constance est la clé du succès… ou un truc du genre !</string>
     <key>eoy_year_over_year_subtitle_went_down</key>
@@ -877,6 +883,8 @@ que vous avez écouté était
     <string>Par rapport à 2022, votre temps d’écoute a légèrement diminué</string>
     <key>eoy_year_over_year_title_went_up</key>
     <string>Par rapport à 2022, votre temps d’écoute a explosé de %1$@ %</string>
+    <key>eoy_year_ratings_share_text</key>
+    <string>J’ai évalué %1$@ podcasts différents en %2$@, que j’ai le plus souvent notés %3$@</string>
     <key>episode</key>
     <string>Épisode</string>
     <key>episode_count_plural_format</key>
@@ -966,6 +974,8 @@ Partagez-les avec Pocket Casts, ils apparaîtront ici</string>
     <string>Trier les fichiers</string>
     <key>filter_auto_add_subtitle</key>
     <string>Les nouveaux podcasts auxquels vous êtes abonné seront ajoutés automatiquement.</string>
+    <key>filter_auto_add_subtitle_new</key>
+    <string>Les nouveaux podcasts auxquels vous vous abonnez seront ajoutés automatiquement.</string>
     <key>filter_chips_all_podcasts</key>
     <string>Tous vos podcasts</string>
     <key>filter_chips_duration</key>
@@ -982,6 +992,8 @@ Partagez-les avec Pocket Casts, ils apparaîtront ici</string>
     <string>Aucun épisode correspondant</string>
     <key>filter_create_no_episodes_description_explanation</key>
     <string>Les critères que vous avez sélectionnés ne correspondent à aucun épisode actuel de vos abonnements</string>
+    <key>filter_create_no_episodes_description_explanation_new</key>
+    <string>Les critères que vous avez sélectionnés ne correspondent à aucun épisode actuel de vos podcasts</string>
     <key>filter_create_no_episodes_description_prompt</key>
     <string>Choisissez des critères différents ou enregistrez ce filtre si vous pensez qu’il correspondra à des épisodes ultérieurement.</string>
     <key>filter_create_podcasts_all_podcasts</key>
@@ -1008,6 +1020,8 @@ Partagez-les avec Pocket Casts, ils apparaîtront ici</string>
     <string>Plus de</string>
     <key>filter_manual_add_subtitle</key>
     <string>Les nouveaux podcasts auxquels vous êtes abonné ne seront pas ajoutés automatiquement.</string>
+    <key>filter_manual_add_subtitle_new</key>
+    <string>Les nouveaux podcasts auxquels vous vous abonnez ne seront pas ajoutés automatiquement.</string>
     <key>filter_media_type</key>
     <string>Type de média</string>
     <key>filter_media_type_audio</key>
@@ -1239,6 +1253,10 @@ Remarque : si vous avez supprimé l’application Raccourcis, vous recevrez une
     <string>Vous pouvez importer vos abonnements à des podcasts dans Pocket Casts en utilisant le format OPML largement pris en charge. Exportez le fichier depuis une autre application et choisissez Ouvrir dans Pocket Casts.
 
 Remarque : vous devrez peut-être vous envoyer le fichier OPML par e-mail, appuyer longuement sur la pièce jointe et sélectionner Pocket Casts.</string>
+    <key>import_podcasts_description_new</key>
+    <string>Vous pouvez importer vos podcasts dans Pocket Casts en utilisant le format OPML largement pris en charge. Exportez le fichier depuis une autre application et choisissez Ouvrir dans Pocket Casts.
+
+Remarque : vous devrez peut-être vous envoyer le fichier OPML par e-mail, appuyer longuement sur la pièce jointe et sélectionner Pocket Casts.</string>
     <key>import_podcasts_title</key>
     <string>IMPORTER DANS POCKET CASTS</string>
     <key>import_subtitle</key>
@@ -1282,6 +1300,8 @@ podcasts partout avec</string>
     <string>Vous recevrez une notification via l’application lorsque le nouveau profil enfants sera disponible ! Vous désirez nous dire ce que vous aimeriez voir ?</string>
     <key>kids_profile_thankyou_title</key>
     <string>Merci de votre intérêt</string>
+    <key>learn_about_ratings</key>
+    <string>En savoir plus sur les évaluations</string>
     <key>learn_more</key>
     <string>En savoir plus</string>
     <key>listening_history</key>
@@ -1495,6 +1515,18 @@ MISES À JOUR</string>
     <string>Déblocage</string>
     <key>pause</key>
     <string>Pause</string>
+    <key>paywall_dynamic_headline_files</key>
+    <string>Charger vos fichiers avec Pocket Casts Plus, et plus encore</string>
+    <key>paywall_dynamic_headline_folder</key>
+    <string>Organiser vos podcasts avec Pocket Casts Plus, et plus encore</string>
+    <key>paywall_dynamic_headline_icons</key>
+    <string>Obtenir des icônes d’application exclusives avec Pocket Casts Plus, et plus encore</string>
+    <key>paywall_dynamic_headline_themes</key>
+    <string>Obtenir des thèmes exclusifs avec Pocket Casts Plus, et plus encore</string>
+    <key>paywall_dynamic_headline_up_next_shuffle</key>
+    <string>Écouter vos épisodes en mode aléatoire avec Pocket Casts Plus, et plus encore</string>
+    <key>paywall_dynamic_headline_watch</key>
+    <string>Contrôler votre écoute depuis votre montre avec Pocket Casts Plus, et plus encore</string>
     <key>phone</key>
     <string>Téléphone</string>
     <key>play</key>
@@ -1505,6 +1537,10 @@ MISES À JOUR</string>
     <string>Lire dernier</string>
     <key>play_next</key>
     <string>Lire suivant</string>
+    <key>playback_2024_completion_rate_description</key>
+    <string>Sur les %1$@ épisodes que vous avez commencés, vous en avez écouté %2$@ en totalité</string>
+    <key>playback_2024_completion_rate_title</key>
+    <string>Cette année, votre taux d’achèvement s’élève à %1$@</string>
     <key>playback_2024_description</key>
     <string>Retrouvez vos meilleurs podcasts, catégories, statistiques d’écoute, et plus encore. Partagez du contenu avec vos amis et remerciez vos créateurs favoris !</string>
     <key>playback_2024_feature_description</key>
@@ -1513,8 +1549,54 @@ MISES À JOUR</string>
     <string>La rétrospective 2024 est prête !</string>
     <key>playback_2024_listening_time_description</key>
     <string>%1$@ d’écoute totale de podcasts</string>
+    <key>playback_2024_longest_episode_description</key>
+    <string>Il s’agit de « %1$@ » du podcast « %2$@ »</string>
+    <key>playback_2024_longest_episode_title</key>
+    <string>%1$@ est l’épisode le plus long que vous avez écouté</string>
+    <key>playback_2024_plus_upsell_button_title</key>
+    <string>Découvrir Pocket Casts Plus</string>
+    <key>playback_2024_plus_upsell_description</key>
+    <string>Soutenez Pocket Casts en vous abonnant à Plus et obtenez davantage de statistiques, sans compter les fonctionnalités premium comme les signets, les dossiers ou la présélection de chapitres !</string>
+    <key>playback_2024_plus_upsell_title</key>
+    <string>Et ce n’est pas tout !</string>
+    <key>playback_2024_ratings_description_1_to_3</key>
+    <string>Merci d’avoir partagé votre avis avec la communauté de créateurs</string>
+    <key>playback_2024_ratings_description_4_to_5</key>
+    <string>Waouh, tellement d’évaluations %1$@ étoiles ! Merci d’avoir partagé votre appréciation avec vos créateurs favoris.</string>
+    <key>playback_2024_ratings_empty_description</key>
+    <string>Le saviez-vous ? Vous pouvez désormais évaluer les émissions. Faites connaître vos créateurs favoris et aidez-les à se faire remarquer !</string>
+    <key>playback_2024_ratings_empty_title</key>
+    <string>Oh oh ! Aucune évaluation de podcast à vous montrer pour l’instant</string>
+    <key>playback_2024_ratings_title</key>
+    <string>Voyons vos évaluations !</string>
+    <key>playback_2024_top_spot_description</key>
+    <string>Vous avez écouté %1$@ épisodes pour une durée totale de %2$@ sur « %3$@ »</string>
+    <key>playback_2024_top_spot_title</key>
+    <string>Voici votre podcast le plus écouté en 2024</string>
     <key>playback_2024_view_year</key>
     <string>Voir ma rétrospective 2024</string>
+    <key>playback_2024_year_over_year_compare_description_down</key>
+    <string>Aaaah… il faut vivre sa vie à fond, n’est-ce pas ?</string>
+    <key>playback_2024_year_over_year_compare_description_same</key>
+    <string>On dit que la constance est la clé du succès… ou un truc du genre !</string>
+    <key>playback_2024_year_over_year_compare_description_up</key>
+    <string>On fait mieux en 2025 ?</string>
+    <key>playback_2024_year_over_year_compare_title_down_little</key>
+    <string>Par rapport à 2023, votre temps d’écoute a légèrement diminué</string>
+    <key>playback_2024_year_over_year_compare_title_down_lot</key>
+    <string>Par rapport à 2023, votre temps d’écoute a dégringolé de %1$@</string>
+    <key>playback_2024_year_over_year_compare_title_down_over_500</key>
+    <string>Par rapport à 2023, votre temps d’écoute a diminué de plus de %1$@</string>
+    <key>playback_2024_year_over_year_compare_title_same</key>
+    <string>Par rapport à 2023, votre temps d’écoute est resté assez stable</string>
+    <key>playback_2024_year_over_year_compare_title_up_above_maximum</key>
+    <string>Par rapport à 2023, votre temps d’écoute a augmenté de plus de %1$@</string>
+    <key>playback_2024_year_over_year_compare_title_up_little</key>
+    <string>Par rapport à 2023, votre temps d’écoute a légèrement augmenté</string>
+    <key>playback_2024_year_over_year_compare_title_up_lot</key>
+    <string>Par rapport à 2023, votre temps d’écoute a explosé de %1$@</string>
+    <key>playback_2024_year_over_year_compare_title_up_over_500</key>
+    <string>Par rapport à 2023, votre temps d’écoute a augmenté de plus de %1$@</string>
     <key>playback_effect_all_podcasts</key>
     <string>Tous les podcasts</string>
     <key>playback_effect_this_podcast</key>
