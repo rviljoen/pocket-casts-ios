@@ -20,14 +20,16 @@ EXTRACTED_RELEASE_NOTES_PATH = File.join(RESOURCES_FOLDER, 'release_notes.txt')
 SENTRY_ORG_SLUG = 'a8c'
 SENTRY_PROJECT_SLUG = 'pocket-casts-ios'
 
-APP_STORE_CONNECT_BUILD_OUTPUT_NAME = 'podcast'
-APP_STORE_XCARCHIVE_PATH = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.xcarchive")
-
 ENV_FILE_NAME = 'pocket-casts-ios.env'
 USER_ENV_FILE_PATH = File.join(Dir.home, '.a8c-apps', ENV_FILE_NAME)
 
 TEAM_ID_APP_STORE = 'PZYM8XX95Q'
 TEAM_ID_ENTERPRISE = '99KV9Z6BKV'
+
+APP_STORE_CONNECT_BUILD_OUTPUT_NAME = 'podcast'
+APP_STORE_CONNECT_XCARCHIVE_PATH = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.xcarchive")
+APP_STORE_CONNECT_BUILD_IPA_PATH = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.ipa")
+APP_STORE_CONNECT_BUILD_DSYMS_PATH = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.app.dSYM.zip")
 
 CODE_SIGNING_STORAGE_OPTIONS = {
   storage_mode: 's3',
@@ -540,11 +542,8 @@ platform :ios do
     dsym_path = File.join(ARTIFACTS_FOLDER, "#{APP_STORE_CONNECT_BUILD_OUTPUT_NAME}.app.dSYM.zip")
     UI.user_error!("Could not find dSYM at #{dsym_path}!") unless File.exist?(ipa_path)
 
-    upload_to_testflight(
-      ipa: ipa_path,
-      skip_waiting_for_build_processing: true,
-      team_id: TEAM_ID_APP_STORE,
-      api_key: app_store_connect_api_key
+    upload_app_store_connect_build_to_testflight(
+      ipa_path: ipa_path,
     )
 
     symbols_upload(dsym_path: dsym_path)
@@ -606,7 +605,7 @@ platform :ios do
       #
       # We could have used 'build_path: OUTPUT_DIRECTORY_PATH' for the xcarchive...
       # ...but doing so would append a timestamp and unnecessarily complicate other logic to get the path
-      archive_path: APP_STORE_XCARCHIVE_PATH,
+      archive_path: APP_STORE_CONNECT_XCARCHIVE_PATH,
       output_directory: ARTIFACTS_FOLDER,
       output_name: APP_STORE_CONNECT_BUILD_OUTPUT_NAME
     )
@@ -660,8 +659,19 @@ platform :ios do
     annotate_buildkite_with_appcenter_link
   end
 
+  lane :upload_app_store_connect_build_to_testflight do |ipa_path: APP_STORE_CONNECT_BUILD_IPA_PATH|
+    require_env_vars!(*ASC_API_KEY_ENV_VARS)
+
+    upload_to_testflight(
+      ipa: ipa_path,
+      skip_waiting_for_build_processing: true,
+      team_id: TEAM_ID_APP_STORE,
+      api_key: app_store_connect_api_key
+    )
+  end
+
   desc 'Uploads DSYM Symbols'
-  lane :symbols_upload do |dsym_path: nil|
+  lane :symbols_upload do |dsym_path: APP_STORE_CONNECT_BUILD_DSYMS_PATH|
     require_env_vars!('SENTRY_AUTH_TOKEN')
 
     symbols_path = dsym_path || lane_context[SharedValues::DSYM_OUTPUT_PATH]
