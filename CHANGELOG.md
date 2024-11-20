@@ -9,6 +9,7 @@
 - Adds Playback 2024 [#2250](https://github.com/Automattic/pocket-casts-ios/issues/2250)
 - Attempt to fix the DefaultPlayer main crash [#2420](https://github.com/Automattic/pocket-casts-ios/pull/2420)
 - Improve Apple Watch sync [#2425](https://github.com/Automattic/pocket-casts-ios/pull/2425)
+- Fix AirPlay issues with streaming [#2429](https://github.com/Automattic/pocket-casts-ios/pull/2429)
 
 7.76
 -----
