@@ -726,7 +726,7 @@ Toque no botão abaixo para entrar novamente na sua conta do Pocket Casts.</stri
     <key>downloaded_files_conf_message</key>
     <string>Cancelar a assinatura apagará todos os arquivos baixados deste podcast. Tem certeza?</string>
     <key>downloaded_files_conf_message_new</key>
-    <string>Deixar de seguir apagará todos os arquivos baixados deste podcast. Tem certeza?</string>
+    <string>Deixar de seguir excluirá todos os arquivos baixados deste podcast. Tem certeza?</string>
     <key>downloaded_files_conf_plural_format</key>
     <string>%1$@ arquivos baixados</string>
     <key>downloaded_files_conf_singular</key>
@@ -862,7 +862,7 @@ que você ouviu foi
     <key>eoy_year_completion_rate</key>
     <string>taxa de conclusão</string>
     <key>eoy_year_completion_rate_share_text</key>
-    <string>Minha taxa de conclusão %1$@</string>
+    <string>Minha taxa de conclusão de %1$@</string>
     <key>eoy_year_completion_rate_subtitle</key>
     <string>Dos %1$@ episódios que você começou, você concluiu um total de %2$@</string>
     <key>eoy_year_completion_rate_title</key>
@@ -975,7 +975,7 @@ Compartilhe-os com o Pocket Casts, e eles aparecerão aqui</string>
     <key>filter_auto_add_subtitle</key>
     <string>Os novos podcasts que você assinar serão adicionados automaticamente</string>
     <key>filter_auto_add_subtitle_new</key>
-    <string>Os novos podcasts que você seguir serão adicionados automaticamente</string>
+    <string>Os novos podcasts seguidos serão adicionados automaticamente</string>
     <key>filter_chips_all_podcasts</key>
     <string>Todos os seus podcasts</string>
     <key>filter_chips_duration</key>
@@ -1021,7 +1021,7 @@ Compartilhe-os com o Pocket Casts, e eles aparecerão aqui</string>
     <key>filter_manual_add_subtitle</key>
     <string>Os novos podcasts que você assinar não serão adicionados automaticamente</string>
     <key>filter_manual_add_subtitle_new</key>
-    <string>Os novos podcasts que você seguir não serão adicionados automaticamente</string>
+    <string>Os novos podcasts seguidos não serão adicionados automaticamente</string>
     <key>filter_media_type</key>
     <string>Tipo de mídia</string>
     <key>filter_media_type_audio</key>
@@ -1254,9 +1254,9 @@ Observação: se você excluiu o aplicativo de atalhos, será solicitado que voc
 
 Observação: talvez seja preciso enviar um e-mail com o arquivo OPML para o seu próprio endereço. Toque e segure o anexo e escolha Pocket Casts.</string>
     <key>import_podcasts_description_new</key>
-    <string>Você pode importar seus podcasts para o Pocket Casts usando o formato OPML, que é o mais compatível. Exporte o arquivo de outro app e abra com o Pocket Casts.
+    <string>Você pode importar seus podcasts para o Pocket Casts usando o formato compatível OPML. Exporte o arquivo de outro app e o abra com o Pocket Casts.
 
-Observação: talvez você precise enviar um e-mail para si mesmo com o arquivo OPML, pressionar o anexo e selecionar o Pocket Casts.</string>
+Observação: talvez seja necessário enviar um e-mail para você mesmo com o arquivo OPML, manter pressionado o anexo e selecionar o Pocket Casts.</string>
     <key>import_podcasts_title</key>
     <string>IMPORTAR PARA O POCKET CASTS</string>
     <key>import_subtitle</key>
@@ -1520,13 +1520,13 @@ ATUALIZAÇÕES</string>
     <key>paywall_dynamic_headline_folder</key>
     <string>Organize seus podcasts e muito mais com o Pocket Casts Plus</string>
     <key>paywall_dynamic_headline_icons</key>
-    <string>Adquira ícones de apps exclusivos e muito mais com o Pocket Casts Plus</string>
+    <string>Obtenha ícones de apps exclusivos e muito mais com o Pocket Casts Plus</string>
     <key>paywall_dynamic_headline_themes</key>
-    <string>Adquira temas exclusivos e muito mais com o Pocket Casts Plus</string>
+    <string>Obtenha temas exclusivos e muito mais com o Pocket Casts Plus</string>
     <key>paywall_dynamic_headline_up_next_shuffle</key>
-    <string>Ouça seus episódios no aleatório e muito mais com o Pocket Casts Plus</string>
+    <string>Ouça seus episódios no modo aleatório e muito mais com o Pocket Casts Plus</string>
     <key>paywall_dynamic_headline_watch</key>
-    <string>Ouça diretamente do seu relógio e muito mais com o Pocket Casts Plus</string>
+    <string>Ouça usando seu relógio e muito mais com o Pocket Casts Plus</string>
     <key>phone</key>
     <string>Telefone</string>
     <key>play</key>
@@ -1538,7 +1538,7 @@ ATUALIZAÇÕES</string>
     <key>play_next</key>
     <string>Reproduzir em seguida</string>
     <key>playback_2024_completion_rate_description</key>
-    <string>Dos %1$@ episódios que você começou, você concluiu um total de %2$@</string>
+    <string>Dos %1$@ episódios que você começou a ouvir, você concluiu um total de %2$@</string>
     <key>playback_2024_completion_rate_title</key>
     <string>Sua taxa de conclusão este ano foi de %1$@</string>
     <key>playback_2024_description</key>
@@ -1550,9 +1550,9 @@ ATUALIZAÇÕES</string>
     <key>playback_2024_listening_time_description</key>
     <string>Total de %1$@ ouvindo podcasts</string>
     <key>playback_2024_longest_episode_description</key>
-    <string>Foi %1$@ de %2$@</string>
+    <string>Foi o %1$@ do %2$@</string>
     <key>playback_2024_longest_episode_title</key>
-    <string>O episódio mais longo que você ouviu foi de %1$@</string>
+    <string>O episódio mais longo que você ouviu foi o %1$@</string>
     <key>playback_2024_plus_upsell_button_title</key>
     <string>Confira o Pocket Casts Plus</string>
     <key>playback_2024_plus_upsell_description</key>
@@ -1562,7 +1562,7 @@ ATUALIZAÇÕES</string>
     <key>playback_2024_ratings_description_1_to_3</key>
     <string>Obrigado por compartilhar seu feedback com a comunidade de criadores</string>
     <key>playback_2024_ratings_description_4_to_5</key>
-    <string>Uau! Quantas avaliações %1$@ com estrelas! Obrigado por compartilhar todo o seu amor pelos seus criadores favoritos.</string>
+    <string>Uau! Quantas avaliações com %1$@ estrelas! Agradecemos por compartilhar todo o seu amor pelos seus criadores favoritos.</string>
     <key>playback_2024_ratings_empty_description</key>
     <string>Sabia que agora você pode avaliar programas? Compartilhe todo o seu amor por seus criadores favoritos para atrair mais ouvintes.</string>
     <key>playback_2024_ratings_empty_title</key>
@@ -1584,13 +1584,19 @@ ATUALIZAÇÕES</string>
     <key>playback_2024_year_over_year_compare_title_down_little</key>
     <string>Em comparação com 2023, seu tempo de streaming diminuiu um pouco</string>
     <key>playback_2024_year_over_year_compare_title_down_lot</key>
-    <string>Em comparação com 2023, seu tempo de streaming teve uma queda impressionante de %1$@%</string>
+    <string>Em comparação com 2023, seu tempo de streaming teve uma queda brusca de %1$@%</string>
+    <key>playback_2024_year_over_year_compare_title_down_over_500</key>
+    <string>Em comparação com 2023, seu tempo de streaming diminuiu em %1$@</string>
     <key>playback_2024_year_over_year_compare_title_same</key>
-    <string>Em comparação com 2023, seu tempo de streaming permaneceu bem consistente</string>
+    <string>Em comparação com 2023, seu tempo de streaming foi bem parecido</string>
+    <key>playback_2024_year_over_year_compare_title_up_above_maximum</key>
+    <string>Em comparação com 2023, seu tempo de streaming aumentou em mais de %1$@</string>
     <key>playback_2024_year_over_year_compare_title_up_little</key>
-    <string>Em comparação com 2023, seu tempo de streaming subiu um pouco</string>
+    <string>Em comparação com 2023, seu tempo de streaming aumentou um pouco</string>
     <key>playback_2024_year_over_year_compare_title_up_lot</key>
-    <string>Em comparação com 2023, seu tempo de streaming teve um aumento impressionante de %1$@%</string>
+    <string>Em comparação com 2023, seu tempo de streaming teve um aumento brusco de %1$@%</string>
+    <key>playback_2024_year_over_year_compare_title_up_over_500</key>
+    <string>Em comparação com 2023, seu tempo de streaming aumentou em mais de %1$@</string>
     <key>playback_effect_all_podcasts</key>
     <string>Todos os podcasts</string>
     <key>playback_effect_this_podcast</key>

@@ -1568,7 +1568,7 @@ UM UPDATES ZU ERHALTEN</string>
     <key>playback_2024_ratings_title</key>
     <string>Sehen wir uns deine Bewertungen an!</string>
     <key>playback_2024_top_spot_description</key>
-    <string>Du hast dir insgesamt %2$@ lang %1$@ Folgen von „%3$@“ angehört</string>
+    <string>Du hast dir insgesamt %2$@ von „%3$@“ (Gesamtdauer) dieser %1$@ Folgen angehört</string>
     <key>playback_2024_top_spot_title</key>
     <string>Dies war 2024 dein Top-Podcast</string>
     <key>playback_2024_view_year</key>

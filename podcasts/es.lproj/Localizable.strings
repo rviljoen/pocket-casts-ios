@@ -884,7 +884,7 @@ que has escuchado dura
     <key>eoy_year_over_year_title_went_up</key>
     <string>En comparación con 2022, tu tiempo de escucha aumentó en un gran %1$@%.</string>
     <key>eoy_year_ratings_share_text</key>
-    <string>He valorado %1$@ podcasts diferentes en %2$@ y he indicado que %3$@ es el que más utilizo</string>
+    <string>He valorado %1$@ podcasts diferentes en %2$@ y %3$@ es la valoración que más utilizo</string>
     <key>episode</key>
     <string>Episodio</string>
     <key>episode_count_plural_format</key>
@@ -975,7 +975,7 @@ Compártelos con Pocket Casts y aparecerán aquí.</string>
     <key>filter_auto_add_subtitle</key>
     <string>Los nuevos podcasts a los que te suscribas se añadirán automáticamente</string>
     <key>filter_auto_add_subtitle_new</key>
-    <string>Los nuevos podcasts que sigas se añadirán automáticamente</string>
+    <string>Los podcasts nuevos que sigas se añadirán automáticamente</string>
     <key>filter_chips_all_podcasts</key>
     <string>Todos tus podcasts</string>
     <key>filter_chips_duration</key>
@@ -1021,7 +1021,7 @@ Compártelos con Pocket Casts y aparecerán aquí.</string>
     <key>filter_manual_add_subtitle</key>
     <string>Los nuevos podcasts a los que te suscribas no se añadirán automáticamente</string>
     <key>filter_manual_add_subtitle_new</key>
-    <string>Los nuevos podcasts que sigas no se añadirán automáticamente</string>
+    <string>Los podcasts nuevos que sigas no se añadirán automáticamente</string>
     <key>filter_media_type</key>
     <string>Tipo de archivo multimedia</string>
     <key>filter_media_type_audio</key>
@@ -1254,9 +1254,9 @@ Nota: En caso de que hayas eliminado la aplicación Atajos, se te pedirá que la
 
 Nota: Es posible que tengas que mandarte el archivo OPML a ti mismo por correo electrónico, mantén pulsado el archivo adjunto y selecciona Pocket Casts.</string>
     <key>import_podcasts_description_new</key>
-    <string>Puedes importar tus podcasts a Pocket Casts con el formato OPML, que se admite en muchas aplicaciones. Exporta el archivo en la otra aplicación y elige abrirlo en Pocket Casts.
+    <string>Puedes importar tus podcasts a Pocket Casts con el formato OPML, que se admite en muchas aplicaciones. Exporta el archivo de otra aplicación y elige abrirlo en Pocket Casts.
 
-Nota: Es posible que tengas que mandarte el archivo OPML a ti mismo por correo electrónico, mantén pulsado el archivo adjunto y selecciona Pocket Casts.</string>
+Nota: Es posible que tengas que mandarte el archivo OPML por correo electrónico. Mantén pulsado el adjunto y elige Pocket Casts.</string>
     <key>import_podcasts_title</key>
     <string>IMPORTAR A POCKET CASTS</string>
     <key>import_subtitle</key>
@@ -1524,7 +1524,7 @@ ACTUALIZACIONES</string>
     <key>paywall_dynamic_headline_themes</key>
     <string>Consigue temas exclusivos con Pocket Casts Plus, y mucho más</string>
     <key>paywall_dynamic_headline_up_next_shuffle</key>
-    <string>Reproduce tus episodios de forma aleatoria con Pocket Casts Plus y mucho más</string>
+    <string>Reproduce tus episodios de forma aleatoria con Pocket Casts Plus, y mucho más</string>
     <key>paywall_dynamic_headline_watch</key>
     <string>Escucha desde tu reloj con Pocket Casts Plus, y mucho más</string>
     <key>phone</key>
@@ -1549,12 +1549,14 @@ ACTUALIZACIONES</string>
     <string>Playback 2024 ya ha llegado.</string>
     <key>playback_2024_listening_time_description</key>
     <string>%1$@ en total escuchan pódcasts</string>
+    <key>playback_2024_longest_episode_description</key>
+    <string>Fue "%1$@" de "%2$@"</string>
     <key>playback_2024_longest_episode_title</key>
-    <string>El episodio más largo que escuchaste fue %1$@.</string>
+    <string>El episodio más largo que escuchaste fue %1$@</string>
     <key>playback_2024_plus_upsell_button_title</key>
-    <string>Descubre Pocket Casts Plus</string>
+    <string>Descubrir Pocket Casts Plus</string>
     <key>playback_2024_plus_upsell_description</key>
-    <string>Apoya Pocket Casts suscribiéndote a Plus y obtén más estadísticas, además de funciones Premium como marcadores, carpetas o preselección de capítulos.</string>
+    <string>Apoya Pocket Casts suscribiéndote a Plus y obtén más estadísticas, además de funciones Premium como los marcadores, las carpetas o la preselección de capítulos.</string>
     <key>playback_2024_plus_upsell_title</key>
     <string>¡Aún hay más!</string>
     <key>playback_2024_ratings_description_1_to_3</key>
@@ -1564,7 +1566,7 @@ ACTUALIZACIONES</string>
     <key>playback_2024_ratings_empty_description</key>
     <string>¿Sabías que ya puedes valorar los programas? Comparte el amor por tus creadores favoritos y ayúdales a darse a conocer.</string>
     <key>playback_2024_ratings_empty_title</key>
-    <string>Oh, oh. Aún no hay valoraciones de podcasts que mostrarte</string>
+    <string>Vaya. Aún no hay valoraciones de podcasts que mostrarte</string>
     <key>playback_2024_ratings_title</key>
     <string>Veamos tus valoraciones.</string>
     <key>playback_2024_top_spot_description</key>
@@ -1574,11 +1576,11 @@ ACTUALIZACIONES</string>
     <key>playback_2024_view_year</key>
     <string>Ver Mi Playback 2024</string>
     <key>playback_2024_year_over_year_compare_description_down</key>
-    <string>La vida hay que vivirla, ¿no?</string>
+    <string>Hay que vivir la vida, ¿no?</string>
     <key>playback_2024_year_over_year_compare_description_same</key>
     <string>Dicen que la constancia es la clave del éxito, ¡o algo así!</string>
     <key>playback_2024_year_over_year_compare_description_up</key>
-    <string>¿Lo superarás en 2025?</string>
+    <string>¿Todo listo para superarlo en 2025?</string>
     <key>playback_2024_year_over_year_compare_title_down_little</key>
     <string>En comparación con 2023, tu tiempo de escucha disminuyó un poco</string>
     <key>playback_2024_year_over_year_compare_title_down_lot</key>
@@ -1586,7 +1588,7 @@ ACTUALIZACIONES</string>
     <key>playback_2024_year_over_year_compare_title_down_over_500</key>
     <string>En comparación con 2023, tu tiempo de escucha disminuyó más de un %1$@</string>
     <key>playback_2024_year_over_year_compare_title_same</key>
-    <string>En comparación con 2023, tu tiempo de escucha se mantuvo más o menos igual.</string>
+    <string>En comparación con 2023, tu tiempo de escucha se mantuvo más o menos igual</string>
     <key>playback_2024_year_over_year_compare_title_up_little</key>
     <string>En comparación con 2023, tu tiempo de escucha aumentó un poco</string>
     <key>playback_2024_year_over_year_compare_title_up_lot</key>

@@ -862,7 +862,7 @@
     <key>eoy_year_completion_rate</key>
     <string>процент завершения</string>
     <key>eoy_year_completion_rate_share_text</key>
-    <string>Процент завершения (%1$@)</string>
+    <string>Процент завершения %1$@</string>
     <key>eoy_year_completion_rate_subtitle</key>
     <string>Из %1$@ запущенных выпусков всего вы дослушали до конца %2$@</string>
     <key>eoy_year_completion_rate_title</key>
@@ -884,7 +884,7 @@
     <key>eoy_year_over_year_title_went_up</key>
     <string>По сравнению с 2022 годом ваше время прослушивания возросло сразу на %1$@%</string>
     <key>eoy_year_ratings_share_text</key>
-    <string>Подкасты (%1$@), которые я оценил(а) в %2$@. Самая частая оценка —  %3$@.</string>
+    <string>Подкасты (%1$@), которые я оценил(а) в %2$@. Самая частая оценка — %3$@.</string>
     <key>episode</key>
     <string>Выпуск</string>
     <key>episode_count_plural_format</key>
@@ -993,7 +993,7 @@
     <key>filter_create_no_episodes_description_explanation</key>
     <string>Ни один текущий выпуск в ваших подписках не соответствует заданным условиям.</string>
     <key>filter_create_no_episodes_description_explanation_new</key>
-    <string>Ни один текущий выпуск в ваших подкастах не соответствует заданным условиям.</string>
+    <string>Ни один текущий выпуск в ваших подкастах не соответствует заданным условиям</string>
     <key>filter_create_no_episodes_description_prompt</key>
     <string>Измените условия или сохраните этот фильтр, если вы предполагаете появление соответствующих выпусков в будущем.</string>
     <key>filter_create_podcasts_all_podcasts</key>
@@ -1254,7 +1254,7 @@
 
 Примечание. Вам может потребоваться отправить файл OPML самому себе по электронной почте, для этого нажмите и удерживайте вложение и выберите Pocket Casts.</string>
     <key>import_podcasts_description_new</key>
-    <string>Вы можете импортировать свои подкасты в Pocket Casts, воспользовавшись распространенным форматом OPML. Экспортируйте файл из другого приложения и откройте его в Pocket Casts.
+    <string>Вы можете импортировать свои подкасты в Pocket Casts, воспользовавшись распространённым форматом OPML. Экспортируйте файл из другого приложения и откройте его в Pocket Casts.
 
 Примечание. Вам может потребоваться отправить файл OPML самому себе по электронной почте, для этого нажмите и удерживайте вложение, а затем выберите Pocket Casts.</string>
     <key>import_podcasts_title</key>
@@ -1516,17 +1516,17 @@
     <key>pause</key>
     <string>Пауза</string>
     <key>paywall_dynamic_headline_files</key>
-    <string>Загружайте свои файлы при помощи Pocket Casts Plus — и многое другое</string>
+    <string>Загружайте свои файлы при помощи Pocket Casts Plus и многое другое</string>
     <key>paywall_dynamic_headline_folder</key>
-    <string>Упорядочивайте ваши подкасты с Pocket Casts Plus — и многое другое</string>
+    <string>Упорядочивайте ваши подкасты с Pocket Casts Plus и многое другое</string>
     <key>paywall_dynamic_headline_icons</key>
-    <string>Получайте эксклюзивные значки приложений с Pocket Casts Plus — и многое другое</string>
+    <string>Получайте эксклюзивные значки приложений с Pocket Casts Plus и многое другое</string>
     <key>paywall_dynamic_headline_themes</key>
-    <string>Получайте эксклюзивные темы с Pocket Casts Plus — и многое другое</string>
+    <string>Получайте эксклюзивные темы с Pocket Casts Plus и многое другое</string>
     <key>paywall_dynamic_headline_up_next_shuffle</key>
-    <string>При помощи Pocket Casts Plus можно воспроизводить выпуски в случайном порядке и делать ещё много интересного.</string>
+    <string>При помощи Pocket Casts Plus можно воспроизводить выпуски в случайном порядке и делать ещё много интересного</string>
     <key>paywall_dynamic_headline_watch</key>
-    <string>Прослушивайте подкасты через наручные часы при помощи Pocket Casts Plus — и многое другое</string>
+    <string>Прослушивайте подкасты через наручные часы при помощи Pocket Casts Plus и многое другое</string>
     <key>phone</key>
     <string>Телефон</string>
     <key>play</key>
@@ -1556,13 +1556,13 @@
     <key>playback_2024_plus_upsell_button_title</key>
     <string>Попробуйте Pocket Casts Plus</string>
     <key>playback_2024_plus_upsell_description</key>
-    <string>Поддержите Pocket Casts, подписавшись на Plus, и пользуйтесь развёрнутой статистикой и премиум-функциями, например: закладками, папками и предварительным выбором глав.</string>
+    <string>Поддержите Pocket Casts, подписавшись на Plus, и пользуйтесь развёрнутой статистикой и премиум-функциями, например: закладками, папками и предварительным выбором глав!</string>
     <key>playback_2024_plus_upsell_title</key>
     <string>И это ещё не всё!</string>
     <key>playback_2024_ratings_description_1_to_3</key>
     <string>Благодарим за то, что поделились своим мнением с сообществом авторов</string>
     <key>playback_2024_ratings_description_4_to_5</key>
-    <string>Ого, сколько %1$@-звёздных оценок! Благодарим за то, что вы выразили признательность своим любимым авторам!</string>
+    <string>Ого, сколько %1$@-звёздных оценок! Благодарим за то, что вы выразили признательность своим любимым авторам.</string>
     <key>playback_2024_ratings_empty_description</key>
     <string>Знаете ли вы, что теперь можно оценивать шоу? Выразите признательность своим любимым авторам и помогите им стать популярнее!</string>
     <key>playback_2024_ratings_empty_title</key>
@@ -1570,21 +1570,21 @@
     <key>playback_2024_ratings_title</key>
     <string>Давайте посмотрим ваши оценки!</string>
     <key>playback_2024_top_spot_description</key>
-    <string>Вы прослушали %1$@ вып. «%3$@» общей продолжительностью %2$@</string>
+    <string>Вы прослушали %1$@ вып. Прослушано %2$@ из «%3$@»</string>
     <key>playback_2024_top_spot_title</key>
     <string>Это ваш любимый подкаст 2024 года</string>
     <key>playback_2024_view_year</key>
     <string>Посмотрите свою историю прослушиваний в 2024 году</string>
     <key>playback_2024_year_over_year_compare_description_down</key>
-    <string>Ага... надо ведь и ещё чем-то в жизни заниматься, верно?</string>
+    <string>И… как, вам хватает времени на всё остальное?</string>
     <key>playback_2024_year_over_year_compare_description_same</key>
-    <string>Говорят, постоянство — ключ к успеху… или что-то в этом роде!</string>
+    <string>Говорят, постоянство — это ключ к успеху… или что-то в этом роде!</string>
     <key>playback_2024_year_over_year_compare_description_up</key>
     <string>Готовы превзойти свой рекорд в 2025 году?</string>
     <key>playback_2024_year_over_year_compare_title_down_little</key>
-    <string>По сравнению с 2023 годом вы стали слушать немного меньше.</string>
+    <string>По сравнению с 2023 годом вы стали слушать немного меньше</string>
     <key>playback_2024_year_over_year_compare_title_down_lot</key>
-    <string>По сравнению с 2023 годом ваше время прослушивания снизилось сразу на %1$@%</string>
+    <string>По сравнению с 2023 годом ваше время прослушивания снизилось сразу на %1$@</string>
     <key>playback_2024_year_over_year_compare_title_down_over_500</key>
     <string>В сравнении с 2023 годом вы провели на %1$@ меньше времени, слушая подкасты.</string>
     <key>playback_2024_year_over_year_compare_title_same</key>
@@ -1592,9 +1592,9 @@
     <key>playback_2024_year_over_year_compare_title_up_above_maximum</key>
     <string>В сравнении с 2023 годом вы провели на %1$@ больше времени, слушая подкасты.</string>
     <key>playback_2024_year_over_year_compare_title_up_little</key>
-    <string>По сравнению с 2023 годом вы стали слушать немного больше.</string>
+    <string>По сравнению с 2023 годом вы стали слушать немного больше</string>
     <key>playback_2024_year_over_year_compare_title_up_lot</key>
-    <string>По сравнению с 2023 годом ваше время прослушивания возросло сразу на %1$@%</string>
+    <string>По сравнению с 2023 годом ваше время прослушивания возросло сразу на %1$@</string>
     <key>playback_2024_year_over_year_compare_title_up_over_500</key>
     <string>В сравнении с 2023 годом вы провели на %1$@ больше времени, слушая подкасты.</string>
     <key>playback_effect_all_podcasts</key>

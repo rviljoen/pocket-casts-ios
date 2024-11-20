@@ -1524,7 +1524,7 @@ MISES À JOUR</string>
     <key>paywall_dynamic_headline_themes</key>
     <string>Obtenir des thèmes exclusifs avec Pocket Casts Plus, et plus encore</string>
     <key>paywall_dynamic_headline_up_next_shuffle</key>
-    <string>Écoutez vos épisodes en mode aléatoire avec Pocket Casts Plus, et bien plus encore</string>
+    <string>Écouter vos épisodes en mode aléatoire avec Pocket Casts Plus, et plus encore</string>
     <key>paywall_dynamic_headline_watch</key>
     <string>Contrôler votre écoute depuis votre montre avec Pocket Casts Plus, et plus encore</string>
     <key>phone</key>
@@ -1556,7 +1556,7 @@ MISES À JOUR</string>
     <key>playback_2024_plus_upsell_button_title</key>
     <string>Découvrir Pocket Casts Plus</string>
     <key>playback_2024_plus_upsell_description</key>
-    <string>Soutenez Pocket Casts en vous abonnant à Plus et obtenez davantage de statistiques, sans compter les fonctionnalités Premium comme les signets, les dossiers ou la présélection de chapitres !</string>
+    <string>Soutenez Pocket Casts en vous abonnant à Plus et obtenez davantage de statistiques, sans compter les fonctionnalités premium comme les signets, les dossiers ou la présélection de chapitres !</string>
     <key>playback_2024_plus_upsell_title</key>
     <string>Et ce n’est pas tout !</string>
     <key>playback_2024_ratings_description_1_to_3</key>
@@ -1570,9 +1570,9 @@ MISES À JOUR</string>
     <key>playback_2024_ratings_title</key>
     <string>Voyons vos évaluations !</string>
     <key>playback_2024_top_spot_description</key>
-    <string>Vous avez écouté %1$@ épisodes pour une durée totale de %2$@ de « %3$@ »</string>
+    <string>Vous avez écouté %1$@ épisodes pour une durée totale de %2$@ sur « %3$@ »</string>
     <key>playback_2024_top_spot_title</key>
-    <string>Voilà votre podcast le plus écouté en 2024</string>
+    <string>Voici votre podcast le plus écouté en 2024</string>
     <key>playback_2024_view_year</key>
     <string>Voir ma rétrospective 2024</string>
     <key>playback_2024_year_over_year_compare_description_down</key>
