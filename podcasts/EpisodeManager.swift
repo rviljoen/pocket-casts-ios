@@ -369,6 +369,8 @@ class EpisodeManager: NSObject {
     class func urlForEpisode(_ episode: BaseEpisode, streamingOnly: Bool = false) -> URL? {
         if episode.downloaded(pathFinder: DownloadManager.shared), !streamingOnly {
             return URL(fileURLWithPath: episode.pathToDownloadedFile(pathFinder: DownloadManager.shared))
+        } else if let episode  = episode as? Episode, episode.streamDownloaded(pathFinder: DownloadManager.shared) {
+            return URL(fileURLWithPath: episode.pathToDownloadedFile(pathFinder: DownloadManager.shared))
         } else if let episode = episode as? Episode, let url = episode.downloadUrl {
             return URL(string: url)
         } else if let episode = episode as? UserEpisode {
