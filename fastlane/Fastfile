@@ -587,8 +587,8 @@ platform :ios do
   end
 
   desc 'Builds for distribution to App Store Connect'
-  lane :build_app_store_connect do
-    configure_code_signing_app_store
+  lane :build_app_store_connect do |fetch_code_signing: true|
+    configure_code_signing_app_store if fetch_code_signing
 
     build_app(
       scheme: SCHEME,
