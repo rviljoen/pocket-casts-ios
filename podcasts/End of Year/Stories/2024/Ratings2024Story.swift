@@ -55,7 +55,7 @@ struct Ratings2024Story: ShareableStory {
 
     @ViewBuilder func emptyView() -> some View {
         let words = ["OOOOPSIES"]
-        let separator = Image("star")
+        let separator = Image("playback-2024-star")
         VStack {
             Spacer()
             VStack(spacing: 16) {
