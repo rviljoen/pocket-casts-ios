@@ -31,6 +31,8 @@
 		102141192C7E33CC0065D34A /* AppStoreInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102141182C7E33CC0065D34A /* AppStoreInfo.swift */; };
 		1021411B2C7F5BF40065D34A /* PlusPaywallReviewsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1021411A2C7F5BF40065D34A /* PlusPaywallReviewsViewModel.swift */; };
 		1021411D2C7F77BB0065D34A /* appStoreInfo.json in Resources */ = {isa = PBXBuildFile; fileRef = 1021411C2C7F77BB0065D34A /* appStoreInfo.json */; };
+		102864A92CECEDB20098B2A9 /* CancelSubscriptionViewRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102864A82CECEDB20098B2A9 /* CancelSubscriptionViewRow.swift */; };
+		102864AB2CED1F990098B2A9 /* CancelSubscription.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 102864AA2CED1F990098B2A9 /* CancelSubscription.xcassets */; };
 		102D1C882C7648680088DB89 /* PlusPaywallFeatureCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 102D1C872C7648680088DB89 /* PlusPaywallFeatureCard.swift */; };
 		105A6C422BAA0B2C0025B855 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 10B558EB2BA471DF0061847C /* PrivacyInfo.xcprivacy */; };
 		105A6C432BAA0B3B0025B855 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 10B558EA2BA364420061847C /* PrivacyInfo.xcprivacy */; };
@@ -2002,6 +2004,8 @@
 		102141182C7E33CC0065D34A /* AppStoreInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreInfo.swift; sourceTree = "<group>"; };
 		1021411A2C7F5BF40065D34A /* PlusPaywallReviewsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusPaywallReviewsViewModel.swift; sourceTree = "<group>"; };
 		1021411C2C7F77BB0065D34A /* appStoreInfo.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = appStoreInfo.json; sourceTree = "<group>"; };
+		102864A82CECEDB20098B2A9 /* CancelSubscriptionViewRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelSubscriptionViewRow.swift; sourceTree = "<group>"; };
+		102864AA2CED1F990098B2A9 /* CancelSubscription.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = CancelSubscription.xcassets; sourceTree = "<group>"; };
 		102D1C872C7648680088DB89 /* PlusPaywallFeatureCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlusPaywallFeatureCard.swift; sourceTree = "<group>"; };
 		10756F822C57D00B0089D34F /* KidsProfileThankYouScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = KidsProfileThankYouScreen.swift; path = "Kids Profile/KidsProfileThankYouScreen.swift"; sourceTree = "<group>"; };
 		10756F842C5944660089D34F /* Podcast+Sortable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Podcast+Sortable.swift"; sourceTree = "<group>"; };
@@ -3904,6 +3908,7 @@
 			children = (
 				109446752CEB3A7E00977161 /* CancelSubscriptionViewModel.swift */,
 				100C99542CE7B801008D73E9 /* CancelSubscriptionView.swift */,
+				102864A82CECEDB20098B2A9 /* CancelSubscriptionViewRow.swift */,
 			);
 			path = "Cancel Subscription";
 			sourceTree = "<group>";
@@ -6477,6 +6482,7 @@
 				BD663F9217E1FBA600D48373 /* Push Sounds */,
 				4007B056230E38DD008DDCF5 /* What's New */,
 				10B558ED2BA476BA0061847C /* PrivacyInfo.xcprivacy */,
+				102864AA2CED1F990098B2A9 /* CancelSubscription.xcassets */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -8794,6 +8800,7 @@
 				4007B04D230E1FB4008DDCF5 /* WhatsNewViewController.xib in Resources */,
 				BDA002D11F7B318B00DCB4AE /* AppIcon-Dark76x76@2x~ipad.png in Resources */,
 				BDA002E41F7B318B00DCB4AE /* AppIcon-Round-Dark76x76~ipad.png in Resources */,
+				102864AB2CED1F990098B2A9 /* CancelSubscription.xcassets in Resources */,
 				BDE73A7E1B607AF5005BFE30 /* PlayerImages.xcassets in Resources */,
 				BDEAA1871BB144AD001097D9 /* DisclosureCell.xib in Resources */,
 				BD65E51D1CD9BDE000B90A67 /* OnlineSupportController.xib in Resources */,
@@ -10028,6 +10035,7 @@
 				8B3DF0CE2BE5683700EE4CA8 /* MainTabBarController+Alert.swift in Sources */,
 				BD44E36D20937D9C008BD7F0 /* PodcastChapterParser.swift in Sources */,
 				C7D5E7F12A8BF3150039F4A1 /* UIViewController+Presenting.swift in Sources */,
+				102864A92CECEDB20098B2A9 /* CancelSubscriptionViewRow.swift in Sources */,
 				BDE954E9236684E300CEB6DA /* ChaptersViewController.swift in Sources */,
 				BDF7BDD21CA2248E0045AB6D /* StatsTopCell.swift in Sources */,
 				BDA7A0A624C6BBA600ADA8AA /* SecondaryLabel.swift in Sources */,
