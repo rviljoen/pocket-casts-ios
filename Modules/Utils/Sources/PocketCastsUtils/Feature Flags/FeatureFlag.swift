@@ -152,6 +152,9 @@ public enum FeatureFlag: String, CaseIterable {
     /// Show Manage Downloaded episode banner/modal when running in low space in the device
     case manageDownloadedEpisodes
 
+    /// Uses the episode IDs from the server's response rather than our local database IDs
+    case useSyncResponseEpisodeIDs
+
     public var enabled: Bool {
         if let overriddenValue = FeatureFlagOverrideStore().overriddenValue(for: self) {
             return overriddenValue
@@ -253,7 +256,9 @@ public enum FeatureFlag: String, CaseIterable {
         case .winback:
             false
         case .manageDownloadedEpisodes:
-            false
+			true
+        case .useSyncResponseEpisodeIDs:
+            true
         }
     }
 

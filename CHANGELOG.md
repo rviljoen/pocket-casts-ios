@@ -1,12 +1,17 @@
 7.78
 -----
+- Fix background sync when more than 2000 episodes are changed [#2448](https://github.com/Automattic/pocket-casts-ios/pull/2448)
 - File downloads use switch instead of check box for include starred [#2455](https://github.com/Automattic/pocket-casts-ios/pull/2455)
+- Show download management banner and modal when running low in disk space [#2430](https://github.com/Automattic/pocket-casts-ios/pull/2430)
 
 7.77
 -----
 - Implement shuffle button in Up Next view [#1179](https://github.com/orgs/Automattic/projects/1179/views/1)
 - Use a single icon for folders upsell. [#2362](https://github.com/Automattic/pocket-casts-ios/pull/2362)
 - Adds Playback 2024 [#2250](https://github.com/Automattic/pocket-casts-ios/issues/2250)
+- Attempt to fix the DefaultPlayer main crash [#2420](https://github.com/Automattic/pocket-casts-ios/pull/2420)
+- Improve Apple Watch sync [#2425](https://github.com/Automattic/pocket-casts-ios/pull/2425)
+- Fix AirPlay issues with streaming [#2429](https://github.com/Automattic/pocket-casts-ios/pull/2429)
 
 7.76
 -----

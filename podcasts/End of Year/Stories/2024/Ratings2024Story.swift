@@ -55,7 +55,7 @@ struct Ratings2024Story: ShareableStory {
 
     @ViewBuilder func emptyView() -> some View {
         let words = ["OOOOPSIES"]
-        let separator = Image("star")
+        let separator = Image("playback-2024-star")
         VStack {
             Spacer()
             VStack(spacing: 16) {
@@ -145,7 +145,7 @@ struct Ratings2024Story: ShareableStory {
         let totalRatings = ratings.values.reduce(0, +)
         return [
             StoryShareableProvider.new(AnyView(self)),
-            StoryShareableText(L10n.eoyYearRatingsShareText(totalRatings, "2024", mostCommonRating))
+            StoryShareableText(L10n.eoyYearRatingsShareText(totalRatings, "2024", mostCommonRating), year: .y2024)
         ]
     }
 

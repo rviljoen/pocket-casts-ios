@@ -2,15 +2,17 @@ import SwiftUI
 import PocketCastsUtils
 import Combine
 
-class ManageDownloadsBannerModel: ObservableObject {
+class ManageDownloadsModel: ObservableObject {
 
     @Published var sizeOccupied: String = ""
 
     let onManageTap: (() -> ())?
+    let onNotNowTap: (() -> ())?
 
-    init(initialSize: String, onManageTap: (() -> ())? = nil) {
+    init(initialSize: String, onManageTap: (() -> ())? = nil, onNotNowTap: (() -> ())? = nil) {
         _sizeOccupied = .init(initialValue: initialSize)
         self.onManageTap = onManageTap
+        self.onNotNowTap = onNotNowTap
         loadData()
     }
 
@@ -26,20 +28,13 @@ class ManageDownloadsBannerModel: ObservableObject {
             }
         }
     }
-
-    static var shouldShowBanner: Bool {
-        guard let percentage = FileManager.devicePercentageFreeSpace else {
-            return false
-        }
-        return percentage < 0.1
-    }
 }
 
 struct ManageDownloadsBannerView: View {
 
     @EnvironmentObject var theme: Theme
 
-    @ObservedObject var dataModel: ManageDownloadsBannerModel
+    @ObservedObject var dataModel: ManageDownloadsModel
 
     var body: some View {
         HStack(alignment: .top) {

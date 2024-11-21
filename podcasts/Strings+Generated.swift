@@ -842,7 +842,7 @@ internal enum L10n {
   internal static var editClip: String { return L10n.tr("Localizable", "edit_clip") }
   /// Enable it now
   internal static var enableItNow: String { return L10n.tr("Localizable", "enable_it_now") }
-  /// Don’t forget to share with friends and give a shout out to your favourite podcasts and creators
+  /// Don’t forget to share with friends and give a shout out to your favourite podcasts and creators.
   internal static var eoy2024EpilogueDescription: String { return L10n.tr("Localizable", "eoy_2024_epilogue_description") }
   /// Thank you for listening with us this year.
   /// See you in 2025!
@@ -867,7 +867,7 @@ internal enum L10n {
   internal static var eoyStartYourFreeTrial: String { return L10n.tr("Localizable", "eoy_start_your_free_trial") }
   /// Failed to load stories.
   internal static var eoyStoriesFailed: String { return L10n.tr("Localizable", "eoy_stories_failed") }
-  /// Don't forget to share with your friends and give a shout out to your favorite podcast creators
+  /// Don't forget to share with your friends and give a shout out to your favorite podcast creators.
   internal static var eoyStoryEpilogueSubtitle: String { return L10n.tr("Localizable", "eoy_story_epilogue_subtitle") }
   /// Thank you for listening with us this year.
   /// See you in 2024!
@@ -1810,7 +1810,7 @@ internal enum L10n {
   internal static var playLast: String { return L10n.tr("Localizable", "play_last") }
   /// Play Next
   internal static var playNext: String { return L10n.tr("Localizable", "play_next") }
-  /// From the %1$@ episodes you started you listened fully to a total of %2$@
+  /// From the %1$@ episodes you started you listened fully to a total of %2$@.
   internal static func playback2024CompletionRateDescription(_ p1: Any, _ p2: Any) -> String {
     return L10n.tr("Localizable", "playback_2024_completion_rate_description", String(describing: p1), String(describing: p2))
   }
@@ -1828,7 +1828,7 @@ internal enum L10n {
   internal static func playback2024ListeningTimeDescription(_ p1: Any) -> String {
     return L10n.tr("Localizable", "playback_2024_listening_time_description", String(describing: p1))
   }
-  /// It was "%1$@" from "%2$@"
+  /// It was "%1$@" from "%2$@".
   internal static func playback2024LongestEpisodeDescription(_ p1: Any, _ p2: Any) -> String {
     return L10n.tr("Localizable", "playback_2024_longest_episode_description", String(describing: p1), String(describing: p2))
   }
@@ -1850,11 +1850,11 @@ internal enum L10n {
   }
   /// Did you know that you can rate shows now? Share the love for your favorite creators and help them get noticed!
   internal static var playback2024RatingsEmptyDescription: String { return L10n.tr("Localizable", "playback_2024_ratings_empty_description") }
-  /// Oh-oh! No podcast ratings to show you yet
+  /// Oh-oh! No podcast ratings to show you yet.
   internal static var playback2024RatingsEmptyTitle: String { return L10n.tr("Localizable", "playback_2024_ratings_empty_title") }
   /// Let’s see your ratings!
   internal static var playback2024RatingsTitle: String { return L10n.tr("Localizable", "playback_2024_ratings_title") }
-  /// You listened to %1$@ episodes for a total of %2$@ of "%3$@"
+  /// You listened to %1$@ episodes for a total of %2$@ of "%3$@".
   internal static func playback2024TopSpotDescription(_ p1: Any, _ p2: Any, _ p3: Any) -> String {
     return L10n.tr("Localizable", "playback_2024_top_spot_description", String(describing: p1), String(describing: p2), String(describing: p3))
   }
