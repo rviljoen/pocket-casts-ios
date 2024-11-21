@@ -113,8 +113,8 @@ class PlusPricingInfoModel: ObservableObject {
 
 // MARK: - Price Loading
 extension PlusPricingInfoModel {
-    func loadPrices(_ completion: (() -> Void)? = nil) {
-        if purchaseHandler.hasLoadedProducts {
+    func loadPrices(_ completion: (() -> Void)? = nil, forceReload: Bool = false) {
+        if purchaseHandler.hasLoadedProducts, !forceReload {
             priceAvailability = .available
             pricingInfo = Self.getPricingInfo(from: self.purchaseHandler)
             completion?()
