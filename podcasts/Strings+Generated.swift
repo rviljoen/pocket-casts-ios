@@ -867,7 +867,7 @@ internal enum L10n {
   internal static var eoyStartYourFreeTrial: String { return L10n.tr("Localizable", "eoy_start_your_free_trial") }
   /// Failed to load stories.
   internal static var eoyStoriesFailed: String { return L10n.tr("Localizable", "eoy_stories_failed") }
-  /// Don't forget to share with your friends and give a shout out to your favorite podcast creators.
+  /// Don't forget to share with your friends and give a shout out to your favorite podcast creators
   internal static var eoyStoryEpilogueSubtitle: String { return L10n.tr("Localizable", "eoy_story_epilogue_subtitle") }
   /// Thank you for listening with us this year.
   /// See you in 2024!
