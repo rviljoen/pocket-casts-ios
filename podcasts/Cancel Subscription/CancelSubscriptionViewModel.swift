@@ -4,6 +4,10 @@ import PocketCastsServer
 class CancelSubscriptionViewModel: PlusPurchaseModel {
     let navigationController: UINavigationController
 
+    var isEligibleForOffer: Bool {
+        purchaseHandler.isEligibleForOffer
+    }
+
     init(purchaseHandler: IAPHelper = .shared, navigationController: UINavigationController) {
         self.navigationController = navigationController
 
@@ -30,6 +34,16 @@ class CancelSubscriptionViewModel: PlusPurchaseModel {
 
     func claimOffer() {
         //TODO: Apply one month free
+    }
+
+    func showPlans() {
+        //TODO: Show plans
+    }
+
+    func showHelp() {
+        let controller = OnlineSupportController()
+        navigationController.navigationBar.isHidden = false
+        navigationController.pushViewController(controller, animated: true)
     }
 
     override func didAppear() {

@@ -1,55 +1,10 @@
 import SwiftUI
 
-enum CancelSubscriptionOption: CaseIterable, Hashable, Identifiable {
-    static var allCases: [CancelSubscriptionOption] = [.promotion(price: ""), .newPlan, .help]
-
-    case promotion(price: String)
-    case newPlan
-    case help
-
-    var id: Self {
-        return self
-    }
-
-    var title: String {
-        switch self {
-        case .promotion:
-            return L10n.cancelSubscriptionPromotionTitle
-        case .newPlan:
-            return L10n.cancelSubscriptionNewPlanTitle
-        case .help:
-            return L10n.cancelSubscriptionHelpTitle
-        }
-    }
-
-    var subtitle: String {
-        switch self {
-        case .promotion(let price):
-            return L10n.cancelSubscriptionPromotionDescription(price)
-        case .newPlan:
-            return L10n.cancelSubscriptionNewPlanDescription
-        case .help:
-            return L10n.cancelSubscriptionHelpDescription
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .promotion:
-            return "cs-heart"
-        case .newPlan:
-            return "cs-skipbackward"
-        case .help:
-            return "cs-help"
-        }
-    }
-}
-
 struct CancelSubscriptionViewRow: View {
-    let option: CancelSubscriptionOption
-    let viewModel: CancelSubscriptionViewModel
-
     @EnvironmentObject var theme: Theme
+
+    private let option: CancelSubscriptionOption
+    private let viewModel: CancelSubscriptionViewModel
 
     init(option: CancelSubscriptionOption, viewModel: CancelSubscriptionViewModel) {
         self.option = option
@@ -134,9 +89,20 @@ struct CancelSubscriptionViewRow: View {
             }
             .padding(.top, 24.0)
 
-            if option == .newPlan || option == .help {
+            if option == .availablePlans || option == .help {
                 chevron
                     .padding(.trailing, 20.0)
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            switch option {
+            case .help:
+                viewModel.showHelp()
+            case .availablePlans:
+                viewModel.showPlans()
+            default:
+                break
             }
         }
     }
@@ -148,7 +114,7 @@ struct CancelSubscriptionViewRow_Previews: PreviewProvider {
         VStack(spacing: 0) {
             CancelSubscriptionViewRow(option: .promotion(price: "$3.99"), viewModel: viewModel)
                 .environmentObject(Theme.sharedTheme)
-            CancelSubscriptionViewRow(option: .newPlan, viewModel: viewModel)
+            CancelSubscriptionViewRow(option: .availablePlans, viewModel: viewModel)
                 .environmentObject(Theme.sharedTheme)
             CancelSubscriptionViewRow(option: .help, viewModel: viewModel)
                 .environmentObject(Theme.sharedTheme)
