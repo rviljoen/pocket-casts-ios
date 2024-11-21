@@ -88,11 +88,8 @@ struct EndOfYear {
         storyModelType = Self.currentYear.modelType
     }
 
-    func showPrompt(in viewController: UIViewController) {
-        if let presented = viewController.presentedViewController {
-            presented.dismiss(animated: true)
-        }
 
+    func showPrompt(in viewController: UIViewController) {
         guard Self.isEligible, let storyModelType, !Settings.hasShownModalForEndOfYear(storyModelType.year) else {
             return
         }
@@ -109,6 +106,7 @@ struct EndOfYear {
         }
 
         BottomSheetSwiftUIWrapper.present(EndOfYearModal(year: storyModelType.year, model: viewModel), autoSize: true, in: viewController)
+        Settings.setHasShownModalForEndOfYear(true, year: storyModelType.year)
     }
 
     func showPromptBasedOnState(in viewController: UIViewController) {
