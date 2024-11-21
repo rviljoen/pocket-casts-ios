@@ -1,19 +1,56 @@
 import SwiftUI
+import PocketCastsServer
 
-class CancelSubscriptionViewModel {
+class CancelSubscriptionViewModel: PlusPurchaseModel {
     let navigationController: UINavigationController
 
-    init(navigationController: UINavigationController) {
-        self.navigationController = navigationController
+    var isEligibleForOffer: Bool {
+        purchaseHandler.isEligibleForOffer
     }
-}
 
-extension CancelSubscriptionViewModel: OnboardingModel {
-    func didAppear() {
+    init(purchaseHandler: IAPHelper = .shared, navigationController: UINavigationController) {
+        self.navigationController = navigationController
+
+        super.init(purchaseHandler: purchaseHandler)
+
+        self.loadPrices()
+    }
+
+    func monthlyPrice() -> String? {
+        switch SubscriptionHelper.activeTier {
+        case .plus:
+            return pricingInfo.products.first { $0.identifier == .monthly }?.rawPrice
+        case .patron:
+            return pricingInfo.products.first { $0.identifier == .patronMonthly }?.rawPrice
+        case .none:
+            return nil
+        }
+    }
+
+    func cancelSubscriptionTap() {
+        let viewController = CancelConfirmationViewModel.make(in: navigationController)
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func claimOffer() {
+        //TODO: Apply one month free
+    }
+
+    func showPlans() {
+        //TODO: Show plans
+    }
+
+    func showHelp() {
+        let controller = OnlineSupportController()
+        navigationController.navigationBar.isHidden = false
+        navigationController.pushViewController(controller, animated: true)
+    }
+
+    override func didAppear() {
         //TODO: Implement analytics
     }
 
-    func didDismiss(type: OnboardingDismissType) {
+    override func didDismiss(type: OnboardingDismissType) {
         // Since the view can only be dismissed via swipe, only check for that
         guard type == .swipe else { return }
 
