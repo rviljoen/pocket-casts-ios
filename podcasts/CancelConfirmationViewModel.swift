@@ -34,7 +34,7 @@ class CancelConfirmationViewModel: OnboardingModel {
                 do {
                     try await StoreKit.AppStore.showManageSubscriptions(in: windowScene)
 
-                    ApiServerHandler.shared.retrieveSubscriptionStatus()
+                    await ApiServerHandler.shared.retrieveSubscriptionStatus()
 
                     await MainActor.run {
                         navigationController.dismiss(animated: true)
