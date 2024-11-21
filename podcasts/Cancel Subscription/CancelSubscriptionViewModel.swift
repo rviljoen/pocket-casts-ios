@@ -13,7 +13,7 @@ class CancelSubscriptionViewModel: PlusPurchaseModel {
 
         super.init(purchaseHandler: purchaseHandler)
 
-        self.loadPrices(forceReload: true)
+        self.loadPrices()
     }
 
     func monthlyPrice() -> String? {
