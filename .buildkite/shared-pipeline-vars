@@ -7,6 +7,6 @@
 XCODE_VERSION="16.0"
 CI_TOOLKIT_PLUGIN_VERSION="3.7.1"
 
-# Note: `-v7` suffix added to use xcode-16.0-v7 image; remember to remove that suffix on next Xcode update
+# Note: `-v10` suffix added to use xcode-16.0-v10 image; remember to remove that suffix on next Xcode update
 export IMAGE_ID="xcode-$XCODE_VERSION-v10"
 export CI_TOOLKIT="automattic/a8c-ci-toolkit#$CI_TOOLKIT_PLUGIN_VERSION"

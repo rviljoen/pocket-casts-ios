@@ -2073,7 +2073,7 @@ Si vols noves idees, ves a la pestanya Descobrir.</string>
     <key>rating_error</key>
     <string>Ep! Hi ha hagut un error.</string>
     <key>rating_listen_to_this_podcast_message</key>
-    <string>Només els oients d'aquest pòdcast poden donar-li una valoració. Escolta uns quants episodis i després torna per a donar la teva. Estem desitjant saber què et sembla!</string>
+    <string>Només els oients d'aquest pòdcast poden fer  una valoració. Escolta uns quants episodis i després torna aquí per a fer la teva valoració. Estem desitjant saber què et sembla!</string>
     <key>rating_listen_to_this_podcast_title</key>
     <string>Per favor, escolta aquest pòdcast primer</string>
     <key>rating_login_required</key>
