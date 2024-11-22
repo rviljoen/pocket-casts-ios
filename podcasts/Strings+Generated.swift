@@ -867,7 +867,7 @@ internal enum L10n {
   internal static var eoyStartYourFreeTrial: String { return L10n.tr("Localizable", "eoy_start_your_free_trial") }
   /// Failed to load stories.
   internal static var eoyStoriesFailed: String { return L10n.tr("Localizable", "eoy_stories_failed") }
-  /// Don't forget to share with your friends and give a shout out to your favorite podcast creators.
+  /// Don't forget to share with your friends and give a shout out to your favorite podcast creators
   internal static var eoyStoryEpilogueSubtitle: String { return L10n.tr("Localizable", "eoy_story_epilogue_subtitle") }
   /// Thank you for listening with us this year.
   /// See you in 2024!
@@ -2513,6 +2513,13 @@ internal enum L10n {
   internal static var referralsShareNoGuestPassMessage: String { return L10n.tr("Localizable", "referrals_share_no_guest_pass_message") }
   /// You've shared all yours guest passes!
   internal static var referralsShareNoGuestPassTitle: String { return L10n.tr("Localizable", "referrals_share_no_guest_pass_title") }
+  /// Hi there!
+  /// 
+  /// Here is a %1$@ guest pass for Pocket Casts Plus–my favorite podcast player. It's packed with unique features like bookmarks, folders, and more that you won't find anywhere else. I think you'll love it too!
+  /// 
+  internal static func referralsSharePassLongMessage(_ p1: Any) -> String {
+    return L10n.tr("Localizable", "referrals_share_pass_long_message", String(describing: p1))
+  }
   /// Hey! Use the link below to claim your %1$@ guest pass for Pocket Casts Plus and enjoy podcasts across all your devices!
   internal static func referralsSharePassMessage(_ p1: Any) -> String {
     return L10n.tr("Localizable", "referrals_share_pass_message", String(describing: p1))
