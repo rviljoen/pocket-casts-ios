@@ -32,7 +32,13 @@ class CancelConfirmationViewModel: OnboardingModel {
                     return
                 }
                 do {
-                    try await StoreKit.AppStore.showManageSubscriptions(in: windowScene)
+                    if let groupID = await IAPHelper.shared.findLastSubscriptionPurchasedGroupID(), #available(iOS 17.0, *) {
+                        FileLog.shared.console("[CancelConfirmationViewModel] Last subscription purchased group ID: \(groupID)")
+
+                        try await StoreKit.AppStore.showManageSubscriptions(in: windowScene, subscriptionGroupID: groupID)
+                    } else {
+                        try await StoreKit.AppStore.showManageSubscriptions(in: windowScene)
+                    }
 
                     await ApiServerHandler.shared.retrieveSubscriptionStatus()
 
