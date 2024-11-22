@@ -142,7 +142,7 @@ class MessageSupportViewModel: ObservableObject {
                 if containsWatch && customFields.first(where: { $0.value.contains(FileLog.noWearableLogsAvailable) }) != nil && !ignoreUnavailableWatchLogs {
                     return Fail(error: MessageSupportFailure.watchLogMissing).eraseToAnyPublisher()
                 } else {
-                    let hasLogs = customFields.contains(where: { $0.id == SupportCustomField.debugLog.rawValue })
+                    let hasLogs = customFields.contains(where: { $0.id == SupportCustomField.debugLog.rawValue && !$0.value.hasSuffix("User opted out")})
                     var extraText = ""
                     if hasLogs {
                         extraText = "\n\nNote: Logs Attached"
