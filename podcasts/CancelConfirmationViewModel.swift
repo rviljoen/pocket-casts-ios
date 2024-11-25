@@ -1,7 +1,6 @@
 import SwiftUI
 import PocketCastsServer
 import PocketCastsUtils
-import StoreKit
 
 class CancelConfirmationViewModel: OnboardingModel {
     let navigationController: UINavigationController
@@ -32,13 +31,7 @@ class CancelConfirmationViewModel: OnboardingModel {
                     return
                 }
                 do {
-                    if let groupID = await IAPHelper.shared.findLastSubscriptionPurchasedGroupID(), #available(iOS 17.0, *) {
-                        FileLog.shared.console("[CancelConfirmationViewModel] Last subscription purchased group ID: \(groupID)")
-
-                        try await StoreKit.AppStore.showManageSubscriptions(in: windowScene, subscriptionGroupID: groupID)
-                    } else {
-                        try await StoreKit.AppStore.showManageSubscriptions(in: windowScene)
-                    }
+                    try await IAPHelper.shared.showManageSubscriptions(in: windowScene)
 
                     await ApiServerHandler.shared.retrieveSubscriptionStatus()
 
