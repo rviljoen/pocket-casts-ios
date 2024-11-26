@@ -37,7 +37,10 @@ class CancelSubscriptionViewModel: PlusPurchaseModel {
     }
 
     func showPlans() {
-        //TODO: Show plans
+        let view = CancelSubscriptionPlansView(viewModel: self)
+        let controller = OnboardingHostingViewController(rootView: view)
+        controller.navBarIsHidden = true
+        navigationController.pushViewController(controller, animated: true)
     }
 
     func showHelp() {
