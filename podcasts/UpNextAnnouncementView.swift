@@ -20,7 +20,7 @@ struct UpNextAnnouncementView: View {
     }
 }
 
-struct UpNextAnnouncementView__Previews: PreviewProvider {
+struct UpNextAnnouncementView_Previews: PreviewProvider {
     static var previews: some View {
         UpNextAnnouncementView()
             .setupDefaultEnvironment()
