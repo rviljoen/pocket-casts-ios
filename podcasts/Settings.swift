@@ -327,19 +327,6 @@ class Settings: NSObject {
         return UserDefaults.standard.bool(forKey: Settings.upNextShuffleKey)
     }
 
-    static let upNextShuffleAnnouncementKey = "SJUpNextShuffleAnnouncementKey"
-    class func setUpNextShuffleAnnouncementPresented(_ presented: Bool) {
-        guard FeatureFlag.upNextShuffle.enabled else { return }
-        UserDefaults.standard.set(presented, forKey: Settings.upNextShuffleAnnouncementKey)
-    }
-
-    class func upNextShuffleAnnouncementPresented() -> Bool {
-        guard FeatureFlag.upNextShuffle.enabled else {
-            return false
-        }
-        return UserDefaults.standard.bool(forKey: Settings.upNextShuffleAnnouncementKey)
-    }
-
     // MARK: - Discover Region
 
     private static let chartRegion = "SJChartRegion"
