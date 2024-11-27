@@ -12,6 +12,7 @@
 - File downloads use switch instead of check box for include starred [#2455](https://github.com/Automattic/pocket-casts-ios/pull/2455)
 - Show download management banner and modal when running low in disk space [#2430](https://github.com/Automattic/pocket-casts-ios/pull/2430)
 - Referrals: update share message and add image [#2468](https://github.com/Automattic/pocket-casts-ios/pull/2468)
+- Fix playback of bookmarks when episode was previously marked as played [#2262](https://github.com/Automattic/pocket-casts-ios/pull/2262)
 
 7.77
 -----
