@@ -416,6 +416,12 @@ class EpisodeManager: NSObject {
         }
     }
 
+    class func hasDownloadedEpisodes() -> Bool {
+        let query = "episodeStatus == \(DownloadStatus.downloaded.rawValue) LIMIT 1"
+        let list = DataManager.sharedManager.findEpisodesWhere(customWhere: query, arguments: nil)
+        return !list.isEmpty
+    }
+
     private class func allDownloadedEpisodes() -> [Episode] {
         let query = "episodeStatus == \(DownloadStatus.downloaded.rawValue)"
 

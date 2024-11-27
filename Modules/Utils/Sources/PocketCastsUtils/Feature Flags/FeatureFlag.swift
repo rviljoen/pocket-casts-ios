@@ -146,6 +146,15 @@ public enum FeatureFlag: String, CaseIterable {
     /// Use single update query to mark all episodes selected synced
     case markAllSyncedInSingleStatement
 
+    /// Enable the winback screen and flow
+    case winback
+
+    /// Show Manage Downloaded episode banner/modal when running in low space in the device
+    case manageDownloadedEpisodes
+
+    /// Uses the episode IDs from the server's response rather than our local database IDs
+    case useSyncResponseEpisodeIDs
+
     public var enabled: Bool {
         if let overriddenValue = FeatureFlagOverrideStore().overriddenValue(for: self) {
             return overriddenValue
@@ -243,6 +252,12 @@ public enum FeatureFlag: String, CaseIterable {
         case .useDefaultPlayerTapCookie:
             true
         case .markAllSyncedInSingleStatement:
+            true
+        case .winback:
+            false
+        case .manageDownloadedEpisodes:
+			true
+        case .useSyncResponseEpisodeIDs:
             true
         }
     }

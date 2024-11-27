@@ -199,6 +199,11 @@ struct Constants {
             static let showTip = "referrals.showtip"
             static let claimURL = "referrals.claimURL"
         }
+
+        enum manageDownloads {
+            static let lastCheckDate = "manageDownloadsLastCheckDate"
+        }
+
     }
 
     enum Values {
