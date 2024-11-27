@@ -1,3 +1,11 @@
+7.80
+-----
+
+
+7.79
+-----
+
+
 7.78
 -----
 - Fix background sync when more than 2000 episodes are changed [#2448](https://github.com/Automattic/pocket-casts-ios/pull/2448)
