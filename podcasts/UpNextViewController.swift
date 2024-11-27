@@ -1,5 +1,4 @@
 import PocketCastsDataModel
-import SwiftUI
 import PocketCastsUtils
 import PocketCastsServer
 import UIKit
