@@ -1,4 +1,5 @@
 import PocketCastsDataModel
+import SwiftUI
 import PocketCastsUtils
 import PocketCastsServer
 import UIKit
@@ -169,6 +170,8 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
         track(.upNextShown, properties: ["source": source])
 
         AnalyticsHelper.upNextOpened()
+
+        presentUpNextAnnouncementIfNecessary()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -268,6 +271,29 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
             clearQueueButton.setTitleColor(AppTheme.colorForStyle(.primaryText02, themeOverride: themeOverride).withAlphaComponent(0.5), for: .disabled)
             clearQueueButton.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .bold)
             clearQueueButton.addTarget(self, action: #selector(clearQueueTapped), for: .touchUpInside)
+        }
+    }
+
+    private func presentUpNextAnnouncementIfNecessary() {
+        let queueCount = PlaybackManager.shared.queue.upNextCount()
+        if !FeatureFlag.upNextShuffle.enabled || Settings.upNextShuffleAnnouncementPresented() || queueCount == 0 {
+            return
+        }
+        let announcementView = UpNextAnnouncementView() { [weak self] in
+            self?.dismiss(animated: true, completion: nil)
+        }.setupDefaultEnvironment()
+        let viewController = UIHostingController(rootView: announcementView)
+        viewController.view.backgroundColor = AppTheme.colorForStyle(.primaryUi01, themeOverride: themeOverride)
+        if let sheetController = viewController.sheetPresentationController {
+            if #available(iOS 16.0, *) {
+                sheetController.detents = [.custom(resolver: { _ in 290 })]
+            } else {
+                sheetController.detents = [.medium()]
+            }
+            sheetController.prefersGrabberVisible = true
+        }
+        present(viewController, animated: true) {
+            Settings.setUpNextShuffleAnnouncementPresented(true)
         }
     }
 
