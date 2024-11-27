@@ -2243,7 +2243,7 @@ extension PlaybackManager {
         #if !os(watchOS)
         // Save the playback time before we start playing so the player will jump to the correct starting time when it does load
         dataManager.saveEpisode(playedUpTo: bookmark.time, episode: episode, updateSyncFlag: false)
-
+        dataManager.saveEpisode(playingStatus: .inProgress, episode: episode, updateSyncFlag: false)
         // Start the play process
         PlaybackActionHelper.play(episode: episode, podcastUuid: bookmark.podcastUuid)
         #endif
