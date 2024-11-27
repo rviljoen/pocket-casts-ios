@@ -1,46 +1,29 @@
 import SwiftUI
 
 struct UpNextAnnouncementView: View {
-    let dismissAction: () -> Void
-
     @EnvironmentObject var theme: Theme
 
+    @State private var show = false
+
     var body: some View {
-        VStack(alignment: .center, spacing: 0) {
-            Image("up-next-shuffle-sheet")
-                .frame(width: 36, height: 36)
-                .padding(.bottom, 17)
-                .foregroundStyle(theme.primaryIcon01)
-            Text(L10n.upNextShuffleAnnouncementTitle)
-                .multilineTextAlignment(.center)
-                .font(size: 22, style: .body, weight: .bold)
-                .foregroundStyle(theme.primaryText01)
-                .padding(.bottom, 10)
-                .padding(.horizontal, 41)
-            Text(L10n.upNextShuffleAnnouncementText)
-                .multilineTextAlignment(.center)
-                .font(size: 14, style: .body, weight: .regular)
-                .foregroundStyle(theme.primaryText01)
-                .padding(.horizontal, 41)
-                .padding(.bottom, 35)
-            Button(action: dismissAction) {
-                Text(L10n.upNextShuffleAnnouncementButton)
-            }
-            .buttonStyle(
-                BasicButtonStyle(textColor: theme.primaryInteractive02,
-                                 backgroundColor: theme.primaryInteractive01)
+        Image("up-next-shuffle-sheet")
+            .foregroundStyle(theme.primaryIcon01)
+            .opacity(show ? 1 : 0)
+            .animation(
+                .linear(duration: 0.6)
+                .delay(TimeInterval(0.6)),
+                value: show
             )
-            .frame(height: 56)
-            .padding(.horizontal, 29)
-        }
-        .background(theme.primaryUi01)
+            .onAppear {
+                show.toggle()
+            }
     }
 }
 
 struct UpNextAnnouncementView__Previews: PreviewProvider {
     static var previews: some View {
-        UpNextAnnouncementView() {}
+        UpNextAnnouncementView()
             .setupDefaultEnvironment()
-            .previewLayout(.fixed(width: 393, height: 290))
+            .previewLayout(.fixed(width: 120, height: 120))
     }
 }
