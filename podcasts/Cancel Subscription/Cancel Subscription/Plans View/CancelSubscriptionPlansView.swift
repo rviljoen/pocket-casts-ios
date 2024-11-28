@@ -10,11 +10,19 @@ struct CancelSubscriptionPlansView: View {
     }
 
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-            .onAppear {
-                viewModel.pricingInfo.products.forEach {
-                    print($0.id)
-                }
+        VStack(spacing: 0) {
+            switch viewModel.currentProductAvailability {
+            case .loading:
+                ProgressView()
+                    .foregroundStyle(theme.primaryUi01)
+            default:
+                Text(viewModel.currentPricingProduct?.id ?? "No product")
+            }
+        }
+        .onAppear {
+            Task {
+                await viewModel.loadCurrentProduct()
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 import SwiftUI
 import PocketCastsServer
+import PocketCastsUtils
 
 class CancelSubscriptionViewModel: PlusPurchaseModel {
     let navigationController: UINavigationController
@@ -8,45 +9,15 @@ class CancelSubscriptionViewModel: PlusPurchaseModel {
         purchaseHandler.isEligibleForOffer
     }
 
+    @Published var currentPricingProduct: PlusPricingInfoModel.PlusProductPricingInfo?
+    @State var currentProductAvailability: CurrentProductAvailability = .idle
+
     init(purchaseHandler: IAPHelper = .shared, navigationController: UINavigationController) {
         self.navigationController = navigationController
 
         super.init(purchaseHandler: purchaseHandler)
 
         self.loadPrices()
-    }
-
-    func monthlyPrice() -> String? {
-        switch SubscriptionHelper.activeTier {
-        case .plus:
-            return pricingInfo.products.first { $0.identifier == .monthly }?.rawPrice
-        case .patron:
-            return pricingInfo.products.first { $0.identifier == .patronMonthly }?.rawPrice
-        case .none:
-            return nil
-        }
-    }
-
-    func cancelSubscriptionTap() {
-        let viewController = CancelConfirmationViewModel.make(in: navigationController)
-        navigationController.pushViewController(viewController, animated: true)
-    }
-
-    func claimOffer() {
-        //TODO: Apply one month free
-    }
-
-    func showPlans() {
-        let view = CancelSubscriptionPlansView(viewModel: self)
-        let controller = OnboardingHostingViewController(rootView: view)
-        controller.navBarIsHidden = true
-        navigationController.pushViewController(controller, animated: true)
-    }
-
-    func showHelp() {
-        let controller = OnlineSupportController()
-        navigationController.navigationBar.isHidden = false
-        navigationController.pushViewController(controller, animated: true)
     }
 
     override func didAppear() {
@@ -59,8 +30,71 @@ class CancelSubscriptionViewModel: PlusPurchaseModel {
 
         //TODO: Implement analytics
     }
+
+    enum CurrentProductAvailability {
+        case idle
+        case loading
+        case available
+        case unavailable
+    }
 }
 
+// IAP
+extension CancelSubscriptionViewModel {
+    func monthlyPrice() -> String? {
+        switch SubscriptionHelper.activeTier {
+        case .plus:
+            return pricingInfo.products.first { $0.identifier == .monthly }?.rawPrice
+        case .patron:
+            return pricingInfo.products.first { $0.identifier == .patronMonthly }?.rawPrice
+        case .none:
+            return nil
+        }
+    }
+
+    func loadCurrentProduct() async {
+        if currentProductAvailability == .loading { return }
+
+        currentProductAvailability = .loading
+        if let transaction = await purchaseHandler.findLastSubscriptionPurchased(),
+           let productID = IAPProductID(rawValue: transaction.productID) {
+            await MainActor.run {
+                currentProductAvailability = .available
+                currentPricingProduct = pricingInfo.products.first { $0.identifier == productID }
+            }
+        } else {
+            currentProductAvailability = .unavailable
+            FileLog.shared.console("[CancelSubscriptionViewModel] Could not find last subscription purchased")
+        }
+    }
+
+    func claimOffer() {
+        //TODO: Apply one month free
+    }
+}
+
+// Navigation
+extension CancelSubscriptionViewModel {
+    func cancelSubscriptionTap() {
+        let viewController = CancelConfirmationViewModel.make(in: navigationController)
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func showPlans() {
+        let view = CancelSubscriptionPlansView(viewModel: self).setupDefaultEnvironment()
+        let controller = OnboardingHostingViewController(rootView: view)
+        controller.navBarIsHidden = true
+        navigationController.pushViewController(controller, animated: true)
+    }
+
+    func showHelp() {
+        let controller = OnlineSupportController()
+        navigationController.navigationBar.isHidden = false
+        navigationController.pushViewController(controller, animated: true)
+    }
+}
+
+// Making vew controller
 extension CancelSubscriptionViewModel {
     /// Make the view, and allow it to be shown by itself or within another navigation flow
     static func make() -> UIViewController {
