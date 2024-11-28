@@ -1,6 +1,9 @@
 7.80
 -----
 
+7.77.1
+-----
+- Fix sharing Playback stories to Instagram [#2482](https://github.com/Automattic/pocket-casts-ios/pull/2482)
 
 7.79
 -----
