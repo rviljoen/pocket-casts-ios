@@ -18,6 +18,7 @@
 - Fix playback of bookmarks when episode was previously marked as played [#2262](https://github.com/Automattic/pocket-casts-ios/pull/2262)
 - Fix refresh of the navigation bar buttons when switchin tabs [#2294](https://github.com/Automattic/pocket-casts-ios/issues/2294)
 - Fix sharing of Referrals, Episodes and EOY when using the radioactivity theme [#2485](https://github.com/Automattic/pocket-casts-ios/pull/2485)
+- Fix playback of bookmarks that are created on other platforms and never loaded locally [#1667](https://github.com/Automattic/pocket-casts-ios/issues/1667)
 
 7.77
 -----
