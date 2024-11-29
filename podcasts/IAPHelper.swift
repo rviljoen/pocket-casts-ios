@@ -101,12 +101,9 @@ class IAPHelper: NSObject {
         return await findLastSubscriptionsPurchased()
             .filter { $0.expirationDate != nil }
             .sorted {
-                if let t0 = $0.expirationDate, let t1 = $1.expirationDate {
-                    return t0 > t1
-                }
-                return false
+                return $0.purchaseDate < $1.purchaseDate
             }
-            .first
+            .last
     }
 
     func showManageSubscriptions(in windowScene: UIWindowScene) async throws {

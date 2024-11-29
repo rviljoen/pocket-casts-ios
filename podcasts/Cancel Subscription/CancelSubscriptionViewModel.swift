@@ -68,6 +68,11 @@ extension CancelSubscriptionViewModel {
         }
     }
 
+    func purchase(product: PlusPricingInfoModel.PlusProductPricingInfo) {
+        currentPricingProduct = product
+        purchase(product: product.identifier)
+    }
+
     func claimOffer() {
         //TODO: Apply one month free
     }
@@ -101,6 +106,7 @@ extension CancelSubscriptionViewModel {
         // If we're not being presented within another nav controller then wrap ourselves in one
         let navController = UINavigationController()
         let viewModel = CancelSubscriptionViewModel(navigationController: navController)
+        viewModel.parentController = navController
 
         // Wrap the SwiftUI view in the hosting view controller
         let swiftUIView = CancelSubscriptionView(viewModel: viewModel).setupDefaultEnvironment()

@@ -10,13 +10,18 @@ struct CancelSubscriptionPlansView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 16.0) {
             switch viewModel.currentProductAvailability {
             case .loading:
                 ProgressView()
                     .foregroundStyle(theme.primaryUi01)
             default:
-                Text(viewModel.currentPricingProduct?.id ?? "No product")
+                ForEach(viewModel.pricingInfo.products, id: \.id) { product in
+                    CancelSubscriptionPlanRow(product: product,
+                                              selected: product.identifier == viewModel.currentPricingProduct?.identifier) { selectedProduct in
+                        viewModel.purchase(product: selectedProduct)
+                    }
+                }
             }
         }
         .onAppear {
