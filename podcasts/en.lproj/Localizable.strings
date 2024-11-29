@@ -4598,7 +4598,7 @@
 "week" = "week";
 
 /* Auto Downloads Setting - Limits downloads row title*/
-"auto_download_limit_downloads" = "Limit downloads";
+"auto_download_limit_downloads" = "Limit Downloads";
 
 /* Auto Downloads Setting - Limits downloads picker title*/
 "auto_download_limit_auto_downloads" = "Limit auto downloads";
@@ -4696,3 +4696,5 @@
 /* Referrals - Share Pass message. `%1$@' is a placeholder for the duration of free period offered on the Plus subscription*/
 "referrals_share_pass_long_message" = "Hi there!\n\nHere is a %1$@ guest pass for Pocket Casts Plus–my favorite podcast player. It's packed with unique features like bookmarks, folders, and more that you won't find anywhere else. I think you'll love it too!\n";
 
+/* Auto Downloads Setting - Auto download on follow of a blog*/
+"auto_download_on_follow" = "On Follow";

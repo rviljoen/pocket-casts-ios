@@ -280,7 +280,7 @@ internal enum L10n {
   internal static var autoDownloadFirst: String { return L10n.tr("Localizable", "auto_download_first") }
   /// Limit auto downloads
   internal static var autoDownloadLimitAutoDownloads: String { return L10n.tr("Localizable", "auto_download_limit_auto_downloads") }
-  /// Limit downloads
+  /// Limit Downloads
   internal static var autoDownloadLimitDownloads: String { return L10n.tr("Localizable", "auto_download_limit_downloads") }
   /// %1$@ Episodes
   internal static func autoDownloadLimitNumberOfEpisodes(_ p1: Any) -> String {
@@ -296,6 +296,8 @@ internal enum L10n {
   internal static var autoDownloadLimitOneEpisodeShow: String { return L10n.tr("Localizable", "auto_download_limit_one_episode_show") }
   /// Enable to auto download episodes in this filter
   internal static var autoDownloadOffSubtitle: String { return L10n.tr("Localizable", "auto_download_off_subtitle") }
+  /// On Follow
+  internal static var autoDownloadOnFollow: String { return L10n.tr("Localizable", "auto_download_on_follow") }
   /// The first %1$@ episodes in this filter will be automatically downloaded
   internal static func autoDownloadOnPluralFormat(_ p1: Any) -> String {
     return L10n.tr("Localizable", "auto_download_on_plural_format", String(describing: p1))

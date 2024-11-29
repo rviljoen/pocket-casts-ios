@@ -529,6 +529,7 @@ enum AnalyticsEvent: String {
     case settingsAutoDownloadShown
     case settingsAutoDownloadUpNextToggled
     case settingsAutoDownloadNewEpisodesToggled
+    case settingsAutoDownloadOnFollowToggled
     case settingsAutoDownloadLimitDownloadsChanged
     case settingsAutoDownloadPodcastsChanged
     case settingsAutoDownloadFiltersChanged
