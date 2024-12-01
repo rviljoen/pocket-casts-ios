@@ -54,15 +54,18 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         let firstRowInSection = tableRows()[section][0]
 
-        if firstRowInSection == .upNext {
+        switch firstRowInSection {
+        case .upNext:
             return L10n.settingsAutoDownloadsSubtitleUpNext
-        } else if firstRowInSection == .podcastAutoDownload {
+        case .podcastAutoDownload:
             return L10n.settingsAutoDownloadsSubtitleNewEpisodes
-        } else if firstRowInSection == .filterSelection {
+        case .filterSelection:
             return L10n.settingsAutoDownloadsSubtitleFilters
+        case .downloadOnFollow:
+            return L10n.settingsAutoDownloadsOnFollowDetails
+        default:
+            return nil
         }
-
-        return nil
     }
 
     func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int) {
@@ -108,7 +111,7 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
         case .downloadOnFollow:
             let cell = tableView.dequeueReusableCell(withIdentifier: DownloadSettingsViewController.switchCellId, for: indexPath) as! SwitchCell
 
-            cell.cellLabel.text = L10n.autoDownloadOnFollow
+            cell.cellLabel.text = L10n.settingsAutoDownloadsOnFollow
             cell.cellSwitch.isOn = Settings.autoDownloadOnFollow()
             cell.cellSwitch.removeTarget(self, action: nil, for: UIControl.Event.valueChanged)
             cell.cellSwitch.addTarget(self, action: #selector(automaticDownloadOnFollowToggled(_:)), for: UIControl.Event.valueChanged)
@@ -258,9 +261,13 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
         var data = autoDownloadPodcastsEnabled ? podcastDownloadOnData : podcastDownloadOffData
 
         if autoDownloadPodcastsEnabled, FeatureFlag.autoDownloadOnSubscribe.enabled {
-            data[1].append(.downloadOnFollow)
             data[1].append(.downloadLimits)
         }
+
+        if FeatureFlag.autoDownloadOnSubscribe.enabled {
+            data.insert([.downloadOnFollow], at: 2)
+        }
+
         return data
     }
 }
