@@ -2318,7 +2318,7 @@
 "settings_auto_downloads_subtitle_filters" = "Download the top episodes in a filter.";
 
 /* Subtitle explaining the toggle to auto download New Episodes. */
-"settings_auto_downloads_subtitle_new_episodes" = "Automatically download new episodes as they’re released, and manage your storage by setting a limit on how many episodes are saved.";
+"settings_auto_downloads_subtitle_new_episodes" = "Automatically download new episodes, save episodes from newly followed shows, and manage your storage by setting a limit on how many episodes are saved.";
 
 /* Subtitle explaining the toggle to auto download items in the Up Next Queue. */
 "settings_auto_downloads_subtitle_up_next" = "Download episodes added to Up Next.";
@@ -4698,6 +4698,3 @@
 
 /* Auto Downloads Setting - Auto download on follow of a blog*/
 "settings_auto_downloads_on_follow" = "On Follow";
-
-/* Auto Downloads Setting - Auto download on follow of a blog details*/
-"settings_auto_downloads_on_follow_details" = "Automatically download the latest two episodes from new shows you follow.";

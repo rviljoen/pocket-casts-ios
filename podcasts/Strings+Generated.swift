@@ -2756,8 +2756,6 @@ internal enum L10n {
   internal static var settingsAutoDownloadsNoPodcastsSelected: String { return L10n.tr("Localizable", "settings_auto_downloads_no_podcasts_selected") }
   /// On Follow
   internal static var settingsAutoDownloadsOnFollow: String { return L10n.tr("Localizable", "settings_auto_downloads_on_follow") }
-  /// Automatically download the latest two episodes from new shows you follow.
-  internal static var settingsAutoDownloadsOnFollowDetails: String { return L10n.tr("Localizable", "settings_auto_downloads_on_follow_details") }
   /// %1$@ podcasts selected
   internal static func settingsAutoDownloadsPodcastsSelectedFormat(_ p1: Any) -> String {
     return L10n.tr("Localizable", "settings_auto_downloads_podcasts_selected_format", String(describing: p1))
@@ -2766,7 +2764,7 @@ internal enum L10n {
   internal static var settingsAutoDownloadsPodcastsSelectedSingular: String { return L10n.tr("Localizable", "settings_auto_downloads_podcasts_selected_singular") }
   /// Download the top episodes in a filter.
   internal static var settingsAutoDownloadsSubtitleFilters: String { return L10n.tr("Localizable", "settings_auto_downloads_subtitle_filters") }
-  /// Automatically download new episodes as they’re released, and manage your storage by setting a limit on how many episodes are saved.
+  /// Automatically download new episodes, save episodes from newly followed shows, and manage your storage by setting a limit on how many episodes are saved.
   internal static var settingsAutoDownloadsSubtitleNewEpisodes: String { return L10n.tr("Localizable", "settings_auto_downloads_subtitle_new_episodes") }
   /// Download episodes added to Up Next.
   internal static var settingsAutoDownloadsSubtitleUpNext: String { return L10n.tr("Localizable", "settings_auto_downloads_subtitle_up_next") }
