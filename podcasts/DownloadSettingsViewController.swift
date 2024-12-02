@@ -61,8 +61,6 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
             return L10n.settingsAutoDownloadsSubtitleNewEpisodes
         case .filterSelection:
             return L10n.settingsAutoDownloadsSubtitleFilters
-        case .downloadOnFollow:
-            return L10n.settingsAutoDownloadsOnFollowDetails
         default:
             return nil
         }
@@ -261,11 +259,8 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
         var data = autoDownloadPodcastsEnabled ? podcastDownloadOnData : podcastDownloadOffData
 
         if autoDownloadPodcastsEnabled, FeatureFlag.autoDownloadOnSubscribe.enabled {
+            data[1].append(.downloadOnFollow)
             data[1].append(.downloadLimits)
-        }
-
-        if FeatureFlag.autoDownloadOnSubscribe.enabled {
-            data.insert([.downloadOnFollow], at: 2)
         }
 
         return data

@@ -221,10 +221,9 @@ extension ServerPodcastManager {
             shouldTriggerAutoDownload = (totalCount > 0) && (autoDownloadCount >= totalCount)
         }
         if shouldTriggerAutoDownload {
-            podcast.autoDownloadSetting = AutoDownloadSetting.off.rawValue
+            podcast.autoDownloadSetting = AutoDownloadSetting.latest.rawValue
             if !latestEpisodes.isEmpty {
-                let range = Range<Int>(uncheckedBounds: (lower: 0, upper: min(2, latestEpisodes.count)))
-                ServerConfig.shared.syncDelegate?.autoDownloadLatestEpisodes(uuids: latestEpisodes[range].map(\.uuid))
+                ServerConfig.shared.syncDelegate?.autoDownloadLatestEpisodes(uuids: latestEpisodes.map(\.uuid))
             }
         } else {
             podcast.autoDownloadSetting = AutoDownloadSetting.off.rawValue
