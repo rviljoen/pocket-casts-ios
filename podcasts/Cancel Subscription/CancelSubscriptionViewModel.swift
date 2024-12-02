@@ -69,6 +69,7 @@ extension CancelSubscriptionViewModel {
     }
 
     func purchase(product: PlusPricingInfoModel.PlusProductPricingInfo) {
+        guard currentPricingProduct?.identifier != product.identifier else { return }
         currentPricingProduct = product
         purchase(product: product.identifier)
     }

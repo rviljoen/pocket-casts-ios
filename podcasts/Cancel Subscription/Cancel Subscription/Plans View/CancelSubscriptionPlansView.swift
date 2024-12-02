@@ -13,11 +13,13 @@ struct CancelSubscriptionPlansView: View {
         ZStack {
             switch viewModel.currentProductAvailability {
             case .loading:
-                ProgressView()
-                    .foregroundStyle(theme.primaryUi01)
+                showLoading()
             default:
                 closeButton
                 mainView
+                if viewModel.state == .purchasing {
+                    showLoading(fullScreen: true)
+                }
             }
         }
         .onAppear {
@@ -66,6 +68,22 @@ struct CancelSubscriptionPlansView: View {
                 }
             }
             Spacer()
+        }
+    }
+
+    @ViewBuilder
+    func showLoading(fullScreen: Bool = false) -> some View {
+        if fullScreen {
+            ZStack {
+                theme.primaryUi05Selected
+                    .edgesIgnoringSafeArea(.all)
+                    .opacity(0.7)
+                ProgressView()
+                    .tint(theme.primaryText01)
+            }
+        } else {
+            ProgressView()
+                .tint(theme.primaryUi01)
         }
     }
 }
