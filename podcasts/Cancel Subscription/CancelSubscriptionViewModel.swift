@@ -81,11 +81,13 @@ extension CancelSubscriptionViewModel {
 // Navigation
 extension CancelSubscriptionViewModel {
     func cancelSubscriptionTap() {
+        //TODO: Implement analytics
         let viewController = CancelConfirmationViewModel.make(in: navigationController)
         navigationController.pushViewController(viewController, animated: true)
     }
 
     func showPlans() {
+        //TODO: Implement analytics
         let view = CancelSubscriptionPlansView(viewModel: self).setupDefaultEnvironment()
         let controller = OnboardingHostingViewController(rootView: view)
         controller.navBarIsHidden = true
@@ -93,9 +95,15 @@ extension CancelSubscriptionViewModel {
     }
 
     func showHelp() {
+        //TODO: Implement analytics
         let controller = OnlineSupportController()
         navigationController.navigationBar.isHidden = false
         navigationController.pushViewController(controller, animated: true)
+    }
+
+    func closePlans() {
+        //TODO: Implement analytics
+        navigationController.dismiss(animated: true)
     }
 }
 

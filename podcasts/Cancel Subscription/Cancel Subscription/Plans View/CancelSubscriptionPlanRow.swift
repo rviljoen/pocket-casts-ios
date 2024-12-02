@@ -15,8 +15,32 @@ struct CancelSubscriptionPlanRow: View {
                 .cornerRadius(8.0)
                 .frame(height: 64)
             VStack(alignment: .leading, spacing: 0) {
-                Text(product.identifier.rawValue)
+                HStack(spacing: 0) {
+                    Text(product.planTitle)
+                        .font(size: 18.0, style: .body, weight: .bold)
+                        .foregroundStyle(theme.primaryText01)
+                    Spacer()
+                    if selected {
+                        ZStack {
+                            Circle()
+                                .fill(theme.primaryField03Active)
+                                .frame(width: 24, height: 24)
+                            Image("small-tick")
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .foregroundColor(theme.primaryInteractive02)
+                        }
+                    }
+                }
+                HStack(spacing: 0) {
+                    Text(product.frequencyPrice)
+                        .font(size: 15.0, style: .body, weight: .regular)
+                        .foregroundStyle(theme.primaryText01)
+                    Spacer()
+                }
             }
+            .padding(.leading, 20.0)
+            .padding(.trailing, 10.0)
         }
         .overlay(
             RoundedRectangle(cornerRadius: 8.0)
@@ -26,6 +50,30 @@ struct CancelSubscriptionPlanRow: View {
         .padding(.horizontal, 20.0)
         .onTapGesture {
             onTap(product)
+        }
+    }
+}
+
+extension PlusPricingInfoModel.PlusProductPricingInfo {
+    fileprivate var planTitle: String {
+        switch identifier {
+        case .yearly, .yearlyReferral:
+            return "Plus \(L10n.yearly.capitalized)"
+        case .monthly:
+            return "Plus \(L10n.monthly.capitalized)"
+        case .patronMonthly:
+            return "Patron \(L10n.monthly.capitalized)"
+        case .patronYearly:
+            return "Patron \(L10n.yearly.capitalized)"
+        }
+    }
+
+    fileprivate var frequencyPrice: String {
+        switch identifier {
+        case .yearly, .yearlyReferral, .patronYearly:
+            return L10n.plusYearlyFrequencyPricingFormat(rawPrice)
+        case .monthly, .patronMonthly:
+            return L10n.plusMonthlyFrequencyPricingFormat(rawPrice)
         }
     }
 }
