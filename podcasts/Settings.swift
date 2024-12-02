@@ -148,7 +148,7 @@ class Settings: NSObject {
     private static let autoDownloadOnFollowKey = "AutoDownloadOnFollow"
     class func autoDownloadOnFollow() -> Bool {
         guard UserDefaults.standard.object(forKey: Settings.autoDownloadOnFollowKey) != nil else {
-            return FeatureFlag.autoDownloadOnSubscribe.enabled
+            return false
         }
         return UserDefaults.standard.bool(forKey: Settings.autoDownloadOnFollowKey)
     }
