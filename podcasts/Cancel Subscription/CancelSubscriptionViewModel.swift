@@ -31,6 +31,15 @@ class CancelSubscriptionViewModel: PlusPurchaseModel {
         //TODO: Implement analytics
     }
 
+    override func handleNext() {
+        if SubscriptionHelper.activeTier == .patron {
+            let controller = PatronWelcomeViewModel.make(in: navigationController)
+            navigationController.pushViewController(controller, animated: true)
+        } else {
+            navigationController.dismiss(animated: true)
+        }
+    }
+
     enum CurrentProductAvailability {
         case idle
         case loading
