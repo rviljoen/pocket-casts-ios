@@ -20,6 +20,7 @@
 - Fix sharing of Referrals, Episodes and EOY when using the radioactivity theme [#2485](https://github.com/Automattic/pocket-casts-ios/pull/2485)
 - Increase tap area for button that removes previous searches [#2494](https://github.com/Automattic/pocket-casts-ios/pull/2494)
 - Fix playback of bookmarks that are created on other platforms and never loaded locally [#1667](https://github.com/Automattic/pocket-casts-ios/issues/1667)
+- Add new setting on Auto-Downloads settings to define the on follow behaviour. [#2493](https://github.com/Automattic/pocket-casts-ios/pull/2493)
 
 7.77
 -----
