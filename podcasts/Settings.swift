@@ -157,7 +157,7 @@ class Settings: NSObject {
         UserDefaults.standard.set(allow, forKey: Settings.autoDownloadOnFollowKey)
 
         guard userInitiated else { return }
-        trackValueToggled(.settingsAutoDownloadOnFollowToggled, enabled: allow)
+        trackValueToggled(.settingsAutoDownloadOnFollowPodcastToggled, enabled: allow)
     }
 
     private static let autoDownloadLimitKey = "AutoDownloadLimit"
