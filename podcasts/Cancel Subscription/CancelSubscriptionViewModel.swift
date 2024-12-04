@@ -9,6 +9,8 @@ class CancelSubscriptionViewModel: PlusPurchaseModel {
         purchaseHandler.isEligibleForOffer
     }
 
+    private var lastPurchasedProductID: IAPProductID?
+
     @Published var currentPricingProduct: PlusPricingInfoModel.PlusProductPricingInfo?
     @State var currentProductAvailability: CurrentProductAvailability = .idle
 
@@ -68,6 +70,7 @@ extension CancelSubscriptionViewModel {
         if let transaction = await purchaseHandler.findLastSubscriptionPurchased(),
            let productID = IAPProductID(rawValue: transaction.productID) {
             await MainActor.run {
+                lastPurchasedProductID = productID
                 currentProductAvailability = .available
                 currentPricingProduct = pricingInfo.products.first { $0.identifier == productID }
             }
@@ -78,9 +81,11 @@ extension CancelSubscriptionViewModel {
     }
 
     func purchase(product: PlusPricingInfoModel.PlusProductPricingInfo) {
-        guard currentPricingProduct?.identifier != product.identifier else { return }
         currentPricingProduct = product
-        purchase(product: product.identifier)
+
+        if currentPricingProduct?.identifier != lastPurchasedProductID {
+            purchase(product: product.identifier)
+        }
     }
 
     func claimOffer() {
