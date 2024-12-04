@@ -1,6 +1,6 @@
 7.79
 -----
-
+- Display the whole chapter title, without truncating it [#2499](https://github.com/Automattic/pocket-casts-ios/pull/2499)
 
 7.78
 -----
