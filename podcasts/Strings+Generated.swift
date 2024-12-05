@@ -386,6 +386,8 @@ internal enum L10n {
   internal static var cancelFailed: String { return L10n.tr("Localizable", "cancel_failed") }
   /// Cancel Subscription
   internal static var cancelSubscription: String { return L10n.tr("Localizable", "cancel_subscription") }
+  /// Available Plans
+  internal static var cancelSubscriptionAvailablePlansTitle: String { return L10n.tr("Localizable", "cancel_subscription_available_plans_title") }
   /// Claim offer
   internal static var cancelSubscriptionClaimOfferButton: String { return L10n.tr("Localizable", "cancel_subscription_claim_offer_button") }
   /// Continue to Cancellation

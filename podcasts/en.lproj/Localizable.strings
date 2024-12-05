@@ -4693,6 +4693,9 @@
 /* Title for the claim offer button */
 "cancel_subscription_claim_offer_button" = "Claim offer";
 
+/* Title of the Available Plans screen accessible from the Cancel Subscription view */
+"cancel_subscription_available_plans_title" = "Available Plans";
+
 /* Referrals - Share Pass message. `%1$@' is a placeholder for the duration of free period offered on the Plus subscription*/
 "referrals_share_pass_long_message" = "Hi there!\n\nHere is a %1$@ guest pass for Pocket Casts Plus–my favorite podcast player. It's packed with unique features like bookmarks, folders, and more that you won't find anywhere else. I think you'll love it too!\n";
 
