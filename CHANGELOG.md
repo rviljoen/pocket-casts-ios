@@ -8,8 +8,12 @@
 - File downloads use switch instead of check box for include starred [#2455](https://github.com/Automattic/pocket-casts-ios/pull/2455)
 - Show download management banner and modal when running low in disk space [#2430](https://github.com/Automattic/pocket-casts-ios/pull/2430)
 - Referrals: update share message and add image [#2468](https://github.com/Automattic/pocket-casts-ios/pull/2468)
+- Fix playback of bookmarks when episode was previously marked as played [#2262](https://github.com/Automattic/pocket-casts-ios/pull/2262)
 - Fix refresh of the navigation bar buttons when switchin tabs [#2294](https://github.com/Automattic/pocket-casts-ios/issues/2294)
 - Fix sharing of Referrals, Episodes and EOY when using the radioactivity theme [#2485](https://github.com/Automattic/pocket-casts-ios/pull/2485)
+- Increase tap area for button that removes previous searches [#2494](https://github.com/Automattic/pocket-casts-ios/pull/2494)
+- Fix playback of bookmarks that are created on other platforms and never loaded locally [#1667](https://github.com/Automattic/pocket-casts-ios/issues/1667)
+- Add new setting on Auto-Downloads settings to define the on follow behaviour. [#2493](https://github.com/Automattic/pocket-casts-ios/pull/2493)
 
 7.77.1
 -----
