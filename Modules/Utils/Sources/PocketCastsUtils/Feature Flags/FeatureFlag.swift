@@ -23,9 +23,6 @@ public enum FeatureFlag: String, CaseIterable {
     /// Enable chapters to be loaded from the RSS feed
     case rssChapters
 
-    /// Enable a quicker and more responsive player transition
-    case newPlayerTransition
-
     /// Avoid logging out user on non-authorization HTTP errors
     case errorLogoutHandling
 
@@ -179,8 +176,6 @@ public enum FeatureFlag: String, CaseIterable {
             false
         case .rssChapters:
             false
-        case .newPlayerTransition:
-            true
         case .errorLogoutHandling:
             false
         case .giveRatings:
