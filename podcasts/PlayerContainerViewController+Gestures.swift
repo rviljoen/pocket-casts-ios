@@ -7,7 +7,7 @@ extension PlayerContainerViewController: UIGestureRecognizerDelegate {
     private static let minimumScreenRatioToHide: CGFloat = 0.1
 
     @IBAction func panGestureRecognizerHandler(_ sender: UIPanGestureRecognizer) {
-        FeatureFlag.newPlayerTransition.enabled ? newTransitionPanGestureRecognizerHandler(sender) : oldTransitionPanGestureRecognizerHandler(sender)
+        newTransitionPanGestureRecognizerHandler(sender)
     }
 
     func newTransitionPanGestureRecognizerHandler(_ sender: UIPanGestureRecognizer) {
@@ -50,34 +50,6 @@ extension PlayerContainerViewController: UIGestureRecognizerDelegate {
                 break
             }
         }
-
-    func oldTransitionPanGestureRecognizerHandler(_ sender: UIPanGestureRecognizer) {
-        guard let miniPlayer = appDelegate()?.miniPlayer(), !(miniPlayer.playerOpenState == .beingDragged || miniPlayer.playerOpenState == .animating) else { return }
-
-        if nowPlayingItem.timeSlider.isScrubbing() { return }
-
-        let touchPoint = sender.location(in: view?.window)
-
-        switch sender.state {
-        case .began:
-            initialTouchPoint = touchPoint
-        case .changed:
-            if touchPoint.y - initialTouchPoint.y > 0 {
-                let yPosition = touchPoint.y - initialTouchPoint.y
-                handleMoveTo(yPosition: yPosition, miniPlayer: miniPlayer)
-            }
-        case .ended, .cancelled:
-            if touchPoint.y - initialTouchPoint.y > PlayerContainerViewController.pullDownThreshold {
-                miniPlayer.closeFullScreenPlayer()
-            } else {
-                UIView.animate(withDuration: Constants.Animation.defaultAnimationTime) {
-                    self.view.moveTo(y: 0)
-                }
-            }
-        default:
-            break
-        }
-    }
 
     // this is used so that the player tab line only fades in when you tap something that isn't a control
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
