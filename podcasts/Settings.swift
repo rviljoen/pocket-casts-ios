@@ -1404,11 +1404,6 @@ class Settings: NSObject {
             return remote.boolValue
         }
 
-        static var newPlayerTransition: Bool {
-            let remote = RemoteConfig.remoteConfig().configValue(forKey: Constants.RemoteParams.newPlayerTransition)
-            return remote.boolValue
-        }
-
         static var plusCloudStorageLimit: Int {
             RemoteConfig.remoteConfig().configValue(forKey: Constants.RemoteParams.customStorageLimitGB).numberValue.intValue
         }
