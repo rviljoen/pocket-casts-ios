@@ -42,7 +42,6 @@ extension MiniPlayerViewController: UIGestureRecognizerDelegate {
         } else if recognizer.state == UIGestureRecognizer.State.changed {
             let currentPoint = recognizer.translation(in: view.superview)
 
-            moveWhileDragging(offsetFromTop: currentPoint.y)
             fullScreenPlayer?.view.moveTo(y: fullScreenPlayer!.view.bounds.height + currentPoint.y)
         } else if recognizer.state == UIGestureRecognizer.State.ended {
             rootViewController()?.view.isUserInteractionEnabled = true
