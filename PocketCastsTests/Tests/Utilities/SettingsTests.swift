@@ -61,6 +61,7 @@ final class SettingsTests: XCTestCase {
 
         XCTAssertEqual([.addBookmark,
                         .markPlayed,
+                        .transcript,
                         .effects,
                         .sleepTimer,
                         .routePicker,
@@ -83,6 +84,7 @@ final class SettingsTests: XCTestCase {
 
         XCTAssertEqual([.addBookmark,
                         .markPlayed,
+                        .transcript,
                         .effects,
                         .sleepTimer,
                         .routePicker,
@@ -111,6 +113,7 @@ final class SettingsTests: XCTestCase {
 
         XCTAssertEqual([.addBookmark,
                         .markPlayed,
+                        .transcript,
                         .effects,
                         .sleepTimer,
                         .routePicker,
