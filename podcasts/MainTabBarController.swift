@@ -31,11 +31,7 @@ class MainTabBarController: UITabBarController, NavigationProtocol {
 
         fixTarBarTraitCollectionOnIpadForiOS18()
 
-        if FeatureFlag.upNextOnTabBar.enabled {
-            pcTabs = [.podcasts, .filter, .discover, .upNext, .profile]
-        } else {
-            pcTabs = [.podcasts, .filter, .discover, .profile]
-        }
+        pcTabs = [.podcasts, .filter, .discover, .upNext, .profile]
 
         var vcsInTab = [UIViewController]()
 
@@ -56,13 +52,9 @@ class MainTabBarController: UITabBarController, NavigationProtocol {
         let profileViewController = ProfileViewController()
         profileViewController.tabBarItem = profileTabBarItem
 
-        if FeatureFlag.upNextOnTabBar.enabled {
-            let upNextViewController = UpNextViewController(source: .tabBar, showingInTab: true)
-            upNextViewController.tabBarItem = UITabBarItem(title: L10n.upNext, image: UIImage(named: "upnext_tab"), tag: pcTabs.firstIndex(of: .upNext)!)
-            vcsInTab = [podcastsController, filtersViewController, discoverViewController, upNextViewController, profileViewController]
-        } else {
-            vcsInTab = [podcastsController, filtersViewController, discoverViewController, profileViewController]
-        }
+        let upNextViewController = UpNextViewController(source: .tabBar, showingInTab: true)
+        upNextViewController.tabBarItem = UITabBarItem(title: L10n.upNext, image: UIImage(named: "upnext_tab"), tag: pcTabs.firstIndex(of: .upNext)!)
+        vcsInTab = [podcastsController, filtersViewController, discoverViewController, upNextViewController, profileViewController]
 
         displayEndOfYearBadgeIfNeeded()
 
