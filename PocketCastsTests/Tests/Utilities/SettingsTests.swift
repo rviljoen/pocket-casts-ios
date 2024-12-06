@@ -13,7 +13,6 @@ final class SettingsTests: XCTestCase {
     override func setUp() {
         super.setUp()
         UserDefaults.standard.removePersistentDomain(forName: userDefaultsSuiteName)
-        try? override(flag: .transcripts, value: false)
     }
 
     private func override(flag: FeatureFlag, value: Bool) throws {
