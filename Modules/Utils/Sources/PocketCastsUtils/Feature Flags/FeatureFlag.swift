@@ -282,7 +282,7 @@ public enum FeatureFlag: String, CaseIterable {
         case .categoriesRedesign:
             "categories_redesign"
         case .defaultPlayerFilterCallbackFix:
-            "default_player_filter_callback_fix"        
+            "default_player_filter_callback_fix"
         default:
             rawValue.lowerSnakeCased()
         }
