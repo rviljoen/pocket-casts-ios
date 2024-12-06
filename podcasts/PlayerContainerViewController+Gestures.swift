@@ -7,49 +7,45 @@ extension PlayerContainerViewController: UIGestureRecognizerDelegate {
     private static let minimumScreenRatioToHide: CGFloat = 0.1
 
     @IBAction func panGestureRecognizerHandler(_ sender: UIPanGestureRecognizer) {
-        newTransitionPanGestureRecognizerHandler(sender)
-    }
+        guard let miniPlayer = appDelegate()?.miniPlayer(), !(miniPlayer.playerOpenState == .beingDragged || miniPlayer.playerOpenState == .animating) else { return }
 
-    func newTransitionPanGestureRecognizerHandler(_ sender: UIPanGestureRecognizer) {
-            guard let miniPlayer = appDelegate()?.miniPlayer(), !(miniPlayer.playerOpenState == .beingDragged || miniPlayer.playerOpenState == .animating) else { return }
+        if nowPlayingItem.timeSlider.isScrubbing() { return }
 
-            if nowPlayingItem.timeSlider.isScrubbing() { return }
+        let touchPoint = sender.location(in: view?.window)
 
-            let touchPoint = sender.location(in: view?.window)
-
-            switch sender.state {
-            case .began:
-                initialTouchPoint = touchPoint
-            case .changed:
-                if touchPoint.y > initialTouchPoint.y {
-                    view.frame.origin.y = touchPoint.y - initialTouchPoint.y
-                }
-            case .ended, .cancelled:
-                // If pan ended, decide it we should close or reset the view
-                // based on the final position and the speed of the gesture
-                // (https://stackoverflow.com/a/47339617)
-                // If the swipe is too quick, we dismiss
-                let translation = sender.translation(in: view)
-                let velocity = sender.velocity(in: view)
-                let closing = (translation.y > view.frame.size.height * Self.minimumScreenRatioToHide) ||
-                (velocity.y > Self.minimumVelocityToHide) || velocity.y > 1000
-                dismissVelocity = velocity.y
-
-                if closing {
-                    finalYPositionWhenDismissing = touchPoint.y - initialTouchPoint.y
-                    miniPlayer.closeFullScreenPlayer()
-                } else {
-                    UIView.animate(withDuration: 0.2, animations: {
-                        self.view.frame = CGRect(x: 0,
-                                                 y: 0,
-                                                 width: self.view.frame.size.width,
-                                                 height: self.view.frame.size.height)
-                    })
-                }
-            default:
-                break
+        switch sender.state {
+        case .began:
+            initialTouchPoint = touchPoint
+        case .changed:
+            if touchPoint.y > initialTouchPoint.y {
+                view.frame.origin.y = touchPoint.y - initialTouchPoint.y
             }
+        case .ended, .cancelled:
+            // If pan ended, decide it we should close or reset the view
+            // based on the final position and the speed of the gesture
+            // (https://stackoverflow.com/a/47339617)
+            // If the swipe is too quick, we dismiss
+            let translation = sender.translation(in: view)
+            let velocity = sender.velocity(in: view)
+            let closing = (translation.y > view.frame.size.height * Self.minimumScreenRatioToHide) ||
+            (velocity.y > Self.minimumVelocityToHide) || velocity.y > 1000
+            dismissVelocity = velocity.y
+
+            if closing {
+                finalYPositionWhenDismissing = touchPoint.y - initialTouchPoint.y
+                miniPlayer.closeFullScreenPlayer()
+            } else {
+                UIView.animate(withDuration: 0.2, animations: {
+                    self.view.frame = CGRect(x: 0,
+                                             y: 0,
+                                             width: self.view.frame.size.width,
+                                             height: self.view.frame.size.height)
+                })
+            }
+        default:
+            break
         }
+    }
 
     // this is used so that the player tab line only fades in when you tap something that isn't a control
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
