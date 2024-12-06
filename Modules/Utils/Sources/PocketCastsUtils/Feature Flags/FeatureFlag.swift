@@ -73,9 +73,6 @@ public enum FeatureFlag: String, CaseIterable {
 
     case newSharing
 
-    /// Enable the transcripts feature on podcasts episodes
-    case transcripts
-
     /// Enables the Kids banner
     case kidsProfile
 
@@ -207,8 +204,6 @@ public enum FeatureFlag: String, CaseIterable {
         case .accelerateEffects:
             true
         case .newSharing:
-            true
-        case .transcripts:
             true
         case .kidsProfile:
             false
