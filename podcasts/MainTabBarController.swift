@@ -699,7 +699,7 @@ class MainTabBarController: UITabBarController, NavigationProtocol {
     // This code simple checks if the tab bar is already presenting something and, if yes,
     // present the VC through the presentedViewController
     override func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
-        if FeatureFlag.newPlayerTransition.enabled, let presentedViewController, !presentedViewController.isBeingDismissed {
+        if let presentedViewController, !presentedViewController.isBeingDismissed {
             presentedViewController.present(viewControllerToPresent, animated: flag, completion: completion)
             return
         }
