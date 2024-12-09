@@ -166,6 +166,10 @@ public final class FileLog {
         }
     }
 
+    public func logFileAsString() async -> String {
+        return await logBuffer.loadLogFileAsString()        
+    }
+
     // Creates a merged file from `mainLogFilePath` and `backupLogFilePath` to be used for enquing the file upload.
     public func logFileForUpload() -> AnyPublisher<String, Error> {
         let file = LogFilePaths.debugUploadLog
