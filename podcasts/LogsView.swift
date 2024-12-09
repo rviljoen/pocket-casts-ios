@@ -1,29 +1,60 @@
 import Foundation
 import SwiftUI
 import PocketCastsUtils
+import MessageUI
 
-struct LogsView: View {
-    @State var logs: String = ""
+class LogsViewModel: NSObject, ObservableObject, MFMailComposeViewControllerDelegate {
+    @Published var logs = ""
+    var presenter: UIViewController?
 
-    @EnvironmentObject var theme: Theme
+    init(presenter: UIViewController? = nil) {
+        self.presenter = presenter
+    }
 
-    private func load() async {
+    func load() async {
         let result = await FileLog.shared.logFileAsString()
         await MainActor.run {
             self.logs = result
         }
     }
 
+    func mailLogs() {
+        guard MFMailComposeViewController.canSendMail() else {
+            return
+        }
+        let mailVC = MFMailComposeViewController()
+        mailVC.mailComposeDelegate = self
+
+        mailVC.setSubject("Logs")
+        mailVC.setToRecipients(["support@pocketcasts.com"])
+        mailVC.setMessageBody(logs, isHTML: false)
+
+        presenter?.present(mailVC, animated: true)
+    }
+
+    func mailComposeController(_ controller: MFMailComposeViewController,
+                                       didFinishWith result: MFMailComposeResult,
+                               error: Error?) {
+        presenter?.dismiss(animated: true)
+    }
+
+}
+
+struct LogsView: View {
+    @StateObject var model: LogsViewModel
+
+    @EnvironmentObject var theme: Theme
+
     var body: some View {
         VStack {
-            TextEditor(text: $logs)
+            TextEditor(text: $model.logs)
             Spacer()
         }
         .navigationTitle("Logs")
         .toolbar(content: {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-
+                    model.mailLogs()
                 }, label: {
                     Image("mail")
                 })
@@ -32,24 +63,12 @@ struct LogsView: View {
         .applyDefaultThemeOptions()
         .ignoresSafeArea()
         .task {
-            await load()
+            await model.load()
         }
     }
 }
 
 #Preview {
-    LogsView(logs: """
-Line 1
-Line 2
-Line 3
-Line 4
-Line 5
-Line 6
-Line 7
-Line 8
-Line 9
-Line 10
-Line 11
-""")
+    LogsView(model: LogsViewModel())
     .setupDefaultEnvironment()
 }

@@ -3,8 +3,10 @@ import Foundation
 class LogsViewController: ThemedHostingController<LogsView> {
 
     init() {
-        let screen = LogsView()
+        let model = LogsViewModel()
+        let screen = LogsView(model: model)
         super.init(rootView: screen)
+        model.presenter = self
     }
 
     @MainActor required dynamic init?(coder aDecoder: NSCoder) {
@@ -14,7 +16,7 @@ class LogsViewController: ThemedHostingController<LogsView> {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        Analytics.track(.referralClaimScreenShown)
+        //Analytics.track(.referralClaimScreenShown)
 
         setupUI()
     }
