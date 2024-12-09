@@ -52,7 +52,7 @@ struct LogsView: View {
             TextEditor(text: $model.logs)
             Spacer()
         }
-        .navigationTitle("Logs")
+        .navigationTitle(L10n.logs)
         .toolbar(content: {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {

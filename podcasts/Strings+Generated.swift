@@ -1523,6 +1523,8 @@ internal enum L10n {
   internal static var loginSubtitle: String { return L10n.tr("Localizable", "login_subtitle") }
   /// Discover your next favorite podcast
   internal static var loginTitle: String { return L10n.tr("Localizable", "login_title") }
+  /// Logs
+  internal static var logs: String { return L10n.tr("Localizable", "logs") }
   /// Manage downloads
   internal static var manageDownloadsAction: String { return L10n.tr("Localizable", "manage_downloads_action") }
   /// Save %1$@ by removing played episodes.

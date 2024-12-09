@@ -78,7 +78,7 @@ class OnlineSupportController: PCViewController, WKNavigationDelegate {
             self?.export(sender)
         }))
 
-        controller.addAction(.init(title: "Logs", style: .default, handler: { [weak self] _ in
+        controller.addAction(.init(title: L10n.logs, style: .default, handler: { [weak self] _ in
             self?.viewLogs(sender)
         }))
 

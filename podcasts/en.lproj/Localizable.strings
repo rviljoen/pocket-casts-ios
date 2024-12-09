@@ -4704,3 +4704,6 @@
 
 /* Auto Downloads Setting - Auto download on follow of a blog*/
 "settings_auto_downloads_on_follow" = "On Follow";
+
+/* Title of an option to see the users logs */
+"logs" = "Logs";
