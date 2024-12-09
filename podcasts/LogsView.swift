@@ -20,6 +20,7 @@ class LogsViewModel: NSObject, ObservableObject, MFMailComposeViewControllerDele
 
     func mailLogs() {
         guard MFMailComposeViewController.canSendMail() else {
+            Toast.show(L10n.logsNoEmailAccount)
             return
         }
         let mailVC = MFMailComposeViewController()

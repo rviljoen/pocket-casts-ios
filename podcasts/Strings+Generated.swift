@@ -1525,6 +1525,8 @@ internal enum L10n {
   internal static var loginTitle: String { return L10n.tr("Localizable", "login_title") }
   /// Logs
   internal static var logs: String { return L10n.tr("Localizable", "logs") }
+  /// No email account configured to send the logs
+  internal static var logsNoEmailAccount: String { return L10n.tr("Localizable", "logs_no_email_account") }
   /// Manage downloads
   internal static var manageDownloadsAction: String { return L10n.tr("Localizable", "manage_downloads_action") }
   /// Save %1$@ by removing played episodes.
