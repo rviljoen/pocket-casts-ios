@@ -25,10 +25,12 @@ class LogsViewModel: NSObject, ObservableObject, MFMailComposeViewControllerDele
         let mailVC = MFMailComposeViewController()
         mailVC.mailComposeDelegate = self
 
-        mailVC.setSubject("Logs")
+        mailVC.setSubject("iOS Logs \(Settings.appVersion())")
         mailVC.setToRecipients(["support@pocketcasts.com"])
-        mailVC.setMessageBody(logs, isHTML: false)
-
+        mailVC.setMessageBody("Please find attached my logs", isHTML: false)
+        if let data = logs.data(using: .utf8) {
+            mailVC.addAttachmentData(data, mimeType: UTType.plainText.preferredMIMEType ?? "plain/text", fileName: "logs.txt")
+        }
         presenter?.present(mailVC, animated: true)
     }
 
