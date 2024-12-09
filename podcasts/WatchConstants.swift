@@ -43,6 +43,8 @@ public enum WatchConstants {
 
         public static let upNextDownloadEpisodeCount = "upNextDownloadEpisodeCount"
         public static let upNextAutoDeleteEpisodeCount = "upNextAutoDeleteEpisodeCount"
+
+        public static let sequenceNumberKey = "sequenceNumber"
     }
 
     public enum PlayingStatus {
