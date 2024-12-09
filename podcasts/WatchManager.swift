@@ -7,8 +7,21 @@ import WatchConnectivity
 class WatchManager: NSObject, WCSessionDelegate {
     static let shared = WatchManager()
 
+<<<<<<< ours
     let logTaskManager = LogTaskManager()
     let logCache = LogCache()
+||||||| ancestor
+    var logFileRequestTask: Task<Void, Never>?
+
+    // The last retrieved log is cached here for the duration of this session
+    var cachedLog: String? = nil
+=======
+    var logFileRequestTask: Task<Void, Never>?
+
+    // The last retrieved log is cached here for the duration of this session
+    var cachedLog: String? = nil
+    var sequence: Int = 0
+>>>>>>> theirs
 
     // Serial queue for WCSession operations to ensure thread safety
     private let sessionQueue = DispatchQueue(label: "com.pocketcasts.watchmanager.session", qos: .userInitiated)
@@ -90,6 +103,12 @@ class WatchManager: NSObject, WCSessionDelegate {
 
     func sessionWatchStateDidChange(_ session: WCSession) {
         updateWatchData()
+    }
+
+    func sessionReachabilityDidChange(_ session: WCSession) {
+        if session.isReachable {
+            updateWatchData()
+        }
     }
 
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
@@ -464,13 +483,17 @@ class WatchManager: NSObject, WCSessionDelegate {
         // only send data when we have a valid connection
         guard session.activationState == .activated,
               session.isPaired,
-              session.isWatchAppInstalled
+              session.isWatchAppInstalled,
+              session.isReachable
         else {
+            FileLog.shared.addMessage("Not sending state to watch: ActivationState = \(session.activationState), isPaired = \(session.isPaired), isWatchAppInstalled = \(session.isWatchAppInstalled), isReachable = \(session.isReachable)")
             return
         }
 
         var applicationDict = [String: Any]()
         applicationDict[WatchConstants.Keys.messageVersion] = WatchConstants.Values.messageVersion
+        sequence += 1
+        applicationDict[WatchConstants.Keys.sequenceNumberKey] = String(sequence)
 
         applicationDict[WatchConstants.Keys.filters] = serializeFilters()
         applicationDict[WatchConstants.Keys.nowPlayingInfo] = serializeNowPlaying()
@@ -488,6 +511,7 @@ class WatchManager: NSObject, WCSessionDelegate {
         applicationDict[WatchConstants.Keys.upNextAutoDeleteEpisodeCount] = Settings.watchAutoDeleteUpNext() == true ? Settings.watchAutoDownloadUpNextCount() : 25
 
         do {
+            FileLog.shared.addMessage("WatchManager sendStateToWatch sequence \(sequence) at \(Date())")
             try session.updateApplicationContext(applicationDict)
         } catch {
             FileLog.shared.addMessage("WatchManager sendStateToWatch failed \(error.localizedDescription)")

@@ -32,6 +32,12 @@ class SessionManager: NSObject, WCSessionDelegate {
 
     // this is called in the background when there's new data available for the app
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
+
+        guard let sequence = applicationContext[WatchConstants.Keys.sequenceNumberKey] as? String else { return }
+        guard let sequence_latest = session.receivedApplicationContext[WatchConstants.Keys.sequenceNumberKey] as? String else { return }
+
+        FileLog.shared.addMessage("Received application context sequence \(sequence) at \(Date()), latest sequence number is \(sequence_latest)")
+
         if let messageId = applicationContext[WatchConstants.Keys.messageVersion] as? String, messageId == WatchConstants.Values.messageVersion {
             UserDefaults.standard.set(applicationContext, forKey: WatchConstants.UserDefaults.data)
             UserDefaults.standard.set(Date(), forKey: WatchConstants.UserDefaults.lastDataTime)
