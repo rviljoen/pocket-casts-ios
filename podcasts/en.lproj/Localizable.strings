@@ -4709,4 +4709,4 @@
 "logs" = "Logs";
 
 /* Message when no email account is configured to be able to send the logs*/
-"logs_no_email_account" = "No email account configured to send the logs";
+"logs_no_email_account_configured" = "You need to configure an email account on the device in order to send the logs";
