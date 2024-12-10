@@ -141,18 +141,6 @@ public final class FileLog {
         }
     }
 
-    // Just a shortcut for `addMessage` to be used specifically for
-    // the podcasts out of folders issue
-    // By doing so it will be easier to delete those logs once the issue is
-    // sorted.
-    //
-    // See: https://github.com/Automattic/pocket-casts-ios/issues/791
-    public func foldersIssue(_ message: String?) {
-        guard let message else { return }
-
-        addMessage("[Folders] \(message)")
-    }
-
     public func forceFlush() {
         Task {
             await logBuffer.forceFlush()

@@ -12,7 +12,7 @@ struct BetaMenu: View {
         }
         .listStyle(.plain)
         .searchable(text: $searchText, prompt: L10n.search)
-        .modifier(MiniPlayerPadding())
+        .miniPlayerSafeAreaInset()
     }
 
     private var filteredFeatures: [FeatureFlag] {
