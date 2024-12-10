@@ -160,7 +160,7 @@ public enum FeatureFlag: String, CaseIterable {
         case .networkDebugging:
             false
         case .endOfYear:
-            false        
+            false
         case .episodeFeedArtwork:
             false
         case .rssChapters:
