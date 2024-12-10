@@ -8,7 +8,7 @@ struct BetaMenu: View {
                 Toggle(String(describing: feature), isOn: feature.isOn)
             }
         }
-        .modifier(MiniPlayerPadding())
+        .miniPlayerSafeAreaInset()
     }
 }
 
