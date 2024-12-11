@@ -14,9 +14,6 @@ public enum FeatureFlag: String, CaseIterable {
     /// Whether End Of Year feature is enabled
     case endOfYear
 
-    /// Enable show notes using the new endpoint
-    case newShowNotesEndpoint
-
     /// Enable retrieving episode artwork from the RSS feed
     case episodeFeedArtwork
 
@@ -164,8 +161,6 @@ public enum FeatureFlag: String, CaseIterable {
             false
         case .endOfYear:
             false
-        case .newShowNotesEndpoint:
-            false
         case .episodeFeedArtwork:
             false
         case .rssChapters:
@@ -263,8 +258,6 @@ public enum FeatureFlag: String, CaseIterable {
             shouldEnableSyncedSettings ? "new_settings_storage" : nil
         case .settingsSync:
             shouldEnableSyncedSettings ? "settings_sync" : nil
-        case .newShowNotesEndpoint:
-             "new_show_notes"
          case .episodeFeedArtwork:
              "episode_artwork"
          case .rssChapters:
