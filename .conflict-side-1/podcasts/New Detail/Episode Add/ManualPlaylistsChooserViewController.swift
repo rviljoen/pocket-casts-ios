@@ -1,0 +1,388 @@
+import UIKit
+import SwiftUI
+import PocketCastsDataModel
+import PocketCastsUtils
+
+private enum TableSection: Int, CaseIterable {
+    case addNewPlaylist = 0
+    case playlists = 1
+}
+
+class ManualPlaylistsChooserViewController: PCViewController {
+    private var manualPlaylists: [EpisodeFilter] = []
+    private var tempManualPlaylists: [EpisodeFilter] = []
+    private var initialSelectedPlaylists: Set<String> = []
+    private var newSelectedPlaylists: Set<String> = []
+    private var searchController: PCSearchBarController?
+    private let episodes: [Episode]
+    private let analyticsSource: String
+    private let dataManager = DataManager.sharedManager
+
+    private var tableView: ThemeableTable! {
+        didSet {
+            tableView.themeStyle = .primaryUi01
+            tableView.estimatedRowHeight = 80
+            tableView.rowHeight = UITableView.automaticDimension
+            tableView.translatesAutoresizingMaskIntoConstraints = false
+            tableView.sectionHeaderTopPadding = 0
+            tableView.delegate = self
+            tableView.dataSource = self
+            tableView.separatorStyle = .none
+            tableView.register(PlaylistCell.self, forCellReuseIdentifier: PlaylistCell.reuseIdentifier)
+        }
+    }
+
+    private var doneButton: UIButton! {
+        didSet {
+            doneButton.translatesAutoresizingMaskIntoConstraints = false
+            doneButton.backgroundColor = AppTheme.colorForStyle(.primaryInteractive01)
+            doneButton.layer.cornerRadius = 12
+            doneButton.addTarget(self, action: #selector(doneTapped), for: .touchUpInside)
+            let attributedTitle = NSAttributedString(string: L10n.done, attributes: [NSAttributedString.Key.foregroundColor: ThemeColor.primaryInteractive02(), NSAttributedString.Key.font: UIFont.systemFont(ofSize: 18.0, weight: .semibold)])
+            doneButton.setAttributedTitle(attributedTitle, for: .normal)
+        }
+    }
+
+    private var footerView: ThemeableView! {
+        didSet {
+            footerView.translatesAutoresizingMaskIntoConstraints = false
+            footerView.backgroundColor = AppTheme.viewBackgroundColor()
+        }
+    }
+
+    init(episodes: [Episode], analyticsSource: String) {
+        self.episodes = episodes
+        self.analyticsSource = analyticsSource
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    convenience init(episode: Episode, analyticsSource: String) {
+        self.init(episodes: [episode], analyticsSource: analyticsSource)
+    }
+
+    @MainActor required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        setupNavBar()
+        addCloseButton()
+        setupContent()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        Analytics.track(.addToPlaylistsShown, properties: ["source": analyticsSource])
+    }
+
+    private func setupNavBar() {
+        let backgroundColor = AppTheme.viewBackgroundColor()
+        changeNavTint(titleColor: AppTheme.colorForStyle(.primaryText01), iconsColor: AppTheme.colorForStyle(.primaryIcon03), backgroundColor: backgroundColor)
+
+        title = L10n.playlistManualEpisodeAddToPlaylist
+
+        largeTitleFont = UIFont.systemFont(ofSize: 22, weight: .bold)
+
+        navigationController?.navigationBar.prefersLargeTitles = false
+        navigationItem.largeTitleDisplayMode = .never
+
+        let appearance = UINavigationBarAppearance()
+        appearance.backgroundColor = backgroundColor
+        appearance.largeTitleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: AppTheme.colorForStyle(.primaryText01)
+        ]
+        appearance.titleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: AppTheme.colorForStyle(.primaryText01)
+        ]
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.sizeToFit()
+    }
+
+    private func setupContent() {
+        isModalInPresentation = true
+
+        view.backgroundColor = AppTheme.viewBackgroundColor()
+
+        tableView = ThemeableTable()
+        view.insertSubview(tableView, at: 0)
+
+        footerView = ThemeableView()
+        view.addSubview(footerView)
+
+        doneButton = UIButton(type: .custom)
+        footerView.addSubview(doneButton)
+
+        setupSearchController()
+
+        NSLayoutConstraint.activate([
+            footerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+            footerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+            footerView.heightAnchor.constraint(equalToConstant: 110),
+            footerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
+
+            doneButton.leadingAnchor.constraint(equalTo: footerView.leadingAnchor, constant: 16),
+            doneButton.trailingAnchor.constraint(equalTo: footerView.trailingAnchor, constant: -16),
+            doneButton.bottomAnchor.constraint(equalTo: footerView.bottomAnchor, constant: -34),
+            doneButton.topAnchor.constraint(equalTo: footerView.topAnchor, constant: 16),
+
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+            tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
+            tableView.bottomAnchor.constraint(equalTo: footerView.topAnchor, constant: 0)
+        ])
+
+        view.layoutSubviews()
+
+        manualPlaylists = dataManager.allManualPlaylists(includeDeleted: false)
+
+        if episodes.count == 1, let episode = episodes.first {
+            let uuids = dataManager.manualPlaylistUUIDs(for: episode.uuid)
+            initialSelectedPlaylists = Set(uuids)
+        } else {
+            initialSelectedPlaylists = []
+        }
+        newSelectedPlaylists = initialSelectedPlaylists
+    }
+
+    private func addCloseButton() {
+        let closeButton = createStandardCloseButton(imageName: "cancel")
+        closeButton.target = self
+        closeButton.action = #selector(closeTapped)
+        navigationItem.leftBarButtonItem = closeButton
+    }
+
+    @objc private func closeTapped(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
+
+    @objc private func doneTapped() {
+        let added = newSelectedPlaylists.subtracting(initialSelectedPlaylists)
+        let removed = initialSelectedPlaylists.subtracting(newSelectedPlaylists)
+
+        FileLog.shared.console("Added \(added), removed \(removed)")
+
+        var changedPlaylists: Set<EpisodeFilter> = []
+
+        let maxPlaylistItems = Constants.Limits.maxFilterItems
+
+        manualPlaylists.forEach { playlist in
+            if added.contains(playlist.uuid) {
+                if episodes.count > maxPlaylistItems {
+                    Toast.show(L10n.playlistManualAddTooManyEpisodesToast(maxPlaylistItems.localized(.decimal)))
+                    return
+                }
+                let currentCount = dataManager.allPlaylistEpisodeCount(for: playlist, episodeUuidToAdd: nil, includingArchivedEpisodes: true)
+                if currentCount + episodes.count > maxPlaylistItems {
+                    Toast.show(L10n.playlistManualAddEpisodesAlmostFullToast)
+                    return
+                }
+                episodes.forEach { track(episode: $0, added: true, to: playlist) }
+                dataManager.add(episodes: episodes, to: playlist)
+                changedPlaylists.insert(playlist)
+            }
+            if removed.contains(playlist.uuid), let episode = episodes.first, episodes.count == 1 {
+                track(episode: episode, added: false, to: playlist)
+                dataManager.deleteEpisodes([episode.uuid], from: playlist)
+            }
+        }
+
+        changedPlaylists.forEach { playlist in
+            playlist.syncStatus = SyncStatus.notSynced.rawValue
+            dataManager.save(playlist: playlist)
+        }
+
+        let showAddedToast = !added.isEmpty && changedPlaylists.count > 0
+
+        dismiss(animated: true) {
+            guard showAddedToast else {
+                return
+            }
+
+            var actions: [Toast.Action]? = nil
+            var title = L10n.playlistEpisodesAddedToMultiplePlaylists(changedPlaylists.count)
+            if changedPlaylists.count == 1 {
+                guard let playlist = (changedPlaylists.first { added.first == $0.uuid }) else { return }
+                title = L10n.playlistEpisodesAddedToSinglePlaylist(playlist.playlistName)
+                actions = [
+                    .init(title: L10n.bookmarkAddedButtonTitle) {
+                        // Dismiss any presented view controllers (e.g., Episode Detail) before navigating
+                        if let rootVC = SceneHelper.rootViewController(includeTopMost: false),
+                           rootVC.presentedViewController != nil {
+                            rootVC.dismiss(animated: true) {
+                                NavigationManager.sharedManager.navigateTo(
+                                    NavigationManager.filterPageKey,
+                                    data: [
+                                        NavigationManager.filterUuidKey: playlist.uuid
+                                    ]
+                                )
+                            }
+                        } else {
+                            NavigationManager.sharedManager.navigateTo(
+                                NavigationManager.filterPageKey,
+                                data: [
+                                    NavigationManager.filterUuidKey: playlist.uuid
+                                ]
+                            )
+                        }
+                    }
+                ]
+            }
+            Toast.show(title, actions: actions)
+        }
+    }
+}
+
+extension ManualPlaylistsChooserViewController: UITableViewDelegate, UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return TableSection.allCases.count
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        switch section {
+        case TableSection.addNewPlaylist.rawValue:
+            return 1
+        default:
+            return manualPlaylists.count
+        }
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: PlaylistCell.reuseIdentifier, for: indexPath) as! PlaylistCell
+        switch indexPath.section {
+        case TableSection.addNewPlaylist.rawValue:
+            cell.configureAddPlaylistCell()
+        default:
+            let playlist = manualPlaylists[indexPath.row]
+            let episodeIsInPlaylist = initialSelectedPlaylists.contains(playlist.uuid)
+            let onToggleChange: (Bool) -> Void = { [weak self] selected in
+                guard let self = self else { return }
+
+                if selected {
+                    let maxPlaylistItems = Constants.Limits.maxFilterItems
+                    let currentCount = self.dataManager.allPlaylistEpisodeCount(for: playlist, episodeUuidToAdd: nil, includingArchivedEpisodes: true)
+                    if currentCount + self.episodes.count > maxPlaylistItems {
+                        Toast.show(L10n.playlistManualAddEpisodesAlmostFullToast)
+                    }
+                    self.newSelectedPlaylists.insert(playlist.uuid)
+                } else {
+                    self.newSelectedPlaylists.remove(playlist.uuid)
+                }
+                tableView.reloadRows(at: [indexPath], with: .none)
+            }
+            let isSelected = Binding<Bool>(
+                get: { [weak self] in
+                    guard let self = self else { return false }
+                    return self.newSelectedPlaylists.contains(playlist.uuid)
+                },
+                set: { newValue in
+                    onToggleChange(newValue)
+                }
+            )
+            cell.configure(
+                cellType: .check,
+                playlist: playlist,
+                isLastRow: indexPath.row == manualPlaylists.count - 1,
+                isSelected: isSelected,
+                canBeDisabled: !episodeIsInPlaylist,
+                analyticsSource: analyticsSource,
+                additionalEpisodesCount: episodes.count
+            )
+        }
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        indexPath.section == TableSection.addNewPlaylist.rawValue
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard indexPath.section == TableSection.addNewPlaylist.rawValue else { return }
+
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        Analytics.track(.addToPlaylistsNewPlaylistTapped, properties: ["source": analyticsSource])
+
+        let creationType: NewPlaylistViewController.CreationType = episodes.count == 1
+            ? .addEpisode(episode: episodes[0])
+            : .addEpisodes(episodes: episodes)
+        let createPlaylistViewController = NewPlaylistViewController(creationType: creationType, analyticsSource: analyticsSource)
+        navigationController?.pushViewController(createPlaylistViewController, animated: true)
+    }
+}
+
+extension ManualPlaylistsChooserViewController: PCSearchBarDelegate {
+    func searchDidBegin() {
+        tempManualPlaylists = manualPlaylists
+    }
+
+    func searchDidEnd() {
+        manualPlaylists = tempManualPlaylists
+        tempManualPlaylists.removeAll()
+        tableView.reload(section: .playlists, with: .automatic)
+    }
+
+    func searchWasCleared() {
+        // TODO: Add analytics
+
+        manualPlaylists = tempManualPlaylists
+        tableView.reload(section: .playlists, with: .automatic)
+    }
+
+    func searchTermChanged(_ searchTerm: String) { }
+
+    func performSearch(searchTerm: String, triggeredByTimer: Bool, completion: @escaping (() -> Void)) {
+        // TODO: Add analytics
+
+        manualPlaylists = tempManualPlaylists.filter {
+            $0.playlistName.localizedCaseInsensitiveContains(searchTerm)
+        }
+        tableView.reload(section: .playlists, with: .automatic)
+        completion()
+    }
+
+    private func setupSearchController() {
+        searchController = PCSearchBarController()
+        searchController?.searchDebounce = 0.2
+
+        guard let searchController else {
+            return
+        }
+
+        searchController.view.translatesAutoresizingMaskIntoConstraints = false
+        addChild(searchController)
+        view.addSubview(searchController.view)
+        searchController.didMove(toParent: self)
+
+        let topAnchor = searchController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+        NSLayoutConstraint.activate([
+            searchController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            searchController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            searchController.view.heightAnchor.constraint(equalToConstant: PCSearchBarController.defaultHeight),
+            topAnchor
+        ])
+
+        searchController.placeholderText = L10n.playlistSearch
+        searchController.searchControllerTopConstant = topAnchor
+        searchController.setupScrollView(tableView, hideSearchInitially: false)
+        searchController.searchDebounce = Settings.podcastSearchDebounceTime()
+        searchController.searchDelegate = self
+
+        tableView.verticalScrollIndicatorInsets.top = PCSearchBarController.defaultHeight
+    }
+}
+
+fileprivate extension UITableView {
+    func reload(section: TableSection, with animation: UITableView.RowAnimation) {
+        reloadSections(IndexSet(integer: section.rawValue), with: animation)
+    }
+}
+
+extension ManualPlaylistsChooserViewController: PlaylistTypeTrackerProvider {
+    var analyticsSourceType: String {
+        analyticsSource
+    }
+}

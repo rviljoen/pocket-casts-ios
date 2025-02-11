@@ -1,0 +1,274 @@
+import PocketCastsServer
+import UIKit
+import PocketCastsDataModel
+
+class LargeListSummaryViewController: DiscoverPeekViewController, DiscoverSummaryProtocol, UICollectionViewDataSource, GridLayoutDelegate, UICollectionViewDelegateFlowLayout {
+
+    @IBOutlet weak var divider: ThemeDividerView!
+    @IBOutlet weak var titleTopConstraint: NSLayoutConstraint!
+    @IBOutlet var podcastHeaderView: LargeListSummaryCellHeaderView?
+    @IBOutlet var showAllBtn: UIButton! {
+        didSet {
+            showAllBtn.setTitle(L10n.discoverShowAll.localizedUppercase, for: .normal)
+            showAllBtn.titleLabel?.font = .font(ofSize: 13, weight: .bold, scalingWith: .title1)
+            showAllBtn.titleLabel?.numberOfLines = 2
+            showAllBtn.titleLabel?.adjustsFontForContentSizeCategory = true
+        }
+    }
+
+    private static let cellId = "LargeListCell"
+
+    private var lastLayedOutWidth = 0 as CGFloat
+
+    private var relatedPodcastID: String? {
+        didSet {
+            podcastHeaderView?.podcastUUID = relatedPodcastID
+        }
+    }
+    private var podcasts = [DiscoverPodcast]()
+    private var datetime: String? // Used to track the generation of recommendations
+    private weak var delegate: DiscoverDelegate?
+    private var item: DiscoverItem?
+    private var category: DiscoverCategory?
+
+    @IBOutlet var largeListCollectionViewHeight: NSLayoutConstraint!
+
+    var padding: CGFloat? {
+        didSet {
+            view.setNeedsLayout()
+        }
+    }
+
+    private var relatedPodcastImageView: PodcastImageView?
+    private var relatedPodcastLabel: UILabel?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        (view as? ThemeableView)?.style = .primaryUi02
+
+        collectionView.register(UINib(nibName: "LargeListCell", bundle: nil), forCellWithReuseIdentifier: LargeListSummaryViewController.cellId)
+
+        collectionView.backgroundColor = UIColor.clear
+
+        cellSpacing = 16 as CGFloat
+        numVisibleColumns = 2
+        isPeekEnabled = true
+
+        let gridLayout = collectionView.collectionViewLayout as! GridLayout
+
+        gridLayout.delegate = self
+        gridLayout.numberOfRowsOrColumns = 1
+        gridLayout.scrollDirection = .horizontal
+        gridLayout.itemSpacing = cellSpacing
+
+        showAllBtn.setLetterSpacing(0.6)
+    }
+
+    var cellExtraHeight: CGFloat {
+        var baseHeight = padding ?? 50
+        let largeSize = traitCollection.preferredContentSizeCategory.isAccessibilityCategory
+        if largeSize {
+            baseHeight = baseHeight * 1.5
+        }
+        let metric = UIFontMetrics(forTextStyle: .callout)
+        return max(baseHeight, metric.scaledValue(for: baseHeight))
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        if let padding {
+            titleTopConstraint.constant = padding / 2
+        }
+
+        if lastLayedOutWidth != view.bounds.width {
+            lastLayedOutWidth = view.bounds.width
+            largeListCollectionViewHeight.constant = cellWidth + cellExtraHeight
+            collectionView.layoutIfNeeded()
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        collectionView.reloadData()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if let listId = item?.uuid {
+            let categoryId = category?.id.map(String.init)
+            AnalyticsHelper.listImpression(listId: listId, category: categoryId)
+        }
+        NotificationCenter.default.addObserver(self, selector: #selector(podcastStatusChanged), name: Constants.Notifications.podcastAdded, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(podcastStatusChanged), name: Constants.Notifications.podcastDeleted, object: nil)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: Constants.Notifications.podcastDeleted, object: nil)
+        NotificationCenter.default.removeObserver(self, name: Constants.Notifications.podcastAdded, object: nil)
+    }
+
+    // MARK: - UICollectionView Methods
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LargeListSummaryViewController.cellId, for: indexPath) as! LargeListCell
+        let thisPodcast = podcasts[indexPath.row]
+        if let delegate = delegate {
+            cell.populateFrom(thisPodcast, isSubscribed: delegate.isSubscribed(podcast: thisPodcast))
+            cell.onSubscribe = { [weak self] in
+                if let listId = self?.item?.uuid, let podcastUuid = thisPodcast.uuid {
+                    AnalyticsHelper.podcastSubscribedFromList(listId: listId, podcastUuid: podcastUuid, listDateTime: self?.datetime)
+                }
+                delegate.subscribe(podcast: thisPodcast)
+            }
+        }
+        return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        podcasts.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let item = item else { return }
+
+        let podcast = podcasts[indexPath.row]
+
+        delegate?.show(discoverPodcast: podcast, placeholderImage: nil, isFeatured: false, listUuid: item.uuid)
+        collectionView.deselectItem(at: indexPath, animated: true)
+
+        if let listId = item.uuid, let podcastUuid = podcast.uuid {
+            AnalyticsHelper.podcastTappedFromList(listId: listId, podcastUuid: podcastUuid, listDateTime: datetime)
+        }
+    }
+
+    func registerDiscoverDelegate(_ delegate: DiscoverDelegate) {
+        self.delegate = delegate
+    }
+
+    @objc private func podcastStatusChanged(notification: Notification) {
+        guard let object = notification.object else { return }
+        let uuid = object as! String
+        if let index = podcasts.firstIndex(where: { $0.uuid == uuid }), index < collectionView.numberOfItems(inSection: 0) {
+            collectionView.reloadItems(at: [IndexPath(row: index, section: 0)])
+        }
+    }
+
+    // MARK: - GridLayoutDelegate
+
+    func scaleForItem(inCollectionView collectionView: UICollectionView, withLayout layout: UICollectionViewLayout, atIndexPath indexPath: IndexPath) -> UInt {
+        1
+    }
+
+    func sizeForItem(inCollectionView collectionView: UICollectionView, withLayout layout: UICollectionViewLayout, atIndexPath indexPath: IndexPath) -> CGSize {
+        CGSize(width: cellWidth, height: cellWidth + cellExtraHeight + 10)
+    }
+
+    // MARK: - Populate From Data
+
+    func populateFrom(item: DiscoverItem, region: String?, category: DiscoverCategory?) {
+        podcasts = []
+        collectionView.reloadData()
+
+        guard let source = item.source else { return }
+        guard let title = item.title?.localized else { return }
+
+        showAllBtn.isHidden = item.expandedStyle == nil
+
+        self.item = item
+        self.category = category
+
+        switch item.cellType() {
+        case .largeListWithPodcast:
+            podcastHeaderView?.topText = item.title
+            podcastHeaderView?.podcastUUID = nil
+        default:
+            podcastHeaderView?.bottomText = delegate?.replaceRegionName(string: title)
+            podcastHeaderView?.podcastUUID = nil
+        }
+
+        divider.isHidden = true
+
+        switch item.cellType() {
+        case .largeListWithPodcast:
+            DiscoverServerHandler.shared.discoverPodcastCollection(source: source, authenticated: item.authenticated, completion: { [weak self] podcastCollection in
+                guard let strongSelf = self, let discoverPodcast = podcastCollection?.podcasts else { return }
+
+                strongSelf.appendPodcasts(discoverPodcast, item: item)
+                strongSelf.datetime = podcastCollection?.datetime
+
+                DispatchQueue.main.async {
+                    strongSelf.relatedPodcastID = podcastCollection?.featureImage
+                    strongSelf.podcastHeaderView?.bottomText = podcastCollection?.title
+                    strongSelf.divider.isHidden = false
+                    strongSelf.collectionView.reloadData()
+                }
+            })
+        default:
+            DiscoverServerHandler.shared.discoverPodcastList(source: source, authenticated: item.authenticated, completion: { [weak self] podcastList in
+                guard let strongSelf = self, let discoverPodcast = podcastList?.podcasts else { return }
+
+                strongSelf.appendPodcasts(discoverPodcast, item: item)
+                strongSelf.datetime = podcastList?.datetime
+
+                DispatchQueue.main.async {
+                    strongSelf.divider.isHidden = false
+                    strongSelf.collectionView.reloadData()
+                }
+            })
+        }
+    }
+
+    private func appendPodcasts(_ discoverPodcast: [DiscoverPodcast], item: DiscoverItem) {
+        let podcasts: [DiscoverPodcast]
+        if let itemCount = item.summaryItemCount {
+            podcasts = Array(discoverPodcast[0..<itemCount])
+        } else {
+            podcasts = discoverPodcast
+        }
+
+        for podcast in podcasts {
+            self.podcasts.append(podcast)
+        }
+    }
+
+    // MARK: - IBActions
+
+    @IBAction func showAllTapped(_ sender: Any) {
+        guard let delegate = delegate, let item = item else { return }
+
+        delegate.showExpanded(item: item, podcasts: podcasts, podcastCollection: nil, datetime: datetime)
+    }
+
+    // MARK: - Page Changed
+
+    override func pageDidChange(to currentPage: Int, totalPages: Int) {
+        guard let item else {
+            return
+        }
+
+        Analytics.track(.discoverLargeListPageChanged, properties: ["current_page": currentPage,
+                                                                    "total_pages": totalPages,
+                                                                    "list_id": item.inferredListId])
+    }
+
+    // MARK: - Dynamic Type support
+
+    func updateSize() {
+        lastLayedOutWidth = 0
+        largeListCollectionViewHeight.constant = cellWidth + cellExtraHeight
+        view.setNeedsLayout()
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            updateSize()
+        }
+    }
+}
