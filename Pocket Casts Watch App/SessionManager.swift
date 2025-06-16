@@ -35,8 +35,13 @@ class SessionManager: NSObject, WCSessionDelegate {
 
         guard let sequence = applicationContext[WatchConstants.Keys.sequenceNumberKey] as? String else { return }
         guard let sequence_latest = session.receivedApplicationContext[WatchConstants.Keys.sequenceNumberKey] as? String else { return }
+        guard let sequence_generated = applicationContext[WatchConstants.Keys.lastUpdateTime] as? String else { return }
 
-        FileLog.shared.addMessage("Received application context sequence \(sequence) at \(Date()), latest sequence number is \(sequence_latest)")
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let now = dateFormatter.string(from: Date())
+
+        FileLog.shared.addMessage("Received application context sequence \(sequence) at \(now), generated at \(sequence_generated) latest sequence number is \(sequence_latest)")
 
         if let messageId = applicationContext[WatchConstants.Keys.messageVersion] as? String, messageId == WatchConstants.Values.messageVersion {
             UserDefaults.standard.set(applicationContext, forKey: WatchConstants.UserDefaults.data)

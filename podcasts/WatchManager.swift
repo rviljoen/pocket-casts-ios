@@ -419,8 +419,8 @@ class WatchManager: NSObject, WCSessionDelegate {
         // only send data when we have a valid connection
         guard session.activationState == .activated,
               session.isPaired,
-              session.isWatchAppInstalled,
-              session.isReachable
+              session.isWatchAppInstalled//,
+              //session.isReachable
         else {
             FileLog.shared.addMessage("Not sending state to watch: ActivationState = \(session.activationState), isPaired = \(session.isPaired), isWatchAppInstalled = \(session.isWatchAppInstalled), isReachable = \(session.isReachable)")
             return
@@ -428,8 +428,14 @@ class WatchManager: NSObject, WCSessionDelegate {
 
         var applicationDict = [String: Any]()
         applicationDict[WatchConstants.Keys.messageVersion] = WatchConstants.Values.messageVersion
+
         sequence += 1
         applicationDict[WatchConstants.Keys.sequenceNumberKey] = String(sequence)
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let dateTimeString = dateFormatter.string(from: Date())
+        applicationDict[WatchConstants.Keys.lastUpdateTime] = dateTimeString
 
         applicationDict[WatchConstants.Keys.filters] = serializeFilters()
         applicationDict[WatchConstants.Keys.nowPlayingInfo] = serializeNowPlaying()
@@ -446,7 +452,7 @@ class WatchManager: NSObject, WCSessionDelegate {
         applicationDict[WatchConstants.Keys.upNextDownloadEpisodeCount] = Settings.watchAutoDownloadUpNextEnabled() == true ? Settings.watchAutoDownloadUpNextCount() : 0
         applicationDict[WatchConstants.Keys.upNextAutoDeleteEpisodeCount] = Settings.watchAutoDeleteUpNext() == true ? Settings.watchAutoDownloadUpNextCount() : 25
         do {
-            FileLog.shared.addMessage("WatchManager sendStateToWatch sequence \(sequence) at \(Date())")
+            FileLog.shared.addMessage("WatchManager sendStateToWatch sequence \(sequence) at \(dateTimeString)")
             try session.updateApplicationContext(applicationDict)
         } catch {
             FileLog.shared.addMessage("WatchManager sendStateToWatch failed \(error.localizedDescription)")
