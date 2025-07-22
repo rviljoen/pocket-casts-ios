@@ -10,6 +10,9 @@ class ExtensionDelegate: NSObject, WKApplicationDelegate {
         SessionManager.shared.setup()
         WatchSyncManager.shared.setup()
         restorePreviousStateIfRequired()
+
+        // Request current state from phone when watch app launches
+        SessionManager.shared.requestData()
     }
 
     func applicationDidBecomeActive() {
@@ -17,6 +20,9 @@ class ExtensionDelegate: NSObject, WKApplicationDelegate {
         if WatchSyncManager.shared.isPlusUser() {
             scheduleNextRefresh()
         }
+
+        // Request current state from phone when watch app becomes active
+        SessionManager.shared.requestData()
     }
 
     func applicationWillResignActive() {

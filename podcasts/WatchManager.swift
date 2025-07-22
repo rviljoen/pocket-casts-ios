@@ -480,17 +480,18 @@ class WatchManager: NSObject, WCSessionDelegate {
 
         let session = WCSession.default
 
-        // only send data when we have a valid connection
+        // only send data when we have a valid connection and the watch is reachable
         guard session.activationState == .activated,
               session.isPaired,
-              session.isWatchAppInstalled//,
-              //session.isReachable
+              session.isWatchAppInstalled,
+              session.isReachable
         else {
             FileLog.shared.addMessage("Not sending state to watch: ActivationState = \(session.activationState), isPaired = \(session.isPaired), isWatchAppInstalled = \(session.isWatchAppInstalled), isReachable = \(session.isReachable)")
             return
         }
 
         var applicationDict = [String: Any]()
+        applicationDict[WatchConstants.Messages.messageType] = WatchConstants.Messages.StateUpdate.type
         applicationDict[WatchConstants.Keys.messageVersion] = WatchConstants.Values.messageVersion
 
         sequence += 1
@@ -520,6 +521,8 @@ class WatchManager: NSObject, WCSessionDelegate {
             FileLog.shared.addMessage("WatchManager sendStateToWatch sequence \(sequence) at \(dateTimeString)")
             try session.updateApplicationContext(applicationDict)
         } catch {
+        FileLog.shared.addMessage("WatchManager sendStateToWatch sequence \(sequence) at \(dateTimeString)")
+        session.sendMessage(applicationDict, replyHandler: nil) { error in
             FileLog.shared.addMessage("WatchManager sendStateToWatch failed \(error.localizedDescription)")
         }
     }

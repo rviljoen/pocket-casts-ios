@@ -61,6 +61,33 @@ class SessionManager: NSObject, WCSessionDelegate {
         }
     }
 
+    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+        guard let messageType = message[WatchConstants.Messages.messageType] as? String else { return }
+
+        if WatchConstants.Messages.StateUpdate.type == messageType {
+            handleStateUpdate(message)
+        }
+    }
+
+    // MARK: - State Update Handler
+
+    private func handleStateUpdate(_ applicationContext: [String: Any]) {
+        guard let sequence = applicationContext[WatchConstants.Keys.sequenceNumberKey] as? String else { return }
+        guard let sequence_generated = applicationContext[WatchConstants.Keys.lastUpdateTime] as? String else { return }
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        let now = dateFormatter.string(from: Date())
+
+        FileLog.shared.addMessage("Received state update sequence \(sequence) at \(now), generated at \(sequence_generated)")
+
+        if let messageId = applicationContext[WatchConstants.Keys.messageVersion] as? String, messageId == WatchConstants.Values.messageVersion {
+            UserDefaults.standard.set(applicationContext, forKey: WatchConstants.UserDefaults.data)
+            UserDefaults.standard.set(Date(), forKey: WatchConstants.UserDefaults.lastDataTime)
+            NotificationCenter.default.post(name: WatchConstants.Notifications.dataUpdated, object: nil)
+        }
+    }
+
     // MARK: - Offline watch messages
 
     func requestData() {
