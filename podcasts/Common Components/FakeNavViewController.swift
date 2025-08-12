@@ -70,7 +70,7 @@ class FakeNavViewController: PCViewController, UIScrollViewDelegate {
             backBtn.widthAnchor.constraint(equalToConstant: buttonSize),
             backBtn.heightAnchor.constraint(equalToConstant: buttonSize),
             backBtnLeadingConstraint,
-            backBtn.bottomAnchor.constraint(equalTo: fakeNavView.bottomAnchor)
+            backBtn.bottomAnchor.constraint(equalTo: fakeNavView.bottomAnchor, constant: -8)
         ])
         self.backBtnLeadingConstraint = backBtnLeadingConstraint
         fakeNavTitle = UILabel()
@@ -186,7 +186,7 @@ class FakeNavViewController: PCViewController, UIScrollViewDelegate {
                 button.widthAnchor.constraint(equalToConstant: buttonSize),
                 button.heightAnchor.constraint(equalToConstant: buttonSize),
                 fakeNavView.trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: margin),
-                button.bottomAnchor.constraint(equalTo: fakeNavView.bottomAnchor)
+                button.bottomAnchor.constraint(equalTo: fakeNavView.bottomAnchor, constant: -8)
             ])
         } else {
             let previousButton = rightActionButtons.last!
@@ -196,7 +196,7 @@ class FakeNavViewController: PCViewController, UIScrollViewDelegate {
                 button.widthAnchor.constraint(equalToConstant: buttonSize),
                 button.heightAnchor.constraint(equalToConstant: buttonSize),
                 button.trailingAnchor.constraint(equalTo: previousButton.leadingAnchor, constant: -margin),
-                button.bottomAnchor.constraint(equalTo: fakeNavView.bottomAnchor)
+                button.bottomAnchor.constraint(equalTo: fakeNavView.bottomAnchor, constant: -8)
             ])
         }
         rightActionButtons.append(button)
@@ -271,10 +271,12 @@ class FakeNavViewController: PCViewController, UIScrollViewDelegate {
         } else {
             fakeNavView.backgroundColor = ThemeColor.primaryUi01()
             fakeNavTitle.textColor = AppTheme.mainTextColor()
-            updateButtonsBackgroundColors(tintColor: ThemeColor.primaryIcon01(), backgroundColor: .clear)
+            //updateButtonsBackgroundColors(tintColor: ThemeColor.primaryIcon01(), backgroundColor: .clear)
+            updateButtonsBackgroundColors(tintColor: .white, backgroundColor: .black.withAlphaComponent(0.35))
             let config = UIImage.SymbolConfiguration(pointSize: 22, weight: .semibold)
-            backBtn.setImage(UIImage(systemName: "chevron.backward")?.withConfiguration(config), for: .normal)
-            backBtnLeadingConstraint?.constant = 6
+            //backBtn.setImage(UIImage(systemName: "chevron.backward")?.withConfiguration(config), for: .normal)
+            backBtn.setImage(UIImage(systemName: "chevron.backward"), for: .normal)
+            backBtnLeadingConstraint?.constant = 16
         }
     }
 
