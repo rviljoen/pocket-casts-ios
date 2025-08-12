@@ -41,7 +41,7 @@ class SessionManager: NSObject, WCSessionDelegate {
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         let now = dateFormatter.string(from: Date())
 
-        FileLog.shared.addMessage("Received application context sequence \(sequence) at \(now), generated at \(sequence_generated) latest sequence number is \(sequence_latest)")
+        //FileLog.shared.addMessage("Received application context sequence \(sequence) at \(now), generated at \(sequence_generated) latest sequence number is \(sequence_latest)")
 
         if let messageId = applicationContext[WatchConstants.Keys.messageVersion] as? String, messageId == WatchConstants.Values.messageVersion {
             UserDefaults.standard.set(applicationContext, forKey: WatchConstants.UserDefaults.data)

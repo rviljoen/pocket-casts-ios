@@ -486,7 +486,7 @@ class WatchManager: NSObject, WCSessionDelegate {
               session.isWatchAppInstalled,
               session.isReachable
         else {
-            FileLog.shared.addMessage("Not sending state to watch: ActivationState = \(session.activationState), isPaired = \(session.isPaired), isWatchAppInstalled = \(session.isWatchAppInstalled), isReachable = \(session.isReachable)")
+            //FileLog.shared.addMessage("Not sending state to watch: ActivationState = \(session.activationState), isPaired = \(session.isPaired), isWatchAppInstalled = \(session.isWatchAppInstalled), isReachable = \(session.isReachable)")
             return
         }
 
@@ -522,6 +522,7 @@ class WatchManager: NSObject, WCSessionDelegate {
             try session.updateApplicationContext(applicationDict)
         } catch {
         FileLog.shared.addMessage("WatchManager sendStateToWatch sequence \(sequence) at \(dateTimeString)")
+        //FileLog.shared.addMessage("WatchManager sendStateToWatch sequence \(sequence) at \(dateTimeString)")
         session.sendMessage(applicationDict, replyHandler: nil) { error in
             FileLog.shared.addMessage("WatchManager sendStateToWatch failed \(error.localizedDescription)")
         }
