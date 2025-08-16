@@ -1,6 +1,9 @@
 import Foundation
 import PocketCastsDataModel
+import PocketCastsServer
 import PocketCastsUtils
+import CoreMedia
+
 
 class ChapterManager {
     private var chapterParser = PodcastChapterParser()
@@ -137,8 +140,14 @@ class ChapterManager {
                 chapters = externalChapters
                 FileLog.shared.addMessage("ChapterManager: using external chapters")
             } else {
-                chapters = []
-                FileLog.shared.addMessage("ChapterManager: failed. Displaying no chapters.")
+                // Try to extract chapters from show notes as a fallback
+                FileLog.shared.addMessage("ChapterManager: no embedded/external chapters found, trying show notes")
+                chapters = await loadChaptersFromShowNotes(for: episode, duration: duration)
+                if !chapters.isEmpty {
+                    FileLog.shared.addMessage("ChapterManager: using show notes chapters (\(chapters.count) found)")
+                } else {
+                    FileLog.shared.addMessage("ChapterManager: failed. Displaying no chapters.")
+                }
             }
         } catch {
             chapters = await fileChaptersAsync
@@ -170,6 +179,48 @@ class ChapterManager {
         }
 
         return nil
+    }
+
+    private func loadChaptersFromShowNotes(for episode: BaseEpisode, duration: TimeInterval) async -> [ChapterInfo] {
+        #if os(iOS)
+        FileLog.shared.addMessage("ChapterManager: loadChaptersFromShowNotes called for episode \(episode.uuid)")
+
+        guard let showNotes = try? await showInfoCoordinator.loadShowNotes(podcastUuid: episode.parentIdentifier(), episodeUuid: episode.uuid),
+              !showNotes.isEmpty,
+              showNotes != CacheServerHandler.noShowNotesMessage else {
+            FileLog.shared.addMessage("ChapterManager: no show notes available or failed to load")
+            return []
+        }
+
+        FileLog.shared.addMessage("ChapterManager: show notes loaded, length: \(showNotes.count)")
+        let timestampChapters = ShowNotesChapterExtractor.extractChaptersFromShowNotes(showNotes)
+        FileLog.shared.addMessage("ChapterManager: ShowNotesChapterExtractor returned \(timestampChapters.count) chapters")
+
+        return timestampChapters.enumerated().compactMap { index, timestampChapter in
+            let chapterInfo = ChapterInfo()
+            chapterInfo.title = timestampChapter.title
+            chapterInfo.startTime = CMTime(seconds: timestampChapter.startTime, preferredTimescale: 1000)
+            chapterInfo.index = index
+            chapterInfo.isFirst = index == 0
+            chapterInfo.isLast = index == timestampChapters.count - 1
+
+            // Calculate duration: time until next chapter or end of episode
+            if index < timestampChapters.count - 1 {
+                chapterInfo.duration = timestampChapters[index + 1].startTime - timestampChapter.startTime
+            } else {
+                chapterInfo.duration = max(0, duration - timestampChapter.startTime)
+            }
+
+            // Only include chapters with reasonable duration and within episode bounds
+            guard chapterInfo.duration > 0 && timestampChapter.startTime < duration else {
+                return nil
+            }
+
+            return chapterInfo
+        }
+        #else
+        return []
+        #endif
     }
 
     func clearChapterInfo() {
