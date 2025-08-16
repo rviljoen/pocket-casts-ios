@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--Warning: Auto-generated file, do not edit.-->
+<plist version="1.0">
+  <dict>
+    <key>0EmR82</key>
+    <string>Открыть фильтр ${filterName}</string>
+    <key>0YXvyS</key>
+    <string>Назад</string>
+    <key>1uT6VF</key>
+    <string>Поиск медиафайлов</string>
+    <key>3aWmex</key>
+    <string>Глава</string>
+    <key>5yWeuV</key>
+    <string>Воспроизвести со скоростью ${playbackSpeed}</string>
+    <key>CXbd65</key>
+    <string>Установить таймер сна</string>
+    <key>E6Nzn4-No0K9w</key>
+    <string>возобновить Pocket Casts</string>
+    <key>E6Nzn4-Pk1Fkx</key>
+    <string>не возобновлять Pocket Casts</string>
+    <key>ErAaNp</key>
+    <string>Режим повтора</string>
+    <key>EwNFJ5</key>
+    <string>Отложить таймер сна</string>
+    <key>G0iCil</key>
+    <string>Невозможно пропустить главу</string>
+    <key>G3J6fP</key>
+    <string>Воспроизвести подкаст</string>
+    <key>IyhbAH</key>
+    <string>Открыть фильтр</string>
+    <key>LdrEPN</key>
+    <string>Запрос на воспроизведение медиафайла</string>
+    <key>MbU5ep</key>
+    <string>Перемешать ${mediaContainer}</string>
+    <key>No0K9w</key>
+    <string>возобновить</string>
+    <key>Ntulol</key>
+    <string>Пропустить главу</string>
+    <key>OJvsVr</key>
+    <string>Отложить таймер сна на 5 мин.</string>
+    <key>Pk1Fkx</key>
+    <string>не возобновлять</string>
+    <key>QektJm</key>
+    <string>Открыть фильтр</string>
+    <key>QqdHiR</key>
+    <string>в случайном порядке</string>
+    <key>RvX3Zd</key>
+    <string>Скорость воспроизведения</string>
+    <key>WEjMGd</key>
+    <string>Воспроизвести ${mediaContainer}</string>
+    <key>Wj0EAI</key>
+    <string>Пропустить</string>
+    <key>WktFNa</key>
+    <string>В случайном порядке</string>
+    <key>YYfsKp</key>
+    <string>Воспроизвести ${mediaContainer}</string>
+    <key>bVm1vW</key>
+    <string>Установить таймер сна</string>
+    <key>cV2HLF</key>
+    <string>Расположение очереди</string>
+    <key>cfJexL</key>
+    <string>Позиции</string>
+    <key>dBTobY</key>
+    <string>Пропустить главу</string>
+    <key>emhqzv</key>
+    <string>В этом подкасте не поддерживаются главы</string>
+    <key>gD0dlx</key>
+    <string>Следующая</string>
+    <key>iQo0yQ-0YXvyS</key>
+    <string>Предыдущая глава</string>
+    <key>iQo0yQ-Wj0EAI</key>
+    <string>Пропустить главу</string>
+    <key>iQo0yQ-gD0dlx</key>
+    <string>Следующая глава</string>
+    <key>mCAocc</key>
+    <string>подряд</string>
+    <key>nAv25k</key>
+    <string>Перемешать ${mediaContainer}</string>
+    <key>nNozW1</key>
+    <string>Перемешать ${mediaContainer}</string>
+    <key>nR0neu</key>
+    <string>Таймер сна</string>
+    <key>ny98Lo</key>
+    <string>Отложить таймер сна</string>
+    <key>o6CuZu</key>
+    <string>Возобновить ${mediaContainer}</string>
+    <key>q8QY8B</key>
+    <string>Воспроизвести ${mediaItems} со скоростью ${playbackSpeed}</string>
+    <key>rnkZnd</key>
+    <string>Пропустить главу</string>
+    <key>rvNMpm</key>
+    <string>Резюме</string>
+    <key>sLPQxZ</key>
+    <string>Воспроизвести ${mediaContainer}</string>
+    <key>xdnqvn</key>
+    <string>Контейнер</string>
+    <key>zvlpk3</key>
+    <string>Пропущенная глава</string>
+  </dict>
+</plist>

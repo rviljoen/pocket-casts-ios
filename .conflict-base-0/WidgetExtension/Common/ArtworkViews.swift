@@ -1,0 +1,105 @@
+import SwiftUI
+
+struct LargeArtworkView: View {
+    @Environment(\.isAccentedRenderingMode) var isAccentedRenderingMode
+
+    @State var imageData: Data?
+    var size: CGFloat = 74
+
+    var showShadow: Bool = true
+
+    var body: some View {
+        ZStack {
+            if showShadow {
+                Rectangle()
+                    .foregroundColor(Color.nowPlayingShadowColor)
+                    .aspectRatio(1, contentMode: .fit)
+                    .frame(maxHeight: size)
+                    .cornerRadius(9)
+                    .secondaryShadow()
+                    .backwardWidgetAccentable(isAccentedRenderingMode)
+            }
+
+            if let imageData = imageData, let uiImage = UIImage(data: imageData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .backwardWidgetFullColorRenderingMode()
+                    .aspectRatio(1, contentMode: .fit)
+                    .frame(maxHeight: size)
+                    .cornerRadius(8)
+                    .if(showShadow) { view in
+                        view.artworkShadow()
+                    }
+            } else {
+                Image("no-podcast-artwork")
+                    .resizable()
+                    .backwardWidgetFullColorRenderingMode()
+                    .aspectRatio(1, contentMode: .fit)
+                    .frame(maxHeight: size)
+                    .cornerRadius(8)
+                    .if(showShadow) { view in
+                        view.artworkShadow()
+                    }
+            }
+        }
+    }
+}
+
+struct SmallArtworkView: View {
+    @Environment(\.isAccentedRenderingMode) var isAccentedRenderingMode
+
+    @State var imageData: Data?
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .foregroundColor(Color.nowPlayingShadowColor)
+                .aspectRatio(1, contentMode: .fit)
+                .cornerRadius(5)
+                .secondaryShadow()
+                .backwardWidgetAccentable(isAccentedRenderingMode)
+            if let imageData = imageData, let uiImage = UIImage(data: imageData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .backwardWidgetFullColorRenderingMode()
+                    .aspectRatio(1, contentMode: .fit)
+                    .cornerRadius(4)
+                    .artworkShadow()
+            } else {
+                Image("no-podcast-artwork")
+                    .resizable()
+                    .backwardWidgetFullColorRenderingMode()
+                    .aspectRatio(1, contentMode: .fit)
+                    .cornerRadius(4)
+                    .artworkShadow()
+            }
+        }
+    }
+}
+
+struct ArtworkShadow: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .shadow(color: Color.nowPlayingShadowColor.opacity(0.08), radius: 16, x: 0, y: 3)
+    }
+}
+
+struct SecondaryShadow: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .shadow(color: Color.nowPlayingShadowColor.opacity(0.25), radius: 2, x: 0, y: 1)
+    }
+}
+
+extension View {
+    func artworkShadow() -> some View {
+        modifier(ArtworkShadow())
+    }
+
+    func secondaryShadow() -> some View {
+        modifier(SecondaryShadow())
+    }
+}
+
+extension Color {
+    static let nowPlayingShadowColor = Color("NowPlayingShadow")
+}
