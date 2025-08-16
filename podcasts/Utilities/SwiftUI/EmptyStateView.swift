@@ -47,6 +47,8 @@ struct EmptyStateView<Title: View, Style: EmptyStateViewStyle>: View {
     let message: String?
     let actions: [EmptyStateAction]
     let maxContentWidth: CGFloat?
+    let customVerticalPadding: CGFloat?
+    let customSpacing: CGFloat?
 
     init(
         @ViewBuilder title: @escaping () -> Title,
@@ -55,6 +57,9 @@ struct EmptyStateView<Title: View, Style: EmptyStateViewStyle>: View {
         actions: [EmptyStateAction],
         style: Style,
         maxContentWidth: CGFloat? = 400
+        style: Style,
+        customVerticalPadding: CGFloat? = nil,
+        customSpacing: CGFloat? = nil
     ) {
         self.title = title
         self.message = message
@@ -62,10 +67,12 @@ struct EmptyStateView<Title: View, Style: EmptyStateViewStyle>: View {
         self.actions = actions
         self.style = style
         self.maxContentWidth = maxContentWidth
+        self.customVerticalPadding = customVerticalPadding
+        self.customSpacing = customSpacing
     }
 
     var body: some View {
-        VStack(spacing: EmptyConstants.spacing) {
+        VStack(spacing: customSpacing ?? EmptyConstants.spacing) {
 
             if let icon {
                 icon()
@@ -95,7 +102,7 @@ struct EmptyStateView<Title: View, Style: EmptyStateViewStyle>: View {
         }
         .frame(maxWidth: maxContentWidth)
         .padding(.horizontal, EmptyConstants.padding)
-        .padding(.vertical, EmptyConstants.verticalPadding)
+        .padding(.vertical, customVerticalPadding ?? EmptyConstants.verticalPadding)
         .padding(EmptyConstants.padding)
     }
 }
@@ -114,6 +121,7 @@ extension EmptyStateView where Title == Text {
          actions: [EmptyStateAction] = [],
          style: Style = .defaultStyle,
          maxContentWidth: CGFloat? = 400) {
+    init(title: String, message: String?, icon: (() -> Image)? = nil, actions: [EmptyStateAction] = [], style: Style = .defaultStyle, customVerticalPadding: CGFloat? = nil, customSpacing: CGFloat? = nil) {
         self.message = message
         self.actions = actions
         self.icon = icon
@@ -122,6 +130,8 @@ extension EmptyStateView where Title == Text {
         }
         self.style = style
         self.maxContentWidth = maxContentWidth
+        self.customVerticalPadding = customVerticalPadding
+        self.customSpacing = customSpacing
     }
 }
 

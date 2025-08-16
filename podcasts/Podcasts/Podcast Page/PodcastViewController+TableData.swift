@@ -169,7 +169,7 @@ extension PodcastViewController: UITableViewDataSource, UITableViewDelegate {
                         guard let self else { return }
                         self.searchController?.showHideArchiveTapped(self)
                     })
-                ])
+                ], compactVerticalSpacing: true, customVerticalPadding: 0)
                 return cell
             } else if let heading = itemAtRow as? ListHeader {
                 let cell = tableView.dequeueReusableCell(withIdentifier: PodcastViewController.groupHeadingCellId, for: indexPath) as! HeadingCell
