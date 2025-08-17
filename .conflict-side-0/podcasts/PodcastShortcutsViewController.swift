@@ -1,0 +1,44 @@
+import IntentsUI
+import PocketCastsDataModel
+import UIKit
+
+class PodcastShortcutsViewController: PCViewController, UITableViewDelegate, UITableViewDataSource {
+    @IBOutlet var tableView: UITableView!
+    var podcasts: [Podcast]!
+    weak var delegate: SiriSettingsViewController?
+
+    let addCellId = "siriAddCellId"
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = L10n.siriShortcutToPodcast.localizedCapitalized
+        tableView.register(UINib(nibName: "SiriShortcutAddCell", bundle: nil), forCellReuseIdentifier: addCellId)
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = Constants.Values.tableRowHeaderHeight
+        tableView.sectionHeaderHeight = UITableView.automaticDimension
+        tableView.estimatedSectionHeaderHeight = Constants.Values.tableSectionHeaderHeight
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        podcasts.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: addCellId) as! SiriShortcutAddCell
+        let podcast = podcasts[indexPath.row]
+        cell.populateFrom(podcast: podcast)
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        CGFloat.leastNormalMagnitude
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let newShortcut = SiriShortcutsManager.shared.playPodcastShortcut(podcast: podcasts[indexPath.row])
+
+        let viewController = INUIAddVoiceShortcutViewController(shortcut: newShortcut)
+        viewController.modalPresentationStyle = .formSheet
+        viewController.delegate = delegate
+        present(viewController, animated: true, completion: nil)
+    }
+}

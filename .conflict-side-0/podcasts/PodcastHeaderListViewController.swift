@@ -1,0 +1,136 @@
+import PocketCastsServer
+import UIKit
+
+class PodcastHeaderListViewController: PCViewController, UITableViewDataSource, UITableViewDelegate {
+    private var podcasts: [DiscoverPodcast]
+
+    var showFeaturedCell = false
+    var showRankingNumber = false
+    var labelTitle: String?
+
+    @IBOutlet var chartsTable: UITableView!
+
+    private weak var delegate: DiscoverDelegate?
+    private static let cellId = "DiscoverCell"
+    private static let featuredCellId = "FeaturedTableViewCell"
+    private var source: URL?
+    private var isAuthenticated: Bool
+
+    init(podcasts: [DiscoverPodcast], source: String?, isAuthenticated: Bool = false) {
+        self.podcasts = podcasts
+        if let source {
+            self.source = URL(string: source)
+        }
+        self.isAuthenticated = isAuthenticated
+
+        super.init(nibName: "PodcastHeaderListViewController", bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        chartsTable.register(UINib(nibName: "DiscoverPodcastTableCell", bundle: nil), forCellReuseIdentifier: PodcastHeaderListViewController.cellId)
+        chartsTable.register(UINib(nibName: "FeaturedTableViewCell", bundle: nil), forCellReuseIdentifier: PodcastHeaderListViewController.featuredCellId)
+
+        if source != nil && isAuthenticated == false {
+            customRightBtn = UIBarButtonItem(image: UIImage(named: "podcast-share"), style: .plain, target: self, action: #selector(handleShare))
+        }
+
+        insetAdjuster.setupInsetAdjustmentsForMiniPlayer(scrollView: chartsTable)
+
+        chartsTable.updateContentInset(multiSelectEnabled: false)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        chartsTable.reloadData()
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            chartsTable.reloadData()
+        }
+    }
+
+    @objc private func handleShare() {
+        guard let source = source?.deletingPathExtension() else { return }
+        Analytics.track(.discoverListShareTapped)
+        let activityViewController = UIActivityViewController(activityItems: [source], applicationActivities: nil)
+        present(activityViewController, animated: true)
+    }
+
+    // MARK: - UITableView Methods
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+
+        if showFeaturedCell, indexPath.row == 0 {
+            return DiscoverFeaturedView.scaledHeight
+        }
+        return UITableView.automaticDimension
+    }
+
+
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        let preferredBodySize = UIFontMetrics.default.scaledValue(for: 17)
+        if showFeaturedCell, indexPath.row == 0 {
+            return DiscoverFeaturedView.scaledHeight
+        }
+        return max(UIFontMetrics.default.scaledValue(for: 65), preferredBodySize * 2)
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        podcasts.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let podcast = podcasts[indexPath.row]
+        var cell: UITableViewCell
+        if showFeaturedCell, indexPath.row == 0 {
+            let featuredCell = tableView.dequeueReusableCell(withIdentifier: PodcastHeaderListViewController.featuredCellId, for: indexPath) as! FeaturedTableViewCell
+            featuredCell.populateFrom(podcast, listName: labelTitle ?? L10n.top)
+            featuredCell.showRanking()
+            if let uuid = podcast.uuid {
+                ColorManager.darkThemeTintColorForPodcastUuid(uuid, completion: { (color: UIColor) in
+                    DispatchQueue.main.async {
+                        featuredCell.setPodcastColor(color)
+                    }
+                })
+            }
+            cell = featuredCell as UITableViewCell
+        } else {
+            let discoverCell = tableView.dequeueReusableCell(withIdentifier: PodcastHeaderListViewController.cellId, for: indexPath) as! DiscoverPodcastTableCell
+            discoverCell.subscribeSource = .discoverRankedList
+            if showRankingNumber {
+                discoverCell.populateFrom(podcast, number: indexPath.row + 1)
+            } else {
+                discoverCell.populateFrom(podcast, number: 0)
+            }
+            cell = discoverCell as UITableViewCell
+        }
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        if let delegate = delegate {
+            let podcast = podcasts[indexPath.row]
+            delegate.show(discoverPodcast: podcast, placeholderImage: nil, isFeatured: false, listUuid: nil)
+        }
+    }
+
+    func registerDiscoverDelegate(_ delegate: DiscoverDelegate) {
+        self.delegate = delegate
+    }
+
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        AppTheme.defaultStatusBarStyle()
+    }
+}
