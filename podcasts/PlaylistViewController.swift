@@ -177,6 +177,8 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
         filterCollectionView.filter = filter
 
         isChipHidden = !isNewFilter
+        filterCollectionView.isHidden = isChipHidden
+        filterCollectionView.alpha = isChipHidden ? 0 : 1
 
         loadingIndicator = ThemeLoadingIndicator()
 
@@ -283,26 +285,16 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard !isMultiSelectEnabled else { return }
-        let selectedRefreshControl: PCRefreshControl?
-        if scrollView == noEpisodesScrollView {
-            selectedRefreshControl = noEpisodesRefreshControl
-        } else {
-            selectedRefreshControl = tableRefreshControl
-        }
-
-        selectedRefreshControl?.scrollViewDidScroll(scrollView)
+        
+        tableRefreshControl?.scrollViewDidScroll(scrollView)
+        noEpisodesRefreshControl?.scrollViewDidScroll(scrollView)
     }
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         guard !isMultiSelectEnabled else { return }
-        let selectedRefreshControl: PCRefreshControl?
-        if scrollView == noEpisodesScrollView {
-            selectedRefreshControl = noEpisodesRefreshControl
-        } else {
-            selectedRefreshControl = tableRefreshControl
-        }
-
-        selectedRefreshControl?.scrollViewDidEndDragging(scrollView)
+        
+        tableRefreshControl?.scrollViewDidEndDragging(scrollView)
+        noEpisodesRefreshControl?.scrollViewDidEndDragging(scrollView)
     }
 
     @objc func moreTapped() {
@@ -423,11 +415,11 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
         let titleColor = ThemeColor.filterText01(filterColor: filterColor)
         let iconColor = ThemeColor.filterIcon01(filterColor: filterColor)
         let backgroundColor = ThemeColor.filterUi01(filterColor: filterColor)
-        changeNavTint(titleColor: titleColor, iconsColor: iconColor, backgroundColor: backgroundColor)
+        // Use transparent navigation bar for modern glass effect
+        changeNavTint(titleColor: titleColor, iconsColor: iconColor, backgroundColor: .clear)
         titleView.setTintColor(newColor: iconColor)
         themeDividerTop.backgroundColor = ThemeColor.filterUi04(filterColor: filterColor)
 
-        filterCollectionView.backgroundColor = backgroundColor
     }
 
     func arrowTapped() {
@@ -453,8 +445,10 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
         titleView.arrowButton.setExpanded(false)
         themeDividerTopAnchor.constant = 0
         UIView.animate(withDuration: Constants.Animation.defaultAnimationTime, delay: 0, options: .curveEaseInOut, animations: {
+            self.filterCollectionView.alpha = 0
             self.view.layoutIfNeeded()
         }, completion: { _ in
+            self.filterCollectionView.isHidden = true
             self.titleView.accessibilityHint = L10n.accessibilityShowFilterDetails
         })
     }
@@ -462,8 +456,10 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
     func showFilterChips() {
         isChipHidden = false
         titleView.arrowButton.setExpanded(true)
+        filterCollectionView.isHidden = false
         themeDividerTopAnchor.constant = 52
         UIView.animate(withDuration: Constants.Animation.defaultAnimationTime, delay: 0, options: .curveEaseInOut, animations: {
+            self.filterCollectionView.alpha = 1
             self.view.layoutIfNeeded()
         }, completion: { _ in
             self.titleView.accessibilityHint = L10n.accessibilityHideFilterDetails
