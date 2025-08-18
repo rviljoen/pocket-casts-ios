@@ -23,6 +23,9 @@ extension PodcastListViewController: UIScrollViewDelegate, PCSearchBarDelegate {
 
     func setupSearchBar() {
         searchController = PCSearchBarController()
+        
+        // Set transparent background for glass effect
+        searchController.backgroundColorOverride = .clear
 
         searchController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(searchController)
