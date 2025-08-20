@@ -7,6 +7,9 @@ extension DiscoverCollectionViewController {
         addCustomObserver(Constants.Notifications.chartRegionChanged, selector: #selector(chartRegionDidChange))
         addCustomObserver(Constants.Notifications.tappedOnSelectedTab, selector: #selector(checkForScrollTap(_:)))
 
+        // Set transparent background for glass effect
+        searchController.backgroundColorOverride = .clear
+
         searchController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(searchController)
         view.addSubview(searchController.view)
