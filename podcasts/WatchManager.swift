@@ -521,10 +521,11 @@ class WatchManager: NSObject, WCSessionDelegate {
             FileLog.shared.addMessage("WatchManager sendStateToWatch sequence \(sequence) at \(dateTimeString)")
             try session.updateApplicationContext(applicationDict)
         } catch {
-        FileLog.shared.addMessage("WatchManager sendStateToWatch sequence \(sequence) at \(dateTimeString)")
-        //FileLog.shared.addMessage("WatchManager sendStateToWatch sequence \(sequence) at \(dateTimeString)")
-        session.sendMessage(applicationDict, replyHandler: nil) { error in
-            FileLog.shared.addMessage("WatchManager sendStateToWatch failed \(error.localizedDescription)")
+            FileLog.shared.addMessage("WatchManager sendStateToWatch sequence \(sequence) at \(dateTimeString)")
+            //FileLog.shared.addMessage("WatchManager sendStateToWatch sequence \(sequence) at \(dateTimeString)")
+            session.sendMessage(applicationDict, replyHandler: nil) { error in
+                FileLog.shared.addMessage("WatchManager sendStateToWatch failed \(error.localizedDescription)")
+            }
         }
     }
 
