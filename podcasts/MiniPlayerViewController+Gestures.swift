@@ -53,26 +53,26 @@ extension MiniPlayerViewController: UIGestureRecognizerDelegate {
     private func showLongPressMenu(_ touchPoint: CGPoint) {
         Analytics.track(.miniPlayerLongPressMenuShown)
 
-        let optionsPicker = OptionsPicker(title: nil)
-        let markAsPlayedAction = OptionAction(label: L10n.markPlayedShort, icon: "episode-markasplayed") {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
+        let markAsPlayedAction = UIAlertAction(title: L10n.markPlayedShort, style: .default) { _ in
             Analytics.track(.miniPlayerLongPressMenuOptionTapped, properties: ["option": "mark_played"])
             if let episode = PlaybackManager.shared.currentEpisode() {
                 AnalyticsEpisodeHelper.shared.currentSource = self.analyticsSource
                 EpisodeManager.markAsPlayed(episode: episode, fireNotification: true)
             }
         }
-        optionsPicker.addAction(action: markAsPlayedAction)
+        alertController.addAction(markAsPlayedAction)
 
-        let archiveAction = OptionAction(label: L10n.archive, icon: "episode-archive") {
+        let archiveAction = UIAlertAction(title: L10n.archive, style: .default) { _ in
             if let episode = PlaybackManager.shared.currentEpisode() {
                 AnalyticsEpisodeHelper.shared.currentSource = self.analyticsSource
                 EpisodeManager.archiveEpisode(episode: episode as! Episode, fireNotification: true)
             }
         }
-        optionsPicker.addAction(action: archiveAction)
+        alertController.addAction(archiveAction)
 
-
-        let closeAction = OptionAction(label: L10n.miniPlayerClose, icon: "close") {
+        let closeAction = UIAlertAction(title: L10n.miniPlayerClose, style: .destructive) { _ in
             Analytics.track(.miniPlayerLongPressMenuOptionTapped, properties: ["option": "close_and_clear_up_next"])
 
             FileLog.shared.addMessage("Close and Clear Up Next pressed from the mini player")
