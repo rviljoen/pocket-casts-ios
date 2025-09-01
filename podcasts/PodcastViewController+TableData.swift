@@ -4,6 +4,26 @@ import UIKit
 import PocketCastsServer
 import SwiftUI
 
+// MARK: - Custom Button Styles
+struct CapsuleButtonStyle: ButtonStyle {
+    @EnvironmentObject var theme: Theme
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.subheadline)
+            .foregroundColor(.black)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(
+                Capsule()
+                    .fill(Color(ThemeColor.primaryInteractive01()))
+                    .opacity(configuration.isPressed ? 0.7 : 1.0)
+            )
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
+    }
+}
+
 extension PodcastViewController: UITableViewDataSource, UITableViewDelegate {
     private static let episodeCellId = "EpisodeCell"
     private static let headerCellId = "HeaderCell"
@@ -165,7 +185,7 @@ extension PodcastViewController: UITableViewDataSource, UITableViewDelegate {
                 cell.configure(title: L10n.episodeFilterNoEpisodesTitle, message: archivedPlaceholder.message, icon: {
                     Image(systemName: "info.circle")
                 }, actions: [
-                    .init(title: L10n.podcastShowArchived, action: { [weak self] in
+                    .init(title: L10n.podcastShowArchived, style: CapsuleButtonStyle(), action: { [weak self] in
                         guard let self else { return }
                         self.searchController?.showHideArchiveTapped(self)
                     })
