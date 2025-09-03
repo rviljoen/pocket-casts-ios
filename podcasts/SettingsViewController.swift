@@ -113,7 +113,27 @@ class SettingsViewController: PCViewController, UITableViewDataSource, UITableVi
     override func viewDidLoad() {
         super.viewDidLoad()
         title = L10n.settings
+        setupTableView()
         insetAdjuster.setupInsetAdjustmentsForMiniPlayer(scrollView: settingsTable)
+    }
+
+    private func setupTableView() {
+        settingsTable = UITableView(frame: view.bounds, style: .insetGrouped)
+        settingsTable.translatesAutoresizingMaskIntoConstraints = false
+        settingsTable.dataSource = self
+        settingsTable.delegate = self
+        settingsTable.register(UITableViewCell.self, forCellReuseIdentifier: settingsCellId)
+        settingsTable.rowHeight = 54
+        settingsTable.estimatedRowHeight = 54
+
+        view.addSubview(settingsTable)
+
+        NSLayoutConstraint.activate([
+            settingsTable.topAnchor.constraint(equalTo: view.topAnchor),
+            settingsTable.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            settingsTable.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            settingsTable.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -133,19 +153,32 @@ class SettingsViewController: PCViewController, UITableViewDataSource, UITableVi
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: settingsCellId, for: indexPath) as! TopLevelSettingsCell
-        cell.plusIndicator.isHidden = true
+        let cell = tableView.dequeueReusableCell(withIdentifier: settingsCellId, for: indexPath)
 
         let tableRow = tableData[indexPath.section][indexPath.row]
-        cell.settingsLabel.text = tableRow.display.text
-        cell.settingsLabel.accessibilityIdentifier = tableRow.rawValue
-        cell.settingsImage.image = tableRow.display.image
+        let display = tableRow.display
 
+        cell.textLabel?.text = display.text
+        cell.textLabel?.accessibilityIdentifier = tableRow.rawValue
+        cell.imageView?.image = display.image
+        cell.imageView?.tintColor = .systemBlue
+        cell.accessoryType = .disclosureIndicator
+
+        // Handle plus indicator for subscription-locked features
         switch tableRow {
         case .appearance, .customFiles, .watch:
-            cell.plusIndicator.isHidden = SubscriptionHelper.hasActiveSubscription()
+            if !SubscriptionHelper.hasActiveSubscription() {
+                let plusIcon = UIImageView(image: UIImage(named: "plusGold24"))
+                plusIcon.contentMode = .scaleAspectFit
+                plusIcon.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+                cell.accessoryView = plusIcon
+            } else {
+                cell.accessoryType = .disclosureIndicator
+                cell.accessoryView = nil
+            }
         default:
-            break
+            cell.accessoryType = .disclosureIndicator
+            cell.accessoryView = nil
         }
 
         return cell
@@ -216,9 +249,6 @@ class SettingsViewController: PCViewController, UITableViewDataSource, UITableVi
         }
     }
 
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        1
-    }
 
     private func reloadTable() {
         tableData = allSections.compactMap {
