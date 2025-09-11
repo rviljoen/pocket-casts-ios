@@ -7,21 +7,13 @@ import WatchConnectivity
 class WatchManager: NSObject, WCSessionDelegate {
     static let shared = WatchManager()
 
-<<<<<<< ours
     let logTaskManager = LogTaskManager()
     let logCache = LogCache()
-||||||| ancestor
-    var logFileRequestTask: Task<Void, Never>?
-
-    // The last retrieved log is cached here for the duration of this session
-    var cachedLog: String? = nil
-=======
     var logFileRequestTask: Task<Void, Never>?
 
     // The last retrieved log is cached here for the duration of this session
     var cachedLog: String? = nil
     var sequence: Int = 0
->>>>>>> theirs
 
     // Serial queue for WCSession operations to ensure thread safety
     private let sessionQueue = DispatchQueue(label: "com.pocketcasts.watchmanager.session", qos: .userInitiated)
