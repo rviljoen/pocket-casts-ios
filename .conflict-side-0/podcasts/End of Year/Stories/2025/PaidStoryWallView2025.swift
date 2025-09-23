@@ -1,0 +1,182 @@
+import SwiftUI
+import AVKit
+import Combine
+
+import PocketCastsServer
+import PocketCastsUtils
+
+fileprivate class SubscriptionModel: ObservableObject {
+    private var cancellables = Set<AnyCancellable>()
+
+    @Published var subscriptionTier: SubscriptionTier
+
+    init() {
+        self.subscriptionTier = SubscriptionHelper.activeTier
+        ServerNotifications.iapPurchaseCompleted.publisher()
+            .sink { [weak self] _ in
+                self?.refreshTier()
+            }
+            .store(in: &cancellables)
+    }
+
+    private func refreshTier() {
+        DispatchQueue.main.async { [weak self] in
+            self?.subscriptionTier = SubscriptionHelper.activeTier
+        }
+    }
+}
+
+struct PaidStoryWallView2025: StoryView {
+    let identifier = "plus_interstitial"
+
+    @Environment(\.pauseState) var pauseState: PauseState
+    @EnvironmentObject var storyModel: StoriesModel
+
+    @StateObject private var model = PlusPricingInfoModel()
+
+    @StateObject private var subscriptionModel =  SubscriptionModel()
+    private let subscriptionTier: SubscriptionTier
+
+    private let foregroundColor = Color.black
+
+    private let backgroundColor = Color(hex: "#96BCD1")
+
+    private let videoAspectRatio = CGFloat(1.37)
+
+    var shouldPause: Bool = true
+
+    let plusOnly = false
+
+    init(subscriptionTier: SubscriptionTier) {
+        self.subscriptionTier = subscriptionTier
+    }
+
+    var tier: SubscriptionTier {
+        return subscriptionModel.subscriptionTier
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                Spacer()
+                    .frame(width: geometry.size.width)
+                    .background() {
+                        GeometryReader { geometry in
+                            HStack {
+                                Spacer()
+                                CustomVideoPlayerView(urlString: "playback_2025_plus")
+                                    .frame(width: ((geometry.size.height - 48.0) / videoAspectRatio).rounded(),
+                                           height: (geometry.size.height - 48.0))
+                                    .allowsHitTesting(false)
+                                Spacer()
+                            }
+                        }
+                    }
+                    .padding(.top, UIScreen.isSmallScreen ? 80 : 110)
+                    .allowsHitTesting(false)
+                StoryFooter2025(title: tier == .none ?  L10n.playback2025PlusUpsellTitle : L10n.playback2025PlusThanksTitle,
+                                description: tier == .none ?  L10n.playback2025PlusUpsellDescription : L10n.playback2025PlusThanksDescription(tier.displayNameShort),
+                                subscriptionTier: tier == .none ? .plus : tier)
+                Button(tier == .none ?  L10n.playback2025PlusUpsellButtonTitle : L10n.continue) {
+                    if tier == .none {
+                        guard let storiesViewController = SceneHelper.rootViewController() else {
+                            return
+                        }
+                        Analytics.track(.endOfYearUpsellShown, properties: ["current_year": EndOfYear.currentYear.literalValue])
+                        NavigationManager.sharedManager.showUpsellView(from: storiesViewController, source: .endOfYear, flow: SyncManager.isUserLoggedIn() ? .endOfYearUpsell : .endOfYear)
+                    } else {
+                        Analytics.track(.endOfYearPlusContinued, properties: ["current_year": EndOfYear.currentYear.literalValue])
+                        advanceToNextStory()
+                    }
+                }
+                .buttonStyle(BasicButtonStyle(textColor: .white, backgroundColor: .black, borderColor: .black))
+                .padding(.horizontal, 24)
+                .padding(.top, 20)
+                .padding(.bottom, 4)
+            }
+        }
+        .foregroundStyle(foregroundColor)
+        .background {
+            CustomVideoPlayerView(urlString: "playback_2025_plus_background", backgroundColor: backgroundColor)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
+        }
+        .onChange(of: subscriptionModel.subscriptionTier) { newValue in
+            if newValue != subscriptionTier, newValue != .none {
+                pauseState.play()
+                storyModel.next()
+            }
+        }
+    }
+
+    private func advanceToNextStory() {
+        storyModel.start()
+        storyModel.next()
+    }
+
+    func onAppear() {
+        Analytics.track(.endOfYearStoryShown, story: identifier)
+    }
+}
+
+fileprivate struct CustomVideoPlayerView: UIViewControllerRepresentable {
+
+    private let player: AVQueuePlayer
+    private let looper: AVPlayerLooper?
+    private let backgroundColor: Color
+
+    init(urlString: String, backgroundColor: Color = .clear) {
+        self.player = AVQueuePlayer()
+        if let videoURL = Bundle.main.url(forResource: urlString, withExtension: "mp4") {
+            if !PlaybackManager.shared.isPlayingEpisode {
+                let session = AVAudioSession.sharedInstance()
+                try? session.setCategory(.ambient, mode: .default, policy: .default, options: [.mixWithOthers])
+                try? session.setActive(true, options: [])
+            }
+            let item = AVPlayerItem(url: videoURL)
+            self.looper = AVPlayerLooper(player: player, templateItem: item)
+            player.isMuted = true
+            player.play()
+        } else {
+            self.looper = nil
+        }
+        self.backgroundColor = backgroundColor
+    }
+
+    func makeUIViewController(context: Context) -> AVPlayerViewController {
+        let controller = AVPlayerViewController()
+        controller.player = player
+        controller.showsPlaybackControls = false
+        controller.videoGravity = .resizeAspectFill
+        controller.view.backgroundColor = UIColor(backgroundColor)
+        return controller
+    }
+
+    func updateUIViewController(_ controller: AVPlayerViewController, context: Context) {
+        // Handle updates if needed
+        controller.player?.play()
+    }
+
+    static func dismantleUIViewController(_ uiViewController: AVPlayerViewController, coordinator: ()) {
+        if !PlaybackManager.shared.isPlayingEpisode {
+            do {
+                try AVAudioSession.sharedInstance().setActive(false)
+            } catch let error {
+                FileLog.shared.addMessage("Playback Video Audio Session error: \(error)")
+            }
+        }
+    }
+}
+
+#Preview("Plus") {
+    PaidStoryWallView2025(subscriptionTier: .plus)
+}
+
+#Preview("Patron") {
+    PaidStoryWallView2025(subscriptionTier: .patron)
+}
+
+#Preview("None") {
+    PaidStoryWallView2025(subscriptionTier: .none)
+}

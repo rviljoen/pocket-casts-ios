@@ -1,0 +1,42 @@
+**/xcuserdata/
+Pods/
+/.DS_Store
+/Themes.txt
+.DS_Store
+GoogleService-Info.plist
+
+# All secrets should be stored under .configure-files
+# Everything without a .enc extension is ignored
+.configure-files/*
+!.configure-files/*.enc
+
+# Ruby tooling
+vendor
+
+# SPM
+vendor/spm
+Modules/*/.swiftpm
+
+# Fastlane
+fastlane/README.md
+fastlane/report.xml
+fastlane/test_output/
+fastlane/screenshots/screenshots.html
+fastlane/screenshots/**/*.png
+# Locations where we download temporary files with localizations
+fastlane/app-localization-downloads/*.lproj
+
+# Do not commit ApiCredentials.swift
+podcasts/Credentials/LocalApiCredentials.swift
+
+# SwiftLint Remote Config Cache
+.swiftlint/RemoteConfigCache
+
+# Artifacts produced when building locally
+artifacts/*
+*.app.dSYM.zip
+*.ipa
+*.build
+
+# Claude Code ignored personal preferences
+.claude/settings.local.json

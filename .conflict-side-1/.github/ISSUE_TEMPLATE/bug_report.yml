@@ -1,0 +1,52 @@
+name: 🐞 Bug report
+description: Report a bug if something isn't working as expected in the Pocket Casts iOS app
+labels: ["[Type] Bug"]
+body:
+
+    - type: markdown
+      attributes:
+          value: |
+              _Thanks for taking the time to file this bug report!_
+
+    - type: textarea
+      attributes:
+          label: Description
+          description: Please write a brief description of the bug, including what you expect to happen and what is currently happening.
+          placeholder: |
+              Feature '...' is not working properly. I expect '...' to happen, but '...' happens instead
+      validations:
+          required: true
+
+    - type: textarea
+      attributes:
+          label: Step-by-step reproduction instructions
+          placeholder: |
+              1. Go to '...'
+              2. Click on '...'
+              3. Scroll down to '...'
+      validations:
+          required: true
+
+    - type: textarea
+      attributes:
+          label: Screenshots or screen recording
+          description: |
+              Help us see what you see! Please upload a screenshot or screen recording, it really speeds up the fix.
+      validations:
+          required: false
+
+    - type: checkboxes
+      attributes:
+        label: Did you search for existing bug reports?
+        description: Please confirm that you searched for existing bug reports in https://github.com/Automattic/pocket-casts-ios/issues before opening this issue.
+        options:
+          - label: I have searched for existing bug reports.
+            required: true
+
+    - type: textarea
+      attributes:
+          label: Device, Operating system, and Pocket Casts app version
+          placeholder: |
+              iPhone 15 Pro, iOS 17.6.1, Pocket Casts 7.72
+      validations:
+          required: false
