@@ -164,6 +164,7 @@ class PodcastViewController: FakeNavViewController, PodcastActionsDelegate, Sync
                 if self.isMultiSelectEnabled {
                     if self.selectedEpisodes.count == 0, self.longPressMultiSelectIndexPath == nil, !self.multiSelectGestureInProgress {
                         self.tableView().scrollToRow(at: IndexPath(row: NSNotFound, section: PodcastViewController.allEpisodesSection), at: .top, animated: true)
+                        self.multiSelectFooterBottomConstraint.constant = PlaybackManager.shared.currentEpisode() == nil ? 16 : Constants.Values.miniPlayerOffset + 16
                     }
                     self.multiSelectFooter.setSelectedCount(count: self.selectedEpisodes.count)
                     if let selectedIndexPath = self.longPressMultiSelectIndexPath {
@@ -179,36 +180,20 @@ class PodcastViewController: FakeNavViewController, PodcastActionsDelegate, Sync
                         // Check if using UITabAccessory (iOS 26.0+) - no mini player offset needed
                         let miniPlayerOffset: CGFloat
                         if #available(iOS 26.0, *), self.isUsingTabAccessory() {
-                            miniPlayerOffset = 0  // UITabAccessory handles content layout automatically
+                            //miniPlayerOffset = 0  // UITabAccessory handles content layout automatically
+                            miniPlayerOffset = PlaybackManager.shared.currentEpisode() == nil ? 0 : Constants.Values.miniPlayerOffset
                         } else {
                             miniPlayerOffset = PlaybackManager.shared.currentEpisode() == nil ? 0 : Constants.Values.miniPlayerOffset
                         }
-                        self.multiSelectFooterBottomConstraint.constant = miniPlayerOffset + 16
+                        //self.multiSelectFooterBottomConstraint.constant = miniPlayerOffset + 16
+                        self.multiSelectFooterBottomConstraint.constant = PlaybackManager.shared.currentEpisode() == nil ? 16 : miniPlayerOffset + 16
                         self.multiSelectHeaderView.isHidden = false
                         self.view.bringSubviewToFront(self.multiSelectHeaderView)
 
                         // Adjusts multiSelectHeaderView based on screen width
                         self.setMultiSelectHeaderViewConstraint()
-
-            if self.isMultiSelectEnabled {
-                if self.selectedEpisodes.count == 0, self.longPressMultiSelectIndexPath == nil, !self.multiSelectGestureInProgress {
-                    self.tableView().scrollToRow(at: IndexPath(row: NSNotFound, section: PodcastViewController.allEpisodesSection), at: .top, animated: true)
+                    }
                 }
-                self.multiSelectFooter.setSelectedCount(count: self.selectedEpisodes.count)
-                if let selectedIndexPath = self.longPressMultiSelectIndexPath {
-                    self.tableView().selectIndexPath(selectedIndexPath)
-                    self.longPressMultiSelectIndexPath = nil
-                }
-                self.multiSelectHeaderView.backgroundColor = ThemeColor.primaryUi01()
-                self.multiSelectCancelBtn.setTitleColor(ThemeColor.primaryIcon01(), for: .normal)
-                self.multiSelectAllBtn.setTitleColor(ThemeColor.primaryIcon01(), for: .normal)
-                self.updateSelectAllBtn()
-                self.multiSelectFooterBottomConstraint.constant = PlaybackManager.shared.currentEpisode() == nil ? 16 : Constants.Values.miniPlayerOffset + 16
-                self.multiSelectHeaderView.isHidden = false
-                self.view.bringSubviewToFront(self.multiSelectHeaderView)
-
-                // Adjusts multiSelectHeaderView based on screen width
-                self.setMultiSelectHeaderViewConstraint()
             } else {
                 self.multiSelectHeaderView.isHidden = true
                 self.selectedEpisodes.removeAll()

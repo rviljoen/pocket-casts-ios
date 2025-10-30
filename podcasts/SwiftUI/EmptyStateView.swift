@@ -56,8 +56,7 @@ struct EmptyStateView<Title: View, Style: EmptyStateViewStyle>: View {
         icon: (() -> Image)? = nil,
         actions: [EmptyStateAction],
         style: Style,
-        maxContentWidth: CGFloat? = 400
-        style: Style,
+        maxContentWidth: CGFloat? = 400,
         customVerticalPadding: CGFloat? = nil,
         customSpacing: CGFloat? = nil
     ) {
@@ -120,8 +119,10 @@ extension EmptyStateView where Title == Text {
          icon: (() -> Image)? = nil,
          actions: [EmptyStateAction] = [],
          style: Style = .defaultStyle,
-         maxContentWidth: CGFloat? = 400) {
-    init(title: String, message: String?, icon: (() -> Image)? = nil, actions: [EmptyStateAction] = [], style: Style = .defaultStyle, customVerticalPadding: CGFloat? = nil, customSpacing: CGFloat? = nil) {
+         maxContentWidth: CGFloat? = 400,
+         customVerticalPadding: CGFloat? = nil,
+         customSpacing: CGFloat? = nil) {
+
         self.message = message
         self.actions = actions
         self.icon = icon
