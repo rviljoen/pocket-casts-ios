@@ -770,8 +770,17 @@ class MainTabBarController: UITabBarController, NavigationProtocol {
     private func updateTabBarColor() {
         self.view.backgroundColor = AppTheme.viewBackgroundColor()
         let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = AppTheme.tabBarBackgroundColor()
+
+        // Use transparent appearance to allow Liquid Glass on modern iOS,
+        // keep opaque fallback for older versions.
+        if #available(iOS 26.0, *) {
+            appearance.configureWithTransparentBackground()
+            appearance.backgroundEffect = nil
+            appearance.backgroundColor = .clear
+        } else {
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = AppTheme.tabBarBackgroundColor()
+        }
 
         // Change badge colors
         [appearance.stackedLayoutAppearance,
@@ -784,6 +793,7 @@ class MainTabBarController: UITabBarController, NavigationProtocol {
 
         tabBar.standardAppearance = appearance
         tabBar.scrollEdgeAppearance = appearance
+        tabBar.isTranslucent = true
         tabBar.unselectedItemTintColor = AppTheme.unselectedTabBarItemColor()
         tabBar.tintColor = AppTheme.tabBarItemTintColor()
     }

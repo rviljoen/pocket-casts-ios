@@ -146,14 +146,8 @@ class PCViewController: SimpleNotificationsViewController {
 
         let appearance = UINavigationBarAppearance()
         
-        // Use transparent background if no custom background color is set, otherwise use custom color with opaque background
-        if let backgroundColor = navBgColor {
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = backgroundColor
-        } else {
-            appearance.configureWithTransparentBackground()
-        }
-        
+        appearance.configureWithTransparentBackground()
+
         appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: titleColor]
         appearance.largeTitleTextAttributes = [
             NSAttributedString.Key.foregroundColor: titleColor,
