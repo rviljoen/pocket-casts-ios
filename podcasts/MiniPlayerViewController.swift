@@ -134,17 +134,9 @@ class MiniPlayerViewController: SimpleNotificationsViewController {
     }
 
     private func updatePlayerAppearance(inline: Bool) {
-        print("MiniPlayer: Updating appearance - inline: \(inline)")
-
         // Hide artwork and up next button when inline (minimized)
         podcastArtwork.superview?.isHidden = inline
         upNextBtn.isHidden = inline
-
-        // Debug: Check if elements exist
-        print("MiniPlayer: Artwork container exists: \(podcastArtwork.superview != nil)")
-        print("MiniPlayer: Up Next button exists: \(upNextBtn != nil)")
-        print("MiniPlayer: Artwork hidden: \(podcastArtwork.superview?.isHidden ?? false)")
-        print("MiniPlayer: Up Next hidden: \(upNextBtn.isHidden)")
     }
 
     // Manual test method - call this to test inline mode
