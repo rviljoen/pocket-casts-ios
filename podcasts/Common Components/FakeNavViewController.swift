@@ -70,7 +70,7 @@ class FakeNavViewController: PCViewController, UIScrollViewDelegate {
             backBtn.widthAnchor.constraint(equalToConstant: buttonSize),
             backBtn.heightAnchor.constraint(equalToConstant: buttonSize),
             backBtnLeadingConstraint,
-            backBtn.bottomAnchor.constraint(equalTo: fakeNavView.bottomAnchor, constant: -8)
+            backBtn.bottomAnchor.constraint(equalTo: fakeNavView.bottomAnchor)
         ])
         self.backBtnLeadingConstraint = backBtnLeadingConstraint
         fakeNavTitle = UILabel()
@@ -186,7 +186,7 @@ class FakeNavViewController: PCViewController, UIScrollViewDelegate {
                 button.widthAnchor.constraint(equalToConstant: buttonSize),
                 button.heightAnchor.constraint(equalToConstant: buttonSize),
                 fakeNavView.trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: margin),
-                button.bottomAnchor.constraint(equalTo: fakeNavView.bottomAnchor, constant: -8)
+                button.bottomAnchor.constraint(equalTo: fakeNavView.bottomAnchor)
             ])
         } else {
             let previousButton = rightActionButtons.last!
@@ -196,7 +196,7 @@ class FakeNavViewController: PCViewController, UIScrollViewDelegate {
                 button.widthAnchor.constraint(equalToConstant: buttonSize),
                 button.heightAnchor.constraint(equalToConstant: buttonSize),
                 button.trailingAnchor.constraint(equalTo: previousButton.leadingAnchor, constant: -margin),
-                button.bottomAnchor.constraint(equalTo: fakeNavView.bottomAnchor, constant: -8)
+                button.bottomAnchor.constraint(equalTo: fakeNavView.bottomAnchor)
             ])
         }
         rightActionButtons.append(button)
