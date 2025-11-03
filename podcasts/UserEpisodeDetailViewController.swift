@@ -20,7 +20,7 @@ extension UserEpisodeDetailProtocol where Self: UIViewController {
 class UserEpisodeDetailViewController: UIViewController {
     @IBOutlet var containerView: ThemeableView! {
         didSet {
-            containerView.style = .primaryUi01
+            containerView.style = .primaryUi02
             containerView.layer.cornerRadius = 8
         }
     }
@@ -55,7 +55,7 @@ class UserEpisodeDetailViewController: UIViewController {
     @IBOutlet var containerViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet var actionTable: ThemeableTable! {
         didSet {
-            actionTable.themeStyle = .primaryUi01
+            actionTable.themeStyle = .primaryUi02
         }
     }
 
@@ -246,7 +246,7 @@ class UserEpisodeDetailViewController: UIViewController {
         errorContainerView.themeOverride = themeOverride
 
         playPauseButton.circleColor = ThemeColor.primaryIcon01(for: themeOverride)
-        playPauseButton.playButtonColor = ThemeColor.primaryUi01(for: themeOverride)
+        playPauseButton.playButtonColor = ThemeColor.primaryUi02(for: themeOverride)
 
         downloadStatusImage.tintColor = AppTheme.successGreen()
         upNextStatusImage.tintColor = ThemeColor.primaryIcon01(for: themeOverride)
