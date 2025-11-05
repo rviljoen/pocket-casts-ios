@@ -15,13 +15,14 @@ extension UIViewController {
 
         let configView = configuration.makeContentView()
         configView.translatesAutoresizingMaskIntoConstraints = false
+        configView.backgroundColor = AppTheme.colorForStyle(.primaryUi02)
         view.addSubview(configView)
 
         NSLayoutConstraint.activate([
-            configView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            configView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            configView.leadingAnchor.constraint(greaterThanOrEqualTo: view.leadingAnchor, constant: 20),
-            configView.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -20)
+            configView.topAnchor.constraint(equalTo: view.topAnchor),
+            configView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            configView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            configView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
 
         pc_contentUnavailableView = configView
