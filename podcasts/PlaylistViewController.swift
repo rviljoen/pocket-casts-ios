@@ -32,7 +32,7 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
 
     @IBOutlet var noEpisodesScrollView: UIScrollView! {
         didSet {
-            noEpisodesScrollView.backgroundColor = AppTheme.colorForStyle(.primaryUi04)
+            noEpisodesScrollView.backgroundColor = AppTheme.colorForStyle(.primaryUi02)
         }
     }
 
@@ -414,7 +414,7 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
         tableView.reloadData()
         filterCollectionView.reloadData()
         updateNavTintColor()
-        noEpisodesScrollView.backgroundColor = AppTheme.colorForStyle(.primaryUi04)
+        noEpisodesScrollView.backgroundColor = AppTheme.colorForStyle(.primaryUi02)
         noEpisodesIcon.tintColor = ThemeColor.primaryIcon02()
     }
 
