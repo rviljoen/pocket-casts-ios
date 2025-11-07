@@ -325,6 +325,7 @@
 		6406AA8B2C6384A5003DE648 /* SleepTimerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6406AA8A2C63849F003DE648 /* SleepTimerWidget.swift */; };
 		6406AA8D2C63920D003DE648 /* SleepTimerAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6406AA8C2C639203003DE648 /* SleepTimerAttributes.swift */; };
 		6406AA8E2C6393D9003DE648 /* SleepTimerAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6406AA8C2C639203003DE648 /* SleepTimerAttributes.swift */; };
+		643575B02EBE2D7F00DA7372 /* ChapterFilterKeywordsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643575AF2EBE2D7F00DA7372 /* ChapterFilterKeywordsViewController.swift */; };
 		64DE80C72E4211C900AEFA8A /* ShowNotesChapterExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64DE80C62E4211C900AEFA8A /* ShowNotesChapterExtractor.swift */; };
 		64DE80C92E421C1100AEFA8A /* ShowNotesChapterExtractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64DE80C82E421C1100AEFA8A /* ShowNotesChapterExtractorTests.swift */; };
 		64F99D752C677DE600FE3539 /* ExtendTimerIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64F99D742C677DDB00FE3539 /* ExtendTimerIntent.swift */; };
@@ -1298,8 +1299,6 @@
 		F5F5097D2CEBFDE2007D6E39 /* skip_button.json in Resources */ = {isa = PBXBuildFile; fileRef = BD43BDE52122AD0600E63165 /* skip_button.json */; };
 		F5F5097E2CEBFDE6007D6E39 /* skip.json in Resources */ = {isa = PBXBuildFile; fileRef = BD85E3A31E6670DF001B17C1 /* skip.json */; };
 		F5F884632CC9EAA6002BED2C /* Humane-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = F5F884622CC9EAA6002BED2C /* Humane-Bold.otf */; };
-		F5FDDD842E58E8B000FB1C33 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B312B32BF5B6D400290696 /* FirebaseManager.swift */; };
-		F5FDDD852E58E94500FB1C33 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B10E78528D908A900702C54 /* GoogleService-Info.plist */; };
 		F5FF61202BD076BA00190711 /* Sharing.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5FF611F2BD076BA00190711 /* Sharing.xcassets */; };
 		FCCC80732DD56B380080EB2C /* HowToUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCC80722DD56B380080EB2C /* HowToUploadView.swift */; };
 		FCE96E142D922FEF00AC50E3 /* HowToShareMenuImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCE96E132D922FEF00AC50E3 /* HowToShareMenuImageView.swift */; };
@@ -1363,7 +1362,8 @@
 		FFBCADEB2E6578F900EA8287 /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = FFBCADEA2E6578F900EA8287 /* WrappingHStack */; };
 		FFEE599C2EB378B300D4B145 /* Humane-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = FFEE599B2EB378B300D4B145 /* Humane-SemiBold.otf */; };
 		FFEE59C32EB37F4300D4B145 /* playback2025_listening_time.json in Resources */ = {isa = PBXBuildFile; fileRef = FFEE59C22EB37F4300D4B145 /* playback2025_listening_time.json */; };
-		FFEE59C42EB37F4300D4B145 /* playback2025_listening_time.json in Resources */ = {isa = PBXBuildFile; fileRef = FFEE59C22EB37F4300D4B145 /* playback2025_listening_time.json */; };
+		FFEE5A032EB514C100D4B145 /* playback_2025_top_spot_story.json in Resources */ = {isa = PBXBuildFile; fileRef = FFEE5A012EB514C100D4B145 /* playback_2025_top_spot_story.json */; };
+		FFF024CE2B62AC9400457373 /* IAPHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF024CD2B62AC9400457373 /* IAPHelperTests.swift */; };
 		FFF024CF2B62B13A00457373 /* Pocket Casts Configuration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = C7547F77286F571900DC1C9E /* Pocket Casts Configuration.storekit */; };
 		FFF23E8A2CC91E370046D3AD /* ServerPodcastManager+Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFF23E892CC91E2A0046D3AD /* ServerPodcastManager+Subscription.swift */; };
 		FFFCD23F2C7768F900A345ED /* Referrals.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FFFCD23E2C7768F900A345ED /* Referrals.xcassets */; };
@@ -1879,6 +1879,7 @@
 		6406AA8A2C63849F003DE648 /* SleepTimerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimerWidget.swift; sourceTree = "<group>"; };
 		6406AA8C2C639203003DE648 /* SleepTimerAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimerAttributes.swift; sourceTree = "<group>"; };
 		64266CD32D4AE1DA00F62016 /* Pocket Casts App ClipDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Pocket Casts App ClipDebug.entitlements"; sourceTree = "<group>"; };
+		643575AF2EBE2D7F00DA7372 /* ChapterFilterKeywordsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChapterFilterKeywordsViewController.swift; sourceTree = "<group>"; };
 		644224212940773900105BA1 /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig; sourceTree = "<group>"; };
 		64DE80C62E4211C900AEFA8A /* ShowNotesChapterExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ShowNotesChapterExtractor.swift; path = podcasts/ShowNotesChapterExtractor.swift; sourceTree = "<group>"; };
 		64DE80C82E421C1100AEFA8A /* ShowNotesChapterExtractorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowNotesChapterExtractorTests.swift; sourceTree = "<group>"; };
@@ -4916,6 +4917,7 @@
 				BD2A49EE1701AA8500C2F192 /* User Interface */,
 				BD585C1C204785EF00AC842C /* AppDelegate.swift */,
 				F5516DBD2E1C9D82005DC201 /* UserSatisfactionSurveyView.swift */,
+				643575AF2EBE2D7F00DA7372 /* ChapterFilterKeywordsViewController.swift */,
 				F5BA0D732E3443ED005931D3 /* PressableLottieButtonStyle.swift */,
 				F53481C52E21C07B00E80253 /* UserSatisfactionSurveyManager.swift */,
 				C73CD7A72916E8A900EAE879 /* SwiftUI+Previews.swift */,
@@ -7571,6 +7573,7 @@
 				BD27B8C52756F486007A0EA7 /* UIColor+SwiftUI.swift in Sources */,
 				C791418D294CE32D00F1852B /* StorageManager.swift in Sources */,
 				40251CEC22BB0F6E00551C51 /* CancelledAcknowledgeViewController.swift in Sources */,
+				643575B02EBE2D7F00DA7372 /* ChapterFilterKeywordsViewController.swift in Sources */,
 				FF1DF0202C8F411E0028B8D8 /* ReferralsClaimPass.swift in Sources */,
 				F5BA0D742E3443ED005931D3 /* PressableLottieButtonStyle.swift in Sources */,
 				BDF15A401B54E064000EC323 /* PlaybackQueue.swift in Sources */,
@@ -7702,7 +7705,6 @@
 				9AF355922E54DB0A0083ECA7 /* PlaylistEpisodePreviewRowView.swift in Sources */,
 				BDB1E4F61B8C5BF9009AD30F /* NetworkSummaryViewController.swift in Sources */,
 				64DE80C72E4211C900AEFA8A /* ShowNotesChapterExtractor.swift in Sources */,
-				9A11FCA02D92F3E400A1EF3E /* AppTrackingTransparencyController.swift in Sources */,
 				F5F6DA702BBE1109009B1934 /* CategoryButtonStyle.swift in Sources */,
 				8BD7A23C2C06254400CF84E8 /* UpNextEntryView.swift in Sources */,
 				404A080724E215A200308722 /* CheckboxSubtitleCell.swift in Sources */,
