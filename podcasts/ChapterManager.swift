@@ -226,6 +226,26 @@ class ChapterManager {
     private func handleChaptersLoaded(_ chapters: [ChapterInfo], for episode: BaseEpisode) {
         self.chapters = chapters
 
+        // Auto-deselect chapters containing any of the configured filter keywords (case insensitive)
+        let keywords = Settings.chapterFilterKeywords()
+        var hasAutoDeselected = false
+
+        for chapter in self.chapters {
+            for keyword in keywords {
+                if chapter.title.localizedCaseInsensitiveContains(keyword) {
+                    episode.deselect(chapterIndex: chapter.index)
+                    hasAutoDeselected = true
+                    break // No need to check other keywords for this chapter
+                }
+            }
+        }
+
+        // Save episode if we auto-deselected any chapters
+        if hasAutoDeselected {
+            episode.deselectedChaptersModified = TimeFormatter.currentUTCTimeInMillis()
+            DataManager.sharedManager.save(episode: episode)
+        }
+
         episode.deselectedChapters?
             .split(separator: ",")
             .compactMap { Int($0) }

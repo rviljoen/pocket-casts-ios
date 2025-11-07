@@ -523,6 +523,25 @@ class Settings: NSObject {
         UserDefaults.standard.set(value, forKey: playerChaptersExpandedKey)
     }
 
+    // MARK: - Chapter Filter Keywords
+
+    private static let chapterFilterKeywordsKey = "ChapterFilterKeywords"
+    private static let defaultChapterFilterKeywords = ["Sponsor"]
+
+    class func chapterFilterKeywords() -> [String] {
+        if let data = UserDefaults.standard.data(forKey: chapterFilterKeywordsKey),
+           let keywords = try? JSONDecoder().decode([String].self, from: data) {
+            return keywords
+        }
+        return defaultChapterFilterKeywords
+    }
+
+    class func setChapterFilterKeywords(_ keywords: [String]) {
+        if let data = try? JSONEncoder().encode(keywords) {
+            UserDefaults.standard.set(data, forKey: chapterFilterKeywordsKey)
+        }
+    }
+
     // MARK: Subscription Cancelled Acknowledgement
 
     private static let subscriptionCancelledAcknowledgedKey = "SJCancelledAcknowledged"
