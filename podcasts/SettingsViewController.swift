@@ -11,7 +11,7 @@ class SettingsViewController: PCViewController, UITableViewDataSource, UITableVi
         case watch, customFiles, importSteps, opml
         case about, pocketCastsPlus, privacy
         case upNextHistory, foldersHistory
-        case headphoneControls
+        case headphoneControls, chapterFilterKeywords
         case developer, beta
 
         /// Whether the section should be displayed or not
@@ -66,6 +66,8 @@ class SettingsViewController: PCViewController, UITableViewDataSource, UITableVi
                 return ("Beta Features", UIImage(systemName: "testtube.2"))
             case .headphoneControls:
                 return (L10n.settingsHeadphoneControls, .init(named: "settings_headphone_controls"))
+            case .chapterFilterKeywords:
+                return ("Chapter Filter Keywords", .init(systemName: "text.badge.minus"))
             case .upNextHistory:
                 return (L10n.upNextHistory, .init(named: "upnext"))
             case .foldersHistory:
@@ -89,7 +91,7 @@ class SettingsViewController: PCViewController, UITableViewDataSource, UITableVi
             [.pocketCastsPlus],
             [.general, .notifications, .appearance],
             [.autoArchive, .autoDownload, .autoAddToUpNext],
-            [.storageAndDataUse, .siriShortcuts, .headphoneControls, .watch, .customFiles],
+            [.storageAndDataUse, .siriShortcuts, .headphoneControls, .chapterFilterKeywords, .watch, .customFiles],
             [.importSteps, .opml],
             [.upNextHistory, .foldersHistory],
             [.privacy, .about]
@@ -206,6 +208,8 @@ class SettingsViewController: PCViewController, UITableViewDataSource, UITableVi
             navigationController?.pushViewController(hostingController, animated: true)
         case .headphoneControls:
             navigationController?.pushViewController(HeadphoneSettingsViewController(), animated: true)
+        case .chapterFilterKeywords:
+            navigationController?.pushViewController(ChapterFilterKeywordsViewController(), animated: true)
         case .upNextHistory:
             let upNextHistory = UpNextHistoryViewController()
             navigationController?.pushViewController(upNextHistory, animated: true)
