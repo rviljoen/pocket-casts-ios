@@ -248,6 +248,21 @@ class ChapterManager {
     private func handleChaptersLoaded(_ chapters: [ChapterInfo], for episode: BaseEpisode) {
         self.chapters = chapters
 
+        // Auto-deselect chapters containing any of the configured filter keywords (case insensitive)
+        let keywords = Settings.chapterFilterKeywords()
+        let previouslyDeselected = episode.deselectedChapters
+
+        for chapter in self.chapters where keywords.contains(where: { chapter.title.localizedCaseInsensitiveContains($0) }) {
+            episode.deselect(chapterIndex: chapter.index)
+        }
+
+        // Only save when the filter actually deselected something new, otherwise every
+        // chapter load would bump the modified date and trigger another sync write.
+        if episode.deselectedChapters != previouslyDeselected {
+            episode.deselectedChaptersModified = TimeFormatter.currentUTCTimeInMillis()
+            DataManager.shared.save(episode: episode)
+        }
+
         episode.deselectedChapters?
             .split(separator: ",")
             .compactMap { Int($0) }
