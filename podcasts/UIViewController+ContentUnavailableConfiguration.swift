@@ -16,7 +16,7 @@ extension UIViewController {
         let configView = configuration.makeContentView()
         configView.translatesAutoresizingMaskIntoConstraints = false
         configView.backgroundColor = AppTheme.colorForStyle(.primaryUi02)
-        view.addSubview(configView)
+        view.insertSubview(configView, at: 0)
 
         NSLayoutConstraint.activate([
             configView.topAnchor.constraint(equalTo: view.topAnchor),
