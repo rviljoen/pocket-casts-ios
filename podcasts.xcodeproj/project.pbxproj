@@ -466,8 +466,6 @@
 		9AB2900A2ECB7EDB006086F9 /* PlaylistDetailViewController+PlayAll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB290092ECB7ED4006086F9 /* PlaylistDetailViewController+PlayAll.swift */; };
 		9AB2900C2ECB7F81006086F9 /* PlaylistPlayAllSheetHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB2900B2ECB7F75006086F9 /* PlaylistPlayAllSheetHost.swift */; };
 		9AB2900E2ECB82F9006086F9 /* PlaylistPlayAllSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB2900D2ECB82F6006086F9 /* PlaylistPlayAllSheet.swift */; };
-		9AB645182D5138B200A842C8 /* Pocket Casts App Clip.app in Embed App Clips */ = {isa = PBXBuildFile; fileRef = F5D5F7792CEBE769001F492D /* Pocket Casts App Clip.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		9ACB950B2E0D9199007238A7 /* DescriptiveActionAttributedTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ACB950A2E0D9199007238A7 /* DescriptiveActionAttributedTextView.swift */; };
 		9ACB950C2E0D9199007238A7 /* DescriptiveActionAttributedTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ACB950A2E0D9199007238A7 /* DescriptiveActionAttributedTextView.swift */; };
 		9AD41AC22EB4E0750048FB8B /* PlaylistDetailViewController+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD41AC12EB4E0700048FB8B /* PlaylistDetailViewController+Analytics.swift */; };
 		9AD809AF2EA12D940050649B /* PlaylistDetailFetchOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AD809AE2EA12D850050649B /* PlaylistDetailFetchOperation.swift */; };
