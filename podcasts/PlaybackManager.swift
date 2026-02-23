@@ -224,6 +224,7 @@ class PlaybackManager: ServerPlaybackDelegate {
         guard let currEpisode = currentEpisode() else { return }
 
         FileLog.shared.addMessage("PlaybackManager Play \(currentEpisode()?.title ?? "unknown episode") userInitiated: \(userInitiated)")
+        PlayLog.shared.addMessage("▶️ Playback started: \(currEpisode.title ?? "unknown episode") at \(TimeFormatter.shared.playTimeFormat(time: currentTime()))")
 
         if userInitiated {
             analyticsPlaybackHelper.play()
@@ -276,6 +277,7 @@ class PlaybackManager: ServerPlaybackDelegate {
         wasPlayingBeforeInterruption = false
 
         FileLog.shared.addMessage("PlaybackManager pausing playback \(currentEpisode()?.title ?? "unknown episode")")
+        PlayLog.shared.addMessage("⏸️ Playback stopped: \(episode.title ?? "unknown episode") at \(TimeFormatter.shared.playTimeFormat(time: currentTime()))")
 
         recordPlaybackPosition(sendToServerImmediately: playing(), fireNotifications: true)
 
@@ -1157,6 +1159,7 @@ class PlaybackManager: ServerPlaybackDelegate {
             autoplayIfNeeded()
 
             FileLog.shared.addMessage("Finished playing \(episode.displayableTitle())")
+            PlayLog.shared.addMessage("✅ Playback finished: \(episode.displayableTitle()) at \(TimeFormatter.shared.playTimeFormat(time: episode.duration))")
             Analytics.track(.playerEpisodeCompleted, properties: [
                 "podcast_uuid": episode.parentIdentifier(),
                 "episode_uuid": episode.uuid
@@ -1630,6 +1633,7 @@ class PlaybackManager: ServerPlaybackDelegate {
 
     private func pauseAndRecordSleepTimerFinished() {
         sleepTimerManager.recordSleepTimerFinished()
+        PlayLog.shared.addMessage("⌛ fired")
         pause()
     }
 
