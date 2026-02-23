@@ -223,7 +223,8 @@ class PlaybackManager: ServerPlaybackDelegate {
         guard let currEpisode = currentEpisode() else { return }
 
         FileLog.shared.addMessage("PlaybackManager Play \(currentEpisode()?.title ?? "unknown episode") userInitiated: \(userInitiated)")
-        PlayLog.shared.addMessage("▶️ Playback started: \(currEpisode.title ?? "unknown episode") at \(TimeFormatter.shared.playTimeFormat(time: currentTime()))")
+        let playLogPodcastName = (currEpisode as? Episode)?.parentPodcast()?.title ?? "Unknown Podcast"
+        PlayLog.shared.addMessage("▶️ Playback started: \(currEpisode.title ?? "unknown episode") [\(playLogPodcastName)] at \(TimeFormatter.shared.playTimeFormat(time: currentTime()))")
 
         if userInitiated {
             analyticsPlaybackHelper.play()
@@ -276,7 +277,8 @@ class PlaybackManager: ServerPlaybackDelegate {
         wasPlayingBeforeInterruption = false
 
         FileLog.shared.addMessage("PlaybackManager pausing playback \(currentEpisode()?.title ?? "unknown episode")")
-        PlayLog.shared.addMessage("⏸️ Playback stopped: \(episode.title ?? "unknown episode") at \(TimeFormatter.shared.playTimeFormat(time: currentTime()))")
+        let playLogPodcastName = (episode as? Episode)?.parentPodcast()?.title ?? "Unknown Podcast"
+        PlayLog.shared.addMessage("⏸️ Playback stopped: \(episode.title ?? "unknown episode") [\(playLogPodcastName)] at \(TimeFormatter.shared.playTimeFormat(time: currentTime()))")
 
         recordPlaybackPosition(sendToServerImmediately: playing(), fireNotifications: true)
 
@@ -1070,7 +1072,8 @@ class PlaybackManager: ServerPlaybackDelegate {
             autoplayIfNeeded()
 
             FileLog.shared.addMessage("Finished playing \(episode.displayableTitle())")
-            PlayLog.shared.addMessage("✅ Playback finished: \(episode.displayableTitle()) at \(TimeFormatter.shared.playTimeFormat(time: episode.duration))")
+            let playLogPodcastName = (episode as? Episode)?.parentPodcast()?.title ?? "Unknown Podcast"
+            PlayLog.shared.addMessage("⏹️ Playback finished: \(episode.displayableTitle()) [\(playLogPodcastName)] at \(TimeFormatter.shared.playTimeFormat(time: episode.duration))")
             Analytics.track(.playerEpisodeCompleted, properties: [
                 "podcast_uuid": episode.parentIdentifier(),
                 "episode_uuid": episode.uuid
