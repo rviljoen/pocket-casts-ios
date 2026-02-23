@@ -86,7 +86,7 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
     private let settingsCellId = "SettingsCell"
     private let endOfYearPromptCell = "EndOfYearPromptCell"
 
-    enum TableRow { case informationalBanner, kidsProfile, referralsClaim, allStats, downloaded, starred, listeningHistory, help, uploadedFiles, endOfYearPrompt, bookmarks, playback2026Banner }
+    enum TableRow { case informationalBanner, kidsProfile, referralsClaim, allStats, downloaded, starred, listeningHistory, help, uploadedFiles, endOfYearPrompt, bookmarks, playback2026Banner, playLogs }
 
     private lazy var informationalBannerCoordinator: InformationalBannerViewCoordinator = {
         let viewModel = InformationalBannerViewModel(bannerType: .profile)
@@ -403,6 +403,9 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
         case .bookmarks:
             cell.settingsImage.image = UIImage(named: "bookmarks-profile")
             cell.settingsLabel.text = L10n.bookmarks
+        case .playLogs:
+            cell.settingsImage.image = UIImage(systemName: "list.bullet.rectangle")
+            cell.settingsLabel.text = "Play Log"
         }
 
         return cell
@@ -494,6 +497,9 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
         case .playback2026Banner:
             Playback2026Analytics.track(.endOfYearProfileCardTapped)
             Playback2026.start(from: self, source: .profile)
+        case .playLogs:
+            let playLogController = PlayLogViewController()
+            navigationController?.pushViewController(playLogController, animated: true)
         }
     }
 
@@ -513,7 +519,7 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
 
     private func refreshTableData() {
         var data: [[ProfileViewController.TableRow]]
-        data = [[.allStats, .downloaded, .uploadedFiles, .starred, .bookmarks, .listeningHistory, .help]]
+        data = [[.allStats, .downloaded, .uploadedFiles, .starred, .bookmarks, .listeningHistory, .playLogs, .help]]
 
         if EndOfYear.isEndOfYearActive, EndOfYear.isEligible {
             data[0].insert(.endOfYearPrompt, at: 0)
