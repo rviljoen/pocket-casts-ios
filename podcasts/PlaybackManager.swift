@@ -225,7 +225,8 @@ class PlaybackManager: ServerPlaybackDelegate {
 
         FileLog.shared.addMessage("PlaybackManager Play \(currentEpisode()?.title ?? "unknown episode") userInitiated: \(userInitiated)")
         let playLogPodcastName = (currEpisode as? Episode)?.parentPodcast()?.title ?? "Unknown Podcast"
-        PlayLog.shared.addMessage("▶️ Playback started: \(currEpisode.title ?? "unknown episode") [\(playLogPodcastName)] at \(TimeFormatter.shared.playTimeFormat(time: currentTime()))")
+        let playLogTime = TimeFormatter.shared.playTimeFormat(time: currentTime())
+        PlayLog.shared.addMessage("▶️ Playback started: \(currEpisode.title ?? "unknown episode") [\(playLogPodcastName)] at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(currEpisode.uuid)\">\(playLogTime)</a>")
 
         if userInitiated {
             analyticsPlaybackHelper.play()
@@ -279,7 +280,8 @@ class PlaybackManager: ServerPlaybackDelegate {
 
         FileLog.shared.addMessage("PlaybackManager pausing playback \(currentEpisode()?.title ?? "unknown episode")")
         let playLogPodcastName = (episode as? Episode)?.parentPodcast()?.title ?? "Unknown Podcast"
-        PlayLog.shared.addMessage("⏸️ Playback stopped: \(episode.title ?? "unknown episode") [\(playLogPodcastName)] at \(TimeFormatter.shared.playTimeFormat(time: currentTime()))")
+        let playLogTime = TimeFormatter.shared.playTimeFormat(time: currentTime())
+        PlayLog.shared.addMessage("⏸️ Playback stopped: \(episode.title ?? "unknown episode") [\(playLogPodcastName)] at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(episode.uuid)\">\(playLogTime)</a>")
 
         recordPlaybackPosition(sendToServerImmediately: playing(), fireNotifications: true)
 
@@ -1162,7 +1164,8 @@ class PlaybackManager: ServerPlaybackDelegate {
 
             FileLog.shared.addMessage("Finished playing \(episode.displayableTitle())")
             let playLogPodcastName = (episode as? Episode)?.parentPodcast()?.title ?? "Unknown Podcast"
-            PlayLog.shared.addMessage("⏹️ Playback finished: \(episode.displayableTitle()) [\(playLogPodcastName)] at \(TimeFormatter.shared.playTimeFormat(time: episode.duration))")
+            let playLogTime = TimeFormatter.shared.playTimeFormat(time: episode.duration)
+            PlayLog.shared.addMessage("⏹️ Playback finished: \(episode.displayableTitle()) [\(playLogPodcastName)] at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(episode.uuid)\">\(playLogTime)</a>")
             Analytics.track(.playerEpisodeCompleted, properties: [
                 "podcast_uuid": episode.parentIdentifier(),
                 "episode_uuid": episode.uuid
