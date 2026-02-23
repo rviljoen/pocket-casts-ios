@@ -39,7 +39,7 @@ public struct FileRotator: FileRotating {
             return
         }
 
-        do { try fileManager.removeItem(atPath: LogFilePaths.backupLogFilePath) }
+        do { try fileManager.removeItem(atPath: backupFilePath) }
         catch { /* The file doesn't exist, which is perfectly fine */ }
 
         do {

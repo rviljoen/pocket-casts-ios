@@ -44,6 +44,14 @@ class PlaybackManager: ServerPlaybackDelegate {
     private var wasPlayingBeforeInterruption = false
     private let aboutToPlay = Mutex(false)
 
+    /// Whether the play log's last entry for the current episode says playback is running.
+    ///
+    /// Turning off a car often both sends a remote pause command and removes the audio route,
+    /// so `pause()` runs twice. This lets only the first of those log a stop, and likewise keeps
+    /// repeated `play()` calls from each logging a start. It can't be derived from `isPlaying`,
+    /// because iOS may already have halted the player before either call.
+    private let playLogShowsPlaying = Mutex(false)
+
     private let shouldDeactivateSession = Mutex(false)
     private var haveCalledPlayerLoad = false
 
@@ -203,6 +211,12 @@ class PlaybackManager: ServerPlaybackDelegate {
             streamingVideoForDownloadedEpisode.value = false
         }
 
+        // Swapping in a new episode tears the player down without going through `pause()`, so
+        // record where the outgoing one got to before that happens.
+        if episodeIsChanging, let outgoingEpisode = currentEpisode {
+            playLogStopped(outgoingEpisode, at: currentTime, reason: .replaced)
+        }
+
         if let uuid = currentEpisode?.uuid, uuid != episode.uuid {
             chapterManager.clearChapterInfo()
         }
@@ -283,6 +297,72 @@ class PlaybackManager: ServerPlaybackDelegate {
         })
     }
 
+    /// Opens the play log section for `episode`, so its playback events group under one header.
+    ///
+    /// Safe to call before every logged event: `PlayLog` ignores the call when the episode's
+    /// section is already open.
+    private func startPlayLogSection(for episode: BaseEpisode) {
+        let podcastName = (episode as? Episode)?.parentPodcast()?.title ?? "Unknown Podcast"
+        let episodeTitle = episode.title ?? "Unknown Episode"
+        PlayLog.shared.startSection(
+            id: episode.uuid,
+            headerLines: ["<b>\(Self.htmlEscaped(podcastName))</b>", Self.htmlEscaped(episodeTitle)]
+        )
+    }
+
+    private enum PlayLogStopReason {
+        case paused, replaced, cleared, finished
+    }
+
+    /// Logs that `episode` started playing, unless it's a repeated play while it's still playing.
+    private func playLogStarted(_ episode: BaseEpisode) {
+        // Read and set in one step, so two near-simultaneous plays can't both log a start.
+        let alreadyShowsPlaying = playLogShowsPlaying.withLock { showsPlaying in
+            defer { showsPlaying = true }
+            return showsPlaying
+        }
+        // If iOS halted the player without a `pause()`, the log still shows it playing, but this
+        // play does resume it, so it's logged.
+        guard !(alreadyShowsPlaying && isPlaying) else { return }
+
+        startPlayLogSection(for: episode)
+        PlayLog.shared.addMessage("▶️ Playback started at \(playLogJumpLink(to: currentTime, in: episode))")
+    }
+
+    /// Logs that `episode` stopped at `time`, unless the play log already shows it stopped.
+    private func playLogStopped(_ episode: BaseEpisode, at time: TimeInterval, reason: PlayLogStopReason) {
+        // Read and cleared in one step, so two near-simultaneous pauses can't both log a stop.
+        let showedPlaying = playLogShowsPlaying.withLock { showsPlaying in
+            defer { showsPlaying = false }
+            return showsPlaying
+        }
+        guard showedPlaying else { return }
+
+        let link = playLogJumpLink(to: time, in: episode)
+        let message = switch reason {
+        case .paused: "⏸️ Playback stopped at \(link)"
+        case .replaced: "⏹️ Playback stopped at \(link) (replaced)"
+        case .cleared: "⏹️ Playback stopped at \(link) (cleared)"
+        case .finished: "⏹️ Playback finished at \(link)"
+        }
+        startPlayLogSection(for: episode)
+        PlayLog.shared.addMessage(message)
+    }
+
+    /// A link the Play Log screen opens to jump back to `time` in `episode`.
+    private func playLogJumpLink(to time: TimeInterval, in episode: BaseEpisode) -> String {
+        let playLogTime = TimeFormatter.shared.playTimeFormat(time: time)
+        return "<a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(episode.uuid)\">\(playLogTime)</a>"
+    }
+
+    private static func htmlEscaped(_ text: String) -> String {
+        text
+            .replacingOccurrences(of: "&", with: "&amp;")
+            .replacingOccurrences(of: "<", with: "&lt;")
+            .replacingOccurrences(of: ">", with: "&gt;")
+            .replacingOccurrences(of: "\"", with: "&quot;")
+    }
+
     func play(completion: (() -> Void)? = nil, userInitiated: Bool = true) {
         guard let currEpisode = currentEpisode else { return }
 
@@ -319,6 +399,12 @@ class PlaybackManager: ServerPlaybackDelegate {
                     self.hasReportedSourceResolved.value = false
                 }
                 return
+            }
+
+            // Activation can run async, so skip the log if the user has since switched episodes;
+            // the new episode's play cycle logs its own start.
+            if self.currentEpisode?.uuid == currEpisode.uuid {
+                self.playLogStarted(currEpisode)
             }
 
             self.player?.play {
@@ -361,6 +447,7 @@ class PlaybackManager: ServerPlaybackDelegate {
         wasPlayingBeforeInterruption = false
 
         FileLog.shared.addMessage("PlaybackManager pausing playback \(episode.title ?? "unknown episode")")
+        playLogStopped(episode, at: currentTime, reason: .paused)
 
         recordPlaybackPosition(sendToServerImmediately: isPlaying, fireNotifications: true)
 
@@ -948,6 +1035,12 @@ class PlaybackManager: ServerPlaybackDelegate {
     }
 
     func endPlayback(saveCurrentEpisode: Bool = true) {
+        // Like swapping episodes, this tears the player down without going through `pause()`, so
+        // record where the episode got to before that happens.
+        if let outgoingEpisode = currentEpisode {
+            playLogStopped(outgoingEpisode, at: currentTime, reason: .cleared)
+        }
+
         cancelUpdateTimer()
         cancelSleepTimer()
         chapterManager.clearChapterInfo()
@@ -1390,6 +1483,9 @@ class PlaybackManager: ServerPlaybackDelegate {
 
         // handle the episode that just finished, marking it as played, etc
         if let episode = currentEpisode {
+            // Logged before autoplay loads the next episode, which would otherwise log this one as replaced.
+            playLogStopped(episode, at: episode.duration, reason: .finished)
+
             autoplayIfNeeded()
 
             FileLog.shared.addMessage("Finished playing \(episode.displayableTitle())")
@@ -1802,6 +1898,10 @@ class PlaybackManager: ServerPlaybackDelegate {
     private func pauseAndRecordSleepTimerFinished() {
         sleepTimerManager.recordSleepTimerFinished()
         endSleepTimerLiveActivity()
+        if let episode = currentEpisode {
+            startPlayLogSection(for: episode)
+        }
+        PlayLog.shared.addMessage("⌛ fired")
         pause()
     }
 
