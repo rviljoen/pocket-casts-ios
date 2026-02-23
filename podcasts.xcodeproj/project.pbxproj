@@ -1393,6 +1393,10 @@
 		FF91A0F62B64159D002A0590 /* UIScreen+Sizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF91A0F52B64159D002A0590 /* UIScreen+Sizes.swift */; };
 		FF9B6B752D0732D40057A504 /* LogsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9B6B742D0732CF0057A504 /* LogsViewController.swift */; };
 		FF9B6B772D0733670057A504 /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9B6B762D0733650057A504 /* LogsView.swift */; };
+		549F9BB1F07C49E498B735F7 /* PlayLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BA8F393FEBF446085FA19E8 /* PlayLogView.swift */; };
+		5B104ADE91E4462C94DA3D4E /* PlayLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A423129B3C4C4D06B7223468 /* PlayLogViewController.swift */; };
+		FF9BCB2B2EA2A14100A25F12 /* NumberListened2025.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9BCB2A2EA2A13500A25F12 /* NumberListened2025.swift */; };
+		FF9BCB312EA64DB700A25F12 /* StoryHeader2025.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9BCB302EA64DB000A25F12 /* StoryHeader2025.swift */; };
 		FF9BCB342EA659C900A25F12 /* playback_2025_listened.json in Resources */ = {isa = PBXBuildFile; fileRef = FF9BCB322EA659B400A25F12 /* playback_2025_listened.json */; };
 		FF9CBAF22EC9293000989151 /* playback2025_listening_time_numbers.json in Resources */ = {isa = PBXBuildFile; fileRef = FF9CBAF12EC9293000989151 /* playback2025_listening_time_numbers.json */; };
 		FF9ED3552C86010F00B6E630 /* TipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9ED3542C86010F00B6E630 /* TipView.swift */; };
@@ -2728,6 +2732,10 @@
 		FF91A0F52B64159D002A0590 /* UIScreen+Sizes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIScreen+Sizes.swift"; sourceTree = "<group>"; };
 		FF9B6B742D0732CF0057A504 /* LogsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsViewController.swift; sourceTree = "<group>"; };
 		FF9B6B762D0733650057A504 /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
+		9BA8F393FEBF446085FA19E8 /* PlayLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayLogView.swift; sourceTree = "<group>"; };
+		A423129B3C4C4D06B7223468 /* PlayLogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayLogViewController.swift; sourceTree = "<group>"; };
+		FF9BCB2A2EA2A13500A25F12 /* NumberListened2025.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberListened2025.swift; sourceTree = "<group>"; };
+		FF9BCB302EA64DB000A25F12 /* StoryHeader2025.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryHeader2025.swift; sourceTree = "<group>"; };
 		FF9BCB322EA659B400A25F12 /* playback_2025_listened.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = playback_2025_listened.json; sourceTree = "<group>"; };
 		FF9CBAF12EC9293000989151 /* playback2025_listening_time_numbers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = playback2025_listening_time_numbers.json; sourceTree = "<group>"; };
 		FF9ED3542C86010F00B6E630 /* TipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipView.swift; sourceTree = "<group>"; };
@@ -4459,6 +4467,8 @@
 				8BFB434D2A1FFB4B00F3D409 /* StatusPageViewModel.swift */,
 				FF9B6B742D0732CF0057A504 /* LogsViewController.swift */,
 				FF9B6B762D0733650057A504 /* LogsView.swift */,
+				9BA8F393FEBF446085FA19E8 /* PlayLogView.swift */,
+				A423129B3C4C4D06B7223468 /* PlayLogViewController.swift */,
 			);
 			name = Support;
 			sourceTree = "<group>";
@@ -7340,6 +7350,8 @@
 				BD35BB6C1CF697650018D63E /* AudioUtils.swift in Sources */,
 				9AE5043E2DEDF5590027A4AE /* TranscriptPlaybackManaging.swift in Sources */,
 				FF9B6B772D0733670057A504 /* LogsView.swift in Sources */,
+				549F9BB1F07C49E498B735F7 /* PlayLogView.swift in Sources */,
+				5B104ADE91E4462C94DA3D4E /* PlayLogViewController.swift in Sources */,
 				9AE5043C2DEDF2030027A4AE /* TranscriptContainerViewController.swift in Sources */,
 				9A9004D12E2E97DF005879CB /* PlaylistCellViewModel.swift in Sources */,
 				BD48D5A6216DB26A00391F9E /* HapticsHelper.swift in Sources */,

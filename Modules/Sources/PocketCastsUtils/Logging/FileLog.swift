@@ -52,10 +52,19 @@ public final class FileLog {
         logPersistence: PersistentTextWriting,
         logRotator: FileRotating,
         bufferThreshold: UInt = 100,
+        mainFilePath: String = LogFilePaths.mainLogFilePath,
+        backupFilePath: String = LogFilePaths.backupLogFilePath,
         loggingTo logger: Logger? = nil
     ) {
         self.logger = logger
-        self.logBuffer = LogBuffer(logPersistence: logPersistence, logRotator: logRotator, bufferThreshold: bufferThreshold, loggingTo: logger)
+        self.logBuffer = LogBuffer(
+            logPersistence: logPersistence,
+            logRotator: logRotator,
+            bufferThreshold: bufferThreshold,
+            mainFilePath: mainFilePath,
+            backupFilePath: backupFilePath,
+            loggingTo: logger
+        )
     }
 
     /// Writes the message to the given destinations.
@@ -123,14 +132,20 @@ final class LogBuffer: @unchecked Sendable {
     private let logPersistence: PersistentTextWriting
     private let logRotator: FileRotating
     private let logger: Logger?
+    private let mainFilePath: String
+    private let backupFilePath: String
 
     init(logPersistence: PersistentTextWriting,
          logRotator: FileRotating,
          bufferThreshold: UInt = 100,
+         mainFilePath: String = LogFilePaths.mainLogFilePath,
+         backupFilePath: String = LogFilePaths.backupLogFilePath,
          loggingTo logger: Logger? = nil) {
         self.logPersistence = logPersistence
         self.logRotator = logRotator
         self.bufferThreshold = bufferThreshold
+        self.mainFilePath = mainFilePath
+        self.backupFilePath = backupFilePath
         self.logger = logger
     }
 
@@ -193,14 +208,14 @@ final class LogBuffer: @unchecked Sendable {
     private func readLogFiles() -> String {
         let mainFileContents: String
         do {
-            mainFileContents = try String(contentsOfFile: LogFilePaths.mainLogFilePath)
+            mainFileContents = try String(contentsOfFile: mainFilePath)
         } catch {
             mainFileContents = "Main log is empty"
         }
 
         let secondaryFileContents: String
         do {
-            secondaryFileContents = try String(contentsOfFile: LogFilePaths.backupLogFilePath)
+            secondaryFileContents = try String(contentsOfFile: backupFilePath)
         } catch {
             secondaryFileContents = ""
         }
