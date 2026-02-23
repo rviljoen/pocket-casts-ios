@@ -1,0 +1,175 @@
+import SwiftUI
+import PocketCastsUtils
+import PocketCastsServer
+
+struct AccountHeaderView: View {
+    @EnvironmentObject var theme: Theme
+    @ObservedObject var viewModel: AccountHeaderViewModel
+
+    @State private var showingChampion = false
+
+    var body: some View {
+        container { proxy in
+            VStack(spacing: FeatureFlag.newOnboardingUpgrade.enabled ? 8 : Constants.padding.vertical) {
+                SubscriptionProfileImage(viewModel: viewModel)
+                    .frame(width: Constants.imageSize, height: Constants.imageSize)
+                ProfileInfoLabels(profile: viewModel.profile, alignment: .center, spacing: Constants.spacing)
+                // Subscription badge
+                viewModel.subscription.map {
+                    SubscriptionBadge(tier: $0.tier)
+                }
+                let (title, label, action) = subscriptionLabels
+                if label == nil, FeatureFlag.newAccountUpgradePromptFlow.enabled || FeatureFlag.newOnboardingUpgrade.enabled {
+                    Text(title)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .foregroundColor(theme.primaryText02)
+                        .font(size: 11, style: .footnote, weight: .semibold)
+                } else {
+                    // Subscription details labels
+                    HStack {
+                        Text(title)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer()
+                        label
+                        .onTapGesture {
+                            action?()
+                        }
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .foregroundColor(theme.primaryText01)
+                    .font(size: 14, style: .subheadline, weight: .medium)
+                    .sheet(isPresented: $showingChampion) {
+                        ZStack {
+                            theme.primaryUi01.ignoresSafeArea()
+
+                            ChampionView()
+                                .presentationDetents([.medium])
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private var subscriptionLabels: (String, Text?, (() -> Void)?) {
+        switch viewModel.viewState {
+        case .freeAccount:
+            // Show the free account status and the total listening time the user has
+            return (
+                L10n.accountDetailsFreeAccount,
+                (FeatureFlag.newAccountUpgradePromptFlow.enabled || FeatureFlag.newOnboardingUpgrade.enabled) ? nil :
+                viewModel.stats.listeningTime.seconds.localizedTimeDescription.map {
+                    Text(L10n.accountDetailsListenedFor($0))
+                },
+                nil
+            )
+        case .activeSubscription(_, let frequency, let expirationDate):
+            // Show the next billing date, and how often their subscription reviews
+            return (
+                L10n.nextPaymentFormat(DateFormatHelper.sharedHelper.longLocalizedFormat(expirationDate)),
+                frequency.localizedDescription.map { Text($0) },
+                nil
+            )
+        case .freeTrial(let remaining):
+            // Show the time remaining in the free trial and the date it expires
+            return (
+                L10n.plusFreeMembershipFormat(DateFormatHelper.sharedHelper.shortTimeRemaining(remaining).localizedCapitalized),
+                expirationLabel(),
+                nil
+            )
+        case .lifetime:
+            // Lifetime membership, show a thank you message
+            return (
+                L10n.subscriptionsThankYou,
+                Text(L10n.plusChampion)
+                    .foregroundColor(theme.green), {
+                        showingChampion.toggle()
+                }
+            )
+        case .paymentCancelled:
+            // Show the cancelled label, and the date the subscription expires
+            return (
+                L10n.plusPaymentCanceled,
+                expirationLabel(),
+                nil
+            )
+        }
+    }
+
+    private func expirationLabel() -> Text? {
+        guard
+            let expirationDate = viewModel.subscription?.expirationDate,
+            let expirationProgress = viewModel.subscription?.expirationProgress
+        else {
+            return nil
+        }
+
+        // If we're more than the max days (progress >= 1) then show the expiration date
+        guard expirationProgress < 1 else {
+            let label = L10n.plusExpirationFormat(DateFormatHelper.sharedHelper.longLocalizedFormat(expirationDate))
+            return Text(label)
+        }
+
+        // Less than the max days (30 days) show the expires in time
+        return TimeFormatter.shared.appleStyleTillString(date: expirationDate).map {
+            Text(L10n.subscriptionExpiresIn($0))
+                .foregroundColor(theme.red)
+        }
+    }
+
+    // MARK: - Private: Wrapper Views
+    @ViewBuilder
+    /// Main content wrapper view that renders the rest of the content
+    private func container<Content: View>(@ViewBuilder _ content: @escaping (GeometryProxy) -> Content) -> some View {
+        ContentSizeGeometryReader { proxy in
+            VStack(spacing: Constants.spacing) {
+                content(proxy)
+                    .frame(maxWidth: .infinity)
+            }
+            .padding(.top, Constants.padding.top)
+            .padding(.bottom, Constants.padding.bottom)
+            .padding(.horizontal, Constants.padding.horizontal)
+        } contentSizeUpdated: { size in
+            viewModel.contentSizeChanged(size)
+        }
+    }
+
+    // MARK: - View Constants
+    private enum Constants {
+        static let spacing = 16.0
+        static let imageSize = 64.0
+
+        enum padding {
+            static let top = 30.0
+            static let bottom = 16.0
+            static let horizontal = 16.0
+
+            static let vertical = 14.0
+        }
+    }
+}
+
+// MARK: - SubscriptionFrequency Helper Extension
+private extension SubscriptionFrequency {
+    var localizedDescription: String? {
+        switch self {
+        case .none:
+            return nil
+        case .monthly:
+            return L10n.monthly
+        case .yearly:
+            return L10n.yearly
+        }
+    }
+}
+
+// MARK: - Previews
+struct AccountHeaderView_Previews: PreviewProvider {
+    static var previews: some View {
+        VStack {
+            AccountHeaderView(viewModel: .init())
+
+            Spacer()
+        }.setupDefaultEnvironment()
+    }
+}

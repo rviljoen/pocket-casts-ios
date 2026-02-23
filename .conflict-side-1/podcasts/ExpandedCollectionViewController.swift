@@ -1,0 +1,150 @@
+import PocketCastsServer
+import SafariServices
+import UIKit
+
+enum CollectionCellStyle {
+    case grid, descriptive_list
+}
+
+class ExpandedCollectionViewController: PCViewController, CollectionHeaderLinkDelegate {
+    var item: DiscoverItem
+    var podcastCollection: PodcastCollection?
+    var podcasts: [DiscoverPodcast]
+    weak var delegate: DiscoverDelegate?
+
+    var cellStyle: CollectionCellStyle = .grid
+
+    let inset: CGFloat = 16
+    let bigDevicePortraitWidth: CGFloat = 500
+    let gridStyleSpacing: CGFloat = 16
+    let gridNumColumns: CGFloat = 2
+    let gridPreferredWidth: CGFloat = 150
+    let gridPeferredHeight: CGFloat = 265
+    let descriptiveListPreferredMaxWidth: CGFloat = 280
+    var descriptiveListPreferredMaxHeight: CGFloat {
+        var baseHeight = CGFloat(200)
+        let largeSize = traitCollection.preferredContentSizeCategory.isAccessibilityCategory
+        if largeSize {
+            baseHeight = baseHeight * 1.3
+        }
+        let metric = UIFontMetrics(forTextStyle: .callout)
+        return max(baseHeight, metric.scaledValue(for: baseHeight))
+    }
+    let descriptiveListSpacing: CGFloat = 16
+
+    @IBOutlet var collectionView: ThemeableCollectionView! {
+        didSet {
+            collectionView.register(UINib(nibName: "LargeListCell", bundle: nil), forCellWithReuseIdentifier: ExpandedCollectionViewController.gridCellId)
+            collectionView.register(UINib(nibName: "DescriptiveCollectionCell", bundle: nil), forCellWithReuseIdentifier: ExpandedCollectionViewController.descriptiveCellId)
+            collectionView.register(UINib(nibName: "DiscoverCollectionHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ExpandedCollectionViewController.headerId)
+            collectionView.style = .primaryUi02
+        }
+    }
+
+    @IBOutlet var collectionViewHeader: UICollectionReusableView!
+    static let headerId = "DiscoverCollectionHeader"
+    static let gridCellId = "LargeListCell"
+    static let descriptiveCellId = "DescriptiveCollectionCell"
+    private var lastWillLayoutWidth: CGFloat = 0
+
+    init(item: DiscoverItem, podcasts: [DiscoverPodcast]) {
+        self.item = item
+        self.podcasts = podcasts
+
+        super.init(nibName: "ExpandedCollectionViewController", bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        (view as? ThemeableView)?.style = .primaryUi02
+
+        if let collectionSubtitle = podcastCollection?.subtitle?.localized.localizedCapitalized {
+            title = collectionSubtitle
+        } else {
+            title = item.title?.localized.localizedCapitalized
+        }
+
+        if item.source != nil && item.isAuthenticated == false {
+            customRightBtn = UIBarButtonItem(image: UIImage(named: "podcast-share"), style: .plain, target: self, action: #selector(handleShare))
+        }
+
+        insetAdjuster.setupInsetAdjustmentsForMiniPlayer(scrollView: collectionView)
+    }
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        if lastWillLayoutWidth != view.bounds.width {
+            lastWillLayoutWidth = view.bounds.width
+            updateFlowLayoutSize()
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if podcastCollection == nil {
+            navigationController?.navigationBar.shadowImage = UIImage()
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        navigationController?.navigationBar.shadowImage = nil
+    }
+
+    func registerDiscoverDelegate(_ delegate: DiscoverDelegate) {
+        self.delegate = delegate
+    }
+
+    func linkTapped() {
+        guard let link = podcastCollection?.webUrl, let url = URL(string: link) else { return }
+
+        Analytics.track(.discoverCollectionLinkTapped, properties: ["list_id": item.inferredListId])
+
+        if Settings.openLinks {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        } else {
+            present(SFSafariViewController(with: url), animated: true, completion: nil)
+        }
+    }
+
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        AppTheme.defaultStatusBarStyle()
+    }
+
+    @objc func handleShare() {
+        guard let source = item.source, let url = URL(string: source)?.deletingPathExtension() else { return }
+        Analytics.track(.discoverListShareTapped)
+        let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        present(activityViewController, animated: true)
+    }
+
+    // MARK: - Dynamic Type support
+
+    var cellExtraHeight: CGFloat {
+        var baseHeight: CGFloat = 50
+        let largeSize = traitCollection.preferredContentSizeCategory.isAccessibilityCategory
+        if largeSize {
+            baseHeight = baseHeight * 1.5
+        }
+        let metric = UIFontMetrics(forTextStyle: .callout)
+        return max(baseHeight, metric.scaledValue(for: baseHeight))
+    }
+
+    func updateSize() {
+        updateFlowLayoutSize()
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            updateSize()
+        }
+    }
+}
