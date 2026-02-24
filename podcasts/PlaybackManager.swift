@@ -2035,7 +2035,7 @@ class PlaybackManager: ServerPlaybackDelegate {
 
         let reason = changeReason.uintValue
         FileLog.shared.addMessage("Route change reason: \(reason)")
-        
+
         if let currEpisode = currentEpisode(), playingOverAirplay() && playerSwitchRequired() {
             let wasPlaying = player?.shouldBePlaying() ?? false
             let autoPlay: Bool
