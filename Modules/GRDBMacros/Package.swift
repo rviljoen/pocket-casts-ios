@@ -7,7 +7,7 @@ let package = Package(
     name: "GRDBMacros",
     platforms: [
         .iOS(.v15),
-        .macOS(.v10_15)
+        .macOS(.v13)
     ],
     products: [
         .library(
@@ -16,7 +16,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "600.0.0"),
+        .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "602.0.0"),
         .package(url: "https://github.com/groue/GRDB.swift.git", from: "7.0.0"),
     ],
     targets: [
