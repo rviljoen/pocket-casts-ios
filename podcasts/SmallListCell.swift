@@ -4,6 +4,12 @@ import PocketCastsUtils
 import UIKit
 
 class SmallListCell: ThemeableCollectionCell {
+
+    static var scaledHeight: CGFloat {
+        let metric = UIFontMetrics(forTextStyle: .callout)
+        return max(52, metric.scaledValue(for: 52))
+    }
+
     @IBOutlet var podcastImage: PodcastImageView!
     @IBOutlet var subscribeButton: BouncyButton! {
         didSet {
@@ -15,10 +21,15 @@ class SmallListCell: ThemeableCollectionCell {
         }
     }
 
-    @IBOutlet var podcastTitle: ThemeableLabel!
+    @IBOutlet var podcastTitle: ThemeableLabel! {
+        didSet {
+            podcastTitle.font = .font(ofSize: 16, weight: .medium, scalingWith: .callout)
+        }
+    }
     @IBOutlet var podcastAuthor: ThemeableLabel! {
         didSet {
             podcastAuthor.style = .primaryText02
+            podcastAuthor.font = .font(ofSize: 14, weight: .regular, scalingWith: .subheadline)
         }
     }
 
@@ -33,6 +44,11 @@ class SmallListCell: ThemeableCollectionCell {
         didSet {
             setSelectedState(isHighlighted)
         }
+    }
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        updateSize()
     }
 
     func setSelectedState(_ selected: Bool) {
@@ -53,6 +69,8 @@ class SmallListCell: ThemeableCollectionCell {
         subscribeButton.currentlyOn = isSubscribed
 
         subscribeButton.shouldAnimate = true
+
+        setNeedsUpdateConstraints()
     }
 
     @IBAction func subscribeTapped(_ sender: AnyObject) {
@@ -101,5 +119,25 @@ class SmallListCell: ThemeableCollectionCell {
         discoverPodcast = nil
         setSelectedState(false)
         subscribeButton.currentlyOn = false
+    }
+
+    func updateSize() {
+        let largeSize = traitCollection.preferredContentSizeCategory.isAccessibilityCategory
+        podcastTitle.numberOfLines = largeSize ? 2 : 1
+        podcastAuthor.numberOfLines = largeSize ? 2 : 1
+
+        let metric = UIFontMetrics(forTextStyle: .largeTitle)
+
+        podcastImage.updateSizeConstraints(to: max(48, metric.scaledValue(for: 48)))
+
+        subscribeButton.updateSizeConstraints(to: max(44, metric.scaledValue(for: 44)))
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            updateSize()
+        }
     }
 }

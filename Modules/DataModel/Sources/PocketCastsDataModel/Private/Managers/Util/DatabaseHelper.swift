@@ -1,4 +1,3 @@
-import FMDB
 import Foundation
 import PocketCastsUtils
 
@@ -18,6 +17,7 @@ class DatabaseHelper {
                     try db.executeUpdate("PRAGMA user_version = \(newSchemaVersion)", values: nil)
                 }
             } catch {
+                assertionFailure("Failed to setup database \(db.lastErrorCode()): \(db.lastErrorMessage()) actual error: \(error)")
                 FileLog.shared.addMessage("Failed to setup database \(db.lastErrorCode()): \(db.lastErrorMessage()) actual error: \(error)")
             }
         }
@@ -836,6 +836,52 @@ class DatabaseHelper {
                 return
             }
         }
+
+        if schemaVersion < 59 {
+            do {
+                try db.executeUpdate("ALTER TABLE SJFilteredPlaylist DROP COLUMN rawPlaylistType;", values: nil)
+                try db.executeUpdate("ALTER TABLE SJPlaylistEpisode ADD COLUMN playlist_uuid TEXT;", values: nil)
+                schemaVersion = 59
+            } catch {
+                failedAt(59)
+                return
+            }
+        }
+
+        if schemaVersion < 69 {
+            do {
+                try db.executeUpdate("ALTER TABLE SJFilteredPlaylist ADD COLUMN showArchivedEpisodes BOOLEAN DEFAULT FALSE;", values: nil)
+                schemaVersion = 69
+            } catch {
+                failedAt(69)
+                return
+            }
+        }
+
+        if schemaVersion < 70 {
+            do {
+                try db.executeUpdate("ALTER TABLE SJFilteredPlaylist ADD COLUMN playlistUpdateDate REAL;", values: nil)
+                schemaVersion = 70
+            } catch {
+                failedAt(70)
+                return
+            }
+        }
+
+        if schemaVersion < 71 {
+            do {
+                // Indexes to optimize manual playlist queries by playlist_uuid and ordering by episodePosition
+                try db.executeUpdate("CREATE INDEX IF NOT EXISTS playlist_episode_playlist_uuid ON SJPlaylistEpisode (playlist_uuid);", values: nil)
+                try db.executeUpdate("CREATE INDEX IF NOT EXISTS playlist_episode_playlist_uuid_pos ON SJPlaylistEpisode (playlist_uuid, episodePosition);", values: nil)
+                try db.executeUpdate("CREATE INDEX IF NOT EXISTS playlist_episode_playlist_uuid_episode ON SJPlaylistEpisode (playlist_uuid, episodeUuid);", values: nil)
+
+                schemaVersion = 71
+            } catch {
+                failedAt(71)
+                return
+            }
+        }
+
         db.commit()
     }
 }

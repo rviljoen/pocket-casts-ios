@@ -40,12 +40,18 @@ enum AnalyticsEvent: String {
     case plusPromotionPrivacyPolicyTapped
     case plusPromotionTermsAndConditionsTapped
     case plusPromotionDetailsTapped
+    case plusPromotionBannerButtonTapped
 
     // MARK: - Setup Account
 
     case setupAccountShown
     case setupAccountDismissed
     case setupAccountButtonTapped
+
+    // MARK: - Onboarding
+
+    case onboardingCarouselShown
+    case onboardingGetStarted
 
     // MARK: - Sign in View
 
@@ -282,6 +288,12 @@ enum AnalyticsEvent: String {
     case filterDeleted
     case filterUpdated
     case filterCreated
+    case filterCreateShown
+    case filterCreateAsManualPlaylistTapped
+    case filterCreateAsSmartPlaylistTapped
+    case filterCreateCancelled
+    case filterDeleteTriggered
+    case filterDeleteDismissed
 
     case filterShown
     case filterTooltipShown
@@ -289,8 +301,12 @@ enum AnalyticsEvent: String {
 
     case filterMultiSelectEntered
     case filterSelectAllButtonTapped
+    case filterSelectAll
+    case filterDeselectAll
     case filterSelectAllAbove
     case filterSelectAllBelow
+    case filterDeselectAllAbove
+    case filterDeselectAllBelow
     case filterMultiSelectExited
 
     case filterOptionsButtonTapped
@@ -305,8 +321,53 @@ enum AnalyticsEvent: String {
     case filterAutoDownloadUpdated
     case filterAutoDownloadLimitUpdated
 
+    case filterAddEpisodesShown
+    case filterAddEpisodesFolderTapped
+    case filterAddEpisodesPodcastTapped
+    case filterAddEpisodesEpisodeTapped
+
+    case filterEditRulesTapped
+    case filterAddEpisodesTapped
+
+    case filterPlayAllTapped
+    case filterPlayAllReplaceAndPlayTapped
+    case filterPlayAllDismissed
+
+    case filterOptionsTapped
+    case filterSelectEpisodesTapped
+    case filterSortByTapped
+    case filterDownloadAllTapped
+    case filterChromeCastTapped
+    case filterArchiveAllTapped
+    case filterUnarchiveAllTapped
+    case filterRearrangeEpisodesTapped
+
+    case filterShowArchivedTapped
+    case filterHideArchivedTapped
+
+    case filterRemoveFromPlaylistTapped
+
+    case filterNameUpdated
+
+    case filterEditRulesCtaEmptyTapped
+    case filterAddEpisodesCtaEmptyTapped
+    case filterBrowseShowsCtaEmptyTapped
+    case filterShowArchivedCtaEmptyTapped
+
+    case filterManualEpisodesRearranged
+    case filterManualEpisodeDeleted
+
     case episodeRecentlyPlayedSortOptionTooltipShown
     case episodeRecentlyPlayedSortOptionTooltipDismissed
+
+    case episodeAddedToList
+    case episodeRemovedFromList
+
+    case addToPlaylistsShown
+    case addToPlaylistsEpisodeAddTapped
+    case addToPlaylistsRemoveTapped
+    case addToPlaylistsNewPlaylistTapped
+    case addToPlaylistsCreateNewPlaylistTapped
 
     // MARK: - Podcast screen
 
@@ -421,6 +482,8 @@ enum AnalyticsEvent: String {
 
     case playerPreviousChapterTapped
     case playerNextChapterTapped
+    case playerEpisodeCompleted
+
 
     // MARK: - Player: Sleep Timer
 
@@ -695,9 +758,15 @@ enum AnalyticsEvent: String {
     case searchDismissed
     case searchPerformed
     case searchFailed
+    case searchEmptyResults
+    case searchPredictiveFailed
     case searchResultTapped
     case searchListShown
     case searchCleared
+    case searchFilterTapped
+    case searchPredictiveShown
+    case searchPredictiveTermTapped
+    case searchPredictiveViewAllTapped
 
     // MARK: - Chromecast
 
@@ -729,9 +798,14 @@ enum AnalyticsEvent: String {
     case endOfYearStoryShown
     case endOfYearStoryShare
     case endOfYearStoryShared
+    case playbackShared
     case endOfYearProfileCardTapped
     case endOfYearUpsellShown
     case endOfYearLearnRatingsShown
+    case endOfYearProfileCardShown
+    case endOfYearModalTapped
+    case endOfYearModalDismissed
+    case endOfYearPlusContinued
 
     // MARK: - Welcome View
 
@@ -746,6 +820,22 @@ enum AnalyticsEvent: String {
     case onboardingImportAppSelected
     case onboardingImportOpenAppTapped
     case onboardingImportDismissed
+
+    // MARK: - Recommendations
+
+    case recommendationsShown
+    case recommendationsDismissed
+    case recommendationsSearchTapped
+    case recommendationsMoreTapped
+    case recommendationsContinueTapped
+    case recommendationsImportTapped
+
+    // MARK: - Interests
+    case onboardingInterestsShown
+    case onboardingInterestsNotNowTapped
+    case onboardingInterestsCategorySelected
+    case onboardingInterestsShownMoreTapped
+    case onboardingInterestsContinueTapped
 
     // MARK: - Cancel
     case cancelConfirmationViewShown
@@ -921,4 +1011,5 @@ enum AnalyticsEvent: String {
     // MARK: - Banner Ads
     case bannerAdImpression
     case bannerAdTapped
+    case bannerAdReport
 }

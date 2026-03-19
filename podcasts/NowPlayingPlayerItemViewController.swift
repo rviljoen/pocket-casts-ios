@@ -14,6 +14,12 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
 
     private var bannerTask: Task<Void, Never>? = nil
 
+    // Detect Display Zoom (zoomed display makes UI elements appear larger).
+    // Scale controls down slightly when zoomed to avoid oversized buttons.
+    private var isZoomed: Bool {
+        A11y.isDisplayZoomed
+    }
+
     var videoViewController: VideoViewController?
 
     @IBOutlet var skipBackBtn: SkipButton! {
@@ -48,6 +54,8 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
             episodeName.text = ""
 #endif
             episodeName.style = .playerContrast01
+            episodeName.adjustsFontForContentSizeCategory = true
+            episodeName.font = .font(ofSize: 18, weight: .semibold, scalingWith: .largeTitle)
         }
     }
 
@@ -57,6 +65,9 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
             podcastName.text = ""
 #endif
             podcastName.style = .playerContrast02
+            podcastName.adjustsFontForContentSizeCategory = true
+            podcastName.font = .font(ofSize: 14, weight: .medium, scalingWith: .largeTitle)
+
             let tapGesture = UITapGestureRecognizer(target: self, action: #selector(podcastNameTapped))
             podcastName.addGestureRecognizer(tapGesture)
 
@@ -71,6 +82,8 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
             chapterName.text = ""
 #endif
             chapterName.style = .playerContrast01
+            chapterName.adjustsFontForContentSizeCategory = true
+            chapterName.font = .font(ofSize: 18, weight: .semibold, scalingWith: .largeTitle)
 
             let tapGesture = UITapGestureRecognizer(target: self, action: #selector(chapterNameTapped))
             chapterName.addGestureRecognizer(tapGesture)
@@ -103,12 +116,15 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
     @IBOutlet var chapterCounter: ThemeableLabel! {
         didSet {
             chapterCounter.style = .playerContrast02
+            chapterCounter.adjustsFontForContentSizeCategory = true
+            chapterCounter.font = .font(ofSize: 12, weight: .semibold, scalingWith: .largeTitle)
         }
     }
 
     @IBOutlet var chapterTimeLeftLabel: UILabel! {
         didSet {
-            chapterTimeLeftLabel.font = chapterTimeLeftLabel.font.monospaced()
+            chapterTimeLeftLabel.adjustsFontForContentSizeCategory = true
+            chapterTimeLeftLabel.font = .font(ofSize: 11, weight: .semibold, scalingWith: .largeTitle).monospaced()
         }
     }
 
@@ -151,14 +167,21 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
     @IBOutlet var timeElapsed: ThemeableLabel! {
         didSet {
             timeElapsed.style = .playerContrast02
-            timeElapsed.font = UIFont.monospacedDigitSystemFont(ofSize: 12, weight: UIFont.Weight.medium)
+            let baseFont = UIFont.monospacedDigitSystemFont(ofSize: 12, weight: UIFont.Weight.medium)
+            let metrics = UIFontMetrics(forTextStyle: .largeTitle)
+            timeElapsed.font = metrics.scaledFont(for: baseFont)
+            timeElapsed.adjustsFontForContentSizeCategory = true
         }
     }
 
     @IBOutlet var timeRemaining: ThemeableLabel! {
         didSet {
             timeRemaining.style = .playerContrast02
-            timeRemaining.font = UIFont.monospacedDigitSystemFont(ofSize: 12, weight: UIFont.Weight.medium)
+            let baseFont = UIFont.monospacedDigitSystemFont(ofSize: 12, weight: UIFont.Weight.medium)
+            let metrics = UIFontMetrics(forTextStyle: .largeTitle)
+            timeRemaining.font = metrics.scaledFont(for: baseFont)
+            timeRemaining.adjustsFontForContentSizeCategory = true
+
         }
     }
 
@@ -206,6 +229,7 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         chromecastBtn.isPointerInteractionEnabled = true
 
         routePicker.delegate = self
+
         #endif
     }
 
@@ -246,14 +270,19 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
 
     private func loadBannerAd() {
 #if !APPCLIP
-        if FeatureFlag.bannerAds.enabled && !SubscriptionHelper.hasActiveSubscription() {
-            bannerTask = Task { [weak self] in
-                if let promotion = await DiscoverServerHandler.shared.blazePromotion(for: .player) {
-                    guard Task.isCancelled == false else { return }
-                    try? await Task.sleep(for: .seconds(2)) // Delay by 2 seconds so we don't immediately show
-                    await MainActor.run {
-                        self?.addAdBanner(promotion: promotion)
+        if SubscriptionHelper.shouldDisplayPlayerBannerAd {
+            DiscoverServerHandler.shared.blazePromotion(for: .player) { [weak self] promotion, shouldAnimate in
+                guard let self = self else { return }
+
+                if shouldAnimate {
+                    self.bannerTask = Task { [weak self] in
+                        try? await Task.sleep(for: .seconds(2))
+                        await MainActor.run {
+                            self?.addAdBanner(promotion: promotion, animated: true)
+                        }
                     }
+                } else {
+                    self.addAdBanner(promotion: promotion, animated: false)
                 }
             }
         }
@@ -275,7 +304,7 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         resizeControls()
 
         #if !APPCLIP
-        if FeatureFlag.bannerAds.enabled {
+        if FeatureFlag.bannerAdPlayer.enabled {
             updateBannerAdHeight()
         }
         #endif
@@ -293,8 +322,16 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
 
         if playerControlsStackView.spacing != spacing { playerControlsStackView.spacing = spacing }
 
-        let height: CGFloat = displayTranscript ? 40 : view.bounds.height > 710 ? 100 : 80
-        if playPauseHeightConstraint.constant != height { playPauseHeightConstraint.constant = height }
+        // Base height for play/pause. If zoomed and not showing transcript, scale down a bit.
+        let baseHeight: CGFloat = displayTranscript ? 40 : (view.bounds.height > 710 ? 100 : 80)
+        let scaledHeight: CGFloat = (!displayTranscript && isZoomed) ? baseHeight * 0.9 : baseHeight
+        if playPauseHeightConstraint.constant != scaledHeight { playPauseHeightConstraint.constant = scaledHeight }
+
+        // Ensure skip buttons are not too large on zoomed displays.
+        // Use small size either when showing transcript or when display is zoomed.
+        let skipSize: SkipButton.Size = (displayTranscript || isZoomed) ? .small : .large
+        skipBackBtn.changeSize(to: skipSize)
+        skipFwdBtn.changeSize(to: skipSize)
 
         view.layoutIfNeeded()
     }
@@ -308,7 +345,7 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         removeAllCustomObservers()
 
         #if !APPCLIP
-        if FeatureFlag.bannerAds.enabled {
+        if FeatureFlag.bannerAdPlayer.enabled {
             removeBannerAd()
         }
         #endif
@@ -323,13 +360,30 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         super.traitCollectionDidChange(previousTraitCollection)
 
         #if !APPCLIP
-        if FeatureFlag.bannerAds.enabled {
+        if FeatureFlag.bannerAdPlayer.enabled {
             // Update banner height when text size category changes
             if traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory {
                 updateBannerAdHeight()
             }
         }
         #endif
+
+        if traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory {
+            updateSize()
+        }
+    }
+
+    var shelfIconSize: CGFloat {
+        let metrics = UIFontMetrics(forTextStyle: .largeTitle)
+        let iconSize = min(45, max(32, metrics.scaledValue(for: 32)))
+        return iconSize
+    }
+
+    private func updateSize() {
+        let iconSize = shelfIconSize
+        for view in playerControlsStackView.subviews {
+            view.updateSizeConstraints(to: iconSize)
+        }
     }
 
     // MARK: - Interface Actions
@@ -481,8 +535,8 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
             // Display/hide the view that will fill the empty space
             fillView.isHidden = !isShowing
 
-            // Change skip back and forward size
-            let skipButtonSize: SkipButton.Size = isShowing ? .small : .large
+            // Change skip back and forward size (also keep small on zoomed displays)
+            let skipButtonSize: SkipButton.Size = (isShowing || isZoomed) ? .small : .large
             skipBackBtn.changeSize(to: skipButtonSize)
             skipFwdBtn.changeSize(to: skipButtonSize)
             skipBackBtn.layoutIfNeeded()
@@ -511,13 +565,13 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
 
     // MARK: Banner Ad
 
-    func addAdBanner(promotion: BlazePromotion) {
+    func addAdBanner(promotion: BlazePromotion, animated: Bool = true) {
         removeBannerAd()
 
         guard let stackView = episodeImage.superview as? UIStackView else { return }
 
-        let model = BannerAdModel(promotion: promotion, source: AnalyticsSource.player.rawValue) {
-            UIApplication.shared.openSafariVCIfPossible(promotion.url)
+        let model = BannerAdModel(promotion: promotion) {
+            UIApplication.shared.openSafariVCIfPossible(promotion.urlApple)
         }
 
         let adView = BannerAdView(model: model, colors: .playerColors(Theme.sharedTheme)).padding(16)
@@ -549,14 +603,19 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
 
         view.layoutIfNeeded()
 
-        // Animate move first
-        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseOut]) {
-            topConstraint.constant = 0
-            self.view.layoutIfNeeded()
-        }
+        if animated {
+            // Animate move first
+            UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseOut]) {
+                topConstraint.constant = 0
+                self.view.layoutIfNeeded()
+            }
 
-        // Animate opacity second so it's more noticeable
-        UIView.animate(withDuration: 0.2, delay: 0.05) {
+            // Animate opacity second so it's more noticeable
+            UIView.animate(withDuration: 0.2, delay: 0.05) {
+                adUiView.alpha = 1
+            }
+        } else {
+            topConstraint.constant = 0
             adUiView.alpha = 1
         }
     }

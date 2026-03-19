@@ -2,17 +2,22 @@ import SwiftUI
 import Kingfisher
 
 struct PlaylistArtworkView: View {
-    @EnvironmentObject var theme: Theme
-    let urls: [URL]
+    struct ImageItem: Equatable {
+        let id: String
+        let url: URL
+    }
 
-    private let imageSize: Int
+    @EnvironmentObject var theme: Theme
+    let items: [ImageItem]
+
+    private let cornerRadius: CGFloat
 
     init(
-        urls: [URL],
-        imageSize: Int
+        items: [ImageItem],
+        cornerRadius: CGFloat = 4
     ) {
-        self.urls = urls
-        self.imageSize = imageSize
+        self.items = items
+        self.cornerRadius = cornerRadius
     }
 
     var body: some View {
@@ -21,41 +26,43 @@ struct PlaylistArtworkView: View {
             ZStack {
                 Rectangle()
                     .foregroundColor(theme.primaryUi05)
-                if urls.isEmpty {
-                    Image("playlists_tab")
+                if items.isEmpty {
+                    Image("playlist_list_icon")
+                        .resizable()
                         .renderingMode(.template)
                         .foregroundColor(theme.primaryIcon03)
-                        .frame(width: size.width, height: size.height)
+                        .frame(width: size.width * 0.4, height: size.height * 0.4)
                 } else {
-                    switch urls.count {
+                    switch items.count {
                     case 4:
                         VStack(spacing: 0) {
                             HStack(spacing: 0) {
-                                AsyncImageView(url: urls[0], size: imageSize)
+                                AsyncImageView(url: items[0].url, cacheKey: items[0].id)
                                     .frame(width: size.width / 2, height: size.height / 2)
                                     .clipped()
-                                AsyncImageView(url: urls[1], size: imageSize)
+                                AsyncImageView(url: items[1].url, cacheKey: items[1].id)
                                     .frame(width: size.width / 2, height: size.height / 2)
                                     .clipped()
                             }
                             HStack(spacing: 0) {
-                                AsyncImageView(url: urls[2], size: imageSize)
+                                AsyncImageView(url: items[2].url, cacheKey: items[2].id)
                                     .frame(width: size.width / 2, height: size.height / 2)
                                     .clipped()
-                                AsyncImageView(url: urls[3], size: imageSize)
+                                AsyncImageView(url: items[3].url, cacheKey: items[3].id)
                                     .frame(width: size.width / 2, height: size.height / 2)
                                     .clipped()
                             }
                         }
                     default:
-                        AsyncImageView(url: urls[0], size: imageSize)
+                        AsyncImageView(url: items[0].url, cacheKey: items[0].id)
                             .frame(width: size.width, height: size.height)
                             .clipped()
                     }
                 }
             }
-            .cornerRadius(4)
-            .clipped()
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(L10n.accessibilityPlaylistImage)
     }
 }

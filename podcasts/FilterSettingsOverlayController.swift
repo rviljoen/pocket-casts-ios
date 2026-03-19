@@ -20,6 +20,8 @@ class FilterSettingsOverlayController: LargeNavBarViewController, AnalyticsSourc
             saveButton.layer.cornerRadius = 12
             saveButton.setTitleColor(ThemeColor.primaryInteractive02(), for: .normal)
             saveButton.setTitle(L10n.filterUpdate, for: .normal)
+            saveButton.titleLabel?.numberOfLines = 0
+            saveButton.titleLabel?.adjustsFontForContentSizeCategory = true
         }
     }
 
@@ -34,8 +36,8 @@ class FilterSettingsOverlayController: LargeNavBarViewController, AnalyticsSourc
 
     func saveFilter() {
         filterToEdit.syncStatus = SyncStatus.notSynced.rawValue
-        DataManager.sharedManager.save(filter: filterToEdit)
-        NotificationCenter.postOnMainThread(notification: Constants.Notifications.filterChanged, object: filterToEdit)
+        DataManager.sharedManager.save(playlist: filterToEdit)
+        NotificationCenter.postOnMainThread(notification: Constants.Notifications.playlistChanged, object: filterToEdit)
 
         if !filterToEdit.isNew {
             Analytics.track(.filterUpdated, properties: ["group": analyticsSource, "source": "filters"])

@@ -91,11 +91,17 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
 
         removeEpisodeFromCache(episode)
 
+        let sessionType = session === wifiOnlyBackgroundSession ? "wifi-only" : (session === cellularBackgroundSession ? "cellular" : "foreground")
+        let isOnUnexpensiveConnection = NetworkUtils.shared.isConnectedToUnexpensiveConnection()
+        let networkDescription = isOnUnexpensiveConnection ? "unexpensive" : "expensive"
+
         switch error.code {
         case NSURLErrorCancelled:
+            let reason = error.userInfo[NSURLErrorBackgroundTaskCancelledReasonKey] as? Int
+            FileLog.shared.addMessage("DownloadManager: Download cancelled for episode \(episode.displayableTitle()), session: \(sessionType), network: \(networkDescription), reason: \(reason ?? -1)")
+
             if !episode.downloadFailed() {
                 // we already handled this error, since we failed the download ourselves
-                let reason = error.userInfo[NSURLErrorBackgroundTaskCancelledReasonKey] as? Int
                 switch reason {
                 case NSURLErrorCancelledReasonUserForceQuitApplication, NSURLErrorCancelledReasonInsufficientSystemResources:
                     dataManager.saveEpisode(downloadStatus: .queued, downloadTaskId: nil, episode: episode)
@@ -109,11 +115,15 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
 
             return
         case NSURLErrorTimedOut:
+            FileLog.shared.addMessage("DownloadManager: Download timed out for episode \(episode.displayableTitle()), session: \(sessionType), network: \(networkDescription)")
             taskFailure[episode.uuid] = .connectionTimeout
         case NSURLErrorCannotConnectToHost:
+            FileLog.shared.addMessage("DownloadManager: Cannot connect to host for episode \(episode.displayableTitle()), session: \(sessionType), network: \(networkDescription)")
             taskFailure[episode.uuid] = .unknownHost
+        case NSURLErrorNotConnectedToInternet:
+            FileLog.shared.addMessage("DownloadManager: Not connected to internet for episode \(episode.displayableTitle()), session: \(sessionType)")
         default:
-            ()
+            FileLog.shared.addMessage("DownloadManager: Download error for episode \(episode.displayableTitle()), session: \(sessionType), network: \(networkDescription), error code: \(error.code), description: \(error.localizedDescription)")
         }
 
         downloadAttempts.removeValue(forKey: downloadTask.taskIdentifier)
@@ -157,10 +167,10 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
         }
 
         let responseContentType = response.allHeaderFields[ServerConstants.HttpHeaders.contentType] as? String
-        processEpisode(episode, downloadedFile: location, reportedContentType: responseContentType)
+        processEpisode(episode, downloadedFile: location, reportedContentType: responseContentType, copyFile: false)
     }
 
-    func processEpisode(_ episode: BaseEpisode, downloadedFile location: URL, reportedContentType: String?) {
+    func processEpisode(_ episode: BaseEpisode, downloadedFile location: URL, reportedContentType: String?, copyFile: Bool) {
         var contentType = reportedContentType
 
         if FeatureFlag.useMimetypePackage.enabled {
@@ -173,6 +183,9 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
         let fileSize = FileManager.default.fileSize(of: location) ?? 0
         guard isEpisodeFileValid(contentType: contentType, fileSize: fileSize) else {
             markEpisode(episode, asFailedWithMessage: L10n.downloadErrorContactAuthorVersion2, reason: .suspiciousContent(fileSize))
+            if !copyFile {
+                StorageManager.removeItem(at: location)
+            }
             return
         }
 
@@ -181,7 +194,11 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
         let destinationUrl = URL(fileURLWithPath: destinationPath)
 
         do {
-            try StorageManager.copyItem(at: location, to: destinationUrl, options: [.overwriteExisting])
+            if copyFile {
+                try StorageManager.copyItem(at: location, to: destinationUrl, options: [.overwriteExisting])
+            } else {
+                try StorageManager.moveItem(at: location, to: destinationUrl, options: [.overwriteExisting])
+            }
 
             let newDownloadStatus: DownloadStatus = autoDownloadStatus == .playerDownloadedForStreaming ? .downloadedForStreaming : .downloaded
             dataManager.saveEpisode(downloadStatus: newDownloadStatus, sizeInBytes: fileSize, downloadTaskId: nil, episode: episode)
@@ -189,6 +206,10 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
             EpisodeFileSizeUpdater.updateEpisodeDuration(episode: episode)
             NotificationCenter.postOnMainThread(notification: Constants.Notifications.episodeDownloaded, object: episode.uuid)
         } catch {
+            if !copyFile {
+                // Lets try remove the file so we don't have a pending file on the tmp folder
+                StorageManager.removeItem(at: location)
+            }
             FileLog.shared.addMessage("DownloadManager: Failed to copy downloaded file from location: \(location.absoluteString) to destination:  \(destinationPath) error: \(error)")
             markEpisode(episode, asFailedWithMessage: L10n.downloadErrorNotEnoughSpace, reason: .badResponse)
         }

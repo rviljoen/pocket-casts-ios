@@ -18,7 +18,7 @@ class NotificationsViewController: PCViewController, UITableViewDataSource, UITa
         return NotificationsCoordinator.shared
     }()
 
-    enum Section: Int {
+    enum Section: Int, CaseIterable {
         case episodes = 0
         case recommendationsAndReminders
         case featuresAndOffers
@@ -114,6 +114,11 @@ class NotificationsViewController: PCViewController, UITableViewDataSource, UITa
         didSet {
             settingsTable.register(UINib(nibName: "SwitchCell", bundle: nil), forCellReuseIdentifier: switchCellId)
             settingsTable.register(UINib(nibName: "DisclosureCell", bundle: nil), forCellReuseIdentifier: disclosureCellId)
+
+            settingsTable.rowHeight = UITableView.automaticDimension
+            settingsTable.estimatedRowHeight = UITableView.automaticDimension
+            settingsTable.sectionHeaderHeight = UITableView.automaticDimension
+            settingsTable.estimatedSectionHeaderHeight = Constants.Values.tableSectionHeaderHeight
         }
     }
 
@@ -125,10 +130,10 @@ class NotificationsViewController: PCViewController, UITableViewDataSource, UITa
 
         Analytics.track(.settingsNotificationsShown)
 
-        settingsTable.estimatedSectionHeaderHeight = UITableView.automaticDimension
-
         checkNotificationsPermissionBanner()
         addCustomObserver(UIApplication.didBecomeActiveNotification, selector: #selector(checkNotificationsPermissionBanner))
+
+        insetAdjuster.setupInsetAdjustmentsForMiniPlayer(scrollView: settingsTable)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -138,7 +143,7 @@ class NotificationsViewController: PCViewController, UITableViewDataSource, UITa
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return FeatureFlag.notificationsRevamp.enabled ? 3 : 1
+        return Section.allCases.count
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -217,10 +222,6 @@ class NotificationsViewController: PCViewController, UITableViewDataSource, UITa
             return
         }
 
-    }
-
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return UITableView.automaticDimension
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -343,7 +344,7 @@ extension AppBadge {
         case .totalUnplayed:
             return L10n.statusUnplayed
         case .filterCount:
-            return L10n.settingsNotificationsFilterCount
+            return FeatureFlag.playlistsRebranding.enabled ? L10n.settingsNotificationsSmartPlaylistCount : L10n.settingsNotificationsFilterCount
         case .newSinceLastOpened:
             return L10n.newEpisodes
         default:

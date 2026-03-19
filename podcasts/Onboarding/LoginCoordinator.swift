@@ -8,6 +8,7 @@ class LoginCoordinator: NSObject, OnboardingModel {
     weak var navigationController: UINavigationController? = nil
     let headerImages: [LoginHeaderImage]
     var continuePurchasing: ProductInfo? = nil
+    var isOnboarding: Bool = false
 
     private var socialLogin: SocialLogin?
     private var socialAuthProvider: SocialAuthProvider?
@@ -56,7 +57,8 @@ class LoginCoordinator: NSObject, OnboardingModel {
         socialAuthProvider = nil
         OnboardingFlow.shared.track(.setupAccountButtonTapped, properties: ["button": "sign_in"])
         if FeatureFlag.newOnboardingAccountCreation.enabled {
-            let vc = UIHostingController(rootView: SyncSigninView(coordinator: self, loginAgain: false, onCompleted: { self.navigationController?.presentingViewController?.dismiss(animated: true) }).environmentObject(Theme.sharedTheme))
+            let vc = OnboardingHostingViewController(rootView: SyncSigninView(coordinator: self, loginAgain: false, onCompleted: { self.navigationController?.presentingViewController?.dismiss(animated: true) }).environmentObject(Theme.sharedTheme))
+            vc.viewModel = self
             navigationController?.pushViewController(vc, animated: true)
         } else {
             let controller = SyncSigninViewController()
@@ -71,6 +73,50 @@ class LoginCoordinator: NSObject, OnboardingModel {
         let controller = NewEmailViewController()
         controller.delegate = self
         navigationController?.pushViewController(controller, animated: true)
+    }
+
+    func getStartedTapped() {
+        OnboardingFlow.shared.updateAnalyticsSource(.onboardingRecommendations)
+        let hostingController: UIViewController
+        if FeatureFlag.newOnboardingRecommendationChanges.enabled {
+            let view = InterestsView(continueCallback: { categories in
+                self.interestsContinueTapped(categories: categories)
+            }) {
+                self.interestsContinueTapped(categories: nil)
+            }
+            let controller = OnboardingHostingViewController(rootView: view.setupDefaultEnvironment())
+            controller.viewModel = self
+            hostingController = controller
+        } else {
+            let controller = OnboardingHostingViewController(rootView: OnboardingRecommendationsView(coordinator: self).setupDefaultEnvironment())
+            controller.viewModel = self
+            hostingController = controller
+        }
+
+        hostingController.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationController?.pushViewController(hostingController, animated: true)
+    }
+
+    func interestsContinueTapped(categories: [DiscoverCategory]?) {
+        let configuration: RecommendationsViewModel.Configuration
+        if let categories {
+            configuration = .preselected(categories)
+        } else {
+            configuration = .all
+        }
+        let view = OnboardingRecommendationsView(coordinator: self, viewModel: RecommendationsViewModel(configuration: configuration))
+        let hostingController = OnboardingHostingViewController(rootView: view.setupDefaultEnvironment())
+        hostingController.viewModel = self
+        hostingController.navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationController?.pushViewController(hostingController, animated: true)
+    }
+
+    func recommendationsContinueTapped() {
+        socialAuthProvider = nil
+        let view = LoginLandingView(coordinator: self, fullScreenMode: true)
+        let hostingController = LoginLandingHostingController(rootView: view.setupDefaultEnvironment())
+        hostingController.viewModel = self
+        navigationController?.pushViewController(hostingController, animated: true)
     }
 
     @objc func dismissTapped() {
@@ -129,7 +175,7 @@ extension LoginCoordinator {
                     Analytics.track(.userSignedIn, properties: ["source": provider])
                 }
 
-                if FeatureFlag.endOfYear2024.enabled {
+                if FeatureFlag.endOfYear2024.enabled || FeatureFlag.endOfYear2025.enabled {
                     NotificationCenter.postOnMainThread(notification: .userSignedIn)
                 }
 
@@ -237,18 +283,27 @@ extension LoginCoordinator: SyncSigninDelegate, CreateAccountDelegate {
 // MARK: - Helpers
 
 extension LoginCoordinator {
-    static func make(in navigationController: UINavigationController? = nil, continuePurchasing: ProductInfo? = nil) -> UIViewController {
+    static func make(in navigationController: UINavigationController? = nil, continuePurchasing: ProductInfo? = nil, isOnboarding: Bool = false) -> UIViewController {
         let coordinator = LoginCoordinator()
         coordinator.continuePurchasing = continuePurchasing
+        coordinator.isOnboarding = isOnboarding
 
-        let view = LoginLandingView(coordinator: coordinator, fullScreenMode: FeatureFlag.fullScreenLogin.enabled)
-        let controller = LoginLandingHostingController(rootView: view.setupDefaultEnvironment())
-        controller.viewModel = coordinator
+        let controller: UIViewController
+
+        if FeatureFlag.newOnboardingAccountCreation.enabled && isOnboarding {
+            let view = IntroCarouselView(coordinator: coordinator)
+                .setupDefaultEnvironment()
+            let hostingController = IntroCarouselHostingController(rootView: view)
+            controller = hostingController
+        } else {
+            let view = LoginLandingView(coordinator: coordinator, fullScreenMode: true)
+            let hostingController = LoginLandingHostingController(rootView: view.setupDefaultEnvironment())
+            hostingController.viewModel = coordinator
+            controller = hostingController
+        }
 
         let navController = navigationController ?? UINavigationController(rootViewController: controller)
-        if FeatureFlag.fullScreenLogin.enabled {
-            navController.modalPresentationStyle = UIDevice.current.isiPad() ? .formSheet : .fullScreen
-        }
+        navController.modalPresentationStyle = UIDevice.current.isiPad() ? .formSheet : .fullScreen
         coordinator.navigationController = navController
 
         return (navigationController == nil) ? navController : controller

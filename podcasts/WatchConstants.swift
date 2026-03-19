@@ -2,6 +2,7 @@ public enum WatchConstants {
     public enum Keys {
         public static let messageVersion = "id"
         public static let loginChanged = "loginChanged"
+        public static let featureFlags = "featureFlags"
 
         public static let filters = "filters"
         public static let nowPlayingInfo = "nowPlaying"
@@ -78,6 +79,10 @@ public enum WatchConstants {
         enum LogFileRequest {
             public static let type = "logFileRequest"
             public static let logContents = "logFile"
+        }
+
+        enum LogFileTransfer {
+            public static let type = "logFileTransfer"
         }
 
         enum SignificantSyncableUpdate {
@@ -231,6 +236,10 @@ public enum WatchConstants {
             public static let username = "username"
             public static let password = "password"
             public static let refreshToken = "refreshToken"
+        }
+
+        enum StateUpdate {
+            public static let type = "stateUpdate"
         }
     }
 }

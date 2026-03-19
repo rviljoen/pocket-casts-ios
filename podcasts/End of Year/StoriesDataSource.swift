@@ -39,7 +39,10 @@ protocol StoriesDataSource {
     func footerShareView() -> AnyView?
 
     /// Color of the top Story progress indicator
-    var indicatorColor: Color { get }
+    func indicatorColor(for storyIndex: Int) -> Color
+
+    /// Style configuration for the story indicators
+    func indicatorStyle(for storyIndex: Int) -> StoryIndicatorStyle
 
     /// Color of the primary background
     var primaryBackgroundColor: Color { get }
@@ -58,6 +61,12 @@ extension StoriesDataSource {
     func isInteractiveView(for: Int) -> Bool {
         return false
     }
+
+    var indicatorHeight: CGFloat { 2 }
+
+    func indicatorStyle(for storyIndex: Int) -> StoryIndicatorStyle {
+        StoryIndicatorStyle(height: indicatorHeight, backgroundColor: indicatorColor(for: storyIndex), foregroundColor: indicatorColor(for: storyIndex))
+    }
 }
 
 // MARK: - Story Views
@@ -72,6 +81,8 @@ protocol Story {
 
     /// If the story is available only for Plus users
     var plusOnly: Bool { get }
+
+    var shouldPause: Bool { get }
 
     /// Called when the story actually appears.
     ///
@@ -100,6 +111,10 @@ extension Story {
         false
     }
 
+    var shouldPause: Bool {
+        false
+    }
+
     func onAppear() {}
     func onPause() {}
     func onResume() {}
@@ -123,6 +138,14 @@ class PauseState: ObservableObject {
 
     func togglePause() {
         isPaused.toggle()
+    }
+
+    func pause() {
+        isPaused = true
+    }
+
+    func play() {
+        isPaused = false
     }
 }
 

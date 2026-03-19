@@ -7,7 +7,6 @@ import PocketCastsDataModel
 import PocketCastsServer
 import PocketCastsUtils
 import Combine
-import FacebookCore
 import Sentry
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -43,27 +42,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupAnalytics()
 
         DataManager.logger = SentryLogger()
+        ServerConfig.shared.errorLogger = SentryLogger()
 
         appInstallState = appLifecycleAnalytics.checkApplicationInstalledOrUpgraded()
 
         if let appInstallState {
             switch appInstallState {
             case .updated:
-                if FeatureFlag.notificationsRevamp.enabled {
-                    Settings.notificationsNewEpisodes = UserDefaults.standard.bool(forKey: Constants.UserDefaults.pushEnabled)
-                }
+                Settings.notificationsNewEpisodes = UserDefaults.standard.bool(forKey: Constants.UserDefaults.pushEnabled)
+
                 if FeatureFlag.encourageAccountCreation.enabled, !Settings.hasShownInformationalViewModal {
                     Settings.shouldShowInitialOnboardingFlow = !SyncManager.isUserLoggedIn()
                 }
                 if FeatureFlag.playlistsRebranding.enabled {
                     Settings.shouldShowNewFilterTip = false
+                    Settings.shouldShowNewFilterTipInCreationView = false
                 }
             case .installed:
                 //Never show the podcast feed reload tooltip for fresh install
                 Settings.shouldShowPodcastFeeReloadTip = false
                 Settings.shouldShowPodcastViewChangesTip = false
                 Settings.shouldShowRecentlyPlayedSortingTip = false
-                Settings.shouldShowPlaylistsOnboarding = false
+                if FeatureFlag.playlistsRebranding.enabled {
+                    Settings.shouldShowPlaylistsOnboarding = false
+                }
             case .sameVersion:
                 break
             }
@@ -82,6 +84,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         GoogleCastManager.sharedManager.setup()
 
         setupRoutes()
+
+        if Settings.shouldResultEndOfYearSyncStatus {
+            Settings.setHasSyncedEpisodesForPlayback(false, year: 2025)
+            Settings.setHasSyncedEpisodesForPlaybackAsPlusUser(false, year: 2025)
+            Settings.shouldResultEndOfYearSyncStatus = false
+        }
+
 
         NotificationsHelper.shared.register(checkToken: false)
 
@@ -103,8 +112,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             WidgetHelper.shared.cleanupAppGroupImages()
             SiriShortcutsManager.shared.setup()
 
-            if FeatureFlag.downloadFixes.enabled {
-                DownloadManager.shared.startAllQueued()
+            DownloadManager.shared.startAllQueued()
+
+            if FeatureFlag.enableLocalizationHeaders.enabled {
+                LocalizationHelper.provider = InternationalizationProvider(userRegion: Settings.userRegion())
             }
         }
 
@@ -116,14 +127,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         IAPHelper.shared.setup(hasSubscription: SubscriptionHelper.hasActiveSubscription())
 
-        NotificationCenter.default.addObserver(self, selector: #selector(handleThemeChanged), name: Constants.Notifications.themeChanged, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(hideOverlays), name: Constants.Notifications.openingNonOverlayableWindow, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(showOverlays), name: Constants.Notifications.closedNonOverlayableWindow, object: nil)
-
         setupSignOutListener()
 
-        if FeatureFlag.podcastNewformAppsFlyer.enabled {
-            ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
+        if FeatureFlag.earlyReloadSubscriptionStatus.enabled,
+           SyncManager.isUserLoggedIn(),
+           appInstallState == .updated {
+            ApiServerHandler.shared.retrieveSubscriptionStatus()
+            FileLog.shared.addMessage("Reload subscription status early as the app updated")
         }
 
         return true
@@ -250,30 +260,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         })
     }
 
-    // MARK: - Event Handling
-
-    private var overlayShouldBeHidden = false
-    @objc private func hideOverlays() {
-        overlayShouldBeHidden = true
-        if lenticularFilter.isShowing() {
-            lenticularFilter.hide()
-        }
-    }
-
-    @objc private func showOverlays() {
-        overlayShouldBeHidden = false
-        if Theme.sharedTheme.activeTheme == .radioactive {
-            lenticularFilter.show()
-        }
-    }
-
-    @objc private func handleThemeChanged() {
-        if Theme.sharedTheme.activeTheme == .radioactive, !overlayShouldBeHidden {
-            lenticularFilter.show()
-        } else {
-            lenticularFilter.hide()
-        }
-    }
 
     private func setupBackgroundRefresh() {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: Constants.Values.refreshTaskId, using: nil) { task in
@@ -312,18 +298,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseManager.refreshRemoteConfig() { [weak self] status in
             self?.updateEndOfYearRemoteValue()
             self?.updateRemoteFeatureFlags()
-            ServerConfig.avoidLogoutOnError = FeatureFlag.errorLogoutHandling.enabled
-            ServerConfig.avoidLogoutInBackground = FeatureFlag.avoidLogoutInBackground.enabled
         }
     }
 
     func updateRemoteFeatureFlags(forceReload: Bool = false) {
         guard BuildEnvironment.current != .debug || forceReload else { return }
-
-        if FeatureFlag.errorLogoutHandling.enabled != Settings.errorLogoutHandling {
-            ServerConfig.avoidLogoutOnError = FeatureFlag.errorLogoutHandling.enabled
-            try? FeatureFlagOverrideStore().override(FeatureFlag.errorLogoutHandling, withValue: Settings.errorLogoutHandling)
-        }
 
         if FeatureFlag.newSettingsStorage.enabled != Settings.newSettingsStorage {
             if FeatureFlag.newSettingsStorage.enabled {
@@ -356,7 +335,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func postLaunchSetup() {
         if !UserDefaults.standard.bool(forKey: "CreatedDefPlaylistsV2") {
-            PlaylistManager.createDefaultFilters()
+            PlaylistManager.createDefaultPlaylists()
             UserDefaults.standard.set(true, forKey: "CreatedDefPlaylistsV2")
         }
         Task {
@@ -402,7 +381,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         let role = connectingSceneSession.role
 
-        if role == UISceneSession.Role.carTemplateApplication {
+        if role == .carTemplateApplication {
+            FileLog.shared.addMessage("AppDelegate: CarPlay isConnected")
             return UISceneConfiguration(name: "Pocket Casts Car", sessionRole: UISceneSession.Role.carTemplateApplication)
         }
 
@@ -413,6 +393,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the user discards a scene session.
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+        let includesCarPlay = sceneSessions.contains(where: { $0.role == .carTemplateApplication })
+
+        if includesCarPlay {
+            FileLog.shared.addMessage("AppDelegate: CarPlay didDiscard")
+        }
     }
 
     // MARK: Secrets

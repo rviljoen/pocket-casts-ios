@@ -1,10 +1,18 @@
 import SwiftUI
+import DifferenceKit
 import UIKit
 import PocketCastsDataModel
+import PocketCastsDependencyInjection
 import PocketCastsServer
 import PocketCastsUtils
+import Combine
 
 class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
+
+    @Dependency(\.playlistMetadataLoader) private var playlistMetadataLoader: PlaylistMetadataLoader
+    @Dependency(\.playlistCacheInvalidationCoordinator) private var cacheInvalidationCoordinator: PlaylistCacheInvalidationCoordinator
+
+    private var staleCancellable: AnyCancellable?
     @IBOutlet var filtersTable: ThemeableTable! {
         didSet {
             registerCells()
@@ -18,10 +26,12 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
                 filtersTable.dragDelegate = nil
                 filtersTable.dropDelegate = nil
             }
+            filtersTable.sectionFooterHeight = UITableView.automaticDimension
+            filtersTable.estimatedSectionFooterHeight = UITableView.automaticDimension
         }
     }
 
-    var playlists = [EpisodeFilter]() {
+    var listPlaylistItems: [ListPlaylist] = [] {
         didSet {
             if FeatureFlag.playlistsRebranding.enabled {
                 DispatchQueue.main.async { [weak self] in
@@ -33,6 +43,10 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
 
     var sourceIndexPath: IndexPath?
     var snapshot: UIView?
+    var previouslyDisplayedDetail = false
+    var presentingPlaylistDetail: Bool = false
+
+    private let debounce = Debounce(delay: Constants.defaultDebounceTime)
 
     @IBOutlet var footerView: ThemeableView! {
         didSet {
@@ -58,9 +72,9 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
 
     private var firstTimeLoading = true
 
-    lazy private var informationalBannerCoordinator: InformationalBannerViewCoordinator = {
-        let bannerType: InformationalBannerType = FeatureFlag.playlistsRebranding.enabled ? .playlists : .filters
+    lazy var informationalBannerCoordinator: InformationalBannerViewCoordinator = {
         let invertedColor: Bool? = FeatureFlag.playlistsRebranding.enabled ? true : nil
+        let bannerType: InformationalBannerType = FeatureFlag.playlistsRebranding.enabled ? .playlists : .filters
         let viewModel = InformationalBannerViewModel(bannerType: bannerType, invertedColor: invertedColor)
         return InformationalBannerViewCoordinator(viewModel: viewModel)
     }()
@@ -69,23 +83,22 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
         super.viewDidLoad()
 
         if FeatureFlag.playlistsRebranding.enabled {
-            customRightBtn = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNewFilter))
+            let barButton = UIBarButtonItem(image: UIImage(named: "playlist_add_icon"), style: .plain, target: self, action: #selector(addNewFilter))
+            barButton.tintColor = ThemeColor.secondaryIcon01()
+            customRightBtn = barButton
         } else {
             customRightBtn = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editTapped))
         }
-        customRightBtn?.accessibilityLabel = L10n.accessibilityMoreActions
+        customRightBtn?.accessibilityLabel = L10n.playlistsDefaultNewPlaylist
 
         title = FeatureFlag.playlistsRebranding.enabled ? L10n.playlists : L10n.filters
 
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self else { return }
-
-            if let lastFilterUuid = UserDefaults.standard.string(forKey: Constants.UserDefaults.lastFilterShown), let filter = DataManager.sharedManager.findFilter(uuid: lastFilterUuid) {
-                DispatchQueue.main.async {
-                    let playlistViewController = PlaylistViewController(filter: filter)
-                    self.navigationController?.pushViewController(playlistViewController, animated: false)
-                }
+        if FeatureFlag.playlistsRebranding.enabled {
+            if !previouslyDisplayedDetail {
+                autoPushPlaylist()
             }
+        } else {
+            autoPushPlaylist()
         }
 
         loadingIndicator = ThemeLoadingIndicator()
@@ -94,6 +107,24 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
             setupNewFilterButton()
         }
         handleThemeChanged()
+
+        // Start cache invalidation coordinator and subscribe to stale updates
+        if FeatureFlag.playlistCacheInvalidation.enabled {
+            cacheInvalidationCoordinator.startObserving()
+            subscribeToStaleUpdates()
+        }
+    }
+
+    func autoPushPlaylist() {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self else { return }
+
+            if let lastFilterUuid = UserDefaults.standard.string(forKey: Constants.UserDefaults.lastFilterShown), let filter = DataManager.sharedManager.findPlaylist(uuid: lastFilterUuid) {
+                DispatchQueue.main.async {
+                    self.showFilter(filter)
+                }
+            }
+        }
     }
 
     func setupNewFilterButton() {
@@ -104,24 +135,36 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
         newFilterButton.layer.cornerRadius = 7
         newFilterButton.layer.borderWidth = 2
         newFilterButton.setLetterSpacing(-0.2)
+        newFilterButton.titleLabel?.font = UIFont.font(ofSize: 15, weight: .medium, scalingWith: .subheadline)
+        newFilterButton.titleLabel?.adjustsFontForContentSizeCategory = true
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        // Invalidate stale playlist metadata cache (>30s) to ensure fresh data on screen entry.
+        // This is lightweight and won't block - just clears dictionaries if threshold exceeded.
+        if !FeatureFlag.playlistCacheInvalidation.enabled {
+            Task {
+                await playlistMetadataLoader.invalidateCacheIfStale()
+            }
+        }
+
         reloadFilters()
-        setupInformationalBanner()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateNavTintColors()
-        addCustomObserver(Constants.Notifications.filterChanged, selector: #selector(filtersUpdated))
+        addCustomObserver(Constants.Notifications.playlistChanged, selector: #selector(filtersUpdated))
         addCustomObserver(Constants.Notifications.tappedOnSelectedTab, selector: #selector(checkForScrollTap(_:)))
 
-        Analytics.track(.filterListShown, properties: ["filter_count": playlists.count])
+        Analytics.track(.filterListShown, properties: ["filter_count": listPlaylistItems.count])
 
-        showNewFilterTipIfNeeded()
+        showPlaylistsTipIfNeeded()
         showOnboardingScreenIfNeeded()
+
+        UserDefaults.standard.set(nil, forKey: Constants.UserDefaults.lastFilterShown)
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -147,7 +190,13 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
     }
 
     @objc private func filtersUpdated() {
-        reloadFilters()
+        if FeatureFlag.playlistsRebranding.enabled, !firstTimeLoading {
+            debounce.call { [weak self] in
+                self?.reloadFilters()
+            }
+        } else {
+            reloadFilters()
+        }
     }
 
     @IBAction func addNewFilter() {
@@ -176,6 +225,7 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
         newFilterButton.titleLabel?.textColor = ThemeColor.primaryInteractive01()
         if FeatureFlag.playlistsRebranding.enabled {
             view.backgroundColor = ThemeColor.primaryUi04()
+            customRightBtn?.tintColor = ThemeColor.secondaryIcon01()
         }
     }
 
@@ -184,10 +234,19 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
     }
 
     func showFilter(_ filter: EpisodeFilter, isNew: Bool? = false) {
-        let playlistViewController = PlaylistViewController(filter: filter)
-        playlistViewController.isNewFilter = isNew ?? false
+        previouslyDisplayedDetail = true
+        presentingPlaylistDetail = true
+
+        let viewController: UIViewController
+        if FeatureFlag.playlistsRebranding.enabled {
+            viewController = PlaylistDetailViewController(playlist: filter, delegate: self)
+        } else {
+            let playlistViewController = PlaylistViewController(filter: filter)
+            playlistViewController.isNewFilter = isNew ?? false
+            viewController = playlistViewController
+        }
         navigationController?.popToRootViewController(animated: false)
-        navigationController?.pushViewController(playlistViewController, animated: true)
+        navigationController?.pushViewController(viewController, animated: true)
 
         UserDefaults.standard.set(filter.uuid, forKey: Constants.UserDefaults.lastFilterShown)
     }
@@ -199,7 +258,41 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             guard let self else { return }
-            playlists = DataManager.sharedManager.allFilters(includeDeleted: false)
+
+            let newData = DataManager.sharedManager.allPlaylists(includeDeleted: false).map { ListPlaylist(playlist: $0) }
+
+            if FeatureFlag.playlistsRebranding.enabled {
+                let oldData = self.listPlaylistItems
+
+                let changeSet = StagedChangeset(source: oldData, target: newData)
+
+                if oldData.isContentEqual(to: newData) {
+                    DispatchQueue.main.async {
+                        self.newFilterButton.isHidden = false
+                        self.loadingIndicator.stopAnimating()
+                    }
+                    return
+                }
+
+                DispatchQueue.main.async {
+                    self.newFilterButton.isHidden = false
+                    self.loadingIndicator.stopAnimating()
+                    do {
+                        try SJCommonUtils.catchException { [weak self] in
+                            self?.filtersTable.reload(using: changeSet, with: .fade) { [weak self] newData in
+                                self?.listPlaylistItems = newData
+                            }
+                        }
+                    } catch {
+                        if let data = changeSet.last?.data {
+                            self.listPlaylistItems = data
+                        }
+                        self.filtersTable.reloadData()
+                    }
+                }
+                return
+            }
+
             firstTimeLoading = false
             DispatchQueue.main.async {
                 self.newFilterButton.isHidden = false
@@ -209,25 +302,12 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
         }
     }
 
-    private func setupInformationalBanner() {
-        if !informationalBannerCoordinator.shouldShowBanner() {
-            filtersTable.tableHeaderView = nil
-            return
-        }
-        if filtersTable.tableHeaderView != nil {
-            return
-        }
-        filtersTable.tableHeaderView = informationalBannerCoordinator.tableHeaderView(size: CGSize(width: filtersTable.bounds.width, height: 160)) {
-            UIView.animate(withDuration: 0.5) { [weak self] in
-                self?.filtersTable.tableHeaderView = nil
-            }
-        }
-    }
-
     private func showOnboardingScreenIfNeeded() {
+        guard FeatureFlag.playlistsRebranding.enabled else { return }
+
         let userIsLoggedIn = SyncManager.isUserLoggedIn()
         let appInstallStateUpdated = (UIApplication.shared.delegate as? AppDelegate)?.appInstallState == .updated
-        let shouldDisplayOnboarding = appInstallStateUpdated && Settings.shouldShowPlaylistsOnboarding && FeatureFlag.playlistsRebranding.enabled && userIsLoggedIn
+        let shouldDisplayOnboarding = appInstallStateUpdated && Settings.shouldShowPlaylistsOnboarding && userIsLoggedIn
         guard shouldDisplayOnboarding else { return }
         let vc = ThemedHostingController(
             rootView: PlaylistsOnboardingView(
@@ -245,11 +325,11 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
             return
         }
 
-        customRightBtn?.isHidden = playlists.isEmpty
+        customRightBtn?.isHidden = listPlaylistItems.isEmpty
 
         var config: UIContentConfiguration?
 
-        if playlists.isEmpty {
+        if listPlaylistItems.isEmpty {
             // Empty State when playlists is empty
             let title = L10n.playlistsEmptyStateTitle
             let message = L10n.playlistsEmptyStateDescription
@@ -276,6 +356,40 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
             self.contentUnavailableConfiguration = configuration
         } else {
             self.setContentUnavailableConfiguration(configuration)
+        }
+    }
+
+    // MARK: - Stale Cache Handling
+
+    private func subscribeToStaleUpdates() {
+        staleCancellable = playlistMetadataLoader.stalePlaylistsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] stalePlaylistIDs in
+                self?.refreshStaleCells(playlistIDs: stalePlaylistIDs)
+            }
+    }
+
+    /// Refreshes visible cells for playlists that have become stale.
+    /// Only triggers reload for cells that are currently visible.
+    private func refreshStaleCells(playlistIDs: Set<String>) {
+        guard !playlistIDs.isEmpty else { return }
+
+        // Get visible cells and their index paths
+        guard let visibleIndexPaths = filtersTable.indexPathsForVisibleRows else { return }
+
+        var indexPathsToRefresh: [IndexPath] = []
+
+        for indexPath in visibleIndexPaths {
+            guard indexPath.row < listPlaylistItems.count else { continue }
+            let playlist = listPlaylistItems[indexPath.row]
+            if playlistIDs.contains(playlist.playlist.uuid) {
+                indexPathsToRefresh.append(indexPath)
+            }
+        }
+
+        // Reload only the affected visible cells
+        if !indexPathsToRefresh.isEmpty {
+            filtersTable.reloadRows(at: indexPathsToRefresh, with: .none)
         }
     }
 

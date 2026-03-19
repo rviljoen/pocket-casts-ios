@@ -2,7 +2,7 @@ import SwiftUI
 
 /// A wrapper for `SwiftUI` views to work with UISheetPresentationController
 ///
-class BottomSheetSwiftUIWrapper<ContentView: View>: UIViewController {
+class BottomSheetSwiftUIWrapper<ContentView: View>: UIViewController, UISheetPresentationControllerDelegate {
     private let stackView = UIStackView()
     private var customDetentHeight: CGFloat = 0
 
@@ -14,19 +14,21 @@ class BottomSheetSwiftUIWrapper<ContentView: View>: UIViewController {
 
     let backgroundColor: UIColor?
     let backgroundStyle: ThemeStyle?
+    let dismissCallback: (()->())?
 
-    init(rootView content: ContentView, backgroundColor: UIColor) {
+    init(rootView content: ContentView, backgroundColor: UIColor, dismissCallback: (()->())? = nil) {
         self.backgroundColor = backgroundColor
         self.backgroundStyle = nil
+        self.dismissCallback = dismissCallback
         super.init(nibName: nil, bundle: nil)
 
         setup(content: content, backgroundColor: backgroundColor)
     }
 
-    init(rootView content: ContentView, backgroundStyle: ThemeStyle = .primaryUi01) {
+    init(rootView content: ContentView, backgroundStyle: ThemeStyle = .primaryUi01, dismissCallback: (()->())? = nil) {
         self.backgroundStyle = backgroundStyle
         self.backgroundColor = nil
-
+        self.dismissCallback = dismissCallback
         super.init(nibName: nil, bundle: nil)
         setup(content: content, backgroundStyle: backgroundStyle)
     }
@@ -46,6 +48,7 @@ class BottomSheetSwiftUIWrapper<ContentView: View>: UIViewController {
                 .edgesIgnoringSafeArea(.all)
                 .environmentObject(Theme.sharedTheme)
         )
+        hostingController.sizingOptions = [.intrinsicContentSize]
         addChild(hostingController)
         stackView.addArrangedSubview(hostingController.view)
         hostingController.didMove(toParent: self)
@@ -98,17 +101,43 @@ class BottomSheetSwiftUIWrapper<ContentView: View>: UIViewController {
     }
 
     /// Present a SwiftUI view as a bottom sheet in the given VC. If `autoSize` is `true`, a custom detent will be calculated based on the view size
-    static func present(_ content: ContentView, autoSize: Bool = false, in viewController: UIViewController) {
-        let wrapperController = BottomSheetSwiftUIWrapper(rootView: content)
+    static func present(_ content: ContentView, autoSize: Bool = false, showingGrabber: Bool = false, in viewController: UIViewController, dismissCallback: (()->())? = nil) {
+        let wrapperController = BottomSheetSwiftUIWrapper(rootView: content, dismissCallback: dismissCallback)
+        var previousSizeCategory = viewController.traitCollection.preferredContentSizeCategory
         if autoSize {
-            let customDetent = UISheetPresentationController.Detent.custom { _ in
+            let customDetent = UISheetPresentationController.Detent.custom { context in
+                if context.containerTraitCollection.preferredContentSizeCategory != previousSizeCategory {
+                    previousSizeCategory = context.containerTraitCollection.preferredContentSizeCategory
+                    wrapperController.updatePreferredContentSize()
+                }
                 return wrapperController.customDetentHeight
             }
-            wrapperController.presentModally(in: viewController, detents: [customDetent])
+            wrapperController.presentModally(in: viewController, detents: [customDetent], showingGrabber: showingGrabber)
         } else {
-            wrapperController.presentModally(in: viewController)
+            wrapperController.presentModally(in: viewController, showingGrabber: showingGrabber)
         }
     }
+
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        self.dismissCallback?()
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            if let sheetController = sheetPresentationController {
+                updatePreferredContentSize()
+                //Dispatch to main to allow changes in content to reflect
+                DispatchQueue.main.async {
+                    sheetController.animateChanges {
+                        sheetController.invalidateDetents()
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 extension UIViewController {
@@ -121,7 +150,9 @@ extension UIViewController {
         if let sheetController = self.sheetPresentationController {
             // Create custom detent based on content size
             sheetController.detents = detents
-
+            if let sheetDelegate = self as? UISheetPresentationControllerDelegate {
+                sheetController.delegate = sheetDelegate
+            }
             sheetController.prefersGrabberVisible = showingGrabber
             sheetController.preferredCornerRadius = 10
 

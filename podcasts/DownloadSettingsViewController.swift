@@ -11,6 +11,10 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
         didSet {
             settingsTable.register(UINib(nibName: "SwitchCell", bundle: nil), forCellReuseIdentifier: DownloadSettingsViewController.switchCellId)
             settingsTable.register(UINib(nibName: "DisclosureCell", bundle: nil), forCellReuseIdentifier: DownloadSettingsViewController.disclosureCellId)
+            settingsTable.rowHeight = UITableView.automaticDimension
+            settingsTable.estimatedRowHeight = UITableView.automaticDimension
+            settingsTable.sectionHeaderHeight = UITableView.automaticDimension
+            settingsTable.estimatedSectionHeaderHeight = Constants.Values.tableSectionHeaderHeight
         }
     }
 
@@ -25,13 +29,22 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
         NotificationCenter.default.addObserver(self, selector: #selector(podcastUpdated(_:)), name: Constants.Notifications.podcastUpdated, object: nil)
         insetAdjuster.setupInsetAdjustmentsForMiniPlayer(scrollView: settingsTable)
         Analytics.track(.settingsAutoDownloadShown)
-        ManageDownloadsCoordinator.showModalIfNeeded(from: self, source: "auto_download")
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         settingsTable.reloadData()
+    }
+
+    private var firstAppear: Bool = true
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if firstAppear {
+            firstAppear = false
+            ManageDownloadsCoordinator.showModalIfNeeded(from: self, source: "auto_download")
+        }
     }
 
     // MARK: - UITableView methods
@@ -60,7 +73,7 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
         case .podcastAutoDownload:
             return L10n.settingsAutoDownloadsSubtitleNewEpisodes
         case .filterSelection:
-            return L10n.settingsAutoDownloadsSubtitleFilters
+            return FeatureFlag.playlistsRebranding.enabled ? L10n.settingsAutoDownloadsSubtitlePlaylists : L10n.settingsAutoDownloadsSubtitleFilters
         case .onlyOnWifi:
             return L10n.onlyOnUnmeteredWifiDetails
         default:
@@ -127,10 +140,13 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
         case .filterSelection:
             let cell = tableView.dequeueReusableCell(withIdentifier: DownloadSettingsViewController.disclosureCellId, for: indexPath) as! DisclosureCell
 
-            let autoDownloadFilterCount = FilterManager.autoDownloadFilterCount()
-
-            let filterStr = autoDownloadFilterCount == 1 ? L10n.settingsAutoDownloadsFiltersSelectedSingular : L10n.settingsAutoDownloadsFiltersSelectedFormat(autoDownloadFilterCount.localized())
-            cell.cellLabel.text = autoDownloadFilterCount > 0 ? filterStr : L10n.settingsAutoDownloadsNoFiltersSelected
+            let autoDownloadPlaylistsCount = PlaylistManager.autoDownloadPlaylistsCount()
+            let playlistRebrandingEnabled = FeatureFlag.playlistsRebranding.enabled
+            let singularPlaylistString = playlistRebrandingEnabled ? L10n.settingsAutoDownloadsPlaylistsSelectedSingular : L10n.settingsAutoDownloadsFiltersSelectedSingular
+            let pluralPlaylistString = playlistRebrandingEnabled ? L10n.settingsAutoDownloadsPlaylistsSelectedFormat(autoDownloadPlaylistsCount.localized()) : L10n.settingsAutoDownloadsFiltersSelectedFormat(autoDownloadPlaylistsCount.localized())
+            let noPlaylistString = playlistRebrandingEnabled ? L10n.settingsAutoDownloadsNoPlaylistsSelected : L10n.settingsAutoDownloadsNoFiltersSelected
+            let playlistStr = autoDownloadPlaylistsCount == 1 ? singularPlaylistString : pluralPlaylistString
+            cell.cellLabel.text = autoDownloadPlaylistsCount > 0 ? playlistStr : noPlaylistString
             cell.cellSecondaryLabel.text = ""
 
             return cell
@@ -164,30 +180,31 @@ class DownloadSettingsViewController: PCViewController, UITableViewDataSource, U
                 navigationController?.pushViewController(podcastSelectController, animated: true)
             }
         case .filterSelection:
-                let filterSelectionViewController = FilterSelectionViewController()
-                filterSelectionViewController.allFilters = DataManager.sharedManager.allFilters(includeDeleted: false)
-                let selectedFilters = DataManager.sharedManager.allFilters(includeDeleted: false).compactMap { filter -> String? in
-                    filter.autoDownloadEpisodes ? filter.uuid : nil
-                }
-                filterSelectionViewController.selectedFilters = selectedFilters
-                filterSelectionViewController.filterSelected = { filter in
-                    Analytics.track(.filterAutoDownloadUpdated, properties: ["enabled": true, "source": AnalyticsSource.autoDownloadSettings])
-                    filter.autoDownloadEpisodes = true
-                    filter.autoDownloadLimit = filter.maxAutoDownloadEpisodes()
-                    DataManager.sharedManager.save(filter: filter)
-                    NotificationCenter.postOnMainThread(notification: Constants.Notifications.filterChanged, object: filter)
-                }
-                filterSelectionViewController.filterUnselected = { filter in
-                    Analytics.track(.filterAutoDownloadUpdated, properties: ["enabled": false, "source": AnalyticsSource.autoDownloadSettings])
-                    filter.autoDownloadEpisodes = false
-                    DataManager.sharedManager.save(filter: filter)
-                    NotificationCenter.postOnMainThread(notification: Constants.Notifications.filterChanged, object: filter)
-                }
-                filterSelectionViewController.didChangeFilters = {
-                    Analytics.track(.settingsAutoDownloadFiltersChanged)
-                }
+            let playlistSelectionViewController = PlaylistSelectionViewController()
+            playlistSelectionViewController.navigationTitle = FeatureFlag.playlistsRebranding.enabled ? L10n.settingsSelectPlaylistsPlural : L10n.settingsSelectFiltersPlural
+            playlistSelectionViewController.allPlaylists = DataManager.sharedManager.allPlaylists(includeDeleted: false)
+            let selectedFilters = DataManager.sharedManager.allPlaylists(includeDeleted: false).compactMap { playlist -> String? in
+                playlist.autoDownloadEpisodes ? playlist.uuid : nil
+            }
+            playlistSelectionViewController.selectedPlaylists = selectedFilters
+            playlistSelectionViewController.playlistSelected = { playlist in
+                Analytics.track(.filterAutoDownloadUpdated, properties: ["enabled": true, "source": AnalyticsSource.autoDownloadSettings])
+                playlist.autoDownloadEpisodes = true
+                playlist.autoDownloadLimit = playlist.maxAutoDownloadEpisodes()
+                DataManager.sharedManager.save(playlist: playlist)
+                NotificationCenter.postOnMainThread(notification: Constants.Notifications.playlistChanged, object: playlist)
+            }
+            playlistSelectionViewController.playlistUnselected = { playlist in
+                Analytics.track(.filterAutoDownloadUpdated, properties: ["enabled": false, "source": AnalyticsSource.autoDownloadSettings])
+                playlist.autoDownloadEpisodes = false
+                DataManager.sharedManager.save(playlist: playlist)
+                NotificationCenter.postOnMainThread(notification: Constants.Notifications.playlistChanged, object: playlist)
+            }
+            playlistSelectionViewController.didChangePlaylist = {
+                Analytics.track(.settingsAutoDownloadFiltersChanged)
+            }
 
-                navigationController?.pushViewController(filterSelectionViewController, animated: true)
+            navigationController?.pushViewController(playlistSelectionViewController, animated: true)
         case .downloadLimits:
             let picker = OptionsPicker(title: L10n.autoDownloadLimitAutoDownloads)
             let limitOptions = AutoDownloadLimit.allCases

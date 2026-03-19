@@ -10,11 +10,16 @@ class PlaylistPreviewViewModel: ObservableObject {
 
     @Published var newPlaylistHasChanged: Bool = false
 
-    private(set) var isInPreview: Bool = false
-    private(set) var newPlaylist: EpisodeFilter
-    private(set) var enabledRules: [SmartPlaylistRuleInfo] = []
-    private(set) var availableRules: [SmartPlaylistRuleInfo] = []
-    private(set) var episodes = [ListEpisode]()
+    @Published private(set) var isInPreview: Bool = false
+    @Published private(set) var newPlaylist: EpisodeFilter
+    @Published private(set) var enabledRules: [SmartPlaylistRuleInfo] = []
+    @Published private(set) var availableRules: [SmartPlaylistRuleInfo] = []
+    @Published private(set) var episodes = [ListEpisode]()
+    private lazy var operationQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.maxConcurrentOperationCount = 1
+        return queue
+    }()
 
     let playlistMode: PlaylistMode
     let action: (SmartPlaylistRule) -> Void
@@ -27,11 +32,13 @@ class PlaylistPreviewViewModel: ObservableObject {
         self.newPlaylist = newPlaylist
         self.action = action
         self.playlistMode = playlistMode
-        self.availableRules = SmartPlaylistRule.allCases.map { SmartPlaylistRuleInfo(type: $0) }
+        self.availableRules = SmartPlaylistRule.allCases.map {
+            SmartPlaylistRuleInfo(type: $0, description: playlistMode == .creation ? nil : ruleText(for: $0))
+        }
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleFilterChanged(_:)),
-            name: Constants.Notifications.filterChanged,
+            name: Constants.Notifications.playlistChanged,
             object: nil
         )
     }
@@ -98,14 +105,14 @@ class PlaylistPreviewViewModel: ObservableObject {
         case .releaseDate:
             return ReleaseDateFilterOption(rawValue: newPlaylist.filterHours)?.description
         case .starred:
-            return newPlaylist.filterStarred ? "\(episodes.count)" : nil
+            return newPlaylist.filterStarred ? "\(episodes.count)" : L10n.off
         case .duration:
             if newPlaylist.filterDuration {
                 let shortTime = TimeFormatter.shared.multipleUnitFormattedShortTime(time: TimeInterval(newPlaylist.shorterThan * 60))
                 let longTime = TimeFormatter.shared.multipleUnitFormattedShortTime(time: TimeInterval(newPlaylist.longerThan * 60))
                 return "\(longTime) - \(shortTime)"
             }
-            return nil
+            return L10n.off
         }
     }
 
@@ -117,34 +124,47 @@ class PlaylistPreviewViewModel: ObservableObject {
         }
         newPlaylist = playlist
 
-        if playlistMode == .edit {
-            enabledRules = SmartPlaylistRule.allCases.map {
+        switch playlistMode {
+        case .creation:
+            newPlaylist.isNew = true
+            isInPreview = true
+
+            enabledRules.removeAll()
+            availableRules.removeAll()
+
+            for rule in SmartPlaylistRule.allCases {
+                if smartRuleIsApplied(for: rule) {
+                    let ruleText = ruleText(for: rule)
+                    enabledRules.append(SmartPlaylistRuleInfo(type: rule, description: ruleText))
+                } else {
+                    availableRules.append(SmartPlaylistRuleInfo(type: rule))
+                }
+            }
+        case .edit:
+            availableRules = SmartPlaylistRule.allCases.map {
                 let ruleText = ruleText(for: $0)
                 return SmartPlaylistRuleInfo(type: $0, description: ruleText)
             }
-            newPlaylistHasChanged = true
-            return
         }
 
-        newPlaylist.isNew = true
-        isInPreview = true
-
-        enabledRules.removeAll()
-        availableRules.removeAll()
-
-        for rule in SmartPlaylistRule.allCases {
-            if smartRuleIsApplied(for: rule) {
-                let ruleText = ruleText(for: rule)
-                enabledRules.append(SmartPlaylistRuleInfo(type: rule, description: ruleText))
-            } else {
-                availableRules.append(SmartPlaylistRuleInfo(type: rule))
-            }
-        }
-
-        newPlaylistHasChanged = true
+        startOperation()
     }
 
     func removeObserver() {
         NotificationCenter.default.removeObserver(self)
+    }
+
+    private func startOperation() {
+        if operationQueue.operationCount > 0 {
+            operationQueue.cancelAllOperations()
+            episodes.removeAll()
+        }
+        let refreshOperation = PlaylistRefreshOperation(playlist: newPlaylist) { [weak self] newData in
+            self?.episodes = newData
+            DispatchQueue.main.async {
+                self?.newPlaylistHasChanged = true
+            }
+        }
+        operationQueue.addOperation(refreshOperation)
     }
 }

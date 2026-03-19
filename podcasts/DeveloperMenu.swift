@@ -8,7 +8,14 @@ struct DeveloperMenu: View {
     @State var showingExporter = false
     @State var showingPlaylistsOnboarding = false
     @State var showingRecommendationsOnboarding = false
+    @State var showingInterestsOnboarding = false
+    @State var showingRecommendationsOnboardingSelected = false
     @State var showSurvey = false
+    @State var showIntroCarousel = false
+    @State var showingNotificationsPermissions = false
+    @State var enableDebugPlaylistLimit = false
+
+    @StateObject var recommendationsViewModel = RecommendationsViewModel(configuration: .all)
 
     var body: some View {
         List {
@@ -286,6 +293,7 @@ struct DeveloperMenu: View {
             Section {
                 Button("Reset Informational Modal Visibility") {
                     Settings.shouldShowInitialOnboardingFlow = true
+                    Settings.hasShownInformationalViewModal = false
                 }
                 Button("Reset banners visibility") {
                     InformationalBannerType.allCases.forEach {
@@ -306,6 +314,11 @@ struct DeveloperMenu: View {
             }
 
             Section {
+                Button("Notifications Permissions Screen") {
+                    showingNotificationsPermissions.toggle()
+                }.sheet(isPresented: $showingNotificationsPermissions) {
+                    NotificationsPermissionsView()
+                }
                 Button("Speed Up Notifications") {
                     NotificationsGroup.speedUpNotifications = true
                 }
@@ -341,6 +354,47 @@ struct DeveloperMenu: View {
             }
 
             Section {
+                Button("Show Intro Carousel") {
+                    showIntroCarousel = true
+                }
+                .sheet(isPresented: $showIntroCarousel) {
+                    IntroCarouselView(coordinator: LoginCoordinator())
+                }
+                Button("Show Onboarding Recommendations") {
+                    showingRecommendationsOnboarding = true
+                }
+                .sheet(isPresented: $showingRecommendationsOnboarding) {
+                    NavigationStack {
+                        OnboardingRecommendationsView(coordinator: LoginCoordinator())
+                            .environmentObject(Theme.sharedTheme)
+                    }
+                }
+                Button("Show Onboarding Interests") {
+                    showingInterestsOnboarding = true
+                }
+                .sheet(isPresented: $showingInterestsOnboarding) {
+                    InterestsView(continueCallback: { categories in
+                        showInterestRecommendations(categories: categories)
+                    }, notNowCallback: {
+                        showingInterestsOnboarding.toggle()
+                    }, isInsideNavigation: false)
+                        .environmentObject(Theme.sharedTheme)
+                }
+                .sheet(isPresented: $showingRecommendationsOnboardingSelected) {
+                    OnboardingRecommendationsView(coordinator: LoginCoordinator(), viewModel: self.recommendationsViewModel)
+                        .environmentObject(Theme.sharedTheme)
+                }
+            } header: {
+                Text("Onboarding")
+            }
+
+            Section {
+                Toggle(isOn: $enableDebugPlaylistLimit) {
+                    Text("Enable Debug Playlists limit")
+                }
+                .onChange(of: enableDebugPlaylistLimit) { newValue in
+                    Settings.debugPlaylistsLimit = newValue ? 6 : Constants.Limits.maxFilterItems
+                }
                 Button("Show Playlists Onboarding") {
                     showingPlaylistsOnboarding = true
                 }
@@ -350,23 +404,15 @@ struct DeveloperMenu: View {
                     })
                 }
             } header: {
-                Text("Playlists")
+                Text("Playlist Rebranding")
             }
-
             Section {
-                Button("Show Onboarding Recommendations") {
-                    showingRecommendationsOnboarding = true
-                }
-                .sheet(isPresented: $showingRecommendationsOnboarding) {
-                    NavigationStack {
-                        OnboardingRecommendationsView()
-                            .environmentObject(Theme.sharedTheme)
-                    }
+                Button("Reset Referrals Tip") {
+                    Settings.shouldShowReferralsTip = true
                 }
             } header: {
-                Text("Onboarding")
+                Text("Playlist Rebranding")
             }
-
             Section {
                 Text(Bundle.main.identifier)
             } header: {
@@ -374,6 +420,12 @@ struct DeveloperMenu: View {
             }
         }
         .miniPlayerSafeAreaInset()
+    }
+
+    func showInterestRecommendations(categories: [DiscoverCategory]) {
+        showingInterestsOnboarding = false
+        recommendationsViewModel.configuration = .preselected(categories)
+        showingRecommendationsOnboardingSelected = true
     }
 }
 

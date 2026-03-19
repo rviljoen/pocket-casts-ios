@@ -1,8 +1,10 @@
-import FMDB
 import PocketCastsUtils
+import Foundation
+import GRDB
 
 class EpisodeDataManager {
-    private let columnNames = [
+    /// Legacy column names for non-GRDB code path.
+    let columnNames = [
         "id",
         "addedDate",
         "lastDownloadAttemptDate",
@@ -42,8 +44,15 @@ class EpisodeDataManager {
         "excludeFromEpisodeLimit",
         "starredModified",
         "deselectedChapters",
-        "deselectedChaptersModified"
+        "deselectedChaptersModified",
+        "wasDeleted"
     ]
+
+    enum Constants {
+        enum Limits {
+            static let maxPlaylistItems = FeatureFlag.playlistsRebranding.enabled ? 1000 : 500
+        }
+    }
 
     // MARK: - Query
 
@@ -79,6 +88,33 @@ class EpisodeDataManager {
                 FileLog.shared.addMessage("EpisodeDataManager.loadMultiple Episode error: \(error)")
             }
         }
+        return episodes
+    }
+
+    func findMatchingEpisodes(uuids: [String], dbQueue: PCDBQueue) -> [String] {
+        let list = uuids.map { "'\($0)'" }.joined(separator: ",")
+
+        let query = """
+        SELECT uuid from \(DataManager.episodeTableName)
+        WHERE uuid IN (\(list))
+        LIMIT \(uuids.count)
+        """
+
+        var episodes = [String]()
+        dbQueue.read { db in
+            do {
+                let resultSet = try db.executeQuery(query, values: nil)
+                defer { resultSet.close() }
+
+                while resultSet.next() {
+                    let uuid = DBUtils.nonNilStringFromColumn(resultSet: resultSet, columnName: "uuid")
+                    episodes.append(uuid)
+                }
+            } catch {
+                FileLog.shared.addMessage("EpisodeDataManager.findMissingEpisodes error: \(error)")
+            }
+        }
+
         return episodes
     }
 
@@ -129,13 +165,18 @@ class EpisodeDataManager {
         loadMultiple(query: "SELECT * from \(DataManager.episodeTableName) WHERE \(columnName) IS NOT NULL", values: nil, dbQueue: dbQueue)
     }
 
-    func findEpisodesAndPodcastsWhere(customWhere: String, dbQueue: PCDBQueue) -> [Episode] {
+    func findEpisodesAndPodcastsWhere(customWhere: String, listenedTo: Bool, dbQueue: PCDBQueue) -> [Episode] {
+        let listenedToQuery: String = """
+        lastPlaybackInteractionDate IS NOT NULL
+        AND lastPlaybackInteractionDate > 0
+        AND
+        """
         let query = """
         SELECT episode.* FROM \(DataManager.episodeTableName) episode
         LEFT JOIN \(DataManager.podcastTableName) podcast ON episode.podcast_id = podcast.id
-        WHERE lastPlaybackInteractionDate IS NOT NULL
-        AND lastPlaybackInteractionDate > 0
-        AND (UPPER(episode.title) LIKE '%' || UPPER(?) || '%'  ESCAPE '\\'
+        WHERE
+        \(listenedTo ? listenedToQuery : "")
+        (UPPER(episode.title) LIKE '%' || UPPER(?) || '%'  ESCAPE '\\'
          OR UPPER(podcast.title) LIKE '%' || UPPER(?) || '%'  ESCAPE '\\')
         ORDER BY lastPlaybackInteractionDate DESC LIMIT 1000
         """
@@ -146,12 +187,27 @@ class EpisodeDataManager {
         loadMultiple(query: "SELECT * from \(DataManager.episodeTableName) WHERE \(customWhere)", values: arguments, dbQueue: dbQueue)
     }
 
+    func findEpisodes(with term: String, podcastUUID: String, dbQueue: PCDBQueue) -> [Episode] {
+        let escapedSearch = term.escapeLike(escapeChar: "\\")
+        let query = """
+        (UPPER(title) LIKE '%' || UPPER(?) || '%'  ESCAPE '\\' AND
+        podcastUuid = ? AND wasDeleted = 0)
+        ORDER BY publishedDate DESC, addedDate DESC
+        """
+
+        return findEpisodesWhere(customWhere: query, arguments: [escapedSearch, podcastUUID], dbQueue: dbQueue)
+    }
+
+    func findPlaylistEpisodesWhere(query: String, arguments: [Any]?, dbQueue: PCDBQueue) -> [Episode] {
+        loadMultiple(query: query, values: arguments, dbQueue: dbQueue)
+    }
+
     func unsyncedEpisodes(limit: Int, dbQueue: PCDBQueue) -> [Episode] {
         loadMultiple(query: "SELECT * from \(DataManager.episodeTableName) WHERE playingStatusModified > 0 OR playedUpToModified > 0 OR durationModified > 0 OR keepEpisodeModified > 0 OR archivedModified > 0 ORDER BY publishedDate DESC, addedDate DESC LIMIT \(limit)", values: nil, dbQueue: dbQueue)
     }
 
     func allEpisodesForPodcast(id: Int64, dbQueue: PCDBQueue) -> [Episode] {
-        loadMultiple(query: "SELECT * from \(DataManager.episodeTableName) WHERE podcast_id = ?", values: [id], dbQueue: dbQueue)
+        loadMultiple(query: "SELECT * from \(DataManager.episodeTableName) WHERE podcast_id = ? AND wasDeleted = 0", values: [id], dbQueue: dbQueue)
     }
 
     func episodesWithListenHistory(limit: Int, dbQueue: PCDBQueue) -> [Episode] {
@@ -159,18 +215,47 @@ class EpisodeDataManager {
     }
 
     func findLatestEpisode(podcast: Podcast, dbQueue: PCDBQueue) -> Episode? {
-        loadSingle(query: "SELECT * from \(DataManager.episodeTableName) WHERE podcast_id = ? ORDER BY publishedDate DESC, addedDate DESC LIMIT 1", values: [podcast.id], dbQueue: dbQueue)
+        loadSingle(query: "SELECT * from \(DataManager.episodeTableName) WHERE podcast_id = ? AND wasDeleted = 0 ORDER BY publishedDate DESC, addedDate DESC LIMIT 1", values: [podcast.id], dbQueue: dbQueue)
     }
 
     func findLatestEpisodes(podcast: Podcast, limit: Int, dbQueue: PCDBQueue) -> [Episode] {
-        loadMultiple(query: "SELECT * from \(DataManager.episodeTableName) WHERE podcast_id = ? ORDER BY publishedDate DESC, addedDate DESC LIMIT ?", values: [podcast.id, limit], dbQueue: dbQueue)
+        loadMultiple(query: "SELECT * from \(DataManager.episodeTableName) WHERE podcast_id = ? AND wasDeleted = 0 ORDER BY publishedDate DESC, addedDate DESC LIMIT ?", values: [podcast.id, limit], dbQueue: dbQueue)
     }
 
     func allUpNextEpisodes(dbQueue: PCDBQueue) -> [Episode] {
         let upNextTableName = DataManager.playlistEpisodeTableName
         let episodeTableName = DataManager.episodeTableName
 
-        return loadMultiple(query: "SELECT \(episodeTableName).* FROM \(upNextTableName) JOIN \(episodeTableName) ON \(episodeTableName).uuid = \(upNextTableName).episodeUuid ORDER BY \(upNextTableName).episodePosition ASC", values: nil, dbQueue: dbQueue)
+        return loadMultiple(
+            query: """
+            SELECT \(episodeTableName).*
+            FROM \(upNextTableName)
+            JOIN \(episodeTableName)
+            ON \(episodeTableName).uuid = \(upNextTableName).episodeUuid
+            WHERE \(upNextTableName).playlist_id = ?
+            ORDER BY \(upNextTableName).episodePosition ASC
+            """,
+            values: [UpNextDataManager.upNextPlaylistId],
+            dbQueue: dbQueue
+        )
+    }
+
+    func allUpNextEpisodes(from uuids: [String], dbQueue: PCDBQueue) -> [Episode] {
+        let placeholders = uuids.map { "'\($0)'" }.joined(separator: ", ")
+        let upNextTableName = DataManager.playlistEpisodeTableName
+        let episodeTableName = DataManager.episodeTableName
+        return loadMultiple(
+            query: """
+            SELECT DISTINCT \(episodeTableName).*
+            FROM \(upNextTableName)
+            JOIN \(episodeTableName)
+            ON \(episodeTableName).uuid = \(upNextTableName).episodeUuid
+            WHERE \(episodeTableName).uuid IN (\(placeholders))
+            ORDER BY \(upNextTableName).episodePosition ASC
+            """,
+            values: nil,
+            dbQueue: dbQueue
+        )
     }
 
     private func loadSingle(query: String, values: [Any]?, dbQueue: PCDBQueue) -> Episode? {
@@ -295,39 +380,76 @@ class EpisodeDataManager {
     }
 
     func save(episode: Episode, dbQueue: PCDBQueue) {
-        dbQueue.write { db in
+        let isInsert = episode.id == 0
+        if isInsert {
+            episode.id = DBUtils.generateUniqueId()
+        }
+
+        if FeatureFlag.grdbQueryInterface.enabled, let grdbQueue = dbQueue as? GRDBQueue {
+            // GRDB path using PersistableRecord
             do {
-                if episode.id == 0 {
-                    episode.id = DBUtils.generateUniqueId()
-                    try db.executeUpdate("INSERT INTO \(DataManager.episodeTableName) (\(self.columnNames.joined(separator: ","))) VALUES \(DBUtils.valuesQuestionMarks(amount: self.columnNames.count))", values: self.createValuesFrom(episode: episode))
-                } else {
-                    let setStatement = "\(self.columnNames.joined(separator: " = ?, ")) = ?"
-                    try db.executeUpdate("UPDATE \(DataManager.episodeTableName) SET \(setStatement) WHERE id = ?", values: self.createValuesFrom(episode: episode, includeIdForWhere: true))
+                try grdbQueue.dbPool.write { db in
+                    try episode.save(db)
                 }
             } catch {
                 FileLog.shared.addMessage("EpisodeDataManager.save Episode error: \(error)")
             }
-        }
-    }
-
-    func bulkSave(episodes: [Episode], dbQueue: PCDBQueue) {
-        dbQueue.write { db in
-            do {
-                db.beginTransaction()
-
-                for episode in episodes {
-                    if episode.id == 0 {
-                        episode.id = DBUtils.generateUniqueId()
+        } else {
+            // Legacy path
+            dbQueue.write { db in
+                do {
+                    if isInsert {
                         try db.executeUpdate("INSERT INTO \(DataManager.episodeTableName) (\(self.columnNames.joined(separator: ","))) VALUES \(DBUtils.valuesQuestionMarks(amount: self.columnNames.count))", values: self.createValuesFrom(episode: episode))
                     } else {
                         let setStatement = "\(self.columnNames.joined(separator: " = ?, ")) = ?"
                         try db.executeUpdate("UPDATE \(DataManager.episodeTableName) SET \(setStatement) WHERE id = ?", values: self.createValuesFrom(episode: episode, includeIdForWhere: true))
                     }
+                } catch {
+                    FileLog.shared.addMessage("EpisodeDataManager.save Episode error: \(error)")
                 }
+            }
+        }
+    }
 
-                db.commit()
+    func bulkSave(episodes: [Episode], dbQueue: PCDBQueue) {
+        if FeatureFlag.grdbQueryInterface.enabled, let grdbQueue = dbQueue as? GRDBQueue {
+            // GRDB path using PersistableRecord
+            do {
+                try grdbQueue.dbPool.write { db in
+                    for episode in episodes {
+                        if episode.id == 0 {
+                            episode.id = DBUtils.generateUniqueId()
+                        }
+                        try episode.save(db)
+                    }
+                }
             } catch {
                 FileLog.shared.addMessage("EpisodeDataManager.bulkSave error: \(error)")
+            }
+        } else {
+            // Legacy path
+            dbQueue.write { db in
+                do {
+                    db.beginTransaction()
+
+                    for episode in episodes {
+                        let isInsert = episode.id == 0
+                        if isInsert {
+                            episode.id = DBUtils.generateUniqueId()
+                        }
+
+                        if isInsert {
+                            try db.executeUpdate("INSERT INTO \(DataManager.episodeTableName) (\(self.columnNames.joined(separator: ","))) VALUES \(DBUtils.valuesQuestionMarks(amount: self.columnNames.count))", values: self.createValuesFrom(episode: episode))
+                        } else {
+                            let setStatement = "\(self.columnNames.joined(separator: " = ?, ")) = ?"
+                            try db.executeUpdate("UPDATE \(DataManager.episodeTableName) SET \(setStatement) WHERE id = ?", values: self.createValuesFrom(episode: episode, includeIdForWhere: true))
+                        }
+                    }
+
+                    db.commit()
+                } catch {
+                    FileLog.shared.addMessage("EpisodeDataManager.bulkSave error: \(error)")
+                }
             }
         }
     }
@@ -1051,6 +1173,7 @@ class EpisodeDataManager {
         values.append(episode.starredModified)
         values.append(DBUtils.nullIfNil(value: episode.deselectedChapters))
         values.append(episode.deselectedChaptersModified)
+        values.append(episode.wasDeleted)
 
         if includeIdForWhere {
             values.append(episode.id)
@@ -1073,7 +1196,14 @@ public enum SortOrder {
 
 extension EpisodeDataManager {
     func findGhostEpisodes(_ dbQueue: PCDBQueue) -> [Episode] {
-        let query = "SELECT SJEpisode.* FROM SJEpisode LEFT JOIN SJPodcast ON SJEpisode.podcastUuid = SJPodcast.uuid WHERE SJPodcast.uuid IS NULL"
+        let playlistTable = DataManager.playlistEpisodeTableName
+        let query = """
+        SELECT SJEpisode.*
+        FROM SJEpisode
+        LEFT JOIN SJPodcast ON SJEpisode.podcastUuid = SJPodcast.uuid
+        LEFT JOIN \(playlistTable) ON \(playlistTable).episodeUuid = SJEpisode.uuid AND \(playlistTable).wasDeleted = 0 AND \(playlistTable).playlist_uuid IS NOT NULL
+        WHERE SJPodcast.uuid IS NULL AND \(playlistTable).episodeUuid IS NULL
+        """
 
         return loadMultiple(query: query, values: nil, dbQueue: dbQueue)
     }

@@ -55,6 +55,10 @@ public class SyncManager {
         UserDefaults.standard.removeObject(forKey: ServerConstants.UserDefaults.subscriptionGiftAcknowledgementNeedsSyncKey)
         UserDefaults.standard.removeObject(forKey: ServerConstants.UserDefaults.subscriptionGiftAcknowledgement)
         UserDefaults.standard.removeObject(forKey: ServerConstants.UserDefaults.subscriptionPodcasts)
+        UserDefaults.standard.removeObject(forKey: ServerConstants.UserDefaults.removeBannerAds)
+        UserDefaults.standard.removeObject(forKey: ServerConstants.UserDefaults.removeDiscoverAds)
+        UserDefaults.standard.removeObject(forKey: ServerConstants.UserDefaults.subscriptionCreateDate)
+        ServerSettings.liveAnalyticsUrl = nil
         UserDefaults.standard.synchronize()
 
         ServerConfig.shared.syncDelegate?.cleanupCloudOnlyFiles()

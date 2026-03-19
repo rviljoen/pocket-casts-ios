@@ -8,6 +8,9 @@ class EffectsViewController: SimpleNotificationsViewController {
         didSet {
             headingLbl.style = .playerContrast02
             headingLbl.text = L10n.playbackEffects.localizedUppercase
+            headingLbl.font = UIFont.font(ofSize: 13, weight: .medium, scalingWith: .title1)
+            headingLbl.adjustsFontForContentSizeCategory = true
+
         }
     }
 
@@ -81,7 +84,9 @@ class EffectsViewController: SimpleNotificationsViewController {
     @IBOutlet var volumeDescription: ThemeableLabel! {
         didSet {
             volumeDescription.style = .playerContrast02
-            volumeDescription.text = L10n.volumeBoostDescription
+            volumeDescription.text = Settings.isVoiceBoostNEnabled
+                ? L10n.volumeBoostNDescription
+                : L10n.volumeBoostDescription
         }
     }
 
@@ -195,6 +200,7 @@ class EffectsViewController: SimpleNotificationsViewController {
 
         updateColors()
         updateControls()
+        setupAccessibility()
 
         if isCustomPlaybackSettingsEnabled {
             playbackSettingsSegmentedControl.selectedSegmentIndex = PlaybackManager.shared.isCurrentEffectGlobal() ? 0 : 1
@@ -383,13 +389,27 @@ class EffectsViewController: SimpleNotificationsViewController {
         let effects = PlaybackManager.shared.effects()
         trimSilenceSwitch.isOn = effects.trimSilence.isEnabled()
 
-        trimSilenceSpeedsToLabelConstraint.isActive = effects.trimSilence.isEnabled()
+        let isEnabled = effects.trimSilence.isEnabled()
+
+        trimSilenceSpeedsToLabelConstraint.isActive = isEnabled
+        let wasHidden = trimSilenceAmountControl.isHidden
         UIView.animate(withDuration: 0.3) {
-            self.trimSilenceAmountControl.alpha = effects.trimSilence.isEnabled() ? 1 : 0
+            self.trimSilenceAmountControl.alpha = isEnabled ? 1 : 0
             self.view.layoutIfNeeded()
         }
 
+        // Hide from accessibility when not enabled to prevent VoiceOver getting stuck
+        trimSilenceAmountControl.isAccessibilityElement = isEnabled
+        trimSilenceAmountControl.accessibilityElementsHidden = !isEnabled
+        trimSilenceAmountControl.isHidden = !isEnabled
+
         trimSilenceAmountControl.selectedIndex = trimSilenceAmountToIndex(effects.trimSilence)
+
+        // Update accessibility order when trim silence state changes
+        setupAccessibilityOrder(trimSilenceEnabled: isEnabled)
+        if isEnabled && wasHidden {
+            UIAccessibility.post(notification: .layoutChanged, argument: trimSilenceAmountControl)
+        }
 
         let timeSaved = StatsManager.shared.timeSavedDynamicSpeedInclusive()
         if timeSaved < 60 {
@@ -417,6 +437,9 @@ class EffectsViewController: SimpleNotificationsViewController {
         speedBtn.strokeColor = speedBtn.isOn ? ThemeColor.playerContrast01() : ThemeColor.playerContrast02()
         speedBtn.textColor = speedBtn.isOn ? PlayerColorHelper.playerBackgroundColor01() : ThemeColor.playerContrast01()
         speedBtn.accessibilityLabel = L10n.accessibilityPlayerEffectsPlaybackSpeed(effects.playbackSpeed.localized(.spellOut))
+
+        // Post accessibility notification for speed changes
+        UIAccessibility.post(notification: .announcement, argument: speedBtn.accessibilityLabel)
     }
 
     @objc private func updateColors() {
@@ -434,9 +457,9 @@ class EffectsViewController: SimpleNotificationsViewController {
             playbackSettingsSegmentedControl.backgroundColor = ThemeColor.playerContrast06()
             playbackSettingsSegmentedControl.selectedSegmentTintColor = ThemeColor.playerContrast01()
 
-            let normalAttribute = [NSAttributedString.Key.foregroundColor: ThemeColor.playerContrast02()]
+            let normalAttribute = [NSAttributedString.Key.foregroundColor: ThemeColor.playerContrast02(), .font: UIFont.font(ofSize: 14, weight: .medium, scalingWith: .largeTitle)]
             playbackSettingsSegmentedControl.setTitleTextAttributes(normalAttribute, for: .normal)
-            let selectedAttribute = [NSAttributedString.Key.foregroundColor: PlayerColorHelper.playerBackgroundColor01()]
+            let selectedAttribute = [NSAttributedString.Key.foregroundColor: PlayerColorHelper.playerBackgroundColor01(), .font: UIFont.font(ofSize: 14, weight: .medium, scalingWith: .largeTitle)]
             playbackSettingsSegmentedControl.setTitleTextAttributes(selectedAttribute, for: .selected)
         } else {
             trimSilenceAmountControl.lineColor = ThemeColor.playerContrast02()
@@ -484,5 +507,79 @@ class EffectsViewController: SimpleNotificationsViewController {
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         .portrait
+    }
+
+    // MARK: - Accessibility
+
+    private func setupAccessibility() {
+        // Speed control buttons
+        minusBtn.accessibilityLabel = "Decrease Speed"//L10n.accessibilityPlayerEffectsDecreaseSpeed
+        plusBtn.accessibilityLabel = "Increase Speed"//L10n.accessibilityPlayerEffectsIncreaseSpeed
+
+        // Switches
+        trimSilenceSwitch.accessibilityLabel = L10n.trimSilence
+        volumeBoostSwitch.accessibilityLabel = L10n.volumeBoost
+
+        // Trim silence amount control accessibility is handled by the custom control itself
+        trimSilenceAmountControl.accessibilityLabel = L10n.trimSilence + " amount"
+        trimSilenceAmountControl.accessibilityHint = "Swipe up or down to change"
+
+        playbackSettingsSegmentedControl.accessibilityLabel = "Playback Effects Settings"
+
+        // Set accessibility hints
+        trimSilenceSwitch.accessibilityHint = L10n.playerEffectsTrimSilenceDetails
+        volumeBoostSwitch.accessibilityHint = Settings.isVoiceBoostNEnabled
+            ? L10n.volumeBoostNDescription
+            : L10n.volumeBoostDescription
+
+        // Configure view to allow VoiceOver navigation
+        view.accessibilityViewIsModal = true
+        setupAccessibilityOrder()
+    }
+
+    private func setupAccessibilityOrder(trimSilenceEnabled: Bool? = nil) {
+        let isTrimSilenceEnabled = trimSilenceEnabled ?? trimSilenceSwitch.isOn
+        // Create explicit accessibility navigation order
+        var accessibilityElements: [Any] = []
+
+        // Always include these elements in order
+        if !playbackSettingsSegmentedControl.isHidden {
+            accessibilityElements.append(playbackSettingsSegmentedControl!)
+        }
+
+        accessibilityElements.append(speedBtn!)
+        accessibilityElements.append(minusBtn!)
+        accessibilityElements.append(plusBtn!)
+        accessibilityElements.append(trimSilenceSwitch!)
+
+        // Only include trim silence amount control when it's enabled and visible
+        if isTrimSilenceEnabled && !trimSilenceAmountControl.isHidden {
+            accessibilityElements.append(trimSilenceAmountControl!)
+        }
+
+        accessibilityElements.append(volumeBoostSwitch!)
+
+        view.accessibilityElements = accessibilityElements
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory {
+            updateSize()
+        }
+    }
+
+    private func updateSize() {
+        let iconMetric = UIFontMetrics(forTextStyle: .largeTitle)
+        let iconSize = max(24, iconMetric.scaledValue(for: 24))
+        trimIcon.updateSizeConstraints(to: iconSize)
+        speedIcon.updateSizeConstraints(to: iconSize)
+        volumeIcon.updateSizeConstraints(to: iconSize)
+
+        let timerSize = max(36, iconMetric.scaledValue(for: 36))
+        speedBtn.updateSizeConstraints(width: 70, height: timerSize)
+
+        updateColors()
     }
 }

@@ -4,7 +4,6 @@ import JLRoutes
 import PocketCastsDataModel
 import PocketCastsServer
 import PocketCastsUtils
-import FacebookCore
 
 extension AppDelegate {
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
@@ -18,14 +17,6 @@ extension AppDelegate {
     }
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        if FeatureFlag.podcastNewformAppsFlyer.enabled {
-            ApplicationDelegate.shared.application(
-                app,
-                open: url,
-                sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
-                annotation: options[UIApplication.OpenURLOptionsKey.annotation]
-            )
-        }
         guard let progressViewController = SceneHelper.rootViewController() else { return false }
         return handleOpenUrl(url: url, rootViewController: progressViewController)
     }
@@ -105,11 +96,11 @@ extension AppDelegate {
             return true
         }
 
-        // open a filter from a shortcut
+        // open a playlist from a shortcut
         JLRoutes.global().addRoute("/shortcuts/filter/:filterId") { parameters -> Bool in
-            guard let filterId = parameters["filterId"] as? String, let filter = DataManager.sharedManager.findFilter(uuid: filterId) else { return false }
+            guard let playlistId = parameters["filterId"] as? String, let playlist = DataManager.sharedManager.findPlaylist(uuid: playlistId) else { return false }
 
-            NavigationManager.sharedManager.navigateTo(NavigationManager.filterPageKey, data: [NavigationManager.filterUuidKey: filter.uuid])
+            NavigationManager.sharedManager.navigateTo(NavigationManager.filterPageKey, data: [NavigationManager.filterUuidKey: playlist.uuid])
             AnalyticsHelper.forceTouchTopFilter()
 
             return true
@@ -178,7 +169,13 @@ extension AppDelegate {
 
         // Support for subscribing to a feed URL
         JLRoutes.global().addRoute("/subscribe/*") { [weak self] parameters -> Bool in
-            guard let strongSelf = self, let controller = SceneHelper.rootViewController(), let subscribeUrl = (parameters[JLRouteURLKey] as? URL)?.absoluteString else { return false }
+            guard
+                let strongSelf = self,
+                let rootController = SceneHelper.rootViewController(includeTopMost: false), //I don't want to consider the top most presented but the main root instead
+                let subscribeUrl = (parameters[JLRouteURLKey] as? URL)?.absoluteString
+            else {
+                return false
+            }
 
             let prefix = "pktc://subscribe/"
             if prefix.count >= subscribeUrl.count { return true } // this request is missing a URL
@@ -188,8 +185,8 @@ extension AppDelegate {
             let searchTerm = !feedUrl.hasPrefix("http://") && !feedUrl.hasPrefix("https://") ? "http://\(feedUrl)" : feedUrl
 
             strongSelf.progressDialog = ShiftyLoadingAlert(title: L10n.podcastLoading)
-            controller.dismiss(animated: false, completion: nil)
-            strongSelf.progressDialog?.showAlert(controller, hasProgress: false, completion: {
+            rootController.dismiss(animated: false, completion: nil)
+            strongSelf.progressDialog?.showAlert(rootController, hasProgress: false, completion: {
                 MainServerHandler.shared.podcastSearch(searchTerm: searchTerm) { response in
                     guard let uuid = response?.result?.podcast?.uuid else {
                         DispatchQueue.main.async {
@@ -402,6 +399,7 @@ extension AppDelegate {
         setupOnboardingRoutes()
         setupNewFeaturesRoutes()
         setupProfileRoutes()
+        setupTestFlightIAPRoutes()
     }
 
     func setupOnboardingRoutes() {
@@ -462,7 +460,8 @@ extension AppDelegate {
                   let pathComponents = parameters[JLRouteWildcardComponentsKey] as? [String],
                   let row = pathComponents.first
             else {
-                return false
+                NavigationManager.sharedManager.navigateTo(NavigationManager.settingsProfileKey, data: [:])
+                return true
             }
             NavigationManager.sharedManager.navigateTo(NavigationManager.settingsProfileKey, data: [NavigationManager.profileRowKey: row])
             return true
@@ -472,11 +471,38 @@ extension AppDelegate {
     func openSharePath(_ path: String, controller: UIViewController, onErrorOpen: URL?) {
         progressDialog = ShiftyLoadingAlert(title: L10n.sharedItemLoading)
         progressDialog?.showAlert(controller, hasProgress: false) {
+            // Parse the URL into path and query components so that any query parameters
+            // (e.g. ?t=123) do not interfere with UUID extraction.
+            let urlComponents = URLComponents(string: path)
+            let cleanPath = urlComponents?.path.isEmpty == false ? urlComponents!.path : path
+            let timestamp: Double? = {
+                guard let queryItems = urlComponents?.queryItems else { return nil }
+                guard let tItem = queryItems.first(where: { $0.name == "t" }) else { return nil }
+                guard let value = tItem.value, let doubleValue = Double(value) else { return nil }
+                return doubleValue
+            }()
+
             // URLs that are already in the format https://pca.st/podcast/da3271a0-69e7-0132-d9fd-5f4c86fd3263 (or /private/) have the podcast UUID in them already so no need to ask the refresh server for it
-            if path.contains("/podcast/") || path.contains("/private/") {
-                if let lastSlashIndex = path.lastIndex(of: "/") {
-                    let startIndex = path.index(lastSlashIndex, offsetBy: 1)
-                    let uuid = path.suffix(from: startIndex)
+            // Also handles new format: /podcast/{podcastSlug}/{podcastUuid}/{episodeSlug}/{episodeUuid}
+            if cleanPath.contains("/podcast/") || cleanPath.contains("/private/") {
+                // Check for new format with episode: /podcast/{slug}/{podcastUuid}/{episodeSlug}/{episodeUuid}
+                if let podcastRange = cleanPath.range(of: "/podcast/") ?? cleanPath.range(of: "/private/") {
+                    let afterPodcast = String(cleanPath[podcastRange.upperBound...])
+                    let components = afterPodcast.split(separator: "/").map(String.init)
+
+                    // New format: 4 components = podcastSlug, podcastUuid, episodeSlug, episodeUuid
+                    if components.count == 4 {
+                        let podcastUuid = components[1]
+                        let episodeUuid = components[3]
+                        self.loadAndShowEpisode(episodeUuid: episodeUuid, podcastUuid: podcastUuid, timestamp: timestamp)
+                        return
+                    }
+                }
+
+                // Original format: just podcast UUID as last component
+                if let lastSlashIndex = cleanPath.lastIndex(of: "/") {
+                    let startIndex = cleanPath.index(lastSlashIndex, offsetBy: 1)
+                    let uuid = cleanPath.suffix(from: startIndex)
                     let podcastHeader = PodcastHeader(uuid: String(uuid))
                     DispatchQueue.main.async {
                         self.hideProgressDialog()
@@ -541,5 +567,31 @@ extension AppDelegate {
                 }
             }
         })
+    }
+
+    private func setupTestFlightIAPRoutes() {
+        if BuildEnvironment.current != .testFlight {
+            return
+        }
+        JLRoutes.global().addRoute("/iap/:enabled") {[weak self] parameters -> Bool in
+            guard
+                self != nil,
+                let value = parameters["enabled"] as? String
+            else { return false }
+
+            let isEnabled = value.lowercased() == "true"
+            Settings.shouldEnableIAPInTestFlightBuilds = isEnabled
+
+            let title = isEnabled ? "✅ In-App Purchases Enabled" : "🚫 In-App Purchases Disabled"
+            let message = isEnabled ? "This beta build uses a test environment. Purchases made here are for testing only—please don’t use your production account." : "In-App Purchases are turned off on this device."
+
+            SJUIUtils.showAlert(
+                title: title,
+                message: message,
+                from: SceneHelper.rootViewController()
+            )
+
+            return true
+        }
     }
 }

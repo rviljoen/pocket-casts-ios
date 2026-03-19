@@ -1,6 +1,7 @@
 import SwiftUI
 import PocketCastsDataModel
 import PocketCastsUtils
+import PocketCastsServer
 
 struct SearchResultsView: View {
     @EnvironmentObject var theme: Theme
@@ -15,7 +16,15 @@ struct SearchResultsView: View {
 
     var body: some View {
         Group {
-            NavigationLink(destination: SearchResultsListView(displayMode: displayMode).setupDefaultEnvironment().environmentObject(searchAnalyticsHelper).environmentObject(searchResults).environmentObject(searchHistory), isActive: $showInlineResults) { EmptyView() }
+            NavigationLink(destination:
+                            SearchResultsListView(displayMode: displayMode)
+                                .setupDefaultEnvironment()
+                                .environmentObject(searchAnalyticsHelper)
+                                .environmentObject(searchResults)
+                                .environmentObject(searchHistory),
+                           isActive: $showInlineResults) {
+                EmptyView()
+            }
 
             if searchResults.episodeSearchError != nil && searchResults.podcastSearchError != nil {
                 HStack(alignment: .center) {
@@ -32,15 +41,26 @@ struct SearchResultsView: View {
                 }
                 .frame(maxHeight: .infinity)
                 .background(Theme.sharedTheme.primaryUi02)
+            } else if searchResults.isShowingPredictiveSearch || searchResults.isSearchingPredictive {
+                if searchResults.isSearchingPredictive, searchResults.predictive.isEmpty {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .tint(AppTheme.loadingActivityColor().color)
+                } else {
+                    SearchListView {
+                        PredictiveList()
+                            .onAppear {
+                                self.searchAnalyticsHelper.trackPredictiveShown()
+                            }
+                    }
+                }
             } else {
                 SearchListView {
                     ThemeableListHeader(title: L10n.podcastsPlural, actionTitle: L10n.discoverShowAll) {
                         displayMode = .podcasts
                         showInlineResults = true
                     }
-
                     PodcastsCarouselView()
-
                     episodeList()
                 }
             }

@@ -2,6 +2,7 @@ import PocketCastsDataModel
 import UIKit
 protocol FilterCreatedDelegate: AnyObject {
     func filterCreated(newFilter: EpisodeFilter)
+    var presentingPlaylistDetail: Bool { get set }
 }
 
 class CreateFilterViewController: PCViewController, UITextFieldDelegate, UIScrollViewDelegate, UITableViewDelegate, UITableViewDataSource {
@@ -152,10 +153,10 @@ class CreateFilterViewController: PCViewController, UITextFieldDelegate, UIScrol
         filterToEdit.syncStatus = SyncStatus.notSynced.rawValue
         filterToEdit.isNew = false
         filterToEdit.setTitle(filterNameTextField.text, defaultTitle: L10n.filtersDefaultNewFilter.localizedCapitalized)
-        DataManager.sharedManager.save(filter: filterToEdit)
+        DataManager.sharedManager.save(playlist: filterToEdit)
         UserDefaults.standard.set(filterToEdit.uuid, forKey: Constants.UserDefaults.lastFilterShown)
         delegate?.filterCreated(newFilter: filterToEdit)
-        NotificationCenter.postOnMainThread(notification: Constants.Notifications.filterChanged, object: filterToEdit)
+        NotificationCenter.postOnMainThread(notification: Constants.Notifications.playlistChanged, object: filterToEdit)
         dismiss(animated: true, completion: nil)
 
         Analytics.track(.filterCreated, properties: [
@@ -185,7 +186,7 @@ class CreateFilterViewController: PCViewController, UITextFieldDelegate, UIScrol
     }
 
     @IBAction func closeTapped(sender: Any) {
-        PlaylistManager.delete(filter: filterToEdit, fireEvent: true)
+        PlaylistManager.delete(playlist: filterToEdit, fireEvent: true)
         dismiss(animated: true, completion: nil)
     }
 

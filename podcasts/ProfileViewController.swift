@@ -11,15 +11,62 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
 
     @IBOutlet var footerView: UIView!
     @IBOutlet var alertIcon: UIImageView!
-    @IBOutlet var lastRefreshTime: UILabel!
-    @IBOutlet var refreshBtn: AnimatedImageButton! {
+    @IBOutlet var lastRefreshTime: ThemeableLabel! {
         didSet {
-            refreshBtn.mainColor = ThemeColor.primaryText02()
-            refreshBtn.buttonImage = UIImageView(image: UIImage(named: "profile-retry"))
+            lastRefreshTime.style = .primaryText02
+            lastRefreshTime.font = UIFont.font(with: .subheadline, maxSizeCategory: .accessibilityMedium)
+            lastRefreshTime.adjustsFontForContentSizeCategory = true
+        }
+    }
+    @IBOutlet var refreshButtonContainer: UIView!
 
-            refreshBtn.buttonTapped = { [weak self] in
+    private var refreshButtonTitle: String = L10n.refreshNow {
+        didSet {
+            updateRefreshButton()
+        }
+    }
+
+    private var isRefreshAnimating: Bool = false {
+        didSet {
+            updateRefreshButton()
+        }
+    }
+
+    private var refreshButtonHostingController: UIHostingController<AnyView>?
+
+    private func setupRefreshButton() {
+        updateRefreshButton()
+        if let hostingController = refreshButtonHostingController {
+            hostingController.sizingOptions = .intrinsicContentSize
+            addChild(hostingController)
+            refreshButtonContainer.addSubview(hostingController.view)
+            hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                hostingController.view.topAnchor.constraint(equalTo: refreshButtonContainer.topAnchor),
+                hostingController.view.bottomAnchor.constraint(equalTo: refreshButtonContainer.bottomAnchor),
+                hostingController.view.centerXAnchor.constraint(equalTo: refreshButtonContainer.centerXAnchor),
+                hostingController.view.leadingAnchor.constraint(greaterThanOrEqualTo: refreshButtonContainer.leadingAnchor),
+                hostingController.view.trailingAnchor.constraint(lessThanOrEqualTo: refreshButtonContainer.trailingAnchor)
+            ])
+            hostingController.didMove(toParent: self)
+        }
+    }
+
+    private func updateRefreshButton() {
+        let refreshButton = ProfileRefreshButton(
+            title: refreshButtonTitle,
+            isAnimating: isRefreshAnimating,
+            action: { [weak self] in
                 self?.refreshTapped()
             }
+        ).setupDefaultEnvironment()
+
+        if let hostingController = refreshButtonHostingController {
+            hostingController.rootView = AnyView(refreshButton)
+        } else {
+            let hostingController = UIHostingController(rootView: AnyView(refreshButton))
+            hostingController.view.backgroundColor = .clear
+            self.refreshButtonHostingController = hostingController
         }
     }
 
@@ -90,10 +137,10 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
 
         profileTable.tableFooterView = footerView
 
+        setupRefreshButton()
         updateDisplayedData()
         updateRefreshFooterColors()
         updateFooterFrame()
-        updateReferrals()
         setupRefreshControl()
         insetAdjuster.setupInsetAdjustmentsForMiniPlayer(scrollView: profileTable)
     }
@@ -163,12 +210,9 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
 
     override func handleThemeChanged() {
         updateRefreshFooterColors()
-        updateReferralsColors()
     }
 
     private func updateRefreshFooterColors() {
-        refreshBtn.mainColor = ThemeColor.primaryText02()
-        lastRefreshTime.textColor = ThemeColor.primaryText02()
         alertIcon.tintColor = ThemeColor.primaryIcon02()
     }
 
@@ -195,7 +239,7 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
     private func refreshTapped() {
         Analytics.track(.profileRefreshButtonTapped)
 
-        refreshBtn.animateImage(animationType: .rotate)
+        isRefreshAnimating = true
         lastRefreshTime.text = L10n.refreshing
         RefreshManager.shared.refreshPodcasts()
     }
@@ -207,7 +251,7 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
             guard let self = self else { return }
 
             self.refreshControl?.endRefreshing(true)
-            self.refreshBtn.stopAnimatingImage()
+            self.isRefreshAnimating = false
             self.updateLastRefreshDetails()
         }
     }
@@ -232,18 +276,17 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
 
     private func updateLastRefreshDetails() {
         if ReferralsCoordinator.shared.areReferralsAvailableToSend {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: referralsButton)
-            updateReferralsColors()
+            navigationItem.leftBarButtonItem = referralsButton
         } else {
             navigationItem.leftBarButtonItem = nil
         }
 
         if !ServerSettings.lastRefreshSucceeded() || !ServerSettings.lastSyncSucceeded() {
             lastRefreshTime.text = !ServerSettings.lastRefreshSucceeded() ? L10n.refreshFailed : L10n.syncFailed
-            refreshBtn.buttonTitle = L10n.tryAgain
+            refreshButtonTitle = L10n.tryAgain
             alertIcon.isHidden = false
         } else if let lastUpdateTime = ServerSettings.lastRefreshEndTime() {
-            refreshBtn.buttonTitle = L10n.refreshNow
+            refreshButtonTitle = L10n.refreshNow
             if abs(lastUpdateTime.timeIntervalSinceNow) > 2.days {
                 lastRefreshTime.text = L10n.profileLastAppRefresh(TimeFormatter.shared.appleStyleElapsedString(date: lastUpdateTime))
                 alertIcon.isHidden = false
@@ -252,7 +295,7 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
                 alertIcon.isHidden = true
             }
         } else {
-            refreshBtn.buttonTitle = L10n.refreshNow
+            refreshButtonTitle = L10n.refreshNow
             lastRefreshTime.text = L10n.refreshPreviousRun(L10n.timeFormatNever)
             alertIcon.isHidden = false
         }
@@ -311,7 +354,6 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
 
         cell.settingsImage.tintColor = ThemeColor.primaryIcon01()
         cell.settingsLabel.setLetterSpacing(-0.01)
-        cell.updateImageScale()
         cell.separatorInset = .zero
 
         switch row {
@@ -361,6 +403,9 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
         }
         if row == .referralsClaim {
             Analytics.track(.referralPassBannerShown)
+        }
+        if row == .endOfYearPrompt {
+            Analytics.track(.endOfYearProfileCardShown, properties: ["current_year": EndOfYear.currentYear.literalValue])
         }
     }
 
@@ -415,11 +460,13 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
             present(navController, animated: true, completion: nil)
         case .endOfYearPrompt:
             dismiss(animated: true)
-            Analytics.track(.endOfYearProfileCardTapped)
+            Analytics.track(.endOfYearProfileCardTapped, properties: ["current_year": EndOfYear.currentYear.literalValue])
             if let endOfYear = (tabBarController as? MainTabBarController)?.endOfYear {
                 endOfYear.showStories(in: self, from: .profile)
             } else {
-                assertionFailure("End of Year should exist. Something is wrong with the tabBarController")
+                //Show warning that playback is not available
+                let alert = UIAlertController(title: L10n.playbackNotAvailable, message: L10n.pleaseTryAgainLater, preferredStyle: .alert)
+                present(alert, animated: true)
             }
         case .bookmarks:
             let bookmarksController = BookmarksProfileListController()
@@ -445,7 +492,7 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
         var data: [[ProfileViewController.TableRow]]
         data = [[.allStats, .downloaded, .uploadedFiles, .starred, .bookmarks, .listeningHistory, .help]]
 
-        if EndOfYear.isEligible {
+        if EndOfYear.isEndOfYearActive, EndOfYear.isEligible {
             data[0].insert(.endOfYearPrompt, at: 0)
         }
 
@@ -466,8 +513,22 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
     }
 
     private func updateFooterFrame() {
-        let height: CGFloat = plusInfoView.isHidden ? 120 : 308
+        footerView.setNeedsLayout()
+        footerView.layoutIfNeeded()
+
+        let targetSize = CGSize(width: profileTable.bounds.width, height: UIView.layoutFittingCompressedSize.height)
+        let height = footerView.systemLayoutSizeFitting(targetSize, withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel).height
+
         footerView.frame = CGRect(x: footerView.frame.minX, y: footerView.frame.minY, width: footerView.frame.width, height: height)
+        profileTable.tableFooterView = footerView
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory {
+            updateFooterFrame()
+        }
     }
 
     // MARK: - What's New Autoplay flow
@@ -499,50 +560,10 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
         updateDisplayedData()
     }
 
-    private lazy var referralsBadge: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.numberOfLines = 1
-        label.text = nil
-        label.textAlignment = .center
-        label.layer.borderWidth = 1
-        label.layer.masksToBounds = true
-        label.layer.cornerRadius = 8
-        label.font = UIFont.systemFont(ofSize: 11, weight: .medium)
-        return label
-    }()
-
-    private lazy var referralsButton: UIButton = {
-        let button = UIButton(type: .custom)
-        button.setImage(UIImage(named: ReferralsConstants.giftIcon), for: .normal)
-        button.addTarget(self, action: #selector(referralsTapped), for: .touchUpInside)
-        button.addSubview(referralsBadge)
-        NSLayoutConstraint.activate(
-            [
-                button.widthAnchor.constraint(equalToConstant: ReferralsConstants.giftSize),
-                button.heightAnchor.constraint(equalToConstant: ReferralsConstants.giftSize),
-                referralsBadge.widthAnchor.constraint(equalToConstant: ReferralsConstants.giftBadgeSize),
-                referralsBadge.heightAnchor.constraint(equalToConstant: ReferralsConstants.giftBadgeSize),
-                referralsBadge.leadingAnchor.constraint(equalTo: button.trailingAnchor, constant: -ReferralsConstants.giftBadgeSize / 2),
-                referralsBadge.topAnchor.constraint(equalTo: button.topAnchor, constant: -ReferralsConstants.giftBadgeSize / 4)
-            ]
-        )
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.clipsToBounds = false
-        button.bringSubviewToFront(referralsBadge)
+    private lazy var referralsButton: UIBarButtonItem = {
+        let button = UIBarButtonItem(image: UIImage(named: ReferralsConstants.giftIcon), style: .plain, target: self, action: #selector(referralsTapped))
         return button
     }()
-
-    private func updateReferrals() {
-        referralsBadge.text = ""
-        referralsBadge.isHidden = true
-    }
-
-    private func updateReferralsColors() {
-        referralsBadge.backgroundColor = ThemeColor.secondaryIcon01()
-        referralsBadge.textColor = ThemeColor.secondaryUi01()
-        referralsBadge.layer.borderColor = ThemeColor.secondaryUi01().cgColor
-    }
 
     @objc private func referralsTapped() {
         guard let referralsOfferInfo = ReferralsCoordinator.shared.referralsOfferInfo else {
@@ -609,10 +630,9 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
         if let popoverPresentationController = vc.popoverPresentationController {
             popoverPresentationController.delegate = self
             popoverPresentationController.permittedArrowDirections = .up
-            popoverPresentationController.sourceView = referralsButton
-            popoverPresentationController.sourceRect = referralsButton.bounds
+            popoverPresentationController.sourceItem = referralsButton
             popoverPresentationController.backgroundColor = ThemeColor.primaryUi01()
-            popoverPresentationController.passthroughViews = [referralsButton, navigationController?.navigationBar, tabBarController?.tabBar, view].compactMap({$0})
+            popoverPresentationController.passthroughViews = [NavigationManager.sharedManager.miniPlayer?.view, navigationController?.navigationBar, tabBarController?.tabBar, view].compactMap({$0})
         }
         return vc
     }

@@ -14,6 +14,7 @@ struct EndOfYear {
         case y2022
         case y2023
         case y2024
+        case y2025
 
         var modelType: StoryModel.Type? {
             switch self {
@@ -23,6 +24,8 @@ struct EndOfYear {
                 EndOfYear2023StoriesModel.self
             case .y2024:
                 EndOfYear2024StoriesModel.self
+            case .y2025:
+                EndOfYear2025StoriesModel.self
             }
         }
 
@@ -38,11 +41,20 @@ struct EndOfYear {
                 return "2023"
             case .y2024:
                 return "2024"
+            case .y2025:
+                return "2025"
             }
         }
     }
 
     static var isEligible: Bool { eligibilityChecker?.isEligible ?? false }
+
+    static var isEndOfYearActive: Bool {
+        if FeatureFlag.endOfYear2025.enabled || FeatureFlag.endOfYear2024.enabled || FeatureFlag.endOfYear.enabled {
+            return true
+        }
+        return false
+    }
 
     static var shouldShowBadge: Bool {
         guard let year = currentYear.year else { return false }
@@ -63,7 +75,9 @@ struct EndOfYear {
     private static var state: EndOfYearState = .showModalIfNeeded
 
     static var currentYear: Year {
-        if FeatureFlag.endOfYear2024.enabled {
+        if FeatureFlag.endOfYear2025.enabled {
+            return .y2025
+        } else if FeatureFlag.endOfYear2024.enabled {
             return .y2024
         } else if FeatureFlag.endOfYear.enabled {
             return .y2023
@@ -101,7 +115,12 @@ struct EndOfYear {
 
 
     func showPrompt(in viewController: UIViewController) {
-        guard Self.isEligible, let storyModelType, !Settings.hasShownModalForEndOfYear(storyModelType.year) else {
+        guard Self.isEndOfYearActive,
+              Self.isEligible,
+              let storyModelType,
+              viewController.presentedViewController == nil,
+              !Settings.hasShownModalForEndOfYear(storyModelType.year)
+        else {
             return
         }
 
@@ -109,14 +128,21 @@ struct EndOfYear {
 
         switch Self.currentYear {
         case .y2022:
-            fatalError("Shouldn't reach this")
+        #if DEBUG
+            assertionFailure("Shouldn't reach this")
+        #endif
+            return
         case .y2023:
             viewModel = .init(buttonTitle: L10n.eoyViewYear, description: L10n.eoyDescription, backgroundImageName: "modal_cover")
         case .y2024:
             viewModel = .init(buttonTitle: L10n.playback2024ViewYear, description: L10n.playback2024Description, backgroundImageName: "playback-featured")
+        case .y2025:
+            viewModel = .init(buttonTitle: L10n.playback2025ViewYear, description: L10n.playback2025Description, backgroundImageName: "playback-2025-featured")
         }
 
-        BottomSheetSwiftUIWrapper.present(EndOfYearModal(year: storyModelType.year, model: viewModel), autoSize: true, in: viewController)
+        BottomSheetSwiftUIWrapper.present(EndOfYearModal(year: storyModelType.year, model: viewModel), autoSize: true, in: viewController) {
+            Analytics.track(.endOfYearModalDismissed, properties: ["current_year": EndOfYear.currentYear.literalValue])
+        }
         Settings.setHasShownModalForEndOfYear(true, year: storyModelType.year)
     }
 
@@ -140,6 +166,16 @@ struct EndOfYear {
         }
     }
 
+    var configuration: StoriesConfiguration {
+        let configuration = StoriesConfiguration()
+        if EndOfYear.currentYear == .y2025 {
+            configuration.closeAndDismissAfterFinished = true
+            configuration.loadingIsTheFirstStory = FeatureFlag.endOfYearLoadIsFirstStory.enabled
+            configuration.defaultStoriesCount = 11
+        }
+        return configuration
+    }
+
     func showStories(in viewController: UIViewController, from source: EndOfYearPresentationSource) {
         guard let storyModelType else { return }
 
@@ -156,7 +192,7 @@ struct EndOfYear {
 
         let model = storyModelType.init()
 
-        let storiesViewController = StoriesHostingController(rootView: StoriesView(dataSource: EndOfYearStoriesDataSource(model: model)).padding(storiesPadding))
+        let storiesViewController = StoriesHostingController(rootView: StoriesView(dataSource: EndOfYearStoriesDataSource(model: model), configuration: configuration).padding(storiesPadding))
         storiesViewController.view.backgroundColor = .black
         storiesViewController.modalPresentationStyle = presentationMode
 
@@ -166,7 +202,7 @@ struct EndOfYear {
         }
 
         viewController.present(storiesViewController, animated: true, completion: nil)
-        Analytics.track(.endOfYearStoriesShown, properties: ["source": source.rawValue, "year": EndOfYear.currentYear.literalValue])
+        Analytics.track(.endOfYearStoriesShown, properties: ["source": source.rawValue, "current_year": EndOfYear.currentYear.literalValue])
     }
 
     static func share(assets: [Any], model: StoriesModel, storyIdentifier: String = "unknown", onDismiss: (() -> Void)? = nil) {
@@ -180,21 +216,23 @@ struct EndOfYear {
         activityViewController.popoverPresentationController?.sourceView = presenter?.view
 
         activityViewController.completionWithItemsHandler = { activity, success, _, _ in
-            NotificationCenter.postOnMainThread(notification: Constants.Notifications.closedNonOverlayableWindow)
             if !success && activity == nil {
                 fakeViewController.dismiss(animated: false)
             }
 
             if let activity, success {
-                Analytics.track(.endOfYearStoryShared, properties: ["activity": activity.rawValue, "story": storyIdentifier])
-                fakeViewController.dismiss(animated: false)
+                let properties = ["activity": activity.rawValue, "story": storyIdentifier, "from": "button", "current_year": EndOfYear.currentYear.literalValue]
+                Analytics.track(.endOfYearStoryShared, properties: properties)
+                DispatchQueue.main.async {
+                    model.recordPlaybackShare(properties: properties.merging(["source": "end_of_year"]) { $1 })
+                    fakeViewController.dismiss(animated: false)
+                }
             }
         }
 
         // Present the fake view controller first to avoid issues with stories being dismissed
         presenter?.present(fakeViewController, animated: false) { [weak fakeViewController] in
             // Present the share sheet
-            NotificationCenter.postOnMainThread(notification: Constants.Notifications.openingNonOverlayableWindow)
             fakeViewController?.present(activityViewController, animated: true) {
                 // After the share sheet is presented we take the snapshot
                 // This action needs to happen on the main thread because
@@ -224,6 +262,7 @@ struct EndOfYear {
 extension EndOfYear {
     static var defaultDuration: TimeInterval {
         switch currentYear {
+        case .y2025: return 7.seconds
         case .y2024: return 10.seconds
         default: return 7.seconds
         }
@@ -233,6 +272,7 @@ extension EndOfYear {
 class StoriesHostingController<ContentView: View>: UIHostingController<ContentView> {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         switch EndOfYear.currentYear {
+        case .y2025: return .default
         case .y2024: return .darkContent
         default: return .lightContent
         }

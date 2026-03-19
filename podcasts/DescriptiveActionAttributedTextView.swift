@@ -15,6 +15,7 @@ struct DescriptiveActionAttributedTextView: View {
     var body: some View {
         Text(makeAttributedString())
             .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
             .foregroundColor(theme.primaryText01)
             .environment(\.openURL, OpenURLAction { url in
                 onLinkTap?()
@@ -25,7 +26,7 @@ struct DescriptiveActionAttributedTextView: View {
 
     private func makeAttributedString() -> AttributedString {
         var attributed = (try? AttributedString(markdown: text)) ?? AttributedString(text)
-        attributed.font = .systemFont(ofSize: 15.0)
+        attributed.font = .subheadline
         for run in attributed.runs {
             if let _ = run.link {
                 attributed[run.range].foregroundColor = theme.secondaryInteractive01

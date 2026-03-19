@@ -118,6 +118,8 @@ extension ShelfActionsViewController: UITableViewDelegate, UITableViewDataSource
                 self.playerActionsDelegate?.transcriptTapped()
             case.download:
                 self.playerActionsDelegate?.downloadTapped()
+            case .addToPlaylist:
+                self.playerActionsDelegate?.presentManualPlaylistsChooser()
             }
         }
     }
@@ -193,6 +195,10 @@ extension ShelfActionsViewController: UITableViewDelegate, UITableViewDataSource
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        tableView.isEditing ? UITableView.automaticDimension : CGFloat.leastNonzeroMagnitude
+    }
+
+    func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
         tableView.isEditing ? Constants.Values.tableSectionHeaderHeight : CGFloat.leastNonzeroMagnitude
     }
 

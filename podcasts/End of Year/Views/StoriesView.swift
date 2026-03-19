@@ -3,7 +3,6 @@ import PocketCastsServer
 
 struct StoriesView: View {
     @ObservedObject private var model: StoriesModel
-
     @ObservedObject private var syncProgressModel: SyncYearListeningProgress
 
     @Environment(\.accessibilityShowButtonShapes) var showButtonShapes: Bool
@@ -12,8 +11,11 @@ struct StoriesView: View {
     /// If it's longer than that, it's considered a gesture
     private let maximumTapTime: Double = 0.35
 
+    @State private var loadAnimationFinished: Bool = false
+
     init(dataSource: StoriesDataSource, configuration: StoriesConfiguration = StoriesConfiguration(), syncProgressModel: SyncYearListeningProgress = .shared) {
-        model = StoriesModel(dataSource: dataSource, configuration: configuration)
+        let model = StoriesModel(dataSource: dataSource, configuration: configuration)
+        _model = ObservedObject(initialValue: model)
         self.syncProgressModel = syncProgressModel
     }
 
@@ -21,7 +23,7 @@ struct StoriesView: View {
 
     @ViewBuilder
     var body: some View {
-        if model.isReady {
+        if model.isReady, loadAnimationFinished || !model.configuration.loadingIsTheFirstStory {
             stories
             .onAppear {
                 model.start()
@@ -50,6 +52,8 @@ struct StoriesView: View {
                     }
                     .environment(\.animated, true)
                     .environment(\.pauseState, pauseState)
+                    .environmentObject(model)
+                    .environmentObject(syncProgressModel)
 
                 if model.shouldShowUpsell() {
                     model.paywallView().zIndex(6).onAppear {
@@ -65,7 +69,6 @@ struct StoriesView: View {
             }
 
             header
-                .foregroundStyle(model.indicatorColor)
 
             // Hide the share button if needed
             if model.showShareButton(index: model.currentStoryIndex) && !model.shouldShowUpsell(), let shareView = model.overlaidShareView() {
@@ -85,13 +88,13 @@ struct StoriesView: View {
             }
         }
         .background(Color.black)
-        .alert(L10n.eoyShareThisStoryTitle,
-               isPresented: $model.screenshotTaken) {
-            Button(L10n.eoyNotNow) { model.start() }
-            Button(L10n.share) { model.share() }.keyboardShortcut(.defaultAction)
-        } message: {
-            Text(L10n.eoyShareThisStoryMessage)
-        }
+        .modifier(
+            ShareAlertModifier(
+                state: model.shareAlertState,
+                shareAction: model.share,
+                notNowAction: model.start
+            )
+        )
         .onChange(of: pauseState.isPaused) { isPaused in
             if isPaused {
                 model.pause()
@@ -104,18 +107,25 @@ struct StoriesView: View {
     // View shown while data source is preparing
     var loading: some View {
         ZStack {
-            Spacer()
-
-            VStack(spacing: 15) {
-                let progress = syncProgressModel.progress
-                CircularProgressView(value: progress, stroke: model.indicatorColor, strokeWidth: 6)
-                    .frame(width: 40, height: 40)
-                Text(L10n.loading)
-                    .foregroundColor(model.indicatorColor)
-                    .font(style: .body)
+            if model.configuration.loadingIsTheFirstStory {
+                IntroStory2025(afterLoading: false) {
+                    loadAnimationFinished = true
+                    model.loadingEnded()
+                }
+                .environmentObject(syncProgressModel)
+            } else {
+                Spacer()
+                VStack(spacing: 15) {
+                    let progress = syncProgressModel.progress
+                    CircularProgressView(value: progress, stroke: model.indicatorColor(for: model.currentStoryIndex), strokeWidth: 6)
+                        .frame(width: 40, height: 40)
+                    if EndOfYear.currentYear != .y2025 {
+                        Text(L10n.loading)
+                            .foregroundColor(model.indicatorColor(for: model.currentStoryIndex))
+                            .font(style: .body)
+                    }
+                }
             }
-
-            storySwitcher
             header
         }
         .background(model.primaryBackgroundColor)
@@ -124,39 +134,51 @@ struct StoriesView: View {
     var failed: some View {
         ZStack {
             Spacer()
-
-            Text(L10n.eoyStoriesFailed)
-                .foregroundColor(model.indicatorColor)
-
+            if EndOfYear.currentYear == .y2025 {
+                EmptyView()
+            } else {
+                Text(L10n.eoyStoriesFailed)
+                    .foregroundColor(model.indicatorColor(for: model.currentStoryIndex))
+            }
             storySwitcher
             header
         }
         .background(model.primaryBackgroundColor)
         .onAppear {
-            Analytics.track(.endOfYearStoriesFailedToLoad, properties: ["year": EndOfYear.currentYear.literalValue])
+            Analytics.track(.endOfYearStoriesFailedToLoad, properties: ["current_year": EndOfYear.currentYear.literalValue])
+            if EndOfYear.currentYear == .y2025 {
+                model.stopAndDismiss()
+                Toast.show(L10n.playback2025FailedToLoad)
+            }
         }
+    }
+
+    var indicatorStyle: StoryIndicatorStyle {
+        return StoryIndicatorStyle(backgroundColor: model.indicatorColor(for: model.currentStoryIndex), foregroundColor: model.indicatorColor(for: model.currentStoryIndex))
     }
 
     // Header containing the close button and the rectangles
     var header: some View {
         ZStack {
             VStack {
-                HStack(spacing: 2) {
-                    ForEach(0 ..< model.numberOfStories, id: \.self) { x in
-                        StoryIndicator(index: x)
+                HStack(spacing: model.indicatorSpacing) {
+                    ForEach(0 ..< (model.isReady ? model.numberOfStories : model.configuration.defaultStoriesCount), id: \.self) { x in
+                        StoryIndicator(index: x, style: model.indicatorStyle(for: model.currentStoryIndex), progressModel: model.progressPublisher)
                     }
                 }
-                .frame(height: Constants.storyIndicatorHeight)
+                .frame(height: model.indicatorHeight)
                 .padding(.top, 4)
                 Spacer()
             }
             .padding(.leading, Constants.storyIndicatorVerticalPadding)
             .padding(.trailing, Constants.storyIndicatorVerticalPadding)
 
-            closeButton
-                .foregroundColor(model.indicatorColor)
+            if model.shouldShowDismissButton() {
+                closeButton
+            }
         }
         .padding(.top, Constants.headerTopPadding)
+        .foregroundStyle(model.indicatorColor(for: model.currentStoryIndex))
     }
 
     var closeButton: some View {
@@ -248,7 +270,6 @@ struct StoriesView: View {
 
 private extension StoriesView {
     struct Constants {
-        static let storyIndicatorHeight: CGFloat = 2
         static let storyIndicatorVerticalPadding: CGFloat = 13
         static let headerTopPadding: CGFloat = 5
 
@@ -282,6 +303,23 @@ private struct CloseButtonStyle: ButtonStyle {
     private enum Constants {
         static let closeButtonPadding: CGFloat = 13
         static let closeButtonRadius: CGFloat = 5
+    }
+}
+
+private struct ShareAlertModifier: ViewModifier {
+    @ObservedObject var state: StoriesShareAlertState
+    let shareAction: () -> Void
+    let notNowAction: () -> Void
+
+    func body(content: Content) -> some View {
+        content
+            .alert(L10n.eoyShareThisStoryTitle,
+                   isPresented: $state.isPresented) {
+                Button(L10n.eoyNotNow) { notNowAction() }
+                Button(L10n.share) { shareAction() }.keyboardShortcut(.defaultAction)
+            } message: {
+                Text(L10n.eoyShareThisStoryMessage)
+            }
     }
 }
 

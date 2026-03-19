@@ -1,7 +1,7 @@
 import Foundation
 import PocketCastsUtils
 
-struct OnboardingFlow {
+struct OnboardingFlow: AnalyticsSourceProvider {
     typealias Context = [String: Any]
 
     static var shared = OnboardingFlow()
@@ -68,9 +68,10 @@ struct OnboardingFlow {
         case .encourageAccountCreation:
             flowController = InformationalModalViewModel.makeController()
 
-        case .initialOnboarding, .loggedOut: fallthrough
+        case .initialOnboarding:
+            flowController = LoginCoordinator.make(in: navigationController, isOnboarding: true)
         default:
-            flowController = LoginCoordinator.make(in: navigationController)
+            flowController = LoginCoordinator.make(in: navigationController, isOnboarding: false)
         }
 
         return flowController
@@ -95,7 +96,7 @@ struct OnboardingFlow {
 
     /// Resets the internal flow state to none and clears any analytics sources
     mutating func reset() {
-        if FeatureFlag.notificationsRevamp.enabled, (currentFlow == .initialOnboarding) || (currentFlow == .encourageAccountCreation) {
+        if (currentFlow == .initialOnboarding) || (currentFlow == .encourageAccountCreation) {
             NavigationManager.sharedManager.showNotificationsPermissionsModal()
         }
         source = .unknown
@@ -194,5 +195,9 @@ struct OnboardingFlow {
                 false
             }
         }
+    }
+
+    var analyticsSource: AnalyticsSource {
+        .onboarding
     }
 }

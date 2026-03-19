@@ -2,6 +2,7 @@
 import UIKit
 
 class AccountActionCell: ThemeableCell {
+
     var imageAndTextColor: UIColor? = nil {
         didSet {
             handleThemeDidChange()
@@ -11,7 +12,7 @@ class AccountActionCell: ThemeableCell {
     @IBOutlet var cellLabel: ThemeableLabel! {
         didSet {
             cellLabel.style = iconStyle
-            cellLabel.font = UIFont.font(ofSize: 15.0, scalingWith: .body)
+            cellLabel.font = UIFont.font(ofSize: 16.0, scalingWith: .callout)
         }
     }
 
@@ -30,6 +31,7 @@ class AccountActionCell: ThemeableCell {
     @IBOutlet var counterLabel: ThemeableLabel! {
         didSet {
             counterLabel.style = .primaryInteractive02
+            counterLabel.font = UIFont.font(ofSize: 15, weight: .medium, scalingWith: .callout)
         }
     }
 
@@ -47,20 +49,30 @@ class AccountActionCell: ThemeableCell {
             return
         }
 
-
         cellImage.tintColor = imageAndTextColor
         cellLabel.textColor = imageAndTextColor
     }
 
+    private var disclosureImageView: TintableImageView?
+
     var showsDisclosureIndicator = false {
         didSet {
             if showsDisclosureIndicator {
-                accessoryView = TintableImageView(image: UIImage(named: "chevron"))
+                let imageView = TintableImageView(image: UIImage(named: "chevron"))
+                disclosureImageView = imageView
+                accessoryView = imageView
                 updateColor()
+                updateSize()
             } else {
+                disclosureImageView = nil
                 accessoryView = nil
             }
         }
+    }
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        updateSize()
     }
 
     override func prepareForReuse() {
@@ -68,13 +80,23 @@ class AccountActionCell: ThemeableCell {
 
         imageAndTextColor = nil
 
-        updateImageScale()
+        updateSize()
     }
 
-    func updateImageScale() {
-        let category = UIApplication.shared.preferredContentSizeCategory
-        let scale = ScaleFactorModifier.scaleFactor(for: category)
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
 
-        cellImage.transform = CGAffineTransform(scaleX: scale, y: scale)
+        if traitCollection.preferredContentSizeCategory != previousTraitCollection?.preferredContentSizeCategory {
+            updateSize()
+        }
     }
+
+    func updateSize() {
+        let metric = UIFontMetrics(forTextStyle: .largeTitle)
+
+        let iconSize = max(24, metric.scaledValue(for: 24))
+        cellImage.updateSizeConstraints(to: iconSize)
+        disclosureImageView?.updateSizeConstraints(to: iconSize)
+    }
+
 }

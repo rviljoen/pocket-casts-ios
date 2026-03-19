@@ -1,5 +1,5 @@
-import FMDB
 import PocketCastsUtils
+import Foundation
 
 /// Calculates user End of Year stats
 class EndOfYearDataManager {
@@ -215,7 +215,7 @@ class EndOfYearDataManager {
         dbQueue.read { db in
             do {
                 let query = """
-                            SELECT DISTINCT \(DataManager.episodeTableName).uuid,
+                            SELECT DISTINCT \(DataManager.episodeTableName).uuid as episodeUuid,
                                 SUM(playedUpTo) as totalPlayedTime,
                                 COUNT(\(DataManager.episodeTableName).id) as played_episodes,
                                 \(DataManager.podcastTableName).*

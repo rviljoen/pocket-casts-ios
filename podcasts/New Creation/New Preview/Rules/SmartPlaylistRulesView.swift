@@ -1,156 +1,187 @@
 import SwiftUI
 import PocketCastsDataModel
+import PocketCastsUtils
 
 struct SmartPlaylistRulesView: View {
     @State var isExpanded: Bool = false
     @EnvironmentObject var theme: Theme
 
-    let viewModel: PlaylistPreviewViewModel
+    @ObservedObject var viewModel: PlaylistPreviewViewModel
 
     var body: some View {
-        switch viewModel.playlistMode {
-        case .creation:
-            if viewModel.isInPreview {
-                VStack(alignment: .leading) {
-                    if !viewModel.enabledRules.isEmpty {
-                        Text(L10n.playlistSmartPreviewEnabledRules)
-                            .font(size: 22.0, style: .body, weight: .bold)
-                            .foregroundStyle(theme.primaryText01)
-                        SmartPlaylistRulesContainerView(
-                            rules: viewModel.enabledRules,
-                            action: viewModel.action
-                        )
-                        .padding(.vertical, 16.0)
-                    }
-                    if !viewModel.availableRules.isEmpty {
-                        DisclosureGroup(isExpanded: $isExpanded) {
-                            SmartPlaylistRulesContainerView(
-                                rules: viewModel.availableRules,
-                                action: viewModel.action
-                            )
-                            .padding(.vertical, 16.0)
-                        } label: {
-                            Text(L10n.playlistSmartPreviewOtherRules)
-                                .font(size: 22.0, style: .body, weight: .bold)
-                                .foregroundStyle(theme.primaryText01)
-                        }
-                        .accentColor(theme.primaryIcon01)
-                        .animation(.default, value: isExpanded)
-                    }
-                    // TODO: Remove this and move it into the episode section
-                    Text(L10n.playlistPreviewTitle(viewModel.newPlaylist.playlistName))
-                        .font(size: 22.0, style: .body, weight: .bold)
-                        .foregroundStyle(theme.primaryText01)
-                        .padding(.top, 16.0)
-                    Spacer()
-                }
-                .padding(.horizontal, 16.0)
-            } else {
-                VStack(alignment: .leading) {
-                    Text(viewModel.newPlaylist.playlistName)
-                        .font(size: 22.0, style: .body, weight: .bold)
-                        .foregroundStyle(theme.primaryText01)
-                        .padding(.bottom, 2.0)
-                    Text(L10n.playlistSmartPreviewDescription)
-                        .font(size: 14.0, style: .body, weight: .regular)
-                        .lineLimit(2)
-                        .foregroundStyle(theme.primaryText02)
-                        .multilineTextAlignment(.leading)
-                        .padding(.trailing, 8.0)
-                        .padding(.bottom, 24.0)
-                    SmartPlaylistRulesContainerView(
-                        rules: viewModel.availableRules,
+        List {
+            switch viewModel.playlistMode {
+            case .creation:
+                if viewModel.isInPreview {
+                    SmartPlaylistRulesInPreviewSection(
+                        enabledRules: viewModel.enabledRules,
+                        availableRules: viewModel.availableRules,
+                        action: viewModel.action
+                    )
+
+                    SmartPlaylistRulesEpisodesSection(
+                        episodes: viewModel.episodes,
+                        playlistName: viewModel.newPlaylist.playlistName
+                    )
+                } else {
+                    SmartPlaylistRulesDefaultSection(
+                        title: viewModel.newPlaylist.playlistName,
+                        description: L10n.playlistSmartPreviewDescription,
+                        availableRules: viewModel.availableRules,
                         action: viewModel.action
                     )
                 }
-                .padding(.horizontal, 16.0)
+            case .edit:
+                SmartPlaylistRulesDefaultSection(
+                    title: L10n.playlistSmartRulesTitle,
+                    description: nil,
+                    availableRules: viewModel.availableRules,
+                    action: viewModel.action
+                )
+
+                if viewModel.newPlaylistHasChanged {
+                    SmartPlaylistRulesEpisodesSection(
+                        episodes: viewModel.episodes,
+                        playlistName: viewModel.newPlaylist.playlistName
+                    )
+                }
             }
-        case .edit:
-            SmartPlaylistRulesContainerView(
-                rules: viewModel.availableRules,
-                action: viewModel.action
-            )
-            .padding(.horizontal, 16.0)
         }
+        .listStyle(.plain)
+        .scrollIndicators(.hidden)
     }
 }
 
-struct SmartPlaylistRulesContainerView: View {
+fileprivate struct SmartPlaylistRulesDefaultSection: View {
     @EnvironmentObject var theme: Theme
 
-    let rules: [SmartPlaylistRuleInfo]
+    let title: String
+    let description: String?
+    let availableRules: [SmartPlaylistRuleInfo]
     let action: (SmartPlaylistRule) -> Void
 
     var body: some View {
-        VStack(spacing: 0) {
-            ForEach(rules) { rule in
-                SmartPlaylistRuleRowView(
-                    rule: rule.type,
-                    description: rule.description,
-                    hideDivider: rule.type == rules.last?.type,
+        Group {
+            Text(title)
+                .font(size: 22.0, style: .title2, weight: .bold)
+                .fixedSize(horizontal: false, vertical: true)
+                .foregroundStyle(theme.primaryText01)
+                .listRowClearStyle()
+            if let description {
+                Text(description)
+                    .font(size: 14.0, style: .body, weight: .regular)
+                    .lineLimit(4)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .foregroundStyle(theme.primaryText02)
+                    .multilineTextAlignment(.leading)
+                    .padding(.top, 4.0)
+                    .padding(.trailing, 8.0)
+                    .listRowClearStyle()
+            }
+            SmartPlaylistRulesContainerView(
+                rules: availableRules,
+                action: action
+            )
+            .padding(.top, 24.0)
+            .padding(.bottom, 16.0)
+            .listRowClearStyle()
+        }
+        .padding(.horizontal, 16.0)
+    }
+}
+
+fileprivate struct SmartPlaylistRulesInPreviewSection: View {
+    @State var isExpanded: Bool = false
+    @EnvironmentObject var theme: Theme
+
+    let enabledRules: [SmartPlaylistRuleInfo]
+    let availableRules: [SmartPlaylistRuleInfo]
+    let action: (SmartPlaylistRule) -> Void
+
+    var body: some View {
+        Group {
+            if !enabledRules.isEmpty {
+                SmartPlaylistRulesContainerView(
+                    rules: enabledRules,
                     action: action
                 )
+                .padding(.vertical, 16.0)
+                .listRowClearStyle()
+            }
+
+            if !availableRules.isEmpty {
+                DisclosureGroup(isExpanded: $isExpanded) {
+                    SmartPlaylistRulesContainerView(
+                        rules: availableRules,
+                        action: action
+                    )
+                    .listRowClearStyle()
+                    .padding(.vertical, 16.0)
+                    .padding(.leading, -18.0)
+                } label: {
+                    Text(L10n.playlistSmartPreviewMoreRules)
+                        .font(size: 22.0, style: .title2, weight: .bold)
+                        .foregroundStyle(theme.primaryText01)
+                        .listRowClearStyle()
+                }
+                .accentColor(theme.primaryIcon01)
+                .animation(.default, value: isExpanded)
+                .listRowClearStyle()
             }
         }
-        .background(
-            RoundedRectangle(cornerRadius: 8.0, style: .continuous)
-                .fill(theme.primaryUi02Active)
-        )
+        .padding(.horizontal, 16.0)
     }
 }
 
-struct SmartPlaylistRuleRowView: View {
+struct SmartPlaylistRulesEpisodesSection: View {
     @EnvironmentObject var theme: Theme
 
-    let rule: SmartPlaylistRule
-    let description: String?
-    let hideDivider: Bool
-    let action: (SmartPlaylistRule) -> Void
+    let episodes: [ListEpisode]
+    let playlistName: String
 
     var body: some View {
-        Button {
-            action(rule)
-        } label: {
-            ZStack {
-                if !hideDivider {
-                    VStack {
-                        Spacer()
-                        Rectangle()
-                            .fill(theme.primaryUi05)
-                            .frame(height: 1)
-                            .padding(.leading, 40)
-                    }
+        Group {
+            Text(L10n.playlistPreviewTitle(playlistName))
+                .font(size: 22.0, style: .title2, weight: .bold)
+                .foregroundStyle(theme.primaryText01)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 16.0)
+                .padding(.bottom, 16.0)
+                .padding(.horizontal, 16.0)
+                .listRowClearStyle()
+
+            if episodes.isEmpty {
+                EmptyStateView(
+                    title: FeatureFlag.playlistsRebranding.enabled ? L10n.filterCreateNoEpisodes.sentenceCased : L10n.filterCreateNoEpisodes,
+                    message: L10n.playlistCreateNoEpisodesDescription,
+                    icon: {
+                        Image("empty-playlist-info")
+                    },
+                    actions: [],
+                    style: .defaultStyle
+                )
+                .listRowClearStyle()
+                .padding(.horizontal, 16.0)
+            } else {
+                ForEach(episodes, id: \.id) { episode in
+                    PlaylistEpisodePreviewRowView(
+                        episode: episode.episode
+                    )
+                        .frame(minHeight: 80)
+                        .listRowClearStyle()
                 }
-                HStack(alignment: .center) {
-                    Image(rule.iconName)
-                        .renderingMode(.template)
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundStyle(theme.primaryIcon03)
-                        .frame(width: 24, height: 24)
-                        .padding(.trailing, 8.0)
-                    Text(rule.title)
-                        .foregroundStyle(theme.primaryText01)
-                        .font(size: 17, style: .body)
-                        .lineLimit(1)
-                    Spacer()
-                    if let description {
-                        Text(description)
-                            .foregroundStyle(theme.primaryText02)
-                            .font(size: 17, style: .body)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-                    }
-                    Image("cs-chevron")
-                        .renderingMode(.template)
-                        .foregroundStyle(theme.primaryIcon02)
-                        .frame(width: 24, height: 24)
-                        .padding(.trailing, 8.0)
-                }
+                .padding(.leading, 16.0)
             }
-            .padding(.leading, 16.0)
         }
-        .frame(height: 44)
+    }
+}
+
+fileprivate extension View {
+    func listRowClearStyle() -> some View {
+        self
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(EmptyView())
     }
 }
 
@@ -176,7 +207,6 @@ struct SmartPlaylistRuleRowView: View {
 
         private func model() -> EpisodeFilter {
             let filter = EpisodeFilter()
-            filter.rawPlaylistType = 0
             filter.playlistName = "New Releases"
             filter.podcastSmartRuleApplied = true
             return filter

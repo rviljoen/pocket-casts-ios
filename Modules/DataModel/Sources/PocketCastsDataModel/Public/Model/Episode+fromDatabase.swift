@@ -1,5 +1,4 @@
 import Foundation
-import FMDB
 
 extension Episode {
     static func from(resultSet rs: PCDBResultSet) -> Episode? {
@@ -48,6 +47,7 @@ extension Episode {
         episode.starredModified = rs.longLongInt(forColumn: "starredModified")
         episode.deselectedChapters = rs.string(forColumn: "deselectedChapters")
         episode.deselectedChaptersModified = rs.longLongInt(forColumn: "deselectedChaptersModified")
+        episode.wasDeleted = rs.bool(forColumn: "wasDeleted")
         return episode
     }
 }

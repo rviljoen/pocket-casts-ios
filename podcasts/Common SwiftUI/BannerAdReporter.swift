@@ -18,12 +18,26 @@ struct BannerAdReporter {
                 return L10n.bannerAdsReportOther
             }
         }
+
+        var analyticsValue: String {
+            switch self {
+            case .broken:
+                "broken"
+            case .malicious:
+                "malicious"
+            case .tooOften:
+                "too_often"
+            case .other:
+                "other"
+            }
+        }
     }
 
     /// Shows the ad reporting bottom sheet with options to report various problems with an ad
-    static func show() {
+    static func show(for adID: String, from source: String) {
         func handle(action: ReportActionType) {
-            // Handling will be added in a separate PR
+            AnalyticsHelper.bannerReport(adID: adID, reason: action.analyticsValue, location: source)
+            Toast.show(L10n.bannerAdsReportConfirmation)
         }
 
         let reportOptions = OptionsPicker(title: nil)

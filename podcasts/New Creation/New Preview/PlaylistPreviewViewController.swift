@@ -4,30 +4,15 @@ import PocketCastsDataModel
 import PocketCastsUtils
 
 class PlaylistPreviewViewController: PCViewController {
-    enum Cells {
-        static let episodeCellId = "EpisodePreviewCellIdentifier"
-        static let emptyEpisodesCellId = "EmptyEpisodesCellIdentifier"
-    }
-
     weak var delegate: FilterCreatedDelegate?
 
     private let playlistName: String
+    private var playlistUUID: String = ""
+    private var onEditPlaylist: (() -> Void)?
+    private let mode: PlaylistPreviewViewModel.PlaylistMode
     private(set) var viewModel: PlaylistPreviewViewModel!
     private var cancellables = Set<AnyCancellable>()
 
-    var previewTable: ThemeableTable! {
-        didSet {
-            previewTable.themeStyle = .primaryUi01
-            previewTable.translatesAutoresizingMaskIntoConstraints = false
-            previewTable.register(UINib(nibName: "EpisodePreviewCell", bundle: nil), forCellReuseIdentifier: Cells.episodeCellId)
-            previewTable.register(SmartPlaylistRulesCell.self, forCellReuseIdentifier: SmartPlaylistRulesCell.reuseIdentifier)
-            previewTable.register(UITableViewCell.self, forCellReuseIdentifier: Cells.emptyEpisodesCellId)
-            previewTable.rowHeight = UITableView.automaticDimension
-            previewTable.delegate = self
-            previewTable.dataSource = self
-            previewTable.separatorStyle = .none
-        }
-    }
     private var footerView: ThemeableView! {
         didSet {
             footerView.translatesAutoresizingMaskIntoConstraints = false
@@ -54,7 +39,16 @@ class PlaylistPreviewViewController: PCViewController {
 
     init(playlistName: String) {
         self.playlistName = playlistName
+        self.mode = .creation
         super.init(nibName: nil, bundle: nil)
+    }
+
+    init(playlist: EpisodeFilter, onEditPlaylist: @escaping () -> Void) {
+        self.playlistName = playlist.playlistName
+        self.mode = .edit
+        self.onEditPlaylist = onEditPlaylist
+        super.init(nibName: nil, bundle: nil)
+        self.playlistUUID = playlist.uuid
     }
 
     @MainActor required init?(coder: NSCoder) {
@@ -77,17 +71,35 @@ class PlaylistPreviewViewController: PCViewController {
     override func viewWillAppear(_ animated: Bool) { }
 
     private func createNewPlaylist() {
-        let newPlaylist = PlaylistManager.createNewFilter()
-        newPlaylist.setTitle(playlistName, defaultTitle: L10n.playlistsDefaultNewPlaylist.localizedCapitalized)
+        let playlist: EpisodeFilter
 
-        viewModel = PlaylistPreviewViewModel(newPlaylist: newPlaylist, playlistMode: .creation) { [weak self] rule in
+        switch mode {
+            case .creation:
+            playlist = PlaylistManager.createNewPlaylist()
+            playlist.setTitle(playlistName, defaultTitle: L10n.playlistsDefaultNewPlaylist.localizedCapitalized)
+            playlistUUID = playlist.uuid
+        case .edit:
+            let result = DataManager.sharedManager.findPlaylist(uuid: playlistUUID)
+            if result == nil {
+                playlist = PlaylistManager.createNewPlaylist()
+                playlist.setTitle(playlistName, defaultTitle: L10n.playlistsDefaultNewPlaylist.localizedCapitalized)
+            } else {
+                playlist = result!
+            }
+        }
+
+        viewModel = PlaylistPreviewViewModel(newPlaylist: playlist, playlistMode: mode) { [weak self] rule in
             self?.push(rule: rule)
         }
         viewModel.$newPlaylistHasChanged
+            .dropFirst()
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
-                self?.updateSaveButtonEnabledState()
-                self?.reloadData()
+                if self?.mode == .creation {
+                    self?.updateSaveButtonEnabledState()
+                } else {
+                    self?.onEditPlaylist?()
+                }
             }
             .store(in: &cancellables)
     }
@@ -107,61 +119,91 @@ class PlaylistPreviewViewController: PCViewController {
 
         view.backgroundColor = AppTheme.viewBackgroundColor()
 
-        previewTable = ThemeableTable()
-        view.addSubview(previewTable)
+        let list = SmartPlaylistRulesView(
+            viewModel: viewModel
+        ).insertThemedUIView(in: self)
+        list.translatesAutoresizingMaskIntoConstraints = false
 
-        footerView = ThemeableView()
-        view.addSubview(footerView)
+        if mode == .edit {
+            NSLayoutConstraint.activate([
+                list.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                list.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+                list.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                list.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ])
+        } else {
+            footerView = ThemeableView()
+            view.addSubview(footerView)
 
-        saveButton = UIButton(type: .custom)
-        footerView.addSubview(saveButton)
+            saveButton = UIButton(type: .custom)
+            footerView.addSubview(saveButton)
+            NSLayoutConstraint.activate([
+                footerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+                footerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+                footerView.heightAnchor.constraint(equalTo: saveButton.heightAnchor, constant: 32),
+                footerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
 
-        NSLayoutConstraint.activate([
-            footerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            footerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            footerView.heightAnchor.constraint(equalToConstant: 110),
-            footerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
+                saveButton.leadingAnchor.constraint(equalTo: footerView.leadingAnchor, constant: 16),
+                saveButton.trailingAnchor.constraint(equalTo: footerView.trailingAnchor, constant: -16),
+                saveButton.heightAnchor.constraint(greaterThanOrEqualToConstant: 56),
 
-            saveButton.leadingAnchor.constraint(equalTo: footerView.leadingAnchor, constant: 16),
-            saveButton.trailingAnchor.constraint(equalTo: footerView.trailingAnchor, constant: -16),
-            saveButton.bottomAnchor.constraint(equalTo: footerView.bottomAnchor, constant: -34),
-            saveButton.topAnchor.constraint(equalTo: footerView.topAnchor, constant: 16),
-
-            previewTable.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            previewTable.topAnchor.constraint(equalTo: view.topAnchor),
-            previewTable.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            previewTable.bottomAnchor.constraint(equalTo: footerView.topAnchor)
-        ])
+                list.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                list.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+                list.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                list.bottomAnchor.constraint(equalTo: footerView.topAnchor)
+            ])
+        }
 
         view.layoutSubviews()
     }
 
     private func setupSaveButtonTitle() {
-        let attributedTitle = NSAttributedString(string: L10n.playlistPreviewCreateSmartPlaylist, attributes: [NSAttributedString.Key.foregroundColor: ThemeColor.primaryInteractive02(), NSAttributedString.Key.font: UIFont.systemFont(ofSize: 18.0, weight: .semibold)])
-        saveButton.setAttributedTitle(attributedTitle, for: .normal)
+        saveButton.setTitle(L10n.playlistPreviewCreateSmartPlaylist, for: .normal)
+        saveButton.titleLabel?.font = UIFont.font(ofSize: 18.0, weight: .semibold, scalingWith: .headline)
+        saveButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        saveButton.titleLabel?.numberOfLines = 0
+        saveButton.titleLabel?.textAlignment = .center
+        saveButton.tintColor = ThemeColor.primaryInteractive02()
+        saveButton.titleLabel?.lineBreakMode = .byWordWrapping
+        if let label = saveButton.titleLabel {
+            label.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                label.topAnchor.constraint(
+                    equalTo: saveButton.topAnchor, constant: 8
+                ),
+                label.bottomAnchor.constraint(
+                    equalTo: saveButton.bottomAnchor, constant: -8
+                ),
+                label.leadingAnchor.constraint(
+                    equalTo: saveButton.leadingAnchor, constant: 8
+                ),
+                label.trailingAnchor.constraint(
+                    equalTo: saveButton.trailingAnchor, constant: -8
+                ),
+            ])
+        }
     }
 
     private func addCloseButton() {
         let closeButton = createStandardCloseButton(imageName: "cancel")
-        closeButton.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
-
-        let backButtonItem = UIBarButtonItem(customView: closeButton)
-        navigationItem.leftBarButtonItem = backButtonItem
+        closeButton.target = self
+        closeButton.action = #selector(closeTapped)
+        navigationItem.leftBarButtonItem = closeButton
     }
 
     @objc private func closeTapped() {
         if viewModel.isInPreview, viewModel.playlistMode == .creation {
-            PlaylistManager.delete(filter: viewModel.newPlaylist, fireEvent: true)
+            PlaylistManager.delete(playlist: viewModel.newPlaylist, fireEvent: true)
         }
         dismiss()
     }
 
     private func dismiss() {
-        presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
-    }
-
-    private func reloadData() {
-        previewTable.reloadData()
+        if mode == .creation {
+            presentingViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
+        } else {
+            presentingViewController?.dismiss(animated: true, completion: nil)
+        }
     }
 
     private func updateSaveButtonEnabledState() {
@@ -170,13 +212,21 @@ class PlaylistPreviewViewController: PCViewController {
     }
 
     @objc private func saveTapped() {
+        DataManager.sharedManager.bumpSortPositionForAllPlaylists()
+
+        let firstSortPosition = max(0, DataManager.sharedManager.firstSortPositionForPlaylist() - 1)
+        viewModel.newPlaylist.sortPosition = Int32(firstSortPosition)
         viewModel.newPlaylist.syncStatus = SyncStatus.notSynced.rawValue
         viewModel.newPlaylist.isNew = false
         viewModel.removeObserver()
-        DataManager.sharedManager.save(filter: viewModel.newPlaylist)
+        DataManager.sharedManager.save(playlist: viewModel.newPlaylist)
         UserDefaults.standard.set(viewModel.newPlaylist.uuid, forKey: Constants.UserDefaults.lastFilterShown)
         delegate?.filterCreated(newFilter: viewModel.newPlaylist)
-        NotificationCenter.postOnMainThread(notification: Constants.Notifications.filterChanged, object: viewModel.newPlaylist)
+        NotificationCenter.postOnMainThread(notification: Constants.Notifications.playlistChanged, object: viewModel.newPlaylist)
+
+        if Settings.firstTimePlaylistCreated {
+            Settings.shouldShowDragAndDropTip = true
+        }
 
         Analytics.track(.filterCreated, properties: [
             "all_podcasts": viewModel.newPlaylist.filterAllPodcasts,
@@ -194,6 +244,8 @@ class PlaylistPreviewViewController: PCViewController {
             "color": viewModel.newPlaylist.playlistColor().hexString(),
             "icon_name": viewModel.newPlaylist.iconImageName() ?? "unknown"
         ])
+
+        delegate?.presentingPlaylistDetail = true
 
         dismiss()
     }

@@ -1,3 +1,6 @@
+#if canImport(UIKit)
+import UIKit
+#endif
 import Foundation
 import PocketCastsDataModel
 
@@ -64,6 +67,34 @@ extension EpisodeFilter {
         }
     #endif
 
+    #if !os(watchOS) && !APPCLIP
+    @MainActor func grid() -> UIImage {
+        let episodes = DataManager.sharedManager.playlistEpisodes(for: self)
+
+        let items = PlaylistCellViewModel.gridArtworkItems(from: episodes, limit: 4) { $0.podcastUuid }
+
+        return PlaylistArtworkView(items: items)
+            .frame(width: 56.0, height: 56.0)
+            .environmentObject(Theme(previewTheme: carPlayPreviewTheme()))
+            .snapshot()
+    }
+
+    private func carPlayPreviewTheme() -> Theme.ThemeType {
+        guard let interfaceStyle = CarPlayImageHelper.carTraitCollection?.userInterfaceStyle else {
+            return Theme.sharedTheme.activeTheme
+        }
+
+        switch interfaceStyle {
+        case .dark:
+            return .dark
+        case .light:
+            return .light
+        default:
+            return Theme.sharedTheme.activeTheme
+        }
+    }
+    #endif
+
     class func imageForPlaylistIcon(icon: PlaylistIcon) -> UIImage? {
         guard let name = imageName(forPlaylistIcon: icon) else { return nil }
 
@@ -100,7 +131,7 @@ extension EpisodeFilter {
 
             customIcon = Int32(newIcon)
             syncStatus = SyncStatus.notSynced.rawValue
-            DataManager.sharedManager.save(filter: self)
+            DataManager.sharedManager.save(playlist: self)
         }
 
         func playlistColor() -> UIColor {
@@ -126,7 +157,7 @@ extension EpisodeFilter {
     #endif
 
     func maxAutoDownloadEpisodes() -> Int32 {
-        autoDownloadLimit == 0 ? Constants.Values.defaultFilterDownloadLimit : autoDownloadLimit
+        autoDownloadLimit == 0 ? Constants.Values.defaultPlaylistDownloadLimit : autoDownloadLimit
     }
 
     func episodeUuidToAddToQueries() -> String? {

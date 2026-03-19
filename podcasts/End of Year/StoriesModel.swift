@@ -4,7 +4,11 @@ import SwiftUI
 
 @MainActor
 class StoriesModel: ObservableObject {
-    var progress: Double
+    private(set) var progress: Double = 0 {
+        didSet {
+            progressModel.progress = progress
+        }
+    }
 
     @Published var currentStoryIndex: Int = 0
 
@@ -12,13 +16,33 @@ class StoriesModel: ObservableObject {
 
     @Published var failed: Bool = false
 
-    @Published var screenshotTaken: Bool = false
+    private var screenshotTaken: Bool = false {
+        didSet {
+            guard screenshotTaken else {
+                if shareAlertState.isPresented {
+                    setShareAlertPresented(false)
+                }
+                return
+            }
+
+            // Present share alert if the story is shareable
+            guard dataSource.numberOfStories > 0, dataSource.shareableStory(for: currentStoryIndex) != nil else {
+                screenshotTaken = false
+                return
+            }
+
+            setShareAlertPresented(true)
+        }
+    }
+
+    let shareAlertState: StoriesShareAlertState
 
     let activeTier: () -> SubscriptionTier
 
     private let dataSource: StoriesDataSource
     private let publisher: Timer.TimerPublisher
-    private let configuration: StoriesConfiguration
+    let configuration: StoriesConfiguration
+    private let progressModel: StoriesProgressModel
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -26,6 +50,8 @@ class StoriesModel: ObservableObject {
     private var interval: TimeInterval {
         currentStory?.duration ?? 0
     }
+
+    private var loadingCancellable: Cancellable?
 
     private var currentStoryIdentifier: String = ""
 
@@ -43,17 +69,37 @@ class StoriesModel: ObservableObject {
         configuration.storiesToPreload
     }
 
-    init(dataSource: StoriesDataSource, configuration: StoriesConfiguration, activeTier: @autoclosure @escaping () -> SubscriptionTier = SubscriptionHelper.activeTier) {
+    var indicatorHeight: CGFloat {
+        configuration.indicatorHeight
+    }
+
+    var indicatorSpacing: CGFloat {
+        configuration.indicatorSpacing
+    }
+
+    var progressPublisher: StoriesProgressModel {
+        progressModel
+    }
+
+    init(
+        dataSource: StoriesDataSource,
+        configuration: StoriesConfiguration,
+        progressModel: StoriesProgressModel = .shared,
+        activeTier: @autoclosure @escaping () -> SubscriptionTier = SubscriptionHelper.activeTier
+    ) {
         self.dataSource = dataSource
         self.configuration = configuration
-        self.progress = 0
+        self.progressModel = progressModel
         self.publisher = Timer.publish(every: 0.01, on: .main, in: .default)
         self.activeTier = activeTier
+        self.shareAlertState = StoriesShareAlertState()
+        self.progressModel.progress = progress
 
-        Task.init {
-            await isReady = dataSource.isReady()
-            failed = !isReady
+        self.shareAlertState.onVisibilityChanged = { [weak self] isPresented in
+            self?.shareAlertVisibilityChanged(isPresented)
         }
+
+        refresh()
 
         subscribeToNotifications()
     }
@@ -62,9 +108,35 @@ class StoriesModel: ObservableObject {
         isReady = false
 
         Task.init {
-            await isReady = dataSource.refresh()
+            if self.configuration.loadingIsTheFirstStory {
+                loadingStart()
+            }
+            let isReady = await dataSource.refresh()
+            if configuration.loadingIsTheFirstStory, progress >= 1 {
+                currentStoryIndex = 1
+                Analytics.track(.endOfYearStoryShown, story: "cover")
+            }
+            self.isReady = isReady
             failed = !isReady
         }
+    }
+
+    func loadingStart() {
+        loadingCancellable = publisher.autoconnect().sink(receiveValue: { [weak self] _ in
+            guard let self else { return }
+            let newProgress = self.progress + (0.01 / EndOfYear.defaultDuration)
+            if newProgress < 1 {
+                self.progress = newProgress
+            } else {
+                self.progress = 1
+            }
+        })
+    }
+
+    func loadingEnded() {
+        loadingCancellable?.cancel()
+        loadingCancellable = nil
+        self.progress = 1.01
     }
 
     func start() {
@@ -82,6 +154,10 @@ class StoriesModel: ObservableObject {
                     newProgress = 0
                     self.currentStoryIndex = 0
                 }
+                else if self.configuration.closeAndDismissAfterFinished {
+                    Analytics.track(.endOfYearStoriesDismissed, properties: ["source": "auto_progress"])
+                    self.stopAndDismiss()
+                }
                 else {
                     self.pause()
                 }
@@ -96,7 +172,6 @@ class StoriesModel: ObservableObject {
             }
 
             self.progress = newProgress
-            StoriesProgressModel.shared.progress = newProgress
         })
 
         currentStory?.onResume()
@@ -107,8 +182,11 @@ class StoriesModel: ObservableObject {
 
         // Only trigger onAppear if the story is not plus or user is paid
         // Otherwise, the paywall appears in front of the story
-        if !story.plusOnly || isPaidUser() {
+        if currentStory?.identifier != story.identifier, !story.plusOnly || isPaidUser() {
             story.onAppear()
+            if story.shouldPause {
+                pause()
+            }
         }
 
         currentStory = story
@@ -155,8 +233,12 @@ class StoriesModel: ObservableObject {
         guard isReady, numberOfStories > 0 else {
             return
         }
-
-        let nextNonPlus = currentStoryIsPlus ? Int(progress.rounded(.down)) + numberOfPlusStoriesAfterTheCurrentOne() + 1 : 0
+        let nextNonPlus: Int
+        if EndOfYear.Year.y2025 == EndOfYear.currentYear {
+            nextNonPlus = Int(progress.rounded(.down)) + numberOfPlusStoriesAfterTheCurrentOne() + 1
+        } else {
+            nextNonPlus = currentStoryIsPlus ? Int(progress.rounded(.down)) + numberOfPlusStoriesAfterTheCurrentOne() + 1: 0
+        }
 
         manuallyChanged = true
 
@@ -168,7 +250,12 @@ class StoriesModel: ObservableObject {
             return
         }
 
-        let previousNonPlus = currentStoryIndex - numberOfPlusStoriesBeforeTheCurrentOne()
+        let previousNonPlus: Int
+        if EndOfYear.Year.y2025 == EndOfYear.currentYear {
+            previousNonPlus = currentStoryIndex - numberOfPlusStoriesBeforeTheCurrentOne() - 1
+        } else {
+            previousNonPlus = currentStoryIndex - numberOfPlusStoriesBeforeTheCurrentOne()
+        }
 
         manuallyChanged = true
 
@@ -232,7 +319,10 @@ class StoriesModel: ObservableObject {
     }
 
     func shouldShowUpsell() -> Bool {
-        currentStoryIsPlus && activeTier() == .none
+        if case EndOfYear.Year.y2025 = EndOfYear.currentYear {
+            return false
+        }
+        return currentStoryIsPlus && activeTier() == .none
     }
 
     func paywallView() -> some View {
@@ -247,8 +337,12 @@ class StoriesModel: ObservableObject {
         dataSource.footerShareView()
     }
 
-    var indicatorColor: Color {
-        dataSource.indicatorColor
+    func indicatorColor(for storyIndex: Int) -> Color {
+        dataSource.indicatorColor(for: storyIndex)
+    }
+
+    func indicatorStyle(for storyIndex: Int) -> StoryIndicatorStyle {
+        dataSource.indicatorStyle(for: storyIndex)
     }
 
     var primaryBackgroundColor: Color {
@@ -258,19 +352,42 @@ class StoriesModel: ObservableObject {
     func sharingSnapshotModifier(_ view: AnyView) -> AnyView {
         dataSource.sharingSnapshotModifier(view)
     }
+
+    func shouldShowDismissButton() -> Bool {
+        configuration.shouldShowDismissButton
+    }
+
+    func recordPlaybackShare(properties: [String: String]) {
+        Analytics.track(.playbackShared, properties: properties)
+    }
 }
 
 private extension StoriesModel {
+    func setShareAlertPresented(_ presented: Bool) {
+        guard shareAlertState.isPresented != presented else { return }
+        shareAlertState.isPresented = presented
+    }
+
+    func shareAlertVisibilityChanged(_ isPresented: Bool) {
+        if !isPresented && screenshotTaken {
+            screenshotTaken = false
+        }
+    }
+
     func subscribeToNotifications() {
         StoriesController.Notifications.allCases.forEach { [weak self] controller in
             switch controller {
             case .replay:
                 NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: controller.rawValue), object: nil, queue: .main) { [weak self] _ in
-                    self?.replay()
+                    DispatchQueue.main.async {
+                        self?.replay()
+                    }
                 }
             case .share:
                 NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: controller.rawValue), object: nil, queue: .main) { [weak self] _ in
-                    self?.share()
+                    DispatchQueue.main.async {
+                        self?.share()
+                    }
                 }
             }
         }
@@ -278,17 +395,27 @@ private extension StoriesModel {
         UIApplication.userDidTakeScreenshotNotification.publisher()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.pause()
-                self?.screenshotTaken = true
+                guard let self else { return }
+                pause()
+                screenshotTaken = true
+
+                if dataSource.numberOfStories > 0, dataSource.shareableStory(for: currentStoryIndex) != nil {
+                    let year = EndOfYear.currentYear.literalValue
+                    let story = currentStoryIdentifier
+                    let properties = ["story": story, "current_year": year, "from": "screenshot"]
+                    Analytics.track(.endOfYearStoryShared, properties: properties)
+                }
             }
             .store(in: &cancellables)
 
-        ServerNotifications.iapPurchaseCompleted.publisher()
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] _ in
-            self?.refresh()
+        if EndOfYear.currentYear != .y2025 {
+            ServerNotifications.iapPurchaseCompleted.publisher()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.refresh()
+            }
+            .store(in: &cancellables)
         }
-        .store(in: &cancellables)
     }
 
     func isPaidUser() -> Bool {
@@ -307,4 +434,15 @@ private extension StoriesModel {
     func shouldSkipPlusStories() -> Bool {
         !isPaidUser() && !manuallyChanged && currentStoryIsPlus && nextStoryIsPlus()
     }
+}
+
+final class StoriesShareAlertState: ObservableObject {
+    @Published var isPresented: Bool = false {
+        didSet {
+            guard isPresented != oldValue else { return }
+            onVisibilityChanged?(isPresented)
+        }
+    }
+
+    var onVisibilityChanged: ((Bool) -> Void)?
 }

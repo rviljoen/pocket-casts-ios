@@ -18,6 +18,7 @@ protocol NowPlayingActionsDelegate: AnyObject {
     func transcriptTapped()
     func downloadTapped()
     func sharedRoutePicker(largeSize: Bool) -> PCRoutePickerView
+    func presentManualPlaylistsChooser()
 }
 
 extension NowPlayingPlayerItemViewController: NowPlayingActionsDelegate {
@@ -171,6 +172,18 @@ extension NowPlayingPlayerItemViewController: NowPlayingActionsDelegate {
             button.accessibilityLabel = L10n.download
 
             addToShelf(on: button)
+
+        case .addToPlaylist:
+#if !APPCLIP
+            let button = UIButton(frame: CGRect.zero)
+            button.isPointerInteractionEnabled = true
+            button.imageView?.tintColor = ThemeColor.playerContrast02()
+            button.setImage(UIImage(named: action.largeIconName(episode: playingEpisode)), for: .normal)
+            button.addTarget(self, action: #selector(presentManualPlaylistsChooser(_:)), for: .touchUpInside)
+            button.accessibilityLabel = L10n.playlistManualEpisodeAddToPlaylist
+
+            addToShelf(on: button)
+#endif
         }
 
         return true
@@ -408,6 +421,29 @@ extension NowPlayingPlayerItemViewController: NowPlayingActionsDelegate {
         reloadShelfActions()
     }
 
+    // MARK: - Manual Playlists
+
+    @objc func presentManualPlaylistsChooser(_ sender: UIButton) {
+#if !APPCLIP
+        shelfButtonTapped(.addToPlaylist)
+        presentManualPlaylistsChooser()
+#endif
+    }
+
+    @objc func presentManualPlaylistsChooser() {
+#if !APPCLIP
+        guard let episode = PlaybackManager.shared.currentEpisode() else { return }
+
+        NavigationManager.sharedManager.navigateTo(
+            NavigationManager.manualPlaylistsChooserKey,
+            data: [
+                NavigationManager.manualPlaylistsChooserEpisodeKey: episode,
+                NavigationManager.manualPlaylistsChooserSourceKey: "shelf"
+            ]
+        )
+#endif
+    }
+
     // MARK: - Actions Implementation
 
     #if !APPCLIP
@@ -517,8 +553,8 @@ extension NowPlayingPlayerItemViewController: NowPlayingActionsDelegate {
         playerControlsStackView.addArrangedSubview(view)
         view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            view.widthAnchor.constraint(equalToConstant: 32),
-            view.heightAnchor.constraint(equalToConstant: 32)
+            view.widthAnchor.constraint(equalToConstant: shelfIconSize),
+            view.heightAnchor.constraint(equalToConstant: shelfIconSize)
         ])
     }
 }
@@ -531,6 +567,15 @@ extension NowPlayingPlayerItemViewController {
 
 extension NowPlayingPlayerItemViewController: AVRoutePickerViewDelegate {
     func routePickerViewWillBeginPresentingRoutes(_ routePickerView: AVRoutePickerView) {
+
+        // This prepares routing options without activating the session
+        // The actual session activation happens when playback begins
+        if FeatureFlag.activateAudioSessionForRoutePicker.enabled {
+            AVAudioSession.sharedInstance().prepareRouteSelectionForPlayback { shouldStartPlayback, routeSelection in
+                FileLog.shared.addMessage("Route selection prepared: shouldStartPlayback=\(shouldStartPlayback), type=\(routeSelection.rawValue)")
+            }
+        }
+
         shelfButtonTapped(.routePicker)
     }
 }

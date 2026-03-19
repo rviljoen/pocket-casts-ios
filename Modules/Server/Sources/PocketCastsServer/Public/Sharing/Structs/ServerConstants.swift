@@ -38,6 +38,10 @@ public enum ServerConstants {
             production() ? "https://lists.pocketcasts.com/" : "https://lists.pocketcasts.net/"
         }
 
+        public static var search: String {
+            production() ? "https://search.pocketcasts.com/" : "https://search.pocketcasts.net/"
+        }
+
         public static let support = "https://support.pocketcasts.com/ios/"
         public static let cancelSubscription = "https://support.pocketcasts.com/knowledge-base/how-to-cancel-a-subscription/"
         public static let termsOfUse = "https://support.pocketcasts.com/article/terms-of-use/"
@@ -52,7 +56,10 @@ public enum ServerConstants {
     }
 
     private static func production() -> Bool {
-        ServerConfig.shared.syncDelegate?.production() ?? true
+        guard let delegate = ServerConfig.shared.syncDelegate else {
+            return true
+        }
+        return delegate.production()
     }
 
     public enum HttpConstants {
@@ -78,6 +85,8 @@ public enum ServerConstants {
         public static let cacheControl = "Cache-Control"
         public static let date = "Date"
         public static let etag = "ETag"
+        public static let userRegion = "X-User-Region"
+        public static let appLanguage = "X-App-Language"
     }
 
     public enum Timeouts {
@@ -141,6 +150,9 @@ public enum ServerConstants {
         static let statsAutoSkipServer = "StatsIntroSkipServer"
         static let statsStartedDateServer = "StatsStartedDateServer"
         static let userId = "UserId"
+        static let removeBannerAds = "SJSubscriptionRemoveBannerAds"
+        static let removeDiscoverAds = "SJSubscriptionRemoveDiscoverAds"
+        static let subscriptionCreateDate = "SJSubscriptionCreateDate"
     }
 
     public enum Limits {

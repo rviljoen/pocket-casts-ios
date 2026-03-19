@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import PocketCastsUtils
 
 protocol SearchResultsDelegate {
     func clearSearch()
@@ -18,9 +19,9 @@ class SearchResultsViewController: UIHostingController<AnyView> {
     private let searchResults: SearchResultsModel
     private let searchAnalyticsHelper: SearchAnalyticsHelper
 
-    init(source: AnalyticsSource) {
+    init(source: AnalyticsSource, showLocalResults: Bool = false) {
         searchAnalyticsHelper = SearchAnalyticsHelper(source: source)
-        self.searchResults = SearchResultsModel(analyticsHelper: searchAnalyticsHelper)
+        self.searchResults = SearchResultsModel(analyticsHelper: searchAnalyticsHelper, showLocalResults: showLocalResults)
         super.init(rootView: AnyView(
             SearchView()
             .setupDefaultEnvironment()
@@ -57,9 +58,17 @@ extension SearchResultsViewController: SearchResultsDelegate {
 
     func performSearch(searchTerm: String, triggeredByTimer: Bool, completion: @escaping (() -> Void)) {
         displaySearch.isSearching = true
-        searchResults.search(term: searchTerm)
+        if searchTerm.trim().isEmpty {
+            completion()
+        }
 
-        if !triggeredByTimer {
+        if FeatureFlag.searchPredictive.enabled, triggeredByTimer {
+            searchResults.predictiveSearch(term: searchTerm)
+        } else {
+            searchResults.search(term: searchTerm)
+        }
+
+        if !triggeredByTimer, !searchTerm.trim().isEmpty {
             searchHistoryModel.add(searchTerm: searchTerm)
         }
 

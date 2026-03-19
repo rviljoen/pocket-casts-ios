@@ -3,12 +3,18 @@ import PocketCastsUtils
 import UIKit
 
 class LargeListCell: ThemeableCollectionCell {
+
     @IBOutlet var podcastImage: PodcastImageView!
 
-    @IBOutlet var podcastTitle: ThemeableLabel!
+    @IBOutlet var podcastTitle: ThemeableLabel! {
+        didSet {
+            podcastTitle.font = .font(ofSize: 16, weight: .regular, scalingWith: .callout)
+        }
+    }
     @IBOutlet var podcastAuthor: ThemeableLabel! {
         didSet {
             podcastAuthor.style = .primaryText02
+            podcastAuthor.font = .font(ofSize: 15, weight: .regular, scalingWith: .subheadline)
         }
     }
 
@@ -41,6 +47,11 @@ class LargeListCell: ThemeableCollectionCell {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        updateSize()
     }
 
     private func setHighlightedState(_ highlighted: Bool) {
@@ -80,5 +91,21 @@ class LargeListCell: ThemeableCollectionCell {
         subscribeButton.shouldAnimate = false
         subscribeButton.currentlyOn = false
         discoverPodcast = nil
+        updateSize()
+    }
+
+    // MARK: - Dynamic Type support
+
+    func updateSize() {
+        podcastTitle.updateNumberOfLines(regular: 1, accessibility: 2)
+        podcastAuthor.updateNumberOfLines(regular: 1, accessibility: 2)
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        if previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            updateSize()
+        }
     }
 }

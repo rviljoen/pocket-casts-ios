@@ -1,5 +1,16 @@
-import FMDB
 import PocketCastsUtils
+import Foundation
+import GRDB
+
+extension Podcast: Sortable {
+    public var itemUUID: String {
+        uuid
+    }
+
+    public var itemTitle: String? {
+        title
+    }
+}
 
 class PodcastDataManager {
     private var cachedPodcasts = [String: Podcast]()
@@ -9,7 +20,8 @@ class PodcastDataManager {
         return queue
     }()
 
-    private let columnNames = [
+    /// Legacy column names for non-GRDB code path.
+    let columnNames = [
         "id",
         "addedDate",
         "autoDownloadSetting",
@@ -310,6 +322,34 @@ class PodcastDataManager {
         }
     }
 
+    func searchPodcasts(term: String, dbQueue: PCDBQueue) -> [Podcast] {
+        let trimmedTerm = term.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedTerm.isEmpty else { return [] }
+
+        let locale = Locale.current
+        let options: String.CompareOptions = [.caseInsensitive, .diacriticInsensitive]
+
+        var matchingPodcasts = [Podcast]()
+        cachedPodcastsQueue.sync {
+            for podcast in cachedPodcasts.values {
+                guard podcast.isSubscribed() else { continue }
+
+                if podcast.title?.range(of: trimmedTerm, options: options, range: nil, locale: locale) != nil {
+                    matchingPodcasts.append(podcast)
+                    continue
+                }
+
+                if podcast.author?.range(of: trimmedTerm, options: options, range: nil, locale: locale) != nil {
+                    matchingPodcasts.append(podcast)
+                }
+            }
+        }
+
+        return matchingPodcasts.sorted(by: { lhs, rhs in
+            PodcastSorter.sortByNameAndUUID(item1: lhs, item2: rhs)
+        })
+    }
+
     func count(dbQueue: PCDBQueue) -> Int {
         var count = 0
         cachedPodcastsQueue.sync {
@@ -348,17 +388,33 @@ class PodcastDataManager {
     // MARK: - Updates
 
     func save(podcast: Podcast, dbQueue: PCDBQueue) {
-        dbQueue.write { db in
+        let isInsert = podcast.id == 0
+        if isInsert {
+            podcast.id = DBUtils.generateUniqueId()
+        }
+
+        if FeatureFlag.grdbQueryInterface.enabled, let grdbQueue = dbQueue as? GRDBQueue {
+            // GRDB path using PersistableRecord
             do {
-                if podcast.id == 0 {
-                    podcast.id = DBUtils.generateUniqueId()
-                    try db.executeUpdate("INSERT INTO \(DataManager.podcastTableName) (\(self.columnNames.joined(separator: ","))) VALUES \(DBUtils.valuesQuestionMarks(amount: self.columnNames.count))", values: self.createValuesFrom(podcast: podcast))
-                } else {
-                    let setStatement = "\(self.columnNames.joined(separator: " = ?, ")) = ?"
-                    try db.executeUpdate("UPDATE \(DataManager.podcastTableName) SET \(setStatement) WHERE id = ?", values: self.createValuesFrom(podcast: podcast, includeIdForWhere: true))
+                try grdbQueue.dbPool.write { db in
+                    try podcast.save(db)
                 }
             } catch {
                 FileLog.shared.addMessage("PodcastDataManager.save error: \(error)")
+            }
+        } else {
+            // Legacy path
+            dbQueue.write { db in
+                do {
+                    if isInsert {
+                        try db.executeUpdate("INSERT INTO \(DataManager.podcastTableName) (\(self.columnNames.joined(separator: ","))) VALUES \(DBUtils.valuesQuestionMarks(amount: self.columnNames.count))", values: self.createValuesFrom(podcast: podcast))
+                    } else {
+                        let setStatement = "\(self.columnNames.joined(separator: " = ?, ")) = ?"
+                        try db.executeUpdate("UPDATE \(DataManager.podcastTableName) SET \(setStatement) WHERE id = ?", values: self.createValuesFrom(podcast: podcast, includeIdForWhere: true))
+                    }
+                } catch {
+                    FileLog.shared.addMessage("PodcastDataManager.save error: \(error)")
+                }
             }
         }
         cachePodcasts(dbQueue: dbQueue)
@@ -629,7 +685,7 @@ class PodcastDataManager {
 
         dbQueue.read { db in
             do {
-                let resultSet = try db.executeQuery("SELECT * from \(DataManager.podcastTableName) ORDER BY sortOrder ASC", values: nil)
+                let resultSet = try db.executeQuery("SELECT * from \(DataManager.podcastTableName)", values: nil)
                 defer { resultSet.close() }
 
                 var newPodcasts = [String: Podcast]()

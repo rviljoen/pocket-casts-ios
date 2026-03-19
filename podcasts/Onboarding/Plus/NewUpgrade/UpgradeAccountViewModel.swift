@@ -51,7 +51,7 @@ class UpgradeAccountViewModel: PlusPurchaseModel {
     }
 
     var shouldShowVariation: Bool {
-        guard FeatureFlag.newOnboardingVariant.enabled, isFreeTrialAvailable else {
+        guard FeatureFlag.newOnboardingVariant.enabled, isFreeTrialAvailable, FeatureFlag.newOnboardingUpgradeTrialTimeline.enabled else {
             return false
         }
         return ABTestProvider.shared.variation(for: .pocketcastsNewOnboardingIOSABTest) == .treatment
@@ -121,7 +121,7 @@ class UpgradeAccountViewModel: PlusPurchaseModel {
     func dismissTapped(originalDismiss dismiss: DismissAction?) {
         track(.plusPromotionDismissed)
 
-        guard flowSource == .accountCreated, let navigationController else {
+        guard flowSource == .accountCreated, !FeatureFlag.newOnboardingAccountCreation.enabled, let navigationController else {
             if navigationController == nil {
                 dismiss?()
             } else {

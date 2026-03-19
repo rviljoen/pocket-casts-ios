@@ -1,6 +1,5 @@
 import XCTest
 @testable import PocketCastsDataModel
-import FMDB
 @testable import podcasts
 
 class DBTestCase: XCTestCase {
@@ -29,6 +28,7 @@ class DBTestCase: XCTestCase {
     private func setupData() throws {
         let dataManager = Self.dataManager == nil ? try setupDatabase() : Self.dataManager!
         let downloadManager = DownloadManager(dataManager: dataManager)
+        DataManager.sharedManager = dataManager
 
         let podcast = Podcast()
         podcast.uuid = UUID().uuidString

@@ -10,6 +10,8 @@ protocol CreateAccountDelegate: AnyObject {
 class NewEmailViewController: PCViewController, UITextFieldDelegate {
     weak var delegate: CreateAccountDelegate?
 
+    @IBOutlet var scrollView: UIScrollView!
+
     @IBOutlet var emailField: ThemeableTextField! {
         didSet {
             emailField.delegate = self
@@ -23,7 +25,17 @@ class NewEmailViewController: PCViewController, UITextFieldDelegate {
         didSet {
             nextButton.isEnabled = false
             nextButton.buttonStyle = .primaryInteractive01Disabled
-            nextButton.setTitle(L10n.next, for: .normal)
+            if FeatureFlag.newOnboardingAccountCreation.enabled {
+                nextButton.setTitle(L10n.createAccount, for: .normal)
+            } else {
+                nextButton.setTitle(L10n.next, for: .normal)
+            }
+            nextButton.titleLabel?.adjustsFontForContentSizeCategory = true
+            nextButton.titleLabel?.numberOfLines = 0
+
+            NSLayoutConstraint.activate([
+                nextButton.heightAnchor.constraint(greaterThanOrEqualTo: nextButton.titleLabel!.heightAnchor)
+            ])
         }
     }
 
@@ -96,8 +108,13 @@ class NewEmailViewController: PCViewController, UITextFieldDelegate {
         super.viewDidLoad()
         title = L10n.createAccount
         activityIndicator.isHidden = true
-
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "nav-back"), style: .done, target: self, action: #selector(backTapped))
+        let backImage: UIImage?
+        if FeatureFlag.newOnboardingAccountCreation.enabled {
+            backImage = UIImage(systemName: "chevron.backward", withConfiguration: UIImage.SymbolConfiguration(textStyle: UIFont.TextStyle(rawValue: "UICTFontTextStyleEmphasizedBody"), scale: .default))
+        } else {
+            backImage = UIImage(named: "nav-back")
+        }
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: backImage, style: .done, target: self, action: #selector(backTapped))
         navigationController?.navigationBar.setValue(true, forKey: "hidesShadow")
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -105,7 +122,8 @@ class NewEmailViewController: PCViewController, UITextFieldDelegate {
         originalButtonConstant = nextButtonBottomConstraint.constant
 
         updateButtonState()
-        Analytics.track(.createAccountShown)
+
+        OnboardingFlow.shared.track(.createAccountShown)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -296,10 +314,11 @@ class NewEmailViewController: PCViewController, UITextFieldDelegate {
         return false
     }
 
-    private var originalButtonConstant: CGFloat = 49
+    private var originalButtonConstant: CGFloat = 16
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            nextButtonBottomConstraint.constant = originalButtonConstant + keyboardSize.height
+            nextButtonBottomConstraint.constant = view.safeAreaInsets.bottom == 0 ? originalButtonConstant + keyboardSize.height : keyboardSize.height
+
             var animationDuration = 0.3
             if let keyboardDuration = (notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double) {
                 animationDuration = keyboardDuration

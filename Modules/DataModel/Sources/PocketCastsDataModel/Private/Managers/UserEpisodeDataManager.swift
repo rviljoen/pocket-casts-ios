@@ -1,8 +1,10 @@
-import FMDB
 import PocketCastsUtils
+import Foundation
+import GRDB
 
 class UserEpisodeDataManager {
-    private let columnNames = [
+    /// Legacy column names for non-GRDB code path.
+    let columnNames = [
         "id",
         "addedDate",
         "lastDownloadAttemptDate",
@@ -117,7 +119,18 @@ class UserEpisodeDataManager {
     func allUpNextEpisodes(dbQueue: PCDBQueue) -> [UserEpisode] {
         let upNextTableName = DataManager.playlistEpisodeTableName
         let userEpisodeTableName = DataManager.userEpisodeTableName
-        return loadMultiple(query: "SELECT \(userEpisodeTableName).* FROM \(upNextTableName) JOIN \(userEpisodeTableName) ON \(userEpisodeTableName).uuid = \(upNextTableName).episodeUuid ORDER BY \(upNextTableName).episodePosition ASC", values: nil, dbQueue: dbQueue)
+        return loadMultiple(
+            query: """
+            SELECT \(userEpisodeTableName).*
+            FROM \(upNextTableName)
+            JOIN \(userEpisodeTableName)
+            ON \(userEpisodeTableName).uuid = \(upNextTableName).episodeUuid
+            WHERE \(upNextTableName).playlist_id = ?
+            ORDER BY \(upNextTableName).episodePosition ASC
+            """,
+            values: [UpNextDataManager.upNextPlaylistId],
+            dbQueue: dbQueue
+        )
     }
 
     private func loadSingle(query: String, values: [Any]?, dbQueue: PCDBQueue) -> UserEpisode? {
@@ -197,17 +210,33 @@ class UserEpisodeDataManager {
     // MARK: - Updates
 
     func save(episode: UserEpisode, dbQueue: PCDBQueue) {
-        dbQueue.write { db in
+        let isInsert = episode.id == 0
+        if isInsert {
+            episode.id = DBUtils.generateUniqueId()
+        }
+
+        if FeatureFlag.grdbQueryInterface.enabled, let grdbQueue = dbQueue as? GRDBQueue {
+            // GRDB path using PersistableRecord
             do {
-                if episode.id == 0 {
-                    episode.id = DBUtils.generateUniqueId()
-                    try db.executeUpdate("INSERT INTO \(DataManager.userEpisodeTableName) (\(self.columnNames.joined(separator: ","))) VALUES \(DBUtils.valuesQuestionMarks(amount: self.columnNames.count))", values: self.createValuesFrom(episode: episode))
-                } else {
-                    let setStatement = "\(self.columnNames.joined(separator: " = ?, ")) = ?"
-                    try db.executeUpdate("UPDATE \(DataManager.userEpisodeTableName) SET \(setStatement) WHERE id = ?", values: self.createValuesFrom(episode: episode, includeIdForWhere: true))
+                try grdbQueue.dbPool.write { db in
+                    try episode.save(db)
                 }
             } catch {
                 FileLog.shared.addMessage("UserEpisodeDataManager.save error: \(error)")
+            }
+        } else {
+            // Legacy path
+            dbQueue.write { db in
+                do {
+                    if isInsert {
+                        try db.executeUpdate("INSERT INTO \(DataManager.userEpisodeTableName) (\(self.columnNames.joined(separator: ","))) VALUES \(DBUtils.valuesQuestionMarks(amount: self.columnNames.count))", values: self.createValuesFrom(episode: episode))
+                    } else {
+                        let setStatement = "\(self.columnNames.joined(separator: " = ?, ")) = ?"
+                        try db.executeUpdate("UPDATE \(DataManager.userEpisodeTableName) SET \(setStatement) WHERE id = ?", values: self.createValuesFrom(episode: episode, includeIdForWhere: true))
+                    }
+                } catch {
+                    FileLog.shared.addMessage("UserEpisodeDataManager.save error: \(error)")
+                }
             }
         }
     }
@@ -281,7 +310,7 @@ class UserEpisodeDataManager {
 
     func saveEpisode(autoDownloadStatus: AutoDownloadStatus, episode: UserEpisode, dbQueue: PCDBQueue) {
         episode.autoDownloadStatus = autoDownloadStatus.rawValue
-        save(fieldName: "autoDownloadStatus", value: autoDownloadStatus, episodeId: episode.id, dbQueue: dbQueue)
+        save(fieldName: "autoDownloadStatus", value: episode.autoDownloadStatus, episodeId: episode.id, dbQueue: dbQueue)
     }
 
     func saveEpisode(downloadStatus: DownloadStatus, downloadTaskId: String?, episode: UserEpisode, dbQueue: PCDBQueue) {
@@ -360,23 +389,43 @@ class UserEpisodeDataManager {
     }
 
     func bulkSave(episodes: [UserEpisode], dbQueue: PCDBQueue) {
-        dbQueue.write { db in
+        if FeatureFlag.grdbQueryInterface.enabled, let grdbQueue = dbQueue as? GRDBQueue {
+            // GRDB path using PersistableRecord
             do {
-                db.beginTransaction()
+                try grdbQueue.dbPool.write { db in
+                    for episode in episodes {
+                        let isInsert = episode.id == 0
+                        if isInsert {
+                            episode.id = DBUtils.generateUniqueId()
+                        }
 
-                for episode in episodes {
-                    if episode.id == 0 {
-                        episode.id = DBUtils.generateUniqueId()
-                        try db.executeUpdate("INSERT INTO \(DataManager.userEpisodeTableName) (\(self.columnNames.joined(separator: ","))) VALUES \(DBUtils.valuesQuestionMarks(amount: self.columnNames.count))", values: self.createValuesFrom(episode: episode))
-                    } else {
-                        let setStatement = "\(self.columnNames.joined(separator: " = ?, ")) = ?"
-                        try db.executeUpdate("UPDATE \(DataManager.userEpisodeTableName) SET \(setStatement) WHERE id = ?", values: self.createValuesFrom(episode: episode, includeIdForWhere: true))
+                        try episode.save(db)
                     }
                 }
-
-                db.commit()
             } catch {
                 FileLog.shared.addMessage("UserEpisodeDataManager.bulkSave error: \(error)")
+            }
+        } else {
+            // Legacy path
+            dbQueue.write { db in
+                do {
+                    db.beginTransaction()
+
+                    for episode in episodes {
+                        let isInsert = episode.id == 0
+                        if isInsert {
+                            episode.id = DBUtils.generateUniqueId()
+                            try db.executeUpdate("INSERT INTO \(DataManager.userEpisodeTableName) (\(self.columnNames.joined(separator: ","))) VALUES \(DBUtils.valuesQuestionMarks(amount: self.columnNames.count))", values: self.createValuesFrom(episode: episode))
+                        } else {
+                            let setStatement = "\(self.columnNames.joined(separator: " = ?, ")) = ?"
+                            try db.executeUpdate("UPDATE \(DataManager.userEpisodeTableName) SET \(setStatement) WHERE id = ?", values: self.createValuesFrom(episode: episode, includeIdForWhere: true))
+                        }
+                    }
+
+                    db.commit()
+                } catch {
+                    FileLog.shared.addMessage("UserEpisodeDataManager.bulkSave error: \(error)")
+                }
             }
         }
     }
@@ -466,7 +515,7 @@ class UserEpisodeDataManager {
                     values.append(episode.uuid)
 
                     let setStatement = "SET \(fields.joined(separator: " = ?, ")) = ?"
-                    try db.executeUpdate("UPDATE \(DataManager.episodeTableName) \(setStatement) WHERE uuid = ?", values: values)
+                    try db.executeUpdate("UPDATE \(DataManager.userEpisodeTableName) \(setStatement) WHERE uuid = ?", values: values)
                 }
                 db.commit()
             } catch {
@@ -494,9 +543,10 @@ class UserEpisodeDataManager {
     }
 
     func delete(userEpisodeUuids: [String], dbQueue: PCDBQueue) {
+        guard !userEpisodeUuids.isEmpty else { return }
         dbQueue.write { db in
             do {
-                try db.executeUpdate("DELETE FROM \(DataManager.userEpisodeTableName) WHERE uuid = ?", values: userEpisodeUuids)
+                try db.executeUpdate("DELETE FROM \(DataManager.userEpisodeTableName) WHERE uuid IN (\(DataHelper.convertArrayToInString(userEpisodeUuids)))", values: nil)
             } catch {
                 FileLog.shared.addMessage("UserEpisodeDataManager.delete many error: \(error)")
             }
@@ -629,4 +679,5 @@ class UserEpisodeDataManager {
 
         return values
     }
+
 }

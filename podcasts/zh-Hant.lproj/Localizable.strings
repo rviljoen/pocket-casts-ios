@@ -55,8 +55,12 @@
     <string>第 %1$@ 集，共 %2$@ 集</string>
     <key>accessibility_player_effects_playback_speed</key>
     <string>%1$@ 倍速播放</string>
+    <key>accessibility_playlist_add_episode</key>
+    <string>新增單集</string>
     <key>accessibility_playlist_color</key>
     <string>播放清單顏色 %1$@</string>
+    <key>accessibility_playlist_image</key>
+    <string>播放清單圖片</string>
     <key>accessibility_plus_only</key>
     <string>Plus 功能已解鎖</string>
     <key>accessibility_profile_settings</key>
@@ -143,6 +147,8 @@ Tap the button below to sign into your Pocket Casts account again.</string>
     <string>新增到「接下來播放」</string>
     <key>after_playing</key>
     <string>播放後</string>
+    <key>all_results</key>
+    <string>熱門結果</string>
     <key>announcement_autoplay_description</key>
     <string>如果「接下來播放」佇列是空的，而你開始聆聽某一單集，自動播放功能會繼續播放同一個節目或清單的單集。</string>
     <key>announcement_autoplay_title</key>
@@ -297,6 +303,8 @@ Tap the button below to sign into your Pocket Casts account again.</string>
     <string>檢舉這則廣告的原因？</string>
     <key>banner_ads_report_broken</key>
     <string>這則廣告似乎無法正常運作</string>
+    <key>banner_ads_report_confirmation</key>
+    <string>你檢舉了這則廣告。</string>
     <key>banner_ads_report_malicious</key>
     <string>這是惡意廣告</string>
     <key>banner_ads_report_other</key>
@@ -374,7 +382,7 @@ Tap the button below to sign into your Pocket Casts account again.</string>
     <key>cancel_subscription_claim_offer_button</key>
     <string>領取優惠</string>
     <key>cancel_subscription_continue_button</key>
-    <string>繼續取消</string>
+    <string>繼續取消作業</string>
     <key>cancel_subscription_generic_error</key>
     <string>發生錯誤， 請稍後再試。</string>
     <key>cancel_subscription_help_description</key>
@@ -561,6 +569,8 @@ Pocket Casts Plus</string>
     <string>建立片段</string>
     <key>create_filter</key>
     <string>建立篩選器</string>
+    <key>create_up_next_snapshot</key>
+    <string>建立快照</string>
     <key>creator_pick_modal_description</key>
     <string>「創作者精選」列出由節目創作者使用 Podroll 推薦的 Podcast。</string>
     <key>creator_pick_modal_learn_more</key>
@@ -611,6 +621,10 @@ Pocket Casts Plus</string>
     <string>只從裝置刪除</string>
     <key>deselect_all</key>
     <string>取消全選</string>
+    <key>deselect_all_above</key>
+    <string>取消選取上方所有項目</string>
+    <key>deselect_all_below</key>
+    <string>取消選取下方所有項目</string>
     <key>device_shake_sleep_timer</key>
     <string>由於裝置晃動，故睡眠計時器已重新啟動</string>
     <key>discover</key>
@@ -1044,6 +1058,8 @@ Pocket Casts Plus</string>
     <string>%1$@ 集</string>
     <key>episode_description_title</key>
     <string>單集說明</string>
+    <key>episode_detail_add</key>
+    <string>新增</string>
     <key>episode_details_title</key>
     <string>詳細資料</string>
     <key>episode_filter_by_duration_label</key>
@@ -1062,6 +1078,10 @@ Pocket Casts Plus</string>
     <string>第 %1$@ 集</string>
     <key>episode_shorthand_format_short</key>
     <string>第 %1$@ 集</string>
+    <key>episode_unavailable_message</key>
+    <string>Podcast 建立者已刪除這個單集。 除非你移除，否則將保留在你的播放清單。</string>
+    <key>episode_unavailable_title</key>
+    <string>無法提供單集</string>
     <key>episodes</key>
     <string>節目內容</string>
     <key>error</key>
@@ -1085,7 +1105,7 @@ Pocket Casts Plus</string>
     <key>feature_marketing_bookmarks</key>
     <string>使用書籤保留時間戳記</string>
     <key>feature_marketing_cloud_storage</key>
-    <string>%1$@ 雲端儲存空間，供你的檔案使用</string>
+    <string>%1$@ GB 雲端儲存空間，供你的檔案使用</string>
     <key>feature_marketing_early_access</key>
     <string>搶先使用新功能</string>
     <key>feature_marketing_extra_themes_icons</key>
@@ -1146,6 +1166,8 @@ Pocket Casts Plus</string>
     <string>檔案</string>
     <key>files_how_to_title</key>
     <string>如何儲存檔案</string>
+    <key>files_not_uploaded</key>
+    <string>沒有上傳任何檔案</string>
     <key>files_sort</key>
     <string>為檔案排序</string>
     <key>filter_auto_add_subtitle</key>
@@ -1382,20 +1404,22 @@ Pocket Casts Plus</string>
     <string>%1$@ 小時</string>
     <key>hours_saved</key>
     <string>已省下的時數</string>
+    <key>hours_singular_format</key>
+    <string>1 小時</string>
     <key>how_to_upload_explanation</key>
     <string>首先找到你要儲存的音訊檔案，開啟檔案所在的應用程式</string>
-    <key>how_to_upload_first_instruction</key>
-    <string>選擇即可分享該檔案</string>
-    <key>how_to_upload_first_image_background_button_text</key>
-    <string>音頻文件</string>
-    <key>how_to_upload_first_image_foreground_menu_option_text</key>
-    <string>菜單選項</string>
-    <key>how_to_upload_second_instruction</key>
-    <string>在選單中點選「複製到 Pocket Casts」</string>
-    <key>how_to_upload_second_image_center_text</key>
+    <key>how_to_upload_share_action_image_center_text</key>
     <string>複製到 Pocket Casts</string>
-    <key>how_to_upload_second_image_sides_text</key>
-    <string>別的東西</string>
+    <key>how_to_upload_share_action_image_sides_text</key>
+    <string>其他</string>
+    <key>how_to_upload_share_action_instruction</key>
+    <string>在選單中點選「複製到 Pocket Casts」</string>
+    <key>how_to_upload_share_menu_image_background_button_text</key>
+    <string>音訊檔案</string>
+    <key>how_to_upload_share_menu_image_foreground_menu_option_text</key>
+    <string>選單選項</string>
+    <key>how_to_upload_share_menu_instruction</key>
+    <string>選擇即可分享該檔案</string>
     <key>how_to_upload_summary</key>
     <string>這樣就完成了。視需要變更詳細資訊，按下儲存並播放即可！</string>
     <key>iap_product_monthly_pricing_format</key>
@@ -1470,6 +1494,14 @@ Pocket Casts Plus</string>
 隨身帶著聽 </string>
     <key>in_progress</key>
     <string>進行中</string>
+    <key>interests_select_at_least</key>
+    <string>至少選取 %1$@ 個</string>
+    <key>interests_show_more_categories</key>
+    <string>顯示更多分類</string>
+    <key>interests_subtitle</key>
+    <string>即將獻上精彩的編輯精選 Podcast！</string>
+    <key>interests_title</key>
+    <string>與我們分享你的最愛主題</string>
     <key>keycommand_close_player</key>
     <string>關閉播放器</string>
     <key>keycommand_decrease_speed</key>
@@ -1518,6 +1550,10 @@ Pocket Casts Plus</string>
     <string>找不到任何單集</string>
     <key>loading</key>
     <string>正在載入...</string>
+    <key>login_landing_subtitle</key>
+    <string>讓 Podcast 永遠保持同步。 保護你的媒體庫，在網頁和桌上型電腦安全收聽 Pocket Casts。</string>
+    <key>login_landing_title</key>
+    <string>建立 Pocket Casts 帳號</string>
     <key>login_subtitle</key>
     <string>建立帳號即可在所有裝置上同步你的收聽體驗。</string>
     <key>login_title</key>
@@ -1674,6 +1710,14 @@ Pocket Casts Plus</string>
     <string>從其他應用程式過來的使用者？ 將所有最愛節目轉移到 Pocket Casts。</string>
     <key>notifications_onboarding_import_title</key>
     <string>輕鬆匯入你的 Podcast</string>
+    <key>notifications_onboarding_newsletter_subtitle</key>
+    <string>每個月一次，獲得所有 Podcast 好康</string>
+    <key>notifications_onboarding_newsletter_title</key>
+    <string>訂閱電子報</string>
+    <key>notifications_onboarding_notifications_subtitle</key>
+    <string>接收新聞、Podcast 建議等內容</string>
+    <key>notifications_onboarding_notifications_title</key>
+    <string>接收通知</string>
     <key>notifications_onboarding_signup_body</key>
     <string>建立免費帳號即可同步你的節目，隨時隨地收聽。</string>
     <key>notifications_onboarding_signup_title</key>
@@ -1702,6 +1746,8 @@ Pocket Casts Plus</string>
     <string>請在裝置設定中允許通知</string>
     <key>notifications_permissions_open_settings</key>
     <string>開啟設定</string>
+    <key>notifications_permissions_save_preferences</key>
+    <string>儲存喜好設定</string>
     <key>notifications_permissions_title</key>
     <string>掌握最新內容！</string>
     <key>notifications_play_now</key>
@@ -1746,6 +1792,18 @@ Pocket Casts Plus</string>
     <string>關閉</string>
     <key>ok</key>
     <string>OK</string>
+    <key>onboarding_quote_author</key>
+    <string>Pocket Casts 使用者</string>
+    <key>onboarding_quote_best</key>
+    <string>市面上最棒的 Podcast 應用程式 截至目前為止</string>
+    <key>onboarding_quote_customization</key>
+    <string>可自訂的數量爆炸多</string>
+    <key>onboarding_quote_folders</key>
+    <string>採用資料夾整理 Podcast 根本是天才的發想</string>
+    <key>onboarding_recommendations_subtitle</key>
+    <string>以下提供一些精彩節目，展開你的旅程。 點選即可追蹤、搜尋，或從其他應用程式匯入。</string>
+    <key>onboarding_recommendations_title</key>
+    <string>希望你喜歡我們推薦的節目！</string>
     <key>only_on_unmetered_wifi</key>
     <string>僅限非計量付費 WiFi</string>
     <key>only_on_unmetered_wifi_details</key>
@@ -1847,8 +1905,12 @@ Pocket Casts Plus</string>
     <string>全部播放</string>
     <key>play_last</key>
     <string>播放上一集</string>
+    <key>play_last_in_up_next</key>
+    <string>在「接下來播放」中播放最後一集</string>
     <key>play_next</key>
     <string>播放下一集</string>
+    <key>play_next_in_up_next</key>
+    <string>在「接下來播放」中播放下一集</string>
     <key>playback_2024_completion_rate_description</key>
     <string>從你開始收聽的 %1$@ 集起，你完整收聽了 %2$@ 集</string>
     <key>playback_2024_completion_rate_title</key>
@@ -1909,6 +1971,83 @@ Pocket Casts Plus</string>
     <string>比起 2023 年，你的收聽時間大幅上升了 %1$@</string>
     <key>playback_2024_year_over_year_compare_title_up_over_500</key>
     <string>比起 2023 年，你的聆聽時間增加了 %1$@ 以上</string>
+    <key>playback_2025_completion_rate_message</key>
+    <string>你點進 %1$@ 個單集，並聽完 %2$@ 集。 努力不懈，比大多數健身房會員還強</string>
+    <key>playback_2025_completion_rate_title</key>
+    <string>你今年的單集完成率為 %1$@</string>
+    <key>playback_2025_end_story_description</key>
+    <string>與好友分享年度播放回顧，向陪伴你一整年的 Podcast 主講人表達心意</string>
+    <key>playback_2025_end_story_title</key>
+    <string>感謝你這一年來持續使用 Pocket Casts</string>
+    <key>playback_2025_failed_to_load</key>
+    <string>很抱歉，我們無法載入播放功能</string>
+    <key>playback_2025_feature_description</key>
+    <string>看看你的收聽統計和最愛 Podcast 等資料吧。</string>
+    <key>playback_2025_feature_title</key>
+    <string>就在這裡用播放功能！</string>
+    <key>playback_2025_intro_message</key>
+    <string>你的 Podcast 年度回顧已整理完畢，可隨時重溫過往</string>
+    <key>playback_2025_listened_to_numbers</key>
+    <string>你一共收聽了 %1$@ 個不同 Podcast 和 %2$@ 個單集</string>
+    <key>playback_2025_listening_time</key>
+    <string>分鐘 (收聽時間)</string>
+    <key>playback_2025_longest_episode_footer</key>
+    <string>最長的單集是《%2$@》的〈%1$@〉</string>
+    <key>playback_2025_longest_episode_message</key>
+    <string>不妨伸展一下！</string>
+    <key>playback_2025_longest_episode_title</key>
+    <string>你的聆聽馬拉松：%1$@</string>
+    <key>playback_2025_plus_thanks_description</key>
+    <string>只要使用「%1$@」好康，即可解鎖額外的統計工具和強大功能</string>
+    <key>playback_2025_plus_thanks_title</key>
+    <string>感謝你助 Pocket Casts 一臂之力！</string>
+    <key>playback_2025_plus_upsell_button_title</key>
+    <string>取得 Pocket Casts Plus</string>
+    <key>playback_2025_plus_upsell_description</key>
+    <string>訂閱 Pocket Casts Plus，即可享有更深入的統計資料、書籤、資料夾、預先選取章節功能，並透過更多方式深入探索個人收聽習慣</string>
+    <key>playback_2025_plus_upsell_title</key>
+    <string>想深入探索嗎？</string>
+    <key>playback_2025_ratings_description_1_to_3</key>
+    <string>你的評論能讓更多人聽見超讚節目</string>
+    <key>playback_2025_ratings_description_4_to_5</key>
+    <string>世界各地的創作者對這樣的心意都心懷感激</string>
+    <key>playback_2025_ratings_empty_description</key>
+    <string>分享你喜愛的內容，讓更多人聽見你最愛的創作者</string>
+    <key>playback_2025_ratings_empty_title</key>
+    <string>還沒有評分，不過還有時間！</string>
+    <key>playback_2025_ratings_title_1_to_3</key>
+    <string>歡迎與我們分享意見。</string>
+    <key>playback_2025_ratings_title_4_to_5</key>
+    <string>你留下 %1$@ 星級評分，為創作者大力喝采</string>
+    <key>playback_2025_top_5_podcasts_message</key>
+    <string>更多最愛項目、播放資訊以及自我回顧</string>
+    <key>playback_2025_top_5_podcasts_title</key>
+    <string>你其他常聽的節目</string>
+    <key>playback_2025_top_spot_description</key>
+    <string>%1$@ 個單集，%2$@。
+真的很投入其中！</string>
+    <key>playback_2025_top_spot_subtitle</key>
+    <string>徹底展現你的聽覺品味</string>
+    <key>playback_2025_top_spot_title</key>
+    <string>你的 2025 最愛 Podcast</string>
+    <key>playback_2025_view_year</key>
+    <string>檢視我的 2025 年度播放回顧</string>
+    <key>playback_2025_year_over_year_comparison_down_message</key>
+    <string>但真的，質比量更重要</string>
+    <key>playback_2025_year_over_year_comparison_down_title</key>
+    <string>你今年的收聽時間下降了 %1$@</string>
+    <key>playback_2025_year_over_year_comparison_hero_message</key>
+    <string>你今年的收聽時間成長了 %1$@，歡迎加入我們的行列</string>
+    <key>playback_2025_year_over_year_comparison_hero_title</key>
+    <string>直上天際！</string>
+    <key>playback_2025_year_over_year_comparison_same_message</key>
+    <string>穩定可靠，堅若磐石</string>
+    <key>playback_2025_year_over_year_comparison_same_title</key>
+    <string>你的 2025 年收聽狀況維持穩定</string>
+    <key>playback_2025_year_over_year_comparison_up_message</key>
+    <string>更多 Podcast 節目，更多歡樂</string>
+    <key>playback_2025_year_over_year_comparison_up_title</key>
+    <string>比起 2024 年，你的收聽時間飆高了 %1$@</string>
     <key>playback_effect_all_podcasts</key>
     <string>所有 Podcast</string>
     <key>playback_effect_this_podcast</key>
@@ -1923,6 +2062,8 @@ Pocket Casts Plus</string>
     <string>播放效果</string>
     <key>playback_failed</key>
     <string>播放失敗</string>
+    <key>playback_not_available</key>
+    <string>無法播放</string>
     <key>playback_speed</key>
     <string>%1$@ 倍速</string>
     <key>player_accessibility_sleep_timer_on</key>
@@ -1989,16 +2130,142 @@ Pocket Casts Plus</string>
     <string>播放錯誤</string>
     <key>player_user_episode_upload_error</key>
     <string>上傳錯誤</string>
+    <key>playlist_add_to_title</key>
+    <string>新增至「%@」</string>
+    <key>playlist_create_no_episodes_description</key>
+    <string>你的 Podcast 中沒有符合這些規則的單集。
+
+請嘗試調整規則，或儲存此播放清單，以便未來自動加入可能符合條件的單集。</string>
+    <key>playlist_creation_create_playlist_button</key>
+    <string>建立播放清單</string>
+    <key>playlist_creation_create_smart_playlist_button_subtitle</key>
+    <string>根據規則自動新增單集。</string>
+    <key>playlist_creation_create_smart_playlist_button_title</key>
+    <string>彙整成智慧播放清單</string>
+    <key>playlist_detail_description</key>
+    <string>%1$@ 個單集 • %2$@</string>
+    <key>playlist_detail_description_one_episode</key>
+    <string>1 集 • %1$@</string>
+    <key>playlist_episode_added_title</key>
+    <string>已新增 1 個單集至「%@」</string>
+    <key>playlist_episodes_added_title</key>
+    <string>已新增 %1$@ 個單集至「%2$@」</string>
+    <key>playlist_episodes_added_to_multiple_playlists</key>
+    <string>已新增至 %1$@ 個播放清單</string>
+    <key>playlist_episodes_added_to_single_playlist</key>
+    <string>已新增至「%1$@」</string>
+    <key>playlist_episodes_count</key>
+    <string>%1$@ 個單集</string>
+    <key>playlist_manual_add_episode_full_playlist_toast</key>
+    <string>此播放清單已滿。 請移除一些單集，或另行開啟新的播放清單。</string>
+    <key>playlist_manual_add_episodes</key>
+    <string>新增單集</string>
+    <key>playlist_manual_archived_episode_placeholder</key>
+    <string>系統已封存你在此播放清單中的單集</string>
+    <key>playlist_manual_archived_episodes_placeholder</key>
+    <string>已封存此播放清單內容，一共 %1$@ 集</string>
+    <key>playlist_manual_browse_shows_title</key>
+    <string>瀏覽 Podcast</string>
+    <key>playlist_manual_create_error_message</key>
+    <string>很抱歉，建立播放清單時發生錯誤。</string>
+    <key>playlist_manual_empty_state_subtitle_no_podcasts</key>
+    <string>對單集左滑，即可新增至播放清單。</string>
+    <key>playlist_manual_empty_state_title</key>
+    <string>著手建立自己的播放清單</string>
+    <key>playlist_manual_empty_state_title_no_podcasts</key>
+    <string>將單集新增至播放清單</string>
+    <key>playlist_manual_episode_add_to_playlist</key>
+    <string>新增至播放清單</string>
+    <key>playlist_manual_episodes_order_option</key>
+    <string>重新排序單集</string>
+    <key>playlist_manual_play_all_empty_list</key>
+    <string>已封存所有單集 新增或取消封存以播放。</string>
+    <key>playlist_options</key>
+    <string>播放清單選項</string>
+    <key>playlist_play_all_option_save_queue</key>
+    <string>儲存目前的佇列</string>
+    <key>playlist_play_all_picker_message</key>
+    <string>播放此播放清單時，系統會取代你目前的「接下來播放」。 先儲存才能保留。</string>
+    <key>playlist_play_all_picker_title</key>
+    <string>要儲存「接下來播放」佇列嗎？</string>
+    <key>playlist_play_all_replace_picker_message</key>
+    <string>這個動作會清除目前的「接下來播放」佇列，並開始播放此播放清單。</string>
+    <key>playlist_play_all_replace_picker_title</key>
+    <string>要取代目前的「接下來播放」嗎？</string>
+    <key>playlist_play_all_sheet_button_title</key>
+    <string>取代並播放</string>
+    <key>playlist_play_all_sheet_description</key>
+    <string>若播放此內容，將取代目前的「接下來播放」。</string>
+    <key>playlist_play_all_sheet_title</key>
+    <string>要取代「接下來播放」嗎？</string>
+    <key>playlist_play_all_sheet_toggle</key>
+    <string>將目前的「接下來播放」佇列儲存為播放清單。</string>
+    <key>playlist_play_all_up_next_saved</key>
+    <string>已將「接下來播放」儲存為播放清單</string>
+    <key>playlist_play_all_up_next_saved_plural</key>
+    <string>已將「接下來播放」儲存為多個播放清單</string>
+    <key>playlist_preview_create_smart_playlist</key>
+    <string>建立智慧播放清單</string>
+    <key>playlist_preview_title</key>
+    <string>預覽「%@」</string>
+    <key>playlist_search</key>
+    <string>尋找播放清單</string>
+    <key>playlist_smart_no_episodes_msg</key>
+    <string>恭喜你聽完這份清單了，或者你可以編輯篩選規則以獲得更多內容。</string>
+    <key>playlist_smart_preview_description</key>
+    <string>設定「智慧規則」，自動將單集新增至智慧播放清單。</string>
+    <key>playlist_smart_preview_enabled_rules</key>
+    <string>已啟用的規則</string>
+    <key>playlist_smart_preview_more_rules</key>
+    <string>更多規則</string>
+    <key>playlist_smart_rule_podcasts_header_subtitle_auto_add</key>
+    <string>系統會自動新增你追蹤的新 Podcast 節目。</string>
+    <key>playlist_smart_rule_podcasts_header_subtitle_manual_add</key>
+    <string>系統不會自動新增你追蹤的新 Podcast 節目。</string>
+    <key>playlist_smart_rule_podcasts_header_title</key>
+    <string>所有追蹤的 Podcast</string>
+    <key>playlist_smart_rule_save_button</key>
+    <string>儲存智慧規則</string>
+    <key>playlist_smart_rule_starred_header_subtitle_toggle_off</key>
+    <string>如果標星號的單集符合其他規則，仍會顯示出來。</string>
+    <key>playlist_smart_rule_starred_header_subtitle_toggle_on</key>
+    <string>只包含符合其他規則的標星號單集。</string>
+    <key>playlist_smart_rule_starred_header_title</key>
+    <string>標星號的單集</string>
+    <key>playlist_smart_rules_title</key>
+    <string>智慧規則</string>
     <key>playlists</key>
     <string>播放清單</string>
+    <key>playlists_auto_download_off_subtitle</key>
+    <string>啟用即可自動下載此播放清單中的單集</string>
+    <key>playlists_auto_download_on_plural_format</key>
+    <string>系統會自動下載此播放清單的前 %1$@ 集內容</string>
+    <key>playlists_default_new_playlist</key>
+    <string>新播放清單</string>
+    <key>playlists_delete</key>
+    <string>刪除播放清單</string>
+    <key>playlists_delete_alert_message</key>
+    <string>你確定要刪除播放清單？ 此動作無法復原。</string>
+    <key>playlists_delete_alert_title</key>
+    <string>要刪除播放清單嗎？</string>
+    <key>playlists_empty_state_description</key>
+    <string>有了播放清單，你就能透過「智慧規則」手動或自動整理節目內容。</string>
+    <key>playlists_empty_state_title</key>
+    <string>用自己的方式整理節目內容</string>
     <key>playlists_onboarding_manual_description</key>
-    <string>想獲得更全面的控制功能嗎？ 不妨運用手動播放清單建立自訂佇列，搭配旅遊、佈景主題或目前的氣氛。 不論是智慧或手動播放清單，都能配合你的需求。</string>
+    <string>收聽體驗我說了算。 建立自訂播放清單，搭配旅遊、佈景主題或目前的氣氛。 無論智慧或自訂播放清單，都能配合你的收聽習慣。</string>
     <key>playlists_onboarding_manual_title</key>
     <string>隆重介紹播放清單</string>
     <key>playlists_onboarding_smart_description</key>
     <string>播放清單的運作方式不變：可依據你設定的規則，自動加入單集。 你原有的「篩選」都還在，只是名稱有所調整。</string>
     <key>playlists_onboarding_smart_title</key>
     <string>「篩選」現在改名為「智慧播放清單」</string>
+    <key>playlists_play_all</key>
+    <string>全部播放</string>
+    <key>playlists_tip_drag_and_drop_description</key>
+    <string>按住播放清單以移動。</string>
+    <key>playlists_tip_drag_and_drop_title</key>
+    <string>重新排序播放清單</string>
     <key>please_try_again</key>
     <string>請再試一次</string>
     <key>please_try_again_later</key>
@@ -2079,6 +2346,8 @@ Pocket Casts Plus</string>
     <string>你可以建立資料夾來整理你的 Podcast 收藏。</string>
     <key>plus_marketing_folders_title</key>
     <string>資料夾</string>
+    <key>plus_marketing_generated_transcripts</key>
+    <string>生成逐字稿</string>
     <key>plus_marketing_hide_ads_description</key>
     <string>無廣告體驗，讓系統更常顯示你喜歡的內容，並減少顯示不喜歡的內容</string>
     <key>plus_marketing_hide_ads_title</key>
@@ -2322,6 +2591,8 @@ Pocket Casts Plus</string>
     <string>明天</string>
     <key>podcast_unarchive_all</key>
     <string>全部取消封存</string>
+    <key>podcast_unavailable</key>
+    <string>無法提供</string>
     <key>podcast_updates_ended</key>
     <string>更新結束時間：%1$@</string>
     <key>podcast_updates_ends</key>
@@ -2344,6 +2615,8 @@ Pocket Casts Plus</string>
     <string>僅最新單集</string>
     <key>podcasts_badges</key>
     <string>徽章</string>
+    <key>podcasts_episode_sort_drag_and_drop</key>
+    <string>自訂排序</string>
     <key>podcasts_episode_sort_longest_to_shortest</key>
     <string>從最長到最短</string>
     <key>podcasts_episode_sort_newest_to_oldest</key>
@@ -2495,7 +2768,7 @@ Pocket Casts Plus</string>
     <key>referrals_share_pass_long_message</key>
     <string>你好！
 
-在此送上 Pocket Casts Plus 的 %1$@訪客體驗券，這是我最愛的 Podcast 播放器。 Pocket Casts Plus 提供書籤、資料夾等獨特功能，其他播放器找不到。 我相信你也會愛上這項工具！
+在此送上 Pocket Casts Plus 的 %1$@訪客體驗券，這是我最愛的 Podcast 播放器。 Pocket Casts Plus 提供書籤、資料夾等其他播放器找不到的獨特功能。 我相信你也會愛上這個工具！
 </string>
     <key>referrals_share_pass_message</key>
     <string>嗨！ 使用下方連結領取你的 %1$@ Pocket Casts Plus 訪客體驗券，在所有裝置上盡情暢聽 Podcast！</string>
@@ -2545,6 +2818,8 @@ Pocket Casts Plus</string>
     <string>全部移除</string>
     <key>remove_download</key>
     <string>移除下載項目</string>
+    <key>remove_from_playlist</key>
+    <string>從播放清單移除</string>
     <key>remove_from_up_next</key>
     <string>從「接下來播放」中移除</string>
     <key>remove_up_next</key>
@@ -2569,6 +2844,10 @@ Pocket Casts Plus</string>
     <string>儲存書籤</string>
     <key>search</key>
     <string>搜尋</string>
+    <key>search_bookmarks</key>
+    <string>搜尋書籤</string>
+    <key>search_episodes</key>
+    <string>搜尋單集</string>
     <key>search_label</key>
     <string>搜尋 Podcast 或新增 RSS URL</string>
     <key>search_podcasts</key>
@@ -2577,6 +2856,14 @@ Pocket Casts Plus</string>
     <string>最近搜尋的內容</string>
     <key>search_results</key>
     <string>已顯示 %1$@ 筆，共 %2$@ 筆</string>
+    <key>search_results_empty_action</key>
+    <string>傳送意見回饋</string>
+    <key>search_results_empty_message</key>
+    <string>嘗試新的搜尋，或新增 Podcast 摘要 URL</string>
+    <key>search_results_empty_title</key>
+    <string>沒有結果</string>
+    <key>search_results_view_all</key>
+    <string>檢視「%1$@」的所有結果</string>
     <key>season</key>
     <string>季別</string>
     <key>season_episode_shorthand_format</key>
@@ -2709,10 +2996,16 @@ Pocket Casts Plus</string>
     <string>已選取 1 個篩選器</string>
     <key>settings_auto_downloads_no_filters_selected</key>
     <string>沒有選取任何篩選器</string>
+    <key>settings_auto_downloads_no_playlists_selected</key>
+    <string>未選取任何播放清單</string>
     <key>settings_auto_downloads_no_podcasts_selected</key>
     <string>沒有選取任何 Podcast節目</string>
     <key>settings_auto_downloads_on_follow</key>
     <string>追蹤中</string>
+    <key>settings_auto_downloads_playlists_selected_format</key>
+    <string>已選取 %1$@ 個播放清單</string>
+    <key>settings_auto_downloads_playlists_selected_singular</key>
+    <string>已選取 1 個播放清單</string>
     <key>settings_auto_downloads_podcasts_selected_format</key>
     <string>已選取 %1$@ 個 Podcast 節目</string>
     <key>settings_auto_downloads_podcasts_selected_singular</key>
@@ -2721,12 +3014,16 @@ Pocket Casts Plus</string>
     <string>下載篩選器中最上方的單集。</string>
     <key>settings_auto_downloads_subtitle_new_episodes</key>
     <string>自動下載新集數、儲存最近追蹤節目的單集數，並設定儲存集數的上限，嚴加管理你的儲存空間。</string>
+    <key>settings_auto_downloads_subtitle_playlists</key>
+    <string>下載播放清單中的熱門單集。</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>下載新增到「接下來播放」的單集。</string>
     <key>settings_badge_filter_header</key>
     <string>單集篩選器數量</string>
     <key>settings_badge_new_since_opened</key>
     <string>應用程式開啟以來的新單集</string>
+    <key>settings_badge_smart_playlist_header</key>
+    <string>智慧播放清單單集數量</string>
     <key>settings_badge_total_unplayed</key>
     <string>未播放總單集</string>
     <key>settings_bookmark_confirmation_sound</key>
@@ -2877,6 +3174,10 @@ Pocket Casts Plus</string>
     <string>點選「接下來播放」中的單集會顯示動作頁面。長按會播放該單集。開啟以切換這些選項。</string>
     <key>settings_general_up_next_tap_on_subtitle</key>
     <string>點選「接下來播放」中的單集就會播放。長按會顯示單集選項。關閉以切換這些選項。</string>
+    <key>settings_general_voice_boost_n</key>
+    <string>VoiceBoostN</string>
+    <key>settings_general_voice_boost_n_subtitle</key>
+    <string>使用經過更新的音量增強功能，取得更一致的音量。</string>
     <key>settings_global_settings</key>
     <string>全域設定</string>
     <key>settings_headphone_controls</key>
@@ -2893,16 +3194,24 @@ Pocket Casts Plus</string>
     <string>包含在 1 個篩選器中</string>
     <key>settings_in_menu</key>
     <string>在選單中</string>
+    <key>settings_in_smart_playlist_singular</key>
+    <string>包含於 1 個智慧播放清單中</string>
+    <key>settings_in_smart_playlists_plural_format</key>
+    <string>包含於 %1$@ 個智慧播放清單中</string>
     <key>settings_inactive_episodes_msg</key>
     <string>未收聽單集是指：在上方指定時間內未播放或下載的單集。單集封存後，就會移除下載項目。</string>
     <key>settings_next_action</key>
     <string>下一個動作</string>
     <key>settings_not_in_filters</key>
     <string>未包含在任何篩選器中</string>
+    <key>settings_not_in_smart_playlists</key>
+    <string>未包含於任何智慧播放清單中</string>
     <key>settings_notifications</key>
     <string>通知</string>
     <key>settings_notifications_filter_count</key>
     <string>篩選器數量</string>
+    <key>settings_notifications_smart_playlist_count</key>
+    <string>智慧播放清單數量</string>
     <key>settings_notifications_subtitle</key>
     <string>有新單集可聆聽時會通知你。也有助於改善自動下載功能的可靠性。</string>
     <key>settings_opml</key>
@@ -2923,8 +3232,16 @@ Pocket Casts Plus</string>
     <string>選取篩選器</string>
     <key>settings_select_filters_plural</key>
     <string>選取篩選器</string>
+    <key>settings_select_playlist_singular</key>
+    <string>選取播放清單</string>
+    <key>settings_select_playlists_plural</key>
+    <string>選取播放清單</string>
+    <key>settings_select_smart_playlists_plural</key>
+    <string>選取智慧播放清單</string>
     <key>settings_shortcuts_filter_open_filter</key>
     <string>開啟篩選器</string>
+    <key>settings_shortcuts_filter_open_playlist</key>
+    <string>開啟播放清單</string>
     <key>settings_shortcuts_filter_play_all_episodes</key>
     <string>播放所有單集</string>
     <key>settings_shortcuts_filter_play_top_episode</key>
@@ -2941,6 +3258,8 @@ Pocket Casts Plus</string>
     <string>已啟用的捷徑</string>
     <key>settings_siri_shortcuts_specific_filter</key>
     <string>特定篩選器的捷徑</string>
+    <key>settings_siri_shortcuts_specific_playlist</key>
+    <string>特定播放清單的捷徑</string>
     <key>settings_siri_shortcuts_specific_podcast</key>
     <string>特定 Podcast 節目的捷徑</string>
     <key>settings_skip_first</key>
@@ -2961,6 +3280,12 @@ Pocket Casts Plus</string>
     <string>探索和搜尋</string>
     <key>settings_status_discover_description</key>
     <string>應用程式的探索區段，包括 Podcast 搜尋。</string>
+    <key>settings_status_expensive_network</key>
+    <string>非計量付費 WiFi</string>
+    <key>settings_status_expensive_network_description</key>
+    <string>如果成功，將透過此網路用於非計量付費 Wifi 的下載作業。</string>
+    <key>settings_status_expensive_network_failure_message</key>
+    <string>目前的網路已標示為昂貴。 嘗試改用 Wi-Fi 或停用低數據模式。</string>
     <key>settings_status_host</key>
     <string>Podcast 常見託管服務商</string>
     <key>settings_status_host_description</key>
@@ -3087,16 +3412,24 @@ Pocket Casts Plus</string>
     <string>備註</string>
     <key>sign_in</key>
     <string>登入</string>
+    <key>sign_in_continue_with_email</key>
+    <string>繼續使用電子郵件地址登入/註冊</string>
+    <key>sign_in_divider_label</key>
+    <string>或者</string>
     <key>sign_in_email_address_prompt</key>
     <string>電子郵件地址</string>
     <key>sign_in_forgot_password</key>
     <string>我忘記密碼</string>
+    <key>sign_in_hide_password_label</key>
+    <string>顯示密碼</string>
     <key>sign_in_message</key>
     <string>將你的 Podcast 訂閱儲存在雲端，並與其他裝置同步節目進度。</string>
     <key>sign_in_password_prompt</key>
     <string>密碼</string>
     <key>sign_in_prompt</key>
     <string>登入或建立帳號</string>
+    <key>sign_in_show_password_label</key>
+    <string>隱藏密碼</string>
     <key>signed_in_as</key>
     <string>登入身分</string>
     <key>signed_out</key>
@@ -3169,6 +3502,12 @@ Pocket Casts Plus</string>
     <string>在目前的單集結束後休眠</string>
     <key>sleep_timer_time_remaining</key>
     <string>睡眠計時器已啟動，剩餘 %1$@</string>
+    <key>smart_playlist</key>
+    <string>智慧播放清單</string>
+    <key>smart_playlists_tip_view_creation_description</key>
+    <string>自行挑選單集，或讓「智慧型播放清單」依智慧規則自動填入單集。</string>
+    <key>smart_playlists_tip_view_creation_title</key>
+    <string>建立自己的播放清單，或讓我們提供協助</string>
     <key>smart_playlists_tip_view_description</key>
     <string>我們提供這些服務，協助你著手使用。 系統會根據收聽狀況自動更新。</string>
     <key>smart_playlists_tip_view_title</key>
@@ -3481,6 +3820,8 @@ Pocket Casts Plus</string>
     <string>最長到最短</string>
     <key>upload_sort_shortest_to_longest</key>
     <string>最短到最長</string>
+    <key>user_episodes_search_podcasts_title</key>
+    <string>你的 Podcast</string>
     <key>user_satisfaction_survey_no_response</key>
     <string>不太想</string>
     <key>user_satisfaction_survey_subtitle</key>
@@ -3495,6 +3836,8 @@ Pocket Casts Plus</string>
     <string>音量增強</string>
     <key>volume_boost_description</key>
     <string>讓音量更大聲</string>
+    <key>volume_boost_n_description</key>
+    <string>音量更一致</string>
     <key>wait_for_wifi</key>
     <string>正在等候 WiFi</string>
     <key>watch</key>
@@ -3515,6 +3858,8 @@ Pocket Casts Plus</string>
     <string>沒有單集</string>
     <key>watch_no_filters</key>
     <string>沒有篩選器</string>
+    <key>watch_no_playlists</key>
+    <string>沒有播放清單</string>
     <key>watch_no_podcasts</key>
     <string>沒有 Podcast 節目</string>
     <key>watch_nothing_playing_subtitle</key>

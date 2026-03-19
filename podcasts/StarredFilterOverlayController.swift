@@ -20,6 +20,7 @@ class StarredFilterOverlayController: PCViewController {
             tableView.register(UITableViewCell.self, forCellReuseIdentifier: Self.smartRuleHeaderCellId)
             tableView.register(UINib(nibName: "EpisodePreviewCell", bundle: nil), forCellReuseIdentifier: FilterPreviewViewController.previewCellId)
             tableView.rowHeight = UITableView.automaticDimension
+            tableView.estimatedRowHeight = UITableView.automaticDimension
         }
     }
     private var viewModel: SmartRuleToggleViewModel!
@@ -65,9 +66,10 @@ class StarredFilterOverlayController: PCViewController {
         let backgroundColor = AppTheme.viewBackgroundColor()
         changeNavTint(titleColor: AppTheme.colorForStyle(.primaryText01), iconsColor: AppTheme.colorForStyle(.primaryIcon03), backgroundColor: backgroundColor)
 
-        largeTitleFont = UIFont.systemFont(ofSize: 22, weight: .bold)
+        largeTitleFont = UIFont.font(ofSize: 22, weight: .bold, scalingWith: .title2)
 
-        title = L10n.statusStarred
+        title = SmartPlaylistRule.starred.title
+
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
 
@@ -92,6 +94,7 @@ class StarredFilterOverlayController: PCViewController {
             disabledString: L10n.playlistSmartRuleStarredHeaderSubtitleToggleOff
         )
         viewModel.$toggleIsOn
+            .dropFirst()
             .receive(on: RunLoop.main)
             .sink { [weak self] newValue in
                 self?.filterToEdit.filterStarred = newValue
@@ -107,7 +110,7 @@ class StarredFilterOverlayController: PCViewController {
             tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
             return
         }
-        let refreshOperation = PlaylistRefreshOperation(tableView: tableView, filter: filterToEdit) { [weak self] newData in
+        let refreshOperation = PlaylistRefreshOperation(playlist: filterToEdit) { [weak self] newData in
             guard let strongSelf = self, strongSelf.viewModel.toggleIsOn else { return }
             strongSelf.episodes = newData
             strongSelf.tableView.reloadSections(IndexSet(integer: 1), with: .automatic)
@@ -146,14 +149,18 @@ class StarredFilterOverlayController: PCViewController {
     }
 
     private func setupSaveButtonTitle() {
-        let attributedTitle = NSAttributedString(string: L10n.playlistSmartRuleSaveButton, attributes: [NSAttributedString.Key.foregroundColor: ThemeColor.primaryInteractive02(), NSAttributedString.Key.font: UIFont.systemFont(ofSize: 18.0, weight: .semibold)])
-        saveButton.setAttributedTitle(attributedTitle, for: .normal)
+        saveButton.setTitle(L10n.playlistSmartRuleSaveButton, for: .normal)
+        saveButton.tintColor = ThemeColor.primaryInteractive02()
+        saveButton.titleLabel?.font = UIFont.font(ofSize: 18.0, weight: .semibold, scalingWith: .headline)
+        saveButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        saveButton.titleLabel?.numberOfLines = 0
+        saveButton.titleLabel?.lineBreakMode = .byWordWrapping
     }
 
     @objc private func saveTapped(sender: Any) {
         filterToEdit.syncStatus = SyncStatus.notSynced.rawValue
-        DataManager.sharedManager.save(filter: filterToEdit)
-        NotificationCenter.postOnMainThread(notification: Constants.Notifications.filterChanged, object: filterToEdit)
+        DataManager.sharedManager.save(playlist: filterToEdit)
+        NotificationCenter.postOnMainThread(notification: Constants.Notifications.playlistChanged, object: filterToEdit)
         navigationController?.popViewController(animated: true)
 
         if !filterToEdit.isNew {
@@ -182,7 +189,7 @@ extension StarredFilterOverlayController: UITableViewDataSource, UITableViewDele
             cell.contentConfiguration = UIHostingConfiguration {
                 SmartRuleToggleHeaderView(viewModel: viewModel)
                     .environmentObject(Theme.sharedTheme)
-                    .frame(maxWidth: .infinity, minHeight: 70.0, alignment: .leading)
+                    .frame(minHeight: 70.0, alignment: .leading)
             }
             .margins(.horizontal, 0)
             .margins(.vertical, 0)

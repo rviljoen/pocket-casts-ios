@@ -45,6 +45,8 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
         private var highPassFilter: AudioUnit?
         private var sampleCount: Float64 = 0
         private var backgroundTaskId: UIBackgroundTaskIdentifier
+        private var voiceBoostNState: OpaquePointer?
+        private var cachedSampleRate: Double = 0
     #endif
 
     init() {
@@ -87,7 +89,7 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
         guard let player = player else { return false }
 
         if let item = player.currentItem {
-            return item.isPlaybackBufferEmpty
+            return item.isPlaybackBufferEmpty || !item.isPlaybackLikelyToKeepUp
         }
 
         return true
@@ -322,12 +324,21 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
                 process: tapProcess
             )
 
+#if compiler(>=6.2)
+            var audioProcessingTap: MTAudioProcessingTap?
+            if noErr == MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PreEffects, &audioProcessingTap) {
+                audioMixInputParameters.audioTapProcessor = audioProcessingTap
+                mutableMix.inputParameters = [audioMixInputParameters]
+                audioMix = mutableMix
+            }
+#else
             var audioProcessingTap: Unmanaged<MTAudioProcessingTap>?
             if noErr == MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PreEffects, &audioProcessingTap) {
                 audioMixInputParameters.audioTapProcessor = audioProcessingTap?.takeRetainedValue()
                 mutableMix.inputParameters = [audioMixInputParameters]
                 audioMix = mutableMix
             }
+#endif
         }
 
         // MARK: - Tap Callbacks
@@ -342,6 +353,7 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
             referenceToSelf.peakLimiter = nil
             referenceToSelf.highPassFilter = nil
             referenceToSelf.sampleCount = 0
+            referenceToSelf.voiceBoostNState = nil
         }
 
         let tapFinalize: MTAudioProcessingTapFinalizeCallback = { tap in
@@ -367,11 +379,20 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
                 return
             }
             referenceToSelf.peakLimiter = limiter
+
+            // Store sample rate for dynamic VoiceBoostN creation
+            referenceToSelf.cachedSampleRate = Double(processingFormat.pointee.mSampleRate)
         }
 
         let tapUnprepare: MTAudioProcessingTapUnprepareCallback = { tap in
             guard let referenceToSelf = DefaultPlayer.unretainedDefaultPlayer(for: tap) else {
                 return
+            }
+
+            if let vbnState = referenceToSelf.voiceBoostNState {
+                VBN_Destroy(vbnState)
+                referenceToSelf.voiceBoostNState = nil
+                FileLog.shared.addMessage("[DefaultPlayer] VoiceBoostN state destroyed")
             }
 
             if let peakLimiter = referenceToSelf.peakLimiter {
@@ -403,16 +424,55 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
                 return
             }
 
-            // apply volume boost
-            var audioTimeStamp = AudioTimeStamp()
-            audioTimeStamp.mSampleTime = currentSampleCount
-            audioTimeStamp.mFlags = AudioTimeStampFlags.sampleTimeValid
-            guard AudioUnitRender(highPassFilter, nil, &audioTimeStamp, 0, UInt32(numberFrames), bufferListInOut) == noErr else {
-                referenceToSelf.handlePlaybackError("AudioUnitRender failed")
-                return
+            let shouldUseVoiceBoostN = Settings.isVoiceBoostNEnabled
+
+            // Handle dynamic state creation/destruction
+            if shouldUseVoiceBoostN && referenceToSelf.voiceBoostNState == nil {
+                let isInitial = referenceToSelf.sampleCount == Float64(numberFrames) // First buffer
+                referenceToSelf.voiceBoostNState = VBN_Create(referenceToSelf.cachedSampleRate)
+                if isInitial {
+                    FileLog.shared.addMessage("[DefaultPlayer] VoiceBoostN enabled - created state at \(referenceToSelf.cachedSampleRate) Hz")
+                } else {
+                    FileLog.shared.addMessage("[DefaultPlayer] VoiceBoostN enabled mid-playback - created state at \(referenceToSelf.cachedSampleRate) Hz")
+                }
+            } else if !shouldUseVoiceBoostN && referenceToSelf.voiceBoostNState != nil {
+                VBN_Destroy(referenceToSelf.voiceBoostNState)
+                referenceToSelf.voiceBoostNState = nil
+                FileLog.shared.addMessage("[DefaultPlayer] VoiceBoostN disabled mid-playback - switching to previous voice boost")
             }
 
-            numberFramesOut.pointee = numberFrames
+            if let vbnState = referenceToSelf.voiceBoostNState {
+                // Use VoiceBoostN processing
+                guard MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, nil, numberFramesOut) == noErr else {
+                    referenceToSelf.handlePlaybackError("MTAudioProcessingTapGetSourceAudio failed")
+                    return
+                }
+
+                // Process through VoiceBoostN
+                let bufferList = UnsafeMutableAudioBufferListPointer(bufferListInOut)
+                let channelCount = Int32(bufferList.count)
+
+                var channelPointers: [UnsafeMutablePointer<Float>?] = bufferList.compactMap { buffer in
+                    buffer.mData?.assumingMemoryBound(to: Float.self)
+                }
+
+                channelPointers.withUnsafeMutableBufferPointer { ptr in
+                    VBN_Process(vbnState, ptr.baseAddress, Int32(numberFrames), channelCount)
+                }
+
+                numberFramesOut.pointee = numberFrames
+            } else {
+                // Use previous voice boost (AudioUnit chain)
+                var audioTimeStamp = AudioTimeStamp()
+                audioTimeStamp.mSampleTime = currentSampleCount
+                audioTimeStamp.mFlags = AudioTimeStampFlags.sampleTimeValid
+                guard AudioUnitRender(highPassFilter, nil, &audioTimeStamp, 0, UInt32(numberFrames), bufferListInOut) == noErr else {
+                    referenceToSelf.handlePlaybackError("AudioUnitRender failed")
+                    return
+                }
+
+                numberFramesOut.pointee = numberFrames
+            }
         }
 
         // MARK: - Peak Limter
@@ -692,15 +752,42 @@ class DefaultPlayer: PlaybackProtocol, Hashable {
         playToEndObserver = nc.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { [weak self] notification in
             guard let self = self else { return }
 
-            self.shouldKeepPlaying = false
+            if !FeatureFlag.checkFinishedTimeBeforeShouldKeepPlaying.enabled {
+                self.shouldKeepPlaying = false
+            }
 
             if let itemThatFinished = notification.object as? AVPlayerItem {
                 let duration = CMTimeGetSeconds(itemThatFinished.duration)
                 let upTo = CMTimeGetSeconds(itemThatFinished.currentTime())
+
+                let buffered = self.futureBufferAvailable()
+                let isBuffering = self.buffering()
+
+                // Check if this is a spurious notification (more than 5% away from end)
+                // If it is, we do not want to reset shouldKeepPlaying and will let the player continue on its way
                 if duration > upTo + (duration * 0.05) {
-                    FileLog.shared.addMessage("Item didn't actually finish got to \(upTo) of \(duration)")
+                    FileLog.shared.addMessage("Item didn't actually finish got to \(upTo) of \(duration). Buffered: \(buffered)s, isBuffering: \(isBuffering), loadedTimeRanges: \(itemThatFinished.loadedTimeRanges)")
+
+                    // If buffer is empty, this is likely a streaming issue - let the stall handler deal with it
+                    if itemThatFinished.isPlaybackBufferEmpty {
+                        FileLog.shared.addMessage("Spurious end notification detected: buffer empty, treating as playback stall")
+                    }
+
                     return
                 }
+
+                if FeatureFlag.checkFinishedTimeBeforeShouldKeepPlaying.enabled {
+                    // Additional safeguard: check if buffer is empty (shouldn't be if truly finished)
+                    // A truly finished item should have reached the end naturally, not due to buffer exhaustion
+                    if itemThatFinished.isPlaybackBufferEmpty && !itemThatFinished.isPlaybackLikelyToKeepUp {
+                        FileLog.shared.addMessage("Item reports finished but buffer is empty and playback unlikely to keep up - ignoring")
+                        return
+                    }
+                }
+            }
+
+            if FeatureFlag.checkFinishedTimeBeforeShouldKeepPlaying.enabled {
+                self.shouldKeepPlaying = false
             }
 
             PlaybackManager.shared.playerDidFinishPlayingEpisode()

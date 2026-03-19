@@ -1023,15 +1023,13 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This allows you to add custom images to your files</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Pocket Casts uses this to find Google Cast devices on your network. If you don&apos;t use this feature feel free to say no.</string>
+	<string>Pocket Casts uses this to find Google Cast devices on your network. If you don't use this feature feel free to say no.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Pocket Casts needs to access your microphone in order to detect nearby Google Cast devices.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Pocket Casts needs permission to save this image to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Pocket Casts needs permission to save this image to your photo library.</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>We use analytics to make the app better and to measure if our ad campaigns are successful.</string>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>ChapterIntent</string>
@@ -1046,11 +1044,13 @@
 		<string>DMSans.ttf</string>
 		<string>Humane-Medium.otf</string>
 		<string>Humane-Bold.otf</string>
+		<string>Humane-SemiBold.otf</string>
+		<string>Inter.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
-		<true/>
+		<false/>
 		<key>UISceneConfigurations</key>
 		<dict>
 			<key>CPTemplateApplicationSceneSessionRoleApplication</key>
@@ -1086,6 +1086,8 @@
 	</array>
 	<key>UIBrowsableContentSupportsSectionedBrowsing</key>
 	<false/>
+	<key>UIDesignRequiresCompatibility</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen</string>
 	<key>UIRequiredDeviceCapabilities</key>

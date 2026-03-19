@@ -1,2 +1,2 @@
-- Localize the How to Upload screen [#3401](https://github.com/Automattic/pocket-casts-ios/pull/3401)
-- Add Share button to Transcripts [#3418](https://github.com/Automattic/pocket-casts-ios/pull/3418)
+- Show buffering UI on Full Screen Player [#4051](https://github.com/Automattic/pocket-casts-ios/pull/4051)
+- Ensure that temporary download files are properly deleted from the system [#4052](https://github.com/Automattic/pocket-casts-ios/pull/4052)

@@ -76,11 +76,9 @@ enum SharingModal {
 
     static func showModal(podcast: Podcast, episode: Episode?, from source: AnalyticsSource, in viewController: UIViewController) {
 
-        if FeatureFlag.disablePrivateFeedSharing.enabled {
-            if podcast.isPrivate {
-                Toast.show(L10n.sharePodcastPrivateNotAvailable)
-                return
-            }
+        if podcast.isPrivate {
+            Toast.show(L10n.sharePodcastPrivateNotAvailable)
+            return
         }
 
         let colors = OptionsPickerRootController.Colors(title: UIColor.white.withAlphaComponent(0.5), background: PlayerColorHelper.playerBackgroundColor01())
@@ -111,11 +109,9 @@ enum SharingModal {
 
     static func show(option: Option, from source: AnalyticsSource, in viewController: UIViewController) {
 
-        if FeatureFlag.disablePrivateFeedSharing.enabled {
-            if option.podcast.isPrivate {
-                Toast.show(L10n.sharePodcastPrivateNotAvailable)
-                return
-            }
+        if option.podcast.isPrivate {
+            Toast.show(L10n.sharePodcastPrivateNotAvailable)
+            return
         }
 
         let sharingDestinations: [ShareDestination] = ShareDestination.displayedApps + [.copyLink, .systemSheet(vc: viewController)]
@@ -276,6 +272,7 @@ extension SharingModal.Option {
     }
 
     var shareURL: String {
+        let formatter = SignificantDigitsFormatStyle(significantDigits: 4)
         switch self {
         case .episode(let episode):
             return episode.shareURL
@@ -288,7 +285,7 @@ extension SharingModal.Option {
         case .clip(let episode, let timeInterval):
             return episode.shareURL + "?t=\(round(timeInterval))"
         case .clipShare(let episode, let clipTime, _):
-            return episode.shareURL + "?t=\(clipTime.start),\(clipTime.end)"
+            return episode.shareURL + "?t=\(clipTime.start.formatted(formatter)),\(clipTime.end.formatted(formatter))"
         }
     }
 }

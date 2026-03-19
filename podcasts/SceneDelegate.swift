@@ -1,19 +1,11 @@
 import JLRoutes
 import UIKit
-import FacebookCore
 import PocketCastsUtils
 
 class SceneDelegate: UIResponder, UISceneDelegate, UIWindowSceneDelegate {
     var window: UIWindow?
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
-
-        if FeatureFlag.podcastNewformAppsFlyer.enabled {
-            if let userActivity = connectionOptions.userActivities.first,
-               userActivity.activityType == NSUserActivityTypeBrowsingWeb {
-                ApplicationDelegate.shared.application(.shared, continue: userActivity)
-            }
-        }
 
         let window = UIWindow(windowScene: windowScene)
         self.window = window
@@ -34,9 +26,6 @@ class SceneDelegate: UIResponder, UISceneDelegate, UIWindowSceneDelegate {
 
     func sceneDidBecomeActive(_ scene: UIScene) {
         appDelegate()?.handleBecomeActive()
-        if Theme.sharedTheme.activeTheme == .radioactive {
-            appDelegate()?.lenticularFilter.show()
-        }
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
@@ -44,9 +33,6 @@ class SceneDelegate: UIResponder, UISceneDelegate, UIWindowSceneDelegate {
     }
 
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
-        if FeatureFlag.podcastNewformAppsFlyer.enabled {
-            ApplicationDelegate.shared.application(.shared, continue: userActivity)
-        }
         appDelegate()?.handleContinue(userActivity)
     }
 

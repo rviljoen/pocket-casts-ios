@@ -229,12 +229,14 @@ class EpisodeManager: NSObject {
         }
     }
 
-    class func bulkUnarchive(episodes: [Episode]) {
+    class func bulkUnarchive(episodes: [Episode], trackEvent: Bool = true) {
         DataManager.sharedManager.bulkUnarchive(episodes: episodes, updateSyncFlag: SyncManager.isUserLoggedIn())
 
         NotificationCenter.postOnMainThread(notification: Constants.Notifications.manyEpisodesChanged)
 
-        analyticsHelper.bulkUnarchiveEpisodes(count: episodes.count)
+        if trackEvent {
+            analyticsHelper.bulkUnarchiveEpisodes(count: episodes.count)
+        }
     }
 
     class func removeListeningHistory(episodes: [BaseEpisode]) {
@@ -376,14 +378,50 @@ class EpisodeManager: NSObject {
                 deleteDownloadedFiles(episode: episode)
             }
         }
+
+        if FeatureFlag.cleanUpTmpFiles.enabled {
+            // Remove any files in the temporary folder that were not part of the above, that should be orphan files
+            let filePaths = Set(episodes.map { DownloadManager.shared.tempPathForEpisode($0) })
+            // Also protect actively downloading episodes
+            let downloadingEpisodes = DataManager.sharedManager.findEpisodesWhere(
+                customWhere: "episodeStatus == \(DownloadStatus.downloading.rawValue) OR episodeStatus == \(DownloadStatus.queued.rawValue) OR (autoDownloadStatus == \(AutoDownloadStatus.playerDownloadedForStreaming.rawValue) && episodeStatus != \(DownloadStatus.downloaded))",
+                arguments: nil
+            )
+            let allExceptions = filePaths.union(downloadingEpisodes.map { DownloadManager.shared.tempPathForEpisode($0) })
+            cleanUpTmpFolder(exceptions: allExceptions)
+        }
+    }
+
+    class func cleanUpTmpFolder(exceptions: Set<String>) {
+        let fileManager = FileManager.default
+        let tmpPath = DownloadManager.shared.tempDownloadFolder
+        guard let folderEnum = fileManager.enumerator(atPath: tmpPath) else {
+            return
+        }
+        FileLog.shared.addMessage("Episode Manager: Starting removing the temporary orphan files")
+        while let tmpFile = folderEnum.nextObject() as? String {
+            let fullFilePath = (tmpPath as NSString).appendingPathComponent(tmpFile)
+            if exceptions.contains(fullFilePath) {
+                continue
+            }
+            FileLog.shared.addMessage("Episode Manager: Removing the following orphan file \(tmpFile)")
+            StorageManager.removeItem(at: URL(fileURLWithPath: fullFilePath))
+        }
+        FileLog.shared.addMessage("Episode Manager: Ending removing the temporary orphan files")
     }
 
     class func urlForEpisode(_ episode: BaseEpisode, streamingOnly: Bool = false) -> URL? {
-        if episode.downloaded(pathFinder: DownloadManager.shared), !streamingOnly {
-            return URL(fileURLWithPath: episode.pathToDownloadedFile(pathFinder: DownloadManager.shared))
-        } else if let episode  = episode as? Episode, episode.streamDownloaded(pathFinder: DownloadManager.shared) {
-            return URL(fileURLWithPath: episode.pathToDownloadedFile(pathFinder: DownloadManager.shared))
-        } else if let episode = episode as? Episode, let url = episode.downloadUrl {
+        if !streamingOnly {
+            // For local playback, prefer downloaded files
+            if episode.downloaded(pathFinder: DownloadManager.shared) {
+                return URL(fileURLWithPath: episode.pathToDownloadedFile(pathFinder: DownloadManager.shared))
+            } else if let episode = episode as? Episode, episode.streamDownloaded(pathFinder: DownloadManager.shared) {
+                return URL(fileURLWithPath: episode.pathToDownloadedFile(pathFinder: DownloadManager.shared))
+            }
+        }
+
+        // For streaming or when no local files, return remote URL
+        if let episode = episode as? Episode, let url = episode.downloadUrl {
             return URL(string: url)
         } else if let episode = episode as? UserEpisode {
             if let token = ServerSettings.syncingV2Token, episode.uploadStatus != UploadStatus.missing.rawValue {

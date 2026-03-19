@@ -541,9 +541,6 @@
 /* Title for the podcast category Society & Culture */
 "discover_browse_by_category_society_and_culture" = "Society & Culture";
 
-/* Abbreviation for the podcast category Society & Culture, using only "Culture" */
-"discover_browse_by_category_society_and_culture" = "Culture";
-
 /* Title for the podcast category Sports */
 "discover_browse_by_category_sports" = "Sports";
 
@@ -995,7 +992,7 @@
 "playlist_preview_title" = "Preview %@";
 
 /* Button title used to create a new smart playlist */
-"playlist_preview_create_smart_playlist" = "Create Smart Playlist";
+"playlist_preview_create_smart_playlist" = "Create smart playlist";
 
 /* Used on the screen to create a new filter. Title for the toggle to include all podcasts in the filter. */
 "filter_create_podcasts_all_podcasts" = "All Podcasts";
@@ -1056,6 +1053,9 @@
 
 /* Menu prompt to open the Filter options. Also used for the title of the filter options screen. */
 "filter_options" = "Filter Options";
+
+/* Menu prompt to open the Playlist options. Also used for the title of the playlist options screen. */
+"playlist_options" = "Playlist Options";
 
 /* Title for filter options related to release date settings. */
 "filter_release_date" = "Release Date";
@@ -1164,6 +1164,9 @@
 
 /* Time format to display a set number of hours. '%1$@' is a placeholder for a number of hours, this value will be more than one. */
 "hours_plural_format" = "%1$@ hours";
+
+/* Time format to display 1 hour. */
+"hours_singular_format" = "1 hour";
 
 /* The initial informational text explaining how to upload a file */
 "how_to_upload_explanation" = "First, open an app that has the audio files you'd like to save";
@@ -1459,8 +1462,14 @@
 /* A common string used throughout the app. Prompt to add the selected item(s) to the end of the queue. */
 "play_last" = "Play Last";
 
+/* Prompt to add an episode to the end of the Up Next queue. Shown in the episode detail bottom sheet. */
+"play_last_in_up_next" = "Play last in Up Next";
+
 /* A common string used throughout the app. Prompt to add the selected item(s) to the top of the queue. */
 "play_next" = "Play Next";
+
+/* Prompt to add an episode to the top of the Up Next queue. Shown in the episode detail bottom sheet. */
+"play_next_in_up_next" = "Play next in Up Next";
 
 /* One of the options for how aggressive to be in trimming silence. Sets it to max the highest setting. */
 "playback_effect_trim_silence_max" = "Mad Max";
@@ -1594,6 +1603,15 @@
 /* A short description of what the Volume Boost feature does */
 "volume_boost_description" = "Voices sound louder";
 
+/* A short description of what the VoiceBoostN feature does */
+"volume_boost_n_description" = "Voice levels are more consistent";
+
+/* Title for the VoiceBoostN setting in Settings > General */
+"settings_general_voice_boost_n" = "VoiceBoostN";
+
+/* Subtitle for the VoiceBoostN setting in Settings > General */
+"settings_general_voice_boost_n_subtitle" = "Use updated Volume Boost with more consistent voice levels.";
+
 /* A common string used throughout the app. Catch all prompt to suggest to the user to try the task again. */
 "please_try_again" = "Please try again";
 
@@ -1635,6 +1653,9 @@
 
 /* Message displayed when teh user tap "Pocket Casts Champion" button */
 "plus_champion_message" = "Thanks for being with Pocket Casts from the start. You're a real champion!";
+
+/* Pocket Casts Plus marketing page, description of generated transcriptsg */
+"plus_marketing_generated_transcripts" = "Generated Transcripts";
 
 /* Pocket Casts Plus marketing page, description of removing banner ads */
 "plus_marketing_no_banner_ads" = "No Banner Ads";
@@ -1817,6 +1838,18 @@
 
 /* Indicates that the episode has been archived. */
 "podcast_archived" = "Archived";
+
+/* Indicates that the episode is unavailable server side. */
+"podcast_unavailable" = "Unavailable";
+
+/* Title indicating that the episode is unavailable server side */
+"episode_unavailable_title" = "Episode Unavailable";
+
+/* Message indicating that the episode is unavailable server side but will remain in your manual playlist until removed. */
+"episode_unavailable_message" = "The podcast creator deleted this episode. It will stay in your playlist until you remove it.";
+
+/* A title used for an action to remove an episode from a playlist */
+"remove_from_playlist" = "Remove from playlist";
 
 /* Label used to display the number or archived episodes in a podcast. '%1$@' is a placeholder for the archived episode number. */
 "podcast_archived_count_format" = "%1$@ archived";
@@ -2025,6 +2058,9 @@
 /* Episodes will be displayed in order from the shortest to the longest. */
 "podcasts_episode_sort_shortest_to_longest" = "Shortest to Longest";
 
+/* Episodes will be displayed in custom order by drag and drop */
+"podcasts_episode_sort_drag_and_drop" = "Custom order";
+
 /* Presents the podcasts with large podcast artwork tiles. */
 "podcasts_large_grid" = "Large Grid";
 
@@ -2182,6 +2218,12 @@
 /* A common string used throughout the app when searching podcasts. Placeholder text used in search boxes. */
 "search_podcasts" = "Search Podcasts";
 
+/* A placeholder used when searchng episodes. */
+"search_episodes" = "Search episodes";
+
+/* A placeholder used when searching bookmarks. */
+"search_bookmarks" = "Search bookmarks";
+
 /* A common string used throughout the app. Refers to the season a podcast episode is in. */
 "season" = "Season";
 
@@ -2202,6 +2244,12 @@
 
 /* A common string used throughout the app. Prompt to select all items below the currently selected item. */
 "select_all_below" = "Select all below";
+
+/* A common string used throughout the app. Prompt to deselect all items above the currently selected item. */
+"deselect_all_above" = "Deselect all above";
+
+/* A common string used throughout the app. Prompt to deselect all items below the currently selected item. */
+"deselect_all_below" = "Deselect all below";
 
 /* A common string used throughout the app. Prompt to select episodes in the presented list. */
 "select_episodes" = "Select Episodes";
@@ -2318,7 +2366,7 @@
 "settings_auto_add_limit_subtitle_stop" = "New episodes will stop being added when Up Next reaches %1$@ episodes.";
 
 /* Subtitle explaining the app's behavior when the episode limit is reached and new episodes are added to the top of the Up Next Queue. '%1$@' is a placeholder for the auto add limit. */
-"settings_auto_add_limit_subtitle_top" = "When Up Next reaches %1$@, new episodes auto-added to the top will remove the last episode in the queue. No new episodes will be added to the bottom.";
+"settings_auto_add_limit_subtitle_top" = "When Up Next reaches %1$@, new episodes auto‑added to the top will remove the last episode in the queue. Episodes set to auto‑add to the bottom won’t be added until Up Next is below the limit.";
 
 /* Section header that displays all of the Podcasts that will automatically add new episodes to the Up Next Queue. */
 "settings_auto_add_podcasts" = "Auto-Add Podcasts";
@@ -2368,6 +2416,15 @@
 /* Label indicating no filters have been selected. */
 "settings_auto_downloads_no_filters_selected" = "No Filters Selected";
 
+/* Label indicating the number of selected playlists. '%1$@' is a placeholder for the number of playlists selected. */
+"settings_auto_downloads_playlists_selected_format" = "%1$@ Playlists Selected";
+
+/* Label indicating the number of selected playlists. This is the singular form for an accompanying plural option. */
+"settings_auto_downloads_playlists_selected_singular" = "1 Playlist Selected";
+
+/* Label indicating no playlists have been selected. */
+"settings_auto_downloads_no_playlists_selected" = "No Playlists Selected";
+
 /* Label indicating no podcasts have been selected. */
 "settings_auto_downloads_no_podcasts_selected" = "No Podcasts Selected";
 
@@ -2380,6 +2437,9 @@
 /* Subtitle explaining the toggle to auto download the top episodes of a filter. */
 "settings_auto_downloads_subtitle_filters" = "Download the top episodes in a filter.";
 
+/* Subtitle explaining the toggle to auto download the top episodes of a playlist. */
+"settings_auto_downloads_subtitle_playlists" = "Download the top episodes in a playlist.";
+
 /* Subtitle explaining the toggle to auto download New Episodes. */
 "settings_auto_downloads_subtitle_new_episodes" = "Automatically download new episodes, save episodes from newly followed shows, and manage your storage by setting a limit on how many episodes are saved.";
 
@@ -2388,6 +2448,9 @@
 
 /* Section Header for selecting the options for setting the app badge based on the user's filters. */
 "settings_badge_filter_header" = "EPISODE FILTER COUNT";
+
+/* Section Header for selecting the options for setting the app badge based on the user's smart playlists. */
+"settings_badge_smart_playlist_header" = "SMART PLAYLIST EPISODE COUNT";
 
 /* Option for setting the app badge based on the new episodes since the app opened. */
 "settings_badge_new_since_opened" = "New Since App Opened";
@@ -2614,6 +2677,12 @@
 /* Informs the user that the current podcast is included in one filter. This is the singular form of an accompanying plural string. */
 "settings_in_filters_singular" = "Included In 1 Filter";
 
+/* Informs the user that the current podcast is included in more Smart Playlists. '%1$@' is a placeholder for the number of filters this podcast is included in. */
+"settings_in_smart_playlists_plural_format" = "Included In %1$@ Smart Playlists";
+
+/* Informs the user that the current podcast is included in one Smart Playlist. This is the singular form of an accompanying plural string. */
+"settings_in_smart_playlist_singular" = "Included In 1 Smart Playlist";
+
 /* Setting section header. Indicates that the options in this section will appear in the menu vs an action bar. */
 "settings_in_menu" = "IN MENU";
 
@@ -2623,11 +2692,17 @@
 /* Informs the user that the current podcast isn't included in any filters. */
 "settings_not_in_filters" = "Not Included In Any Filters";
 
+/* Informs the user that the current podcast isn't included in any playlists. */
+"settings_not_in_smart_playlists" = "Not Included In Any Smart Playlists";
+
 /* A common string used throughout the app. Refers to the Notifications settings menu. */
 "settings_notifications" = "Notifications";
 
 /* App badge choice to have the badge reflect the filter count */
 "settings_notifications_filter_count" = "Filter count";
+
+/* App badge choice to have the badge reflect the smart playlist count */
+"settings_notifications_smart_playlist_count" = "Smart Playlist count";
 
 /* Subtitle explaining what notifications to expect when you enable notifications. */
 "settings_notifications_subtitle" = "Notifies you when a new episode is available. Also useful for improving the reliability of auto downloads.";
@@ -2647,11 +2722,23 @@
 /* Prompt to select a filter */
 "settings_select_filter_singular" = "Select Filter";
 
+/* Prompt to select a playlist */
+"settings_select_playlist_singular" = "Select Playlist";
+
 /* Prompt to select filters */
 "settings_select_filters_plural" = "Select Filters";
 
+/* Prompt to select playlists */
+"settings_select_playlists_plural" = "Select Playlists";
+
+/* Prompt to select smart playlists */
+"settings_select_smart_playlists_plural" = "Select Smart Playlists";
+
 /* Option for the filter Siri Shortcut. This sets the app to open the filter when the shortcut is triggered. */
 "settings_shortcuts_filter_open_filter" = "Open Filter";
+
+/* Option for the filter Siri Shortcut. This sets the app to open the playlist when the shortcut is triggered. */
+"settings_shortcuts_filter_open_playlist" = "Open Playlist";
 
 /* Option for the filter Siri Shortcut. This sets the filter to play all episodes in the filter when the shortcut is triggered. */
 "settings_shortcuts_filter_play_all_episodes" = "Play all episodes";
@@ -2676,6 +2763,9 @@
 
 /* Option to create a Siri Shortcut to a specific filter. */
 "settings_siri_shortcuts_specific_filter" = "Shortcut to a specific filter";
+
+/* Option to create a Siri Shortcut to a specific playlist. */
+"settings_siri_shortcuts_specific_playlist" = "Shortcut to a specific playlist";
 
 /* Option to create a Siri Shortcut to a specific podcast. */
 "settings_siri_shortcuts_specific_podcast" = "Shortcut to a specific podcast";
@@ -2723,7 +2813,7 @@
 "settings_up_next_limit" = "Automatically add new episodes to Up Next. New episodes will stop being added when Up Next reaches %1$@.";
 
 /* Informs the user about how the Queue will be adjusted when the episode limit is reached. '%1$@' is a placeholder for the current queue limit. */
-"settings_up_next_limit_add_to_top" = "Automatically add new episodes to Up Next. When Up Next reaches %1$@, new episodes auto-added to the top will remove the last episode in the queue.";
+"settings_up_next_limit_add_to_top" = "Automatically add new episodes to Up Next. When Up Next reaches %1$@, new episodes auto‑added to the top will remove the last episode in the queue. Episodes set to auto‑add to the bottom won’t be added until Up Next is below the limit.";
 
 /* Provides a prompt for the user to toggle on the volume boosting setting. */
 "settings_volume_boost" = "Volume Boost";
@@ -2790,6 +2880,15 @@
 
 /* Failure message for the Internet check. */
 "settings_status_internet_failure_message" = "Unable to connect to the internet. Try connecting on a different network (e.g. mobile data).";
+
+/* Title for the service being checked, in this case, whether the network is considered expensive. */
+"settings_status_expensive_network" = "Unmetered Wifi";
+
+/* Description for the expensive network check. */
+"settings_status_expensive_network_description" = "If successful, this network will be used for downloads on Unmetered Wifi.";
+
+/* Failure message for the expensive network check. */
+"settings_status_expensive_network_failure_message" = "Your current network is marked as expensive. Try switching to Wi-Fi or disabling Low Data Mode.";
 
 /* Title for the service being checked, in this case, the Pocket Cast's Refresh Service. */
 "settings_status_refresh_service" = "Refresh Service";
@@ -3285,6 +3384,9 @@
 
 /* Label in the Apple Watch app informing the user that they haven't configured any of their filters. */
 "watch_no_filters" = "No Filters";
+
+/* Label in the Apple Watch app informing the user that they haven't configured any playlists. */
+"watch_no_playlists" = "No Playlists";
 
 /* Label in the Apple Watch app informing the user that they haven't subscribed to podcasts. */
 "watch_no_podcasts" = "No Podcasts";
@@ -4009,6 +4111,12 @@
 /* Subtitle of the login marketing view */
 "login_subtitle" = "Create an account to sync your listening experience across all your devices.";
 
+/* Title of the login view */
+"login_landing_title" = "Create your Pocket Casts account";
+
+/* Subtitle of the login view */
+"login_landing_subtitle" = "Your podcasts, always in sync. Keep your library safe, and enjoy Pocket Casts on web and desktop.";
+
 /* Title of the plus marketing view */
 "plus_marketing_title" = "Everything you love about Pocket Casts, plus more";
 
@@ -4240,6 +4348,9 @@
 /* Title of a button the clears the current search text */
 "episode_details_title" = "Details";
 
+/* Label for the Add button on the episode detail page. Opens a bottom sheet with options to add to Up Next or playlist. */
+"episode_detail_add" = "Add";
+
 /* Title of the Episode description */
 "episode_description_title" = "Episode Description";
 
@@ -4392,6 +4503,9 @@
 
 /* Title of a screen that display Up Next history */
 "up_next_history" = "Up Next History";
+
+/* Create snapshot */
+"create_up_next_snapshot" = "Create snapshot";
 
 /* A message explaining how to use the Up Next history */
 "up_next_history_explanation" = "A list of recent updates to Up Next due to changes on other devices. To view the episodes and have the option to restore them, tap any entry.";
@@ -4803,7 +4917,7 @@
 "cancel_subscription_title" = "Thinking of leaving?\nLet us help first";
 
 /* Title for the continue button */
-"cancel_subscription_continue_button" = "Continue to Cancellation";
+"cancel_subscription_continue_button" = "Continue with cancellation";
 
 /* Generic error if the product loading fails */
 "cancel_subscription_generic_error" = "An error occurred. Please try again later.";
@@ -4914,7 +5028,7 @@
 "cancel_subscription_offer_yearly_success_view_description" = "Thanks for choosing Pocket Casts. Your discounted year begins after your current plan ends.";
 
 /* Referrals - Share Pass message. `%1$@' is a placeholder for the duration of free period offered on the Plus subscription*/
-"referrals_share_pass_long_message" = "Hi there!\n\nHere is a %1$@ guest pass for Pocket Casts Plus–my favorite podcast player. It's packed with unique features like bookmarks, folders, and more that you won't find anywhere else. I think you'll love it too!\n";
+"referrals_share_pass_long_message" = "Hi there!\n\nHere is a %1$@ guest pass for Pocket Casts Plus - my favorite podcast player. It's packed with unique features like bookmarks, folders, and more that you won't find anywhere else. I think you'll love it too!\n";
 
 /* Auto Downloads Setting - Auto download on follow of a blog*/
 "settings_auto_downloads_on_follow" = "On Follow";
@@ -4924,6 +5038,9 @@
 
 /* Message when no email account is configured to be able to send the logs*/
 "logs_no_email_account_configured" = "You need to configure an email account on the device in order to send the logs";
+
+/* Message shown when watchOS logs are not available */
+"logs_watch_os_not_available" = "No watchOS logs available. Make sure you have an Apple Watch paired and the Pocket Casts watch app installed.";
 
 /* Title for action to remove episode from listening history */
 "listening_history_remove" = "Remove from history";
@@ -5094,6 +5211,18 @@
 /* Subtitle shown for the recommendations sreen during onboarding */
 "onboarding_recommendations_subtitle" = "Here are some great shows to start with. Tap to follow, search or import from other apps.";
 
+/* A user review quote shown during onboarding */
+"onboarding_quote_best" = "The best podcast app out there. By far";
+
+/* A user review quote shown during onboarding alongside an image of the playback effects */
+"onboarding_quote_customization" = "The amount of customization is insane";
+
+/* A user review quote shown during onboarding alongside an image of podcast folders */
+"onboarding_quote_folders" = "Organizing my podcasts by folders is genius";
+
+/* A generic label representing the authour of the onboarding quotes describing users of the app */
+"onboarding_quote_author" = "Pocket Casts user";
+
 /* Notification body for weekly reengagement message */
 "notifications_reengagement_weekly_body" = "It’s been awhile since you’ve listened. Jump back in and enjoy!";
 
@@ -5262,6 +5391,9 @@
 /* The title of an option to report a banner ad as occurring too often. */
 "banner_ads_report_too_often" = "See this ad too often";
 
+/* The title shown in a Toast after reporting a banner ad. */
+"banner_ads_report_confirmation" = "You reported this ad.";
+
 /* The title of an option to report a banner ad as "other". */
 "banner_ads_report_other" = "Other";
 /* Episodes will be displayed in based on season and episode numbers*/
@@ -5301,7 +5433,7 @@
 "feature_marketing_skip_chapters" = "Save time with Preselect Chapters";
 
 /* Cloud Storage feature marketing message. The %1$@ argument is the amount of cloud disk space available. Ex: 20 GB Cloud Storage for your files */
-"feature_marketing_cloud_storage" = "%1$@ Cloud Storage for your files";
+"feature_marketing_cloud_storage" = "%1$@ GB Cloud Storage for your files";
 
 /* Watch playback feature marketing message */
 "feature_marketing_watch_playback" = "Apps for Wear OS and Apple Watch";
@@ -5324,14 +5456,50 @@
 /* A common string used throughout the app. Often refers to the Playlists screen. */
 "playlists" = "Playlists";
 
+/* An accessibility label used for the playlist image */
+"accessibility_playlist_image" = "Playlist image";
+
+/* An accessibility label used for the add episode action for the Add Episodes search view */
+"accessibility_playlist_add_episode" = "Add Episode";
+
+/* Option to delete the playlist. It appears in the edit panel from the playlist detail. */
+"playlists_delete" = "Delete Playlist";
+
+/* Alert title used when a user taps on the delete option to cancel a playlist */
+"playlists_delete_alert_title" = "Delete Playlist?";
+
+/* Alert message used when a user taps on the delete option to cancel a playlist */
+"playlists_delete_alert_message" = "Are you sure you want to delete your playlist? There's no way to undo this.";
+
+/* Playlist Play all button */
+"playlists_play_all" = "Play all";
+
+/* Subtitle for the auto download setting. This is displayed when the option is turned off. */
+"playlists_auto_download_off_subtitle" = "Enable to auto download episodes in this playlist";
+
+/* Subtitle for the auto download setting. This is displayed when the option is turned on. '%1$@' is a placeholder for the number of episodes, this will be more than one. */
+"playlists_auto_download_on_plural_format" = "The first %1$@ episodes in this playlist will be automatically downloaded";
+
 /* A common string used throughout the app. Often refers to the Smart Playlist. */
-"smart_playlist" = "Smart Playlist";
+"smart_playlist" = "Smart playlist";
 
 /* The title shown in a Tip View when the user hasn't yet added a smart playlist */
-"smart_playlists_tip_view_title" = "Smart Playlists, ready to go";
+"smart_playlists_tip_view_title" = "Smart playlists, ready to go";
 
 /* The description shown in a Tip View when the user hasn't yet added a smart playlist */
 "smart_playlists_tip_view_description" = "We made these to help you get started. They auto-update based on your listening.";
+
+/* The title shown in a Tip View when the user opens the new Playlist creation view for the first time */
+"smart_playlists_tip_view_creation_title" = "Build your own playlist or let us help";
+
+/* The description shown in a Tip View when the user opens the new Playlist creation view for the first time */
+"smart_playlists_tip_view_creation_description" = "Pick episodes yourself, or let Smart Playlist fill it automatically based on your Smart Rules.";
+
+/* The title shown in a Tip View when the user creates the first playlist */
+"playlists_tip_drag_and_drop_title" = "Reorder your playlists";
+
+/* The description shown in a Tip View when the user creates the first playlist */
+"playlists_tip_drag_and_drop_description" = "Press and hold a playlist to move it.";
 
 /* Playlists Onboarding screen: title for the smart playlist card */
 "playlists_onboarding_smart_title" = "Filters are now Smart Playlists";
@@ -5352,13 +5520,13 @@
 "playlists_empty_state_description" = "Playlists let you organize episodes manually or automatically with Smart Rules.";
 
 /* A placeholder title for a new playlist. */
-"playlists_default_new_playlist" = "New Playlist";
+"playlists_default_new_playlist" = "New playlist";
 
 /* Title of the save button dislayed in each smart rule */
-"playlist_smart_rule_save_button" = "Save Smart Rule";
+"playlist_smart_rule_save_button" = "Save smart rule";
 
 /* Header title for smart rule podcasts */
-"playlist_smart_rule_podcasts_header_title" = "All Followed Podcasts";
+"playlist_smart_rule_podcasts_header_title" = "All followed podcasts";
 
 /* Header subtitle for smart rule podcasts when select all is on */
 "playlist_smart_rule_podcasts_header_subtitle_auto_add" = "New podcasts you follow will be automatically added.";
@@ -5367,7 +5535,7 @@
 "playlist_smart_rule_podcasts_header_subtitle_manual_add" = "New podcasts you follow will not be automatically added.";
 
 /* Header title for smart rule starred  */
-"playlist_smart_rule_starred_header_title" = "Starred Episodes";
+"playlist_smart_rule_starred_header_title" = "Starred episodes";
 
 /* Header subtitle for smart rule starred when the toggle is on */
 "playlist_smart_rule_starred_header_subtitle_toggle_on" = "Only include starred episodes that match your other rules.";
@@ -5376,25 +5544,136 @@
 "playlist_smart_rule_starred_header_subtitle_toggle_off" = "Starred episodes can still appear if they match your other rules.";
 
 /* Title for the button used during the Playlist creation */
-"playlist_creation_create_playlist_button" = "Create Playlist";
+"playlist_creation_create_playlist_button" = "Create playlist";
 
 /* Title for the button used to open the rules during the Playlist creation */
-"playlist_creation_create_smart_playlist_button_title" = "Make into Smart Playlist";
+"playlist_creation_create_smart_playlist_button_title" = "Make into smart playlist";
 
 /* Subtitle for the button used to open the rules during the Playlist creation */
 "playlist_creation_create_smart_playlist_button_subtitle" = "Automatically add episodes based on rules.";
 
 /* Smart Playlist preview: description that appears when initially there are no rules set */
-"playlist_smart_preview_description" = "Set up Smart Rules to automatically add episodes to your Smart Playlist.";
+"playlist_smart_preview_description" = "Set up smart rules to automatically add episodes to your smart playlist.";
 
 /* Smart Playlist preview: title for the enabled rules section */
-"playlist_smart_preview_enabled_rules" = "Enabled Rules";
+"playlist_smart_preview_enabled_rules" = "Enabled rules";
 
 /* Smart Playlist preview: title for the available rules section */
-"playlist_smart_preview_other_rules" = "Other Options";
+"playlist_smart_preview_more_rules" = "More rules";
 
 /* Smart Playlist preview: title when editing the Smart Playlist rules */
-"playlist_smart_rules_title" = "Smart Rules";
+"playlist_smart_rules_title" = "Smart rules";
+
+/* Message shown when you have no episodes in a playlist */
+"playlist_smart_no_episodes_msg" = "Either it’s time to celebrate completing this list, or edit your rules to get some more.";
+
+/* Playlist detail description when the playlist has one single episode. %1$@ represent the total time. */
+"playlist_detail_description_one_episode" = "1 episode • %1$@";
+
+/* Playlist detail description. %1$@ represent the number of total episodes. %2$@ represents the total time. */
+"playlist_detail_description" = "%1$@ episodes • %2$@";
+
+/* Playlist cell subtitle. It appears in the manual playlist add episode from podcast detail or player */
+"playlist_episodes_count" = "%1$@ episodes";
+
+/* Manual Playlist: header button title to add new episodes to the playlist */
+"playlist_manual_add_episodes" = "Add episodes";
+
+/* Search placeholder used in the add episode to manual playlist search from podcast and player */
+"playlist_search" = "Find playlist";
+
+/* Navigation title that appears when adding episodes to a playlist. %@ is the playlist name. */
+"playlist_add_to_title" = "Add to \"%@\"";
+
+/* Navigation title shown after adding a single episode to a playlist. %@ is the playlist name. */
+"playlist_episode_added_title" = "1 episode added to \"%@\"";
+
+/* Navigation title shown after adding multiple episodes to a playlist. %1$@ is the episode count. %2$@ is the playlist name. */
+"playlist_episodes_added_title" = "%1$@ episodes added to \"%2$@\"";
+
+/* Toast message when an episode is added to a single playlist from the playlists chooser. %1$@ is the playlist name. */
+"playlist_episodes_added_to_single_playlist" = "Added to %1$@";
+
+/* Toast message when an episode is added to multiple playlists from the playlists chooser. %1$@ is the number of playlists added to. */
+"playlist_episodes_added_to_multiple_playlists" = "Added to %1$@ playlists";
+
+/* Title displayed above the user's subscribed podcasts list when no podcast is selected. */
+"user_episodes_search_podcasts_title" = "Your Podcasts";
+
+/* Manual Playlist: empty state title when no episodes are added */
+"playlist_manual_empty_state_title" = "Start building your playlist";
+
+/* Manual Playlist: empty state title when no episodes are added and there are nosubscribed podcasts */
+"playlist_manual_empty_state_title_no_podcasts" = "Add episodes to your playlist";
+
+/* Manual Playlist: empty state subtitle when no episodes are added and there are nosubscribed podcasts */
+"playlist_manual_empty_state_subtitle_no_podcasts" = "Swipe left on an episode to add it your playlist.";
+
+/* Manual Playlist: title when no episodes are added and there are nosubscribed podcasts */
+"playlist_manual_browse_shows_title" = "Browse podcasts";
+
+/* Manual Playlist: manual episodes order option that appears when showing the options sheet */
+"playlist_manual_episodes_order_option" = "Reorder episodes";
+
+/* Manual Playlist: when adding an episode to a manual playlist. It can appear as CTA or title */
+"playlist_manual_episode_add_to_playlist" = "Add to playlist";
+
+/* Toast message when the playlist is full */
+"playlist_manual_add_episode_full_playlist_toast" = "This playlist is full. Remove a few episodes or start a new one.";
+
+/* Toast message when trying to add more than the max number of episodes to a playlist at once, or creating a new playlist with more than the max. '%1$@' is the max episode count, localized for the user's locale. */
+"playlist_manual_add_too_many_episodes_toast" = "Playlists can only contain up to %1$@ episodes.";
+
+/* Toast message when adding episodes to a playlist that would exceed the 1000 episode limit */
+"playlist_manual_add_episodes_almost_full_toast" = "Playlist is almost full. Try adding fewer episodes.";
+
+/* Toast message when trying to add files (user episodes) to a playlist */
+"playlist_manual_add_files_not_supported_toast" = "Playlists can only contain podcast episodes.";
+
+/* Text of the placeholder used in the manual playlist detail screen when one episode is archived. */
+"playlist_manual_archived_episode_placeholder" = "Your episode in this playlist has been archived";
+
+/* Toast message displayed when a user tries to play all archived episodes in a manual playlist */
+"playlist_manual_play_all_empty_list" = "All episodes archived. Add or unarchive to play.";
+
+/* Text of the placeholder used in the manual playlist detail screen when all episodes are archived. '%1$@' represents the number of archived episodes */
+"playlist_manual_archived_episodes_placeholder" = "All %1$@ episodes of this playlist have been archived";
+
+/* Toast message displayed in case something goes wrong with the manual creation */
+"playlist_manual_create_error_message" = "Sorry, something went wrong while creating your playlist.";
+
+/* Picker option showed when tapping Play all */
+"playlist_play_all_option_save_queue" = "Save current queue";
+
+/* Picker title showed when tapping Play all */
+"playlist_play_all_picker_title" = "Save your Up Next queue?";
+
+/* Picker message showed when tapping Play all */
+"playlist_play_all_picker_message" = "Your current Up Next will be replaced when you play this playlist. Save it first to keep it.";
+
+/* Picker title showed when tapping replace after showing the first Play all picker */
+"playlist_play_all_replace_picker_title" = "Replace current Up Next?";
+
+/* Picker message showed when tapping replace after showing the first Play all picker */
+"playlist_play_all_replace_picker_message" = "This will clear your current Up Next queue and start playing this playlist.";
+
+/* Toast message displayed when the current Up Next is saved */
+"playlist_play_all_up_next_saved" = "Up Next saved as playlist";
+
+/* Toast message displayed when the current Up Next is saved in more than one playlists */
+"playlist_play_all_up_next_saved_plural" = "Up Next saved as playlists";
+
+/* Play all sheet title */
+"playlist_play_all_sheet_title" = "Replace your Up Next?";
+
+/* Play all sheet description */
+"playlist_play_all_sheet_description" = "Playing this will replace your current Up Next.";
+
+/* Play all sheet toggle description */
+"playlist_play_all_sheet_toggle" = "Save your current Up Next queue as a playlist.";
+
+/* Play all sheet button title */
+"playlist_play_all_sheet_button_title" = "Replace and play";
 
 /* A title shown for the user satisfaction survey to ask whether a user enjoys the app */
 "user_satisfaction_survey_title" = "Enjoying Pocket Casts?";
@@ -5432,3 +5711,151 @@
 /* Subscription Plan title for custom upgrade screen for the folders feature */
 "subscription_feature_custom_title_folders" = "Folders: your podcasts, perfectly placed";
 
+/* Interests screen title */
+"interests_title" = "Tell us about your favorite topics";
+
+/* Interests screen subtitle */
+"interests_subtitle" = "Great podcasts, handpicked by real people, are coming your way!";
+
+/* Interests screen show more categories button text */
+"interests_show_more_categories" = "Show more categories";
+
+/* Interests screen button title for interests confirmation. The %1$@ argument is the minimum number of interests you need to select. Ex: Select at least 3*/
+"interests_select_at_least" = "Select at least %1$@";
+
+/* Search Results filter option */
+"all_results" = "Top Results";
+
+/// A description of the Playback 2025 feature
+"playback_2025_description" =  "See your top podcasts, categories, listening stats and more. Share with friends and shout out your favourite creators!";
+
+/// Description for the Playback 2025 feature
+"playback_2025_feature_description" = "See your listening stats, top podcasts, and more.";
+
+/// Title for the Playback 2025 feature
+"playback_2025_feature_title" = "Playback is here!";
+
+/// Label of the Playback 2025 call to action buton
+"playback_2025_view_year" = "View My Playback 2025";
+
+/// Label of the Playback 2025 call to action buton
+"playback_2025_intro_message" = "Your year in podcasts, wrapped and ready to relive";
+
+/// Text for playback 2025 listened to numbers story
+"playback_2025_listened_to_numbers" = "You tuned in to %1$@ podcasts and %2$@ episodes";
+
+/* Playback 2025: Title for the last story */
+"playback_2025_end_story_title" = "Thanks for spending your year with Pocket Casts";
+
+/* Playback 2025: Description for the last story */
+"playback_2025_end_story_description" = "Share your Playback with friends and show some love to the podcasters who kept you company all year";
+
+/// Text for playback 2025 listening time in minutes
+"playback_2025_listening_time" = "minutes listened";
+
+/// Text for playback 2025 top stop title
+"playback_2025_top_spot_title" = "Your top podcast of 2025";
+
+/// Text for playback 2025 top stop subtitle
+"playback_2025_top_spot_subtitle" = "It doesn’t get more “you” than this";
+
+/// Text for playback 2025 top description. %1$@ is the number of episodes and %1 is the listening time. Ex: 66 episodes, 2 days, and 3 hours. That’s commitment!
+"playback_2025_top_spot_description" = "%1$@ episodes, %2$@.\nThat’s commitment!";
+
+/* Playback 2025: Title for the top 5 podcasts story */
+"playback_2025_top_5_podcasts_title" = "Your other go-to's";
+
+/* Playback 2025: Description for the top 5 podcasts story */
+"playback_2025_top_5_podcasts_message" = "More favorites, more play, more you";
+
+/* Playback 2025: Title for the longest episode story: %1$@ represent the time */
+"playback_2025_longest_episode_title" = "Your marathon listen: %1$@";
+
+/* Playback 2025: Description for the longest episode story */
+"playback_2025_longest_episode_message" = "Hope you stretched first!";
+
+/* Playback 2025: Footer description for the longest episode story: %1$@ represent the episode title and %2$@ the podcast title */
+"playback_2025_longest_episode_footer" = "The longest episode was “%1$@” from “%2$@”";
+
+/* Playback 2025: Title for the completion rate story: %1$@ represent the percentage of completion rate, like 10% */
+"playback_2025_completion_rate_title" = "Your completion rate was %1$@";
+
+/* Playback 2025: Description for the completion rate story: %1$@ represent the started episodes count and %2$@ the finished episodes count */
+"playback_2025_completion_rate_message" = "Out of %1$@ episodes started, you finished %2$@. A stronger follow‑through than most gym memberships";
+
+/* Playback 2025: Title showed in the Year Over Year Comparison story when the percentage is down compared to the last year. %1$@ represent a placeholder for the formatted percentage. */
+"playback_2025_year_over_year_comparison_down_title" = "Your listening dipped %1$@ this year";
+
+/* Playback 2025: Message showed in the Year Over Year Comparison story when the percentage is down compared to the last year. */
+"playback_2025_year_over_year_comparison_down_message" = "But hey, quality over quantity";
+
+/* Playback 2025: Title showed in the Year Over Year Comparison story when the percentage is more than 500% compared to the last year. */
+"playback_2025_year_over_year_comparison_hero_title" = "From zero to hero!";
+
+/* Playback 2025: Message showed in the Year Over Year Comparison story when the percentage is more than 500% to the last year. %1$@ represent a placeholder for the formatted percentage. */
+"playback_2025_year_over_year_comparison_hero_message" = "You listened %1$@ more this year — welcome to the club";
+
+/* Playback 2025: Title showed in the Year Over Year Comparison story when the percentage is up compared to the last year. %1$@ represent a placeholder for the formatted percentage. */
+"playback_2025_year_over_year_comparison_up_title" = "Compared to 2024, your listening time skyrocketed %1$@";
+
+/* Playback 2025: Message showed in the Year Over Year Comparison story when the percentage is up compared to the last year. */
+"playback_2025_year_over_year_comparison_up_message" = "More podcasts, more joy";
+
+/* Playback 2025: Title showed in the Year Over Year Comparison story when the percentage is the same compared to the last year. */
+"playback_2025_year_over_year_comparison_same_title" = "Your 2025 listening held steady";
+
+/* Playback 2025: Message showed in the Year Over Year Comparison story when the percentage is the same compared to the last year. */
+"playback_2025_year_over_year_comparison_same_message" = "Consistent, dependable, like your coffee shop order";
+
+/// Search results screen: title for no results found
+"search_results_empty_title" = "No Results";
+
+/// Search results screen: message for no results found
+"search_results_empty_message" = "Try a new search, or by adding a podcast feed URL";
+
+/// Search results screen: action for sending feedback when no results found
+"search_results_empty_action" = "Send Us Feedback";
+
+/// Search results screen: action for doing full search on term. %1$@ argument is the term being searched. Ex: "View all results for "cautionary" "
+"search_results_view_all" = "View all results for \"%1$@\"";
+
+/* A title shown in the button on the upsell screen to get  Pocket Casts Plus */
+"playback_2025_plus_upsell_button_title" = "Get Pocket Casts Plus";
+
+/* A title shown in the upsell screen for Pocket Casts Plus subscription */
+"playback_2025_plus_upsell_title" = "Want the deep dive?";
+
+/* A description shown in the upsell screen for Pocket Casts Plus subscription */
+"playback_2025_plus_upsell_description" = "Subscribe to Pocket Casts Plus for extended stats, bookmarks, folders, chapter selection, and more ways to dig into your listening habits";
+
+/* A title shown on the Ratings Playback 2025 screen showing a bar chart of your ratings */
+"playback_2025_ratings_description_4_to_5" = "Creators everywhere appreciate the love";
+
+"playback_2025_ratings_description_1_to_3" = "Reviews help great shows get found";
+
+/* A description shown in Playback 2025 when the user has made ratings of 4-5/5 for Podcasts */
+"playback_2025_ratings_title_4_to_5" = "You dropped %1$@-star ratings like confetti";
+
+/* A description shown in Playback 2025 when the user has only made ratings of 1-3/5 for Podcasts */
+"playback_2025_ratings_title_1_to_3" = "Thanks for sharing your feedback.";
+
+/* A title shown in Playback 2025 when the user has not made any ratings. */
+"playback_2025_ratings_empty_title" = "No ratings yet, but there's still time!";
+
+/* A description shown in Playback 2025 to describe the new Podcast Ratings feature */
+"playback_2025_ratings_empty_description" = "Help your favorite creators get discovered by sharing what you love";
+
+/* A title shown in the Playback thanks screen for Pocket Casts Plus subscription */
+"playback_2025_plus_thanks_title" = "Thanks for supporting Pocket Casts!";
+
+/* A description shown in the Playback thanks screen for Pocket Casts Plus subscribers. %1$@ argument is your subscription Tier. Ex:  Your Plus perks unlock extra stats and power features" */
+"playback_2025_plus_thanks_description" = "Your %1$@ perks unlock extra stats and power features";
+
+/* Message to shown when playback 2025 failed to load */
+"playback_2025_failed_to_load" = "Sorry, we couldn’t load Playback";
+
+/* Message to shown then trying to open playback from deep link but it's not available */
+"playback_not_available" = "Playback unavailable";
+
+/* Message when the user didn't upload any files */
+"files_not_uploaded" = "No files uploaded";

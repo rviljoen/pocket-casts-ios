@@ -9,6 +9,10 @@ import PocketCastsUtils
 
 class Settings: NSObject {
 
+#if !os(watchOS)
+    static var debugPlaylistsLimit = Constants.Limits.maxFilterItems
+#endif
+
     static var isLockScreenScrubbingDisabled: Bool {
         set {
             UserDefaults.standard.set(newValue, forKey: Constants.UserDefaults.isLockScreenScrubbingDisabled)
@@ -384,6 +388,10 @@ class Settings: NSObject {
         UserDefaults.standard.synchronize()
 
         NotificationCenter.postOnMainThread(notification: Constants.Notifications.chartRegionChanged)
+
+        if FeatureFlag.enableLocalizationHeaders.enabled {
+            LocalizationHelper.update(userRegion: region)
+        }
     }
 
     // MARK: - Auto Archiving
@@ -460,11 +468,11 @@ class Settings: NSObject {
     }
 
     class func displayableVersion() -> String {
-        #if STAGING
-            return L10n.appVersion(Settings.appVersion(), Settings.buildNumber()) + " - STAGING"
-        #else
-            return L10n.appVersion(Settings.appVersion(), Settings.buildNumber())
-        #endif
+#if STAGING
+        return L10n.appVersion(Settings.appVersion(), Settings.buildNumber()) + " - STAGING"
+#else
+        return L10n.appVersion(Settings.appVersion(), Settings.buildNumber())
+#endif
     }
 
     class func buildNumber() -> String {
@@ -794,10 +802,10 @@ class Settings: NSObject {
             playerActions = SettingsStore.appSettings.playerShelf
                 .compactMap { action in
                     switch action {
-                    case .known(let present):
-                        return present
-                    case .unknown:
-                        return nil
+                        case .known(let present):
+                            return present
+                        case .unknown:
+                            return nil
                     }
                 }
                 .filter { $0.isAvailable }
@@ -812,10 +820,10 @@ class Settings: NSObject {
         if FeatureFlag.newSettingsStorage.enabled {
             let unknowns = SettingsStore.appSettings.playerShelf.compactMap { action -> ActionOption? in
                 switch action {
-                case .known:
-                    return nil
-                case .unknown(let absent):
-                    return .unknown(absent)
+                    case .known:
+                        return nil
+                    case .unknown(let absent):
+                        return .unknown(absent)
                 }
             }
             SettingsStore.appSettings.playerShelf = actions.map({ .known($0) }) + unknowns
@@ -852,7 +860,7 @@ class Settings: NSObject {
 
     private static let multiSelectActionsKey = "MultiSelectActions"
     class func multiSelectActions() -> [MultiSelectAction] {
-        let defaultActions: [MultiSelectAction] = [.playNext, .playLast, .download, .archive, .share, .markAsPlayed, .star]
+        let defaultActions: [MultiSelectAction] = [.playNext, .playLast, .addToPlaylist, .download, .archive, .share, .markAsPlayed, .star]
         guard let savedInts = UserDefaults.standard.object(forKey: Settings.multiSelectActionsKey) as? [Int32] else {
             return defaultActions
         }
@@ -904,13 +912,15 @@ class Settings: NSObject {
 
     private static let upNextMultiSelectActionsKey = "UpNextMultiSelectActions"
     class func upNextMultiSelectActions() -> [MultiSelectAction] {
+        let defaultActions: [MultiSelectAction] = [.moveToTop, .moveToBottom, .removeFromUpNext, .download, .markAsPlayed, .archive, .addToPlaylist]
         guard let savedInts = UserDefaults.standard.object(forKey: Settings.upNextMultiSelectActionsKey) as? [Int32] else {
-            return [.moveToTop, .moveToBottom, .removeFromUpNext, .download, .markAsPlayed, .archive]
+            return defaultActions
         }
 
         let actions = savedInts.compactMap { MultiSelectAction(rawValue: $0) }
 
-        return actions
+        // Make sure new items are shown
+        return actions + defaultActions.filter { !actions.contains($0) }
     }
 
     class func updateUpNextMultiSelectActions(_ actions: [MultiSelectAction]) {
@@ -1486,7 +1496,7 @@ class Settings: NSObject {
         }
     }
 
-    // MARK: - New Filter Tip
+    // MARK: - Playlists
 
     static var shouldShowNewFilterTip: Bool {
         get {
@@ -1497,7 +1507,23 @@ class Settings: NSObject {
         }
     }
 
-    // MARK: - New Filter Tip
+    static var shouldShowNewFilterTipInCreationView: Bool {
+        get {
+            UserDefaults.standard.value(forKey: Constants.UserDefaults.newFilterTipCreationView) as? Bool ?? true
+        }
+        set {
+            UserDefaults.standard.setValue(newValue, forKey: Constants.UserDefaults.newFilterTipCreationView)
+        }
+    }
+
+    static var shouldShowDragAndDropTip: Bool {
+        get {
+            UserDefaults.standard.value(forKey: Constants.UserDefaults.playlistDragAndDropTip) as? Bool ?? false
+        }
+        set {
+            UserDefaults.standard.setValue(newValue, forKey: Constants.UserDefaults.playlistDragAndDropTip)
+        }
+    }
 
     static var shouldShowPlaylistsOnboarding: Bool {
         get {
@@ -1507,6 +1533,37 @@ class Settings: NSObject {
             UserDefaults.standard.setValue(newValue, forKey: Constants.UserDefaults.playlistsOnboarding)
         }
     }
+
+    static var firstTimePlaylistCreated: Bool {
+        get {
+            UserDefaults.standard.value(forKey: Constants.UserDefaults.firstTimePlaylistCreated) as? Bool ?? true
+        }
+        set {
+            UserDefaults.standard.setValue(newValue, forKey: Constants.UserDefaults.firstTimePlaylistCreated)
+        }
+    }
+
+    static var saveCurrentUpNextQueueIntoPlaylist: Bool {
+        get {
+            UserDefaults.standard.value(forKey: Constants.UserDefaults.saveCurrentUpNextQueueIntoPlaylist) as? Bool ?? true
+        }
+        set {
+            UserDefaults.standard.setValue(newValue, forKey: Constants.UserDefaults.saveCurrentUpNextQueueIntoPlaylist)
+        }
+    }
+
+    static var shouldResultEndOfYearSyncStatus: Bool {
+        get {
+            UserDefaults.standard.value(forKey: Constants.UserDefaults.shouldResultEndOfYearSyncStatus) as? Bool ?? true
+        }
+        set {
+            UserDefaults.standard.setValue(newValue, forKey: Constants.UserDefaults.shouldResultEndOfYearSyncStatus)
+        }
+    }
+
+    // MARK: - Debug IAP in TF builds
+
+    static var shouldEnableIAPInTestFlightBuilds: Bool = false
 
     // MARK: - Informational Banner
 #if !os(watchOS) && !APPCLIP
@@ -1585,6 +1642,22 @@ class Settings: NSObject {
         }
     }
 
+    // MARK: - VoiceBoostN
+
+    static var isVoiceBoostNEnabled: Bool {
+        get {
+            guard FeatureFlag.voiceBoostN.enabled else { return false }
+            if UserDefaults.standard.object(forKey: Constants.UserDefaults.voiceBoostNEnabled) == nil {
+                return true
+            }
+            return UserDefaults.standard.bool(forKey: Constants.UserDefaults.voiceBoostNEnabled)
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: Constants.UserDefaults.voiceBoostNEnabled)
+            FileLog.shared.addMessage("[Settings] VoiceBoostN \(newValue ? "enabled" : "disabled")")
+        }
+    }
+
     // MARK: - Database (internal)
 
     class var upgradedIndexes: Bool {
@@ -1615,7 +1688,11 @@ class Settings: NSObject {
         }
 
         class func podcastSearchDebounceTime() -> TimeInterval {
-            remoteMsToTime(key: Constants.RemoteParams.podcastSearchDebounceMs)
+            if FeatureFlag.searchPredictive.enabled {
+                return 0.2
+            } else {
+                return remoteMsToTime(key: Constants.RemoteParams.podcastSearchDebounceMs)
+            }
         }
 
         class func episodeSearchDebounceTime() -> TimeInterval {

@@ -32,7 +32,7 @@ struct Constants {
         static let episodeDownloaded = NSNotification.Name(rawValue: "SJEpisodeDownloaded")
         static let miniPlayerDidDisappear = NSNotification.Name(rawValue: "SJMiniPlayerDisappeared")
         static let miniPlayerDidAppear = NSNotification.Name(rawValue: "SJMiniPlayerAppeared")
-        static let filterChanged = NSNotification.Name(rawValue: "FilterChanged")
+        static let playlistChanged = NSNotification.Name(rawValue: "FilterChanged")
         static let playlistTempChange = NSNotification.Name(rawValue: "playlistTempChange")
         static let statusBarHeightChanged = NSNotification.Name(rawValue: "SJBarHeightChanged")
         static let podcastSearchRequest = NSNotification.Name(rawValue: "PodcastSearchRequest")
@@ -81,8 +81,6 @@ struct Constants {
         static let searchRequested = NSNotification.Name(rawValue: "SJTriggerSearch")
 
         // modal popups
-        static let openingNonOverlayableWindow = NSNotification.Name(rawValue: "SJPresentingNonOverlayableWindow")
-        static let closedNonOverlayableWindow = NSNotification.Name(rawValue: "SJClosedNonOverlayableWindow")
 
         static let opmlImportCompleted = NSNotification.Name(rawValue: "SJOpmlImportCompleted")
         static let opmlImportFailed = NSNotification.Name(rawValue: "SJOpmlImportFailed")
@@ -182,7 +180,12 @@ struct Constants {
         static let shouldShowRecentlyPlayedSortingTip = "ShouldShowRecentlyPlayedSortingTip"
 
         static let newFilterTip = "NewFilterTip"
-        static let playlistsOnboarding = "PlaylistsOnboarding"
+        static let newFilterTipCreationView = "NewFilterTipCreationView"
+        static let playlistDragAndDropTip = "PlaylistDragAndDropTip"
+        static let playlistsOnboarding = "NewPlaylistsOnboarding"
+        static let firstTimePlaylistCreated = "FirstTimePlaylistCreated"
+        static let saveCurrentUpNextQueueIntoPlaylist = "SaveCurrentUpNextQueueIntoPlaylist"
+        static let shouldResultEndOfYearSyncStatus = "ShouldResultEndOfYearSyncStatus"
 
         enum headphones {
             static let previousAction = SettingValue("headphones.previousAction",
@@ -244,6 +247,8 @@ struct Constants {
         enum informationalModal {
             static let hasShownViewModal = "hasShownViewModal"
         }
+
+        static let voiceBoostNEnabled = "VoiceBoostNEnabled"
     }
 
     enum Values {
@@ -253,13 +258,14 @@ struct Constants {
 
         static let miniPlayerOffset = 80 as CGFloat
         static let extraShowNotesVerticalSpacing: CGFloat = 60
-        static let defaultFilterDownloadLimit = 10 as Int32
+        static let defaultPlaylistDownloadLimit = 10 as Int32
         static let siriArtworkSize = 680
 
         static let minTimeBetweenPodcastImageUpdates = 4.weeks
 
         static let maxWidthForPopups: CGFloat = 500
         static let tableSectionHeaderHeight: CGFloat = 38
+        static let tableRowHeaderHeight: CGFloat = 64
 
         static let refreshTaskId = "au.com.shiftyjelly.podcasts.Refresh"
 
@@ -285,7 +291,7 @@ struct Constants {
             static let watchListItems = 50
         #else
             static let maxListItemsToSendToWatch = 50
-            static let maxFilterItems = 500
+            static let maxFilterItems = FeatureFlag.playlistsRebranding.enabled ? 1000 : 500
             static let maxCarplayItems = 100
             static let maxBulkDownloads = 100
             static let maxSubscriptionExpirySeconds: TimeInterval = 30.days
@@ -419,6 +425,7 @@ enum PlusUpgradeViewSource: String {
     case upNextShuffle
     case generatedTranscripts
     case onboarding
+    case onboardingRecommendations = "onboarding_recommendations"
     case suggestedFolders = "suggested_folders"
     case bannerAd = "banner_ad"
     case login

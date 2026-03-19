@@ -43,7 +43,7 @@ class DownloadManager: NSObject, FilePathProtocol {
 
     var progressManager = DownloadProgressManager()
 
-    lazy var downloadingEpisodesCache: DownloadManagerEpisodesCache = {
+    var downloadingEpisodesCache: DownloadManagerEpisodesCache = {
         if FeatureFlag.downloadsThreadSafeCache.enabled {
             ThreadSafeDictionary<String, BaseEpisode>()
         } else {
@@ -51,7 +51,7 @@ class DownloadManager: NSObject, FilePathProtocol {
         }
     }()
 
-    lazy var downloadAndStreamEpisodes: DownloadManagerStreamAndDownloadCache = {
+    var downloadAndStreamEpisodes: DownloadManagerStreamAndDownloadCache = {
         if FeatureFlag.downloadsThreadSafeCache.enabled {
             ThreadSafeDictionary<String, AVAssetResourceLoaderDelegate>()
         } else {
@@ -88,9 +88,23 @@ class DownloadManager: NSObject, FilePathProtocol {
          }()
     #endif
 
+    /// Eagerly initializes all URLSessions to avoid race conditions.
+    /// Swift lazy properties are not thread-safe: if multiple threads access an
+    /// uninitialized lazy var concurrently, the initializer can run more than once.
+    /// Calling this from `init()` guarantees single-threaded first access.
+    private func setupSessions() {
+        _ = wifiOnlyBackgroundSession
+        _ = cellularBackgroundSession
+        _ = cellularForegroundSession
+    }
+
     lazy var wifiOnlyBackgroundSession: URLSession = {
         var config = URLSessionConfiguration.background(withIdentifier: "au.com.shiftyjelly.PCBackgroundSession")
-        config.allowsExpensiveNetworkAccess = false
+        if FeatureFlag.useCellularNetworkApis.enabled {
+            config.allowsCellularAccess = false
+        } else {
+            config.allowsExpensiveNetworkAccess = false
+        }
         addStandardConfig(to: &config)
 
         let session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
@@ -99,7 +113,11 @@ class DownloadManager: NSObject, FilePathProtocol {
 
     lazy var cellularBackgroundSession: URLSession = {
         var config = URLSessionConfiguration.background(withIdentifier: DownloadManager.cellBackgroundSessionId)
-        config.allowsExpensiveNetworkAccess = true
+        if FeatureFlag.useCellularNetworkApis.enabled {
+            config.allowsCellularAccess = true
+        } else {
+            config.allowsExpensiveNetworkAccess = true
+        }
         addStandardConfig(to: &config)
 
         let session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
@@ -139,7 +157,7 @@ class DownloadManager: NSObject, FilePathProtocol {
         return directory
     }()
 
-    private var tempDownloadFolder = ""
+    private(set) var tempDownloadFolder = ""
 
     let dataManager: DataManager
 
@@ -147,6 +165,7 @@ class DownloadManager: NSObject, FilePathProtocol {
         self.dataManager = dataManager
         super.init()
 
+        setupSessions()
         // setup the temp download folder, in caches where iOS can purge it if need be
         let paths = NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true)
         if let cachePath = paths.first as NSString? {
@@ -213,7 +232,8 @@ class DownloadManager: NSObject, FilePathProtocol {
         markUnplayedAndUnarchiveIfRequired(episode: episode, saveChanges: true)
         dataManager.saveEpisode(downloadStatus: .waitingForWifi, lastDownloadAttemptDate: Date(), autoDownloadStatus: autoDownloadStatus, episode: episode)
 
-        FileLog.shared.addMessage("Queued episode \(episode.displayableTitle()) for later download, autoDownloadStatus: \(autoDownloadStatus)")
+        let networkState = NetworkUtils.shared.isConnectedToUnexpensiveConnection() ? "on unexpensive connection" : "on expensive connection"
+        FileLog.shared.addMessage("DownloadManager: Queued episode \(episode.displayableTitle()) for later download (waitingForWifi), autoDownloadStatus: \(autoDownloadStatus), currently \(networkState)")
 
         if fireNotification {
             NotificationCenter.postOnMainThread(notification: Constants.Notifications.episodeDownloadStatusChanged, object: episode.uuid)
@@ -310,6 +330,27 @@ class DownloadManager: NSObject, FilePathProtocol {
         return
     }
 
+    private class ExportStatus {
+        var completed: Bool = false
+        var reportedType: String?
+        var error: Error?
+    }
+
+    private let activeLoaderLock = NSLock()
+    private var _activeLoaderDelegate: AVAssetResourceLoaderDelegate?
+    private var activeLoaderDelegate: AVAssetResourceLoaderDelegate? {
+        get {
+            activeLoaderLock.lock()
+            defer { activeLoaderLock.unlock() }
+            return _activeLoaderDelegate
+        }
+        set {
+            activeLoaderLock.lock()
+            defer { activeLoaderLock.unlock() }
+            _activeLoaderDelegate = newValue
+        }
+    }
+
     func downloadParallelToStream(of episode: BaseEpisode) -> AVPlayerItem? {
         guard let playbackItem = PlaybackItem(episode: episode).createPlayerItem() else {
             return nil
@@ -325,7 +366,7 @@ class DownloadManager: NSObject, FilePathProtocol {
             return playbackItem
         }
         var newItem: AVPlayerItem = playbackItem
-        #if !os(watchOS)
+        #if !os(watchOS) && !APPCLIP
         if episode.autoDownloadStatus == AutoDownloadStatus.playerDownloadedForStreaming.rawValue || episode.autoDownloadStatus == AutoDownloadStatus.autoDownloaded.rawValue,
            let customDelegate = downloadAndStreamEpisodes[episode.uuid] {
             // We are already downloading this episode for streaming
@@ -334,6 +375,12 @@ class DownloadManager: NSObject, FilePathProtocol {
             let newAsset = AVURLAsset(url: customURL)
             newAsset.resourceLoader.setDelegate(customDelegate, queue: .global(qos: .default))
             newItem = AVPlayerItem(asset: newAsset)
+            if FeatureFlag.releaseMediaExporterWhenNoLongerActive.enabled {
+                if let activeMediaExporterDelegate = activeLoaderDelegate as? MediaExporterResourceLoaderDelegate {
+                    activeMediaExporterDelegate.releaseIfDownloadComplete()
+                }
+                activeLoaderDelegate = customDelegate
+            }
             return newItem
         }
         var wasDownloadingBefore = false
@@ -361,47 +408,63 @@ class DownloadManager: NSObject, FilePathProtocol {
         let outputURL = URL(fileURLWithPath: tempPathForEpisode(episode), isDirectory: false)
         FileLog.shared.addMessage("DownloadManager stream and download: start downloading \(episode.uuid)")
         let exportPath = outputURL.pathComponents.joined(separator: "/")
-        var exportCompleted = false
-        var downloadError: Error?
-        var reportedContentType: String?
+        let exportStatus =  ExportStatus()
         let originalSizeInBytes = episode.sizeInBytes
-        let customLoaderDelegate = MediaExporterResourceLoaderDelegate(saveFilePath: exportPath) { status, contentType, bytesDownloaded, bytesExpected in
-            reportedContentType = contentType
+        let customLoaderDelegate = MediaExporterResourceLoaderDelegate(saveFilePath: exportPath) { [weak self, exportStatus] status, contentType, bytesDownloaded, bytesExpected in
+            guard let self else {
+                return
+            }
+            exportStatus.reportedType = contentType
             let size = max(100, max(bytesExpected, originalSizeInBytes))
             switch status {
             case .downloading:
                 self.reportProgress(episodeUUID: downloadTaskUUID, totalBytesWritten: bytesDownloaded, totalBytesExpectedToWrite: size)
             case .failed(let error):
-                downloadError = error
-                exportCompleted = true
+                exportStatus.error = error
+                exportStatus.completed = true
             case .completed:
-                exportCompleted = true
+                exportStatus.completed = true
             }
         }
-        downloadAndStreamEpisodes[downloadTaskUUID] = customLoaderDelegate
         guard let customURL = MediaExporterResourceLoaderDelegate.makeCustomURL(urlAsset.url) else {
             return newItem
         }
+        downloadAndStreamEpisodes[downloadTaskUUID] = customLoaderDelegate
         let newAsset = AVURLAsset(url: customURL)
         newAsset.resourceLoader.setDelegate(customLoaderDelegate, queue: .global(qos: .default))
         newItem = AVPlayerItem(asset: newAsset)
+        if FeatureFlag.releaseMediaExporterWhenNoLongerActive.enabled {
+            if let activeMediaExporterDelegate = activeLoaderDelegate as? MediaExporterResourceLoaderDelegate {
+                activeMediaExporterDelegate.releaseIfDownloadComplete()
+            }
+            activeLoaderDelegate = customLoaderDelegate
+        }
         Task {
-            while !exportCompleted {
+            while !exportStatus.completed {
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
             }
             downloadingEpisodesCache[downloadTaskUUID] = nil
             removeEpisodeFromCache(episode)
+            if FeatureFlag.releaseMediaExporterWhenNoLongerActive.enabled,
+               let mediaExporterDelegate = downloadAndStreamEpisodes[downloadTaskUUID] as? MediaExporterResourceLoaderDelegate,
+               mediaExporterDelegate != activeLoaderDelegate as? MediaExporterResourceLoaderDelegate {
+                mediaExporterDelegate.releaseIfDownloadComplete()
+            }
             downloadAndStreamEpisodes[downloadTaskUUID] = nil
             guard let episode = dataManager.findBaseEpisode(uuid: downloadTaskUUID) else {
                 return
             }
-            if downloadError == nil {
+            if exportStatus.error == nil {
                 FileLog.shared.addMessage("DownloadManager stream and download: end downloading \(episode.uuid) successfully")
-                processEpisode(episode, downloadedFile: outputURL, reportedContentType: reportedContentType)
+                processEpisode(episode, downloadedFile: outputURL, reportedContentType: exportStatus.reportedType, copyFile: true)
+                if FeatureFlag.cleanUpTmpFiles.enabled {
+                    // Now that the file is downloaded and copied we can mark it for deletion on release
+                    customLoaderDelegate.deleteFileOnRelease = true
+                }
             } else {
-                FileLog.shared.addMessage("DownloadManager stream and download: failed downloading \(episode.uuid) -> \(downloadError?.localizedDescription ?? "")")
+                FileLog.shared.addMessage("DownloadManager stream and download: failed downloading \(episode.uuid) -> \(exportStatus.error?.localizedDescription ?? "")")
                 wasDownloadingBefore = episode.downloading()
-                DataManager.sharedManager.saveEpisode(downloadStatus: .notDownloaded, downloadError: downloadError?.localizedDescription, downloadTaskId: nil, episode: episode)
+                DataManager.sharedManager.saveEpisode(downloadStatus: .notDownloaded, downloadError: exportStatus.error?.localizedDescription, downloadTaskId: nil, episode: episode)
                 DataManager.sharedManager.saveEpisode(autoDownloadStatus: .notSpecified, episode: episode)
                 if wasDownloadingBefore {
                     DownloadManager.shared.addToQueue(episodeUuid: episode.uuid, autoDownloadStatus: .autoDownloaded)
@@ -489,15 +552,16 @@ class DownloadManager: NSObject, FilePathProtocol {
             return
         }
 
-        if FeatureFlag.downloadFixes.enabled {
-            if await shouldSkipExistingTask(for: episode, in: sessionToUse, matching: request) {
-                FileLog.shared.addMessage("Download: skipped task for episode: \(episode.uuid)")
-                return
-            }
+        if await shouldSkipExistingTask(for: episode, in: sessionToUse, matching: request) {
+            FileLog.shared.addMessage("DownloadManager: Download skipped task for episode: \(episode.uuid)")
+            return
         }
 
         let userAgentDescription = retryWithoutUserAgent ? "without User-Agent" : "with User-Agent"
-        FileLog.shared.addMessage("Downloading episode \(episode.displayableTitle()), autoDownloadStatus: \(autoDownloadStatus), previousDownloadFailed: \(previousDownloadFailed), \(userAgentDescription)")
+        let sessionDescription = useCellularSession ? "cellular (allowsExpensiveNetworkAccess=true)" : "wifi-only (allowsExpensiveNetworkAccess=false)"
+        let isOnUnexpensiveConnection = NetworkUtils.shared.isConnectedToUnexpensiveConnection()
+        let networkDescription = isOnUnexpensiveConnection ? "unexpensive connection" : "expensive connection"
+        FileLog.shared.addMessage("DownloadManager: Downloading episode \(episode.displayableTitle()), autoDownloadStatus: \(autoDownloadStatus), previousDownloadFailed: \(previousDownloadFailed), \(userAgentDescription), session: \(sessionDescription), network: \(networkDescription)")
         resumeDownload(tempFilePath: tempFilePath, session: sessionToUse, request: request, previousDownloadFailed: previousDownloadFailed, taskId: episode.uuid, estimatedBytes: episode.sizeInBytes, retryWithoutUserAgent: retryWithoutUserAgent)
 
         if fireNotification { NotificationCenter.postOnMainThread(notification: Constants.Notifications.episodeDownloadStatusChanged, object: episode.uuid) }

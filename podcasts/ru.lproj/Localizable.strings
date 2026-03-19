@@ -55,8 +55,12 @@
     <string>%1$@ из %2$@</string>
     <key>accessibility_player_effects_playback_speed</key>
     <string>Скорость воспроизведения %1$@х</string>
+    <key>accessibility_playlist_add_episode</key>
+    <string>Добавить выпуск</string>
     <key>accessibility_playlist_color</key>
     <string>Цвет списка воспроизведения %1$@</string>
+    <key>accessibility_playlist_image</key>
+    <string>Изображение плейлиста</string>
     <key>accessibility_plus_only</key>
     <string>Заблокировано, функция Plus</string>
     <key>accessibility_profile_settings</key>
@@ -143,6 +147,8 @@
     <string>Добавить в «Следующие»</string>
     <key>after_playing</key>
     <string>После прослушивания</string>
+    <key>all_results</key>
+    <string>Лучшие результаты</string>
     <key>announcement_autoplay_description</key>
     <string>Если в очереди «Следующие» ничего нет, после выпуска, который вы слушаете, автоматически запустится другой из этого шоу или списка.</string>
     <key>announcement_autoplay_title</key>
@@ -297,6 +303,8 @@
     <string>Почему вы хотите пожаловаться на эту рекламу?</string>
     <key>banner_ads_report_broken</key>
     <string>Похоже, эта реклама работает некорректно</string>
+    <key>banner_ads_report_confirmation</key>
+    <string>Вы пожаловались на эту рекламу.</string>
     <key>banner_ads_report_malicious</key>
     <string>Это вредоносная реклама</string>
     <key>banner_ads_report_other</key>
@@ -374,7 +382,7 @@
     <key>cancel_subscription_claim_offer_button</key>
     <string>Воспользоваться предложением</string>
     <key>cancel_subscription_continue_button</key>
-    <string>Продолжить отмену</string>
+    <string>Отменить и продолжить</string>
     <key>cancel_subscription_generic_error</key>
     <string>Произошла ошибка. Повторите попытку позже.</string>
     <key>cancel_subscription_help_description</key>
@@ -561,6 +569,8 @@ Pocket Casts Plus</string>
     <string>Создать клип</string>
     <key>create_filter</key>
     <string>Создать фильтр</string>
+    <key>create_up_next_snapshot</key>
+    <string>Создать моментальный снимок</string>
     <key>creator_pick_modal_description</key>
     <string>Creator Picks — это подкасты, рекомендованные создателем шоу с помощью Podroll.</string>
     <key>creator_pick_modal_learn_more</key>
@@ -611,6 +621,10 @@ Pocket Casts Plus</string>
     <string>Удалить только с устройства</string>
     <key>deselect_all</key>
     <string>ОЧИСТИТЬ ВСЕ</string>
+    <key>deselect_all_above</key>
+    <string>Отменить выбор всех выше</string>
+    <key>deselect_all_below</key>
+    <string>Отменить выбор всех ниже</string>
     <key>device_shake_sleep_timer</key>
     <string>Таймер сна перезагружен из-за встряхивания устройства</string>
     <key>discover</key>
@@ -1044,6 +1058,8 @@ Pocket Casts на полную мощность.</string>
     <string>Выпусков: %1$@</string>
     <key>episode_description_title</key>
     <string>Описание выпуска</string>
+    <key>episode_detail_add</key>
+    <string>Добавить</string>
     <key>episode_details_title</key>
     <string>Детали</string>
     <key>episode_filter_by_duration_label</key>
@@ -1062,6 +1078,10 @@ Pocket Casts на полную мощность.</string>
     <string>ВЫПУСК %1$@</string>
     <key>episode_shorthand_format_short</key>
     <string>ВЫП %1$@</string>
+    <key>episode_unavailable_message</key>
+    <string>Автор подкаста удалил этот выпуск. Он останется в вашем плейлисте до тех пор, пока вы его не удалите.</string>
+    <key>episode_unavailable_title</key>
+    <string>Выпуск недоступен</string>
     <key>episodes</key>
     <string>Выпуски</string>
     <key>error</key>
@@ -1085,7 +1105,7 @@ Pocket Casts на полную мощность.</string>
     <key>feature_marketing_bookmarks</key>
     <string>Сохраняйте отметки времени в закладках</string>
     <key>feature_marketing_cloud_storage</key>
-    <string>%1$@ облачного хранилища для ваших файлов</string>
+    <string>%1$@ ГБ облачного хранилища для ваших файлов</string>
     <key>feature_marketing_early_access</key>
     <string>Ранний доступ к новым возможностям</string>
     <key>feature_marketing_extra_themes_icons</key>
@@ -1146,6 +1166,8 @@ Pocket Casts на полную мощность.</string>
     <string>Файлы</string>
     <key>files_how_to_title</key>
     <string>Как сохранить файл</string>
+    <key>files_not_uploaded</key>
+    <string>Файлы не загружены</string>
     <key>files_sort</key>
     <string>Упорядочить файлы</string>
     <key>filter_auto_add_subtitle</key>
@@ -1382,20 +1404,22 @@ Pocket Casts на полную мощность.</string>
     <string>%1$@ ч</string>
     <key>hours_saved</key>
     <string>часов сохранено</string>
+    <key>hours_singular_format</key>
+    <string>1 ч</string>
     <key>how_to_upload_explanation</key>
     <string>Сначала откройте приложение, содержащее аудиофайлы, которые вы хотите сохранить.</string>
-    <key>how_to_upload_first_instruction</key>
-    <string>Поделитесь этим файлом</string>
-    <key>how_to_upload_first_image_background_button_text</key>
-    <string>Аудиофайл</string>
-    <key>how_to_upload_first_image_foreground_menu_option_text</key>
-    <string>Пункт меню</string>
-    <key>how_to_upload_second_instruction</key>
-    <string>В меню нажмите «Копировать в Pocket Casts».</string>
-    <key>how_to_upload_second_image_center_text</key>
+    <key>how_to_upload_share_action_image_center_text</key>
     <string>Копировать в Pocket Casts</string>
-    <key>how_to_upload_second_image_sides_text</key>
-    <string>Что-то другое</string>
+    <key>how_to_upload_share_action_image_sides_text</key>
+    <string>Прочее</string>
+    <key>how_to_upload_share_action_instruction</key>
+    <string>В меню нажмите «Копировать в Pocket Casts».</string>
+    <key>how_to_upload_share_menu_image_background_button_text</key>
+    <string>Аудиофайл</string>
+    <key>how_to_upload_share_menu_image_foreground_menu_option_text</key>
+    <string>Настройка меню</string>
+    <key>how_to_upload_share_menu_instruction</key>
+    <string>Поделитесь этим файлом</string>
     <key>how_to_upload_summary</key>
     <string>Всё готово! Измените любые настройки по своему вкусу, нажмите «Сохранить» и слушайте!</string>
     <key>iap_product_monthly_pricing_format</key>
@@ -1470,6 +1494,14 @@ Pocket Casts на полную мощность.</string>
 подкасты с собой</string>
     <key>in_progress</key>
     <string>Выполняется</string>
+    <key>interests_select_at_least</key>
+    <string>Выбрать хотя бы %1$@</string>
+    <key>interests_show_more_categories</key>
+    <string>Показать больше рубрик</string>
+    <key>interests_subtitle</key>
+    <string>Отличные подкасты, подобранные вручную, уже на пути к вам!</string>
+    <key>interests_title</key>
+    <string>Расскажите нам о своих любимых темах</string>
     <key>keycommand_close_player</key>
     <string>Закрыть плеер</string>
     <key>keycommand_decrease_speed</key>
@@ -1518,6 +1550,10 @@ Pocket Casts на полную мощность.</string>
     <string>Выпуски не найдены</string>
     <key>loading</key>
     <string>Загрузка…</string>
+    <key>login_landing_subtitle</key>
+    <string>Ваши подкасты всегда будут синхронизированы. Защитите свою библиотеку и пользуйтесь Pocket Casts в Интернете и на ПК.</string>
+    <key>login_landing_title</key>
+    <string>Создать учётную запись Pocket Casts</string>
     <key>login_subtitle</key>
     <string>Создайте учётную запись, чтобы синхронизировать и слушать любимый контент на всех устройствах.</string>
     <key>login_title</key>
@@ -1674,6 +1710,14 @@ Pocket Casts на полную мощность.</string>
     <string>Переходите из другого приложения? Перенесите все любимые шоу в Pocket Casts.</string>
     <key>notifications_onboarding_import_title</key>
     <string>Импортируйте подкасты без проблем</string>
+    <key>notifications_onboarding_newsletter_subtitle</key>
+    <string>Лучшее из подкастов, раз в месяц</string>
+    <key>notifications_onboarding_newsletter_title</key>
+    <string>Подпишитесь на нашу рассылку</string>
+    <key>notifications_onboarding_notifications_subtitle</key>
+    <string>Получать новости, предложения подкастов и др.</string>
+    <key>notifications_onboarding_notifications_title</key>
+    <string>Получать уведомления</string>
     <key>notifications_onboarding_signup_body</key>
     <string>Создайте бесплатную учётную запись, чтобы синхронизировать шоу и прослушивать их на любых устройствах.</string>
     <key>notifications_onboarding_signup_title</key>
@@ -1702,6 +1746,8 @@ Pocket Casts на полную мощность.</string>
     <string>Разрешите уведомления в настройках устройства</string>
     <key>notifications_permissions_open_settings</key>
     <string>Открыть настройки</string>
+    <key>notifications_permissions_save_preferences</key>
+    <string>Сохранить настройки</string>
     <key>notifications_permissions_title</key>
     <string>Будьте в курсе событий!</string>
     <key>notifications_play_now</key>
@@ -1746,6 +1792,18 @@ Pocket Casts на полную мощность.</string>
     <string>Выкл.</string>
     <key>ok</key>
     <string>OK</string>
+    <key>onboarding_quote_author</key>
+    <string>Пользователь Pocket Casts</string>
+    <key>onboarding_quote_best</key>
+    <string>Это лучшее приложение для подкастов. Безусловно</string>
+    <key>onboarding_quote_customization</key>
+    <string>Возможности настройки — просто с ума сойти</string>
+    <key>onboarding_quote_folders</key>
+    <string>Разложить подкасты по папкам — это гениально</string>
+    <key>onboarding_recommendations_subtitle</key>
+    <string>Вот несколько отличных шоу для начала. Нажмите, чтобы подписаться, искать или импортировать из других приложений.</string>
+    <key>onboarding_recommendations_title</key>
+    <string>Надеемся, вам понравятся эти предложения!</string>
     <key>only_on_unmetered_wifi</key>
     <string>Только в сетях Wi-Fi без тарификации</string>
     <key>only_on_unmetered_wifi_details</key>
@@ -1847,8 +1905,12 @@ Pocket Casts на полную мощность.</string>
     <string>Воспроизвести все</string>
     <key>play_last</key>
     <string>Воспроизвести последний</string>
+    <key>play_last_in_up_next</key>
+    <string>Воспроизвести последний в очереди «Следующие»</string>
     <key>play_next</key>
     <string>Воспроизвести следующий</string>
+    <key>play_next_in_up_next</key>
+    <string>Воспроизвести следующий в очереди «Следующие»</string>
     <key>playback_2024_completion_rate_description</key>
     <string>Из %1$@ запущенных выпусков всего вы дослушали до конца %2$@</string>
     <key>playback_2024_completion_rate_title</key>
@@ -1909,6 +1971,83 @@ Pocket Casts на полную мощность.</string>
     <string>По сравнению с 2023 годом ваше время прослушивания возросло сразу на %1$@</string>
     <key>playback_2024_year_over_year_compare_title_up_over_500</key>
     <string>В сравнении с 2023 годом вы провели на %1$@ больше времени, слушая подкасты.</string>
+    <key>playback_2025_completion_rate_message</key>
+    <string>Из %1$@ начатых выпусков вы дослушали до конца %2$@. Куда регулярнее, чем большинство абонементов в спортзал</string>
+    <key>playback_2025_completion_rate_title</key>
+    <string>Ваш процент завершения равен %1$@</string>
+    <key>playback_2025_end_story_description</key>
+    <string>Поделитесь своей статистикой с друзьями и покажите подкастерам, с которыми вы провели весь этот год, как вы их любите</string>
+    <key>playback_2025_end_story_title</key>
+    <string>Спасибо, что провели весь год с Pocket Casts</string>
+    <key>playback_2025_failed_to_load</key>
+    <string>Не удалось загрузить ваш год в подкастах</string>
+    <key>playback_2025_feature_description</key>
+    <string>Просмотрите свой топ подкастов, статистику прослушивания и другие показатели.</string>
+    <key>playback_2025_feature_title</key>
+    <string>Ваш год в подкастах уже здесь!</string>
+    <key>playback_2025_intro_message</key>
+    <string>Ваш год в подкастах, уже под ёлкой в подарочной обёртке</string>
+    <key>playback_2025_listened_to_numbers</key>
+    <string>Вы слушали %1$@ подкастов(-а) и %2$@ выпусков(-а)</string>
+    <key>playback_2025_listening_time</key>
+    <string>мин прослушано</string>
+    <key>playback_2025_longest_episode_footer</key>
+    <string>Самым длинным выпуском был %1$@ из %2$@</string>
+    <key>playback_2025_longest_episode_message</key>
+    <string>Готовьтесь узнать новости!</string>
+    <key>playback_2025_longest_episode_title</key>
+    <string>Ваш марафон прослушивания: %1$@</string>
+    <key>playback_2025_plus_thanks_description</key>
+    <string>Преимущества %1$@ дают возможность пользоваться дополнительной статистикой и возможностями</string>
+    <key>playback_2025_plus_thanks_title</key>
+    <string>Благодарим за поддержку Pocket Casts!</string>
+    <key>playback_2025_plus_upsell_button_title</key>
+    <string>Приобретайте Pocket Casts Plus</string>
+    <key>playback_2025_plus_upsell_description</key>
+    <string>Подписывайтесь на Pocket Casts Plus и пользуйтесь расширенной статистикой, закладками, папками, выбором глав и множеством других инструментов для прослушивания</string>
+    <key>playback_2025_plus_upsell_title</key>
+    <string>Хотите больше возможностей?</string>
+    <key>playback_2025_ratings_description_1_to_3</key>
+    <string>Отзывы помогают лучшим шоу завоевать популярность</string>
+    <key>playback_2025_ratings_description_4_to_5</key>
+    <string>Все авторы ценят признание</string>
+    <key>playback_2025_ratings_empty_description</key>
+    <string>Помогите любимым авторам завоевать популярность — делитесь тем, что вы любите</string>
+    <key>playback_2025_ratings_empty_title</key>
+    <string>Оценок пока нет, но всё ещё впереди!</string>
+    <key>playback_2025_ratings_title_1_to_3</key>
+    <string>Благодарим за то, что поделились мнением.</string>
+    <key>playback_2025_ratings_title_4_to_5</key>
+    <string>%1$@-звёздный рейтинг посыпался, как конфетти!</string>
+    <key>playback_2025_top_5_podcasts_message</key>
+    <string>Больше любимых подкастов, больше удовольствия, больше индивидуальности</string>
+    <key>playback_2025_top_5_podcasts_title</key>
+    <string>Остальные ваши показатели</string>
+    <key>playback_2025_top_spot_description</key>
+    <string>Выпусков: %1$@, %2$@.
+Вот к чему мы стремимся!</string>
+    <key>playback_2025_top_spot_subtitle</key>
+    <string>Это говорит о вас очень многое</string>
+    <key>playback_2025_top_spot_title</key>
+    <string>Ваши любимые подкасты 2025 года</string>
+    <key>playback_2025_view_year</key>
+    <string>Просмотреть мою историю прослушиваний за 2025 год</string>
+    <key>playback_2025_year_over_year_comparison_down_message</key>
+    <string>Только учтите: качество важнее количества</string>
+    <key>playback_2025_year_over_year_comparison_down_title</key>
+    <string>В этом году вы слушали на %1$@ внимательнее</string>
+    <key>playback_2025_year_over_year_comparison_hero_message</key>
+    <string>В этом году вы прослушали на %1$@ больше — добро пожаловать в клуб</string>
+    <key>playback_2025_year_over_year_comparison_hero_title</key>
+    <string>С нуля — в чемпионы!</string>
+    <key>playback_2025_year_over_year_comparison_same_message</key>
+    <string>Верный и надёжный, как кофе, который вы всегда заказываете</string>
+    <key>playback_2025_year_over_year_comparison_same_title</key>
+    <string>В 2025 году вы посвятили прослушиванию столько же времени, сколько и в предыдущем.</string>
+    <key>playback_2025_year_over_year_comparison_up_message</key>
+    <string>Больше подкастов, больше радости</string>
+    <key>playback_2025_year_over_year_comparison_up_title</key>
+    <string>По сравнению с 2024 годом вы посвятили прослушиванию на %1$@ больше времени!</string>
     <key>playback_effect_all_podcasts</key>
     <string>Все подкасты</string>
     <key>playback_effect_this_podcast</key>
@@ -1923,6 +2062,8 @@ Pocket Casts на полную мощность.</string>
     <string>Эффекты воспроизведения</string>
     <key>playback_failed</key>
     <string>Не удалось воспроизвести</string>
+    <key>playback_not_available</key>
+    <string>Ваш год в подкастах недоступен</string>
     <key>playback_speed</key>
     <string>%1$@x</string>
     <key>player_accessibility_sleep_timer_on</key>
@@ -1989,16 +2130,142 @@ Pocket Casts на полную мощность.</string>
     <string>Ошибка воспроизведения</string>
     <key>player_user_episode_upload_error</key>
     <string>Ошибка загрузки</string>
+    <key>playlist_add_to_title</key>
+    <string>Добавить в плейлист «%@»</string>
+    <key>playlist_create_no_episodes_description</key>
+    <string>Ни один выпуск ваших подкастов не соответствует этим правилам.
+
+Попробуйте скорректировать правила или сохраните этот плейлист для будущих выпусков, которые могут в него попасть.</string>
+    <key>playlist_creation_create_playlist_button</key>
+    <string>Создать плейлист</string>
+    <key>playlist_creation_create_smart_playlist_button_subtitle</key>
+    <string>Автоматически добавлять выпуски на основе правил.</string>
+    <key>playlist_creation_create_smart_playlist_button_title</key>
+    <string>Преобразовать в умный плейлист</string>
+    <key>playlist_detail_description</key>
+    <string>Выпусков: %1$@ • %2$@</string>
+    <key>playlist_detail_description_one_episode</key>
+    <string>1 выпуск • %1$@</string>
+    <key>playlist_episode_added_title</key>
+    <string>1 выпуск добавлен в плейлист «%@»</string>
+    <key>playlist_episodes_added_title</key>
+    <string>Выпуски (%1$@) добавлены в плейлист «%2$@»</string>
+    <key>playlist_episodes_added_to_multiple_playlists</key>
+    <string>Добавлен в плейлисты (%1$@)</string>
+    <key>playlist_episodes_added_to_single_playlist</key>
+    <string>Добавлено в %1$@</string>
+    <key>playlist_episodes_count</key>
+    <string>Выпусков: %1$@</string>
+    <key>playlist_manual_add_episode_full_playlist_toast</key>
+    <string>Этот плейлист заполнен. Удалите несколько выпусков или создайте новый.</string>
+    <key>playlist_manual_add_episodes</key>
+    <string>Добавить выпуски</string>
+    <key>playlist_manual_archived_episode_placeholder</key>
+    <string>Выпуск в этом плейлисте архивирован</string>
+    <key>playlist_manual_archived_episodes_placeholder</key>
+    <string>Все выпуски (%1$@) этого плейлиста архивированы</string>
+    <key>playlist_manual_browse_shows_title</key>
+    <string>Просмотр подкастов</string>
+    <key>playlist_manual_create_error_message</key>
+    <string>Что-то пошло не так при создании плейлиста.</string>
+    <key>playlist_manual_empty_state_subtitle_no_podcasts</key>
+    <string>Смахните выпуск влево, чтобы добавить его в плейлист.</string>
+    <key>playlist_manual_empty_state_title</key>
+    <string>Начните создавать плей-лист</string>
+    <key>playlist_manual_empty_state_title_no_podcasts</key>
+    <string>Добавить выпуски в плейлист</string>
+    <key>playlist_manual_episode_add_to_playlist</key>
+    <string>Добавить в плейлист</string>
+    <key>playlist_manual_episodes_order_option</key>
+    <string>Изменение порядка выпусков</string>
+    <key>playlist_manual_play_all_empty_list</key>
+    <string>Все выпуски архивированы. Чтобы начать воспроизведение, добавьте или распакуйте архив.</string>
+    <key>playlist_options</key>
+    <string>Настройки плейлиста</string>
+    <key>playlist_play_all_option_save_queue</key>
+    <string>Сохранить текущий список</string>
+    <key>playlist_play_all_picker_message</key>
+    <string>При воспроизведении этого плейлиста текущий список «Следующие» будет заменён. Сперва сохраните его, если он вам нужен.</string>
+    <key>playlist_play_all_picker_title</key>
+    <string>Сохранить список «Следующие»?</string>
+    <key>playlist_play_all_replace_picker_message</key>
+    <string>Текущий список «Следующие» будет сброшен, и начнётся воспроизведение этого плейлиста.</string>
+    <key>playlist_play_all_replace_picker_title</key>
+    <string>Заменить текущий список «Следующие»?</string>
+    <key>playlist_play_all_sheet_button_title</key>
+    <string>Заменить и воспроизвести</string>
+    <key>playlist_play_all_sheet_description</key>
+    <string>При запуске он заменит текущий список «Следующие».</string>
+    <key>playlist_play_all_sheet_title</key>
+    <string>Заменить список «Следующие»?</string>
+    <key>playlist_play_all_sheet_toggle</key>
+    <string>Сохранить текущий список «Следующие» как плейлист.</string>
+    <key>playlist_play_all_up_next_saved</key>
+    <string>Список «Следующие», сохранённый как плейлист</string>
+    <key>playlist_play_all_up_next_saved_plural</key>
+    <string>Списки «Следующие», сохранённые как плейлисты</string>
+    <key>playlist_preview_create_smart_playlist</key>
+    <string>Создать умный плейлист</string>
+    <key>playlist_preview_title</key>
+    <string>Предварительный просмотр %@</string>
+    <key>playlist_search</key>
+    <string>Найти плейлист</string>
+    <key>playlist_smart_no_episodes_msg</key>
+    <string>У вас два варианта: порадоваться завершению этого списка или изменить правила, чтобы его расширить.</string>
+    <key>playlist_smart_preview_description</key>
+    <string>Настройте умные правила, чтобы автоматически добавлять выпуски в свой умный плейлист.</string>
+    <key>playlist_smart_preview_enabled_rules</key>
+    <string>Включённые правила</string>
+    <key>playlist_smart_preview_more_rules</key>
+    <string>Другие правила</string>
+    <key>playlist_smart_rule_podcasts_header_subtitle_auto_add</key>
+    <string>Новые подкасты, на которые вы будете подписываться, станут добавляться автоматически.</string>
+    <key>playlist_smart_rule_podcasts_header_subtitle_manual_add</key>
+    <string>Новые подкасты, на которые вы будете подписываться, не будут добавляться автоматически.</string>
+    <key>playlist_smart_rule_podcasts_header_title</key>
+    <string>Все подкасты в подписках</string>
+    <key>playlist_smart_rule_save_button</key>
+    <string>Сохранить умное правило</string>
+    <key>playlist_smart_rule_starred_header_subtitle_toggle_off</key>
+    <string>Отмеченные выпуски могут по-прежнему отображаться при условии соответствия остальным правилам.</string>
+    <key>playlist_smart_rule_starred_header_subtitle_toggle_on</key>
+    <string>Включать только отмеченные выпуски, которые соответствуют остальным правилам.</string>
+    <key>playlist_smart_rule_starred_header_title</key>
+    <string>Отмеченные выпуски</string>
+    <key>playlist_smart_rules_title</key>
+    <string>Умные правила</string>
     <key>playlists</key>
     <string>Плейлисты</string>
+    <key>playlists_auto_download_off_subtitle</key>
+    <string>Включите, чтобы автоматически скачивать выпуски из этого плейлиста</string>
+    <key>playlists_auto_download_on_plural_format</key>
+    <string>Первые выпуски (%1$@) в этом плейлисте будут скачаны автоматически</string>
+    <key>playlists_default_new_playlist</key>
+    <string>Новый плейлист</string>
+    <key>playlists_delete</key>
+    <string>Удалить плейлист</string>
+    <key>playlists_delete_alert_message</key>
+    <string>Вы действительно хотите удалить плейлист? Отменить эту операцию будет невозможно.</string>
+    <key>playlists_delete_alert_title</key>
+    <string>Удалить плейлист?</string>
+    <key>playlists_empty_state_description</key>
+    <string>Плейлисты позволяют упорядочивать выпуски вручную или автоматически по умным правилам.</string>
+    <key>playlists_empty_state_title</key>
+    <string>Слушайте выпуски в нужном вам порядке</string>
     <key>playlists_onboarding_manual_description</key>
-    <string>Хотите расширить возможности управления? Свои плейлисты — это функция, дающая вам возможность составлять собственные списки воспроизведения. Создавайте тематические плейлисты, сборники в дорогу или просто списки под настроение. Плейлисты — «свои» или «умные» — действуют так же, как и вы сами.</string>
+    <string>Управляйте прослушиванием. Создавайте собственные плейлисты — в поездку, по темам или просто под настроение. Любой плейлист — умный или пользовательский — должен вам подходить.</string>
     <key>playlists_onboarding_manual_title</key>
     <string>Знакомьтесь: плейлисты</string>
     <key>playlists_onboarding_smart_description</key>
     <string>Всё работает точно так же, как и раньше: выпуски автоматически добавляются по установленным правилам. Все ваши фильтры никуда не делись, и ничего не изменилось, кроме названия.</string>
     <key>playlists_onboarding_smart_title</key>
     <string>Умные плейлисты — это новое название фильтров</string>
+    <key>playlists_play_all</key>
+    <string>Воспроизвести все</string>
+    <key>playlists_tip_drag_and_drop_description</key>
+    <string>Нажмите и удерживайте плейлист, чтобы переместить его.</string>
+    <key>playlists_tip_drag_and_drop_title</key>
+    <string>Изменить порядок воспроизведения плейлистов</string>
     <key>please_try_again</key>
     <string>Попробуйте еще раз</string>
     <key>please_try_again_later</key>
@@ -2079,6 +2346,8 @@ Pocket Casts на полную мощность.</string>
     <string>Создавайте папки для подкастов, чтобы навести порядок в своей коллекции.</string>
     <key>plus_marketing_folders_title</key>
     <string>Папки</string>
+    <key>plus_marketing_generated_transcripts</key>
+    <string>Автоматические расшифровки</string>
     <key>plus_marketing_hide_ads_description</key>
     <string>Без рекламы у вас будет больше того, что вам нравится, и меньше того, что вам не нравится.</string>
     <key>plus_marketing_hide_ads_title</key>
@@ -2322,6 +2591,8 @@ Pocket Casts на полную мощность.</string>
     <string>Завтра</string>
     <key>podcast_unarchive_all</key>
     <string>Разархивировать все</string>
+    <key>podcast_unavailable</key>
+    <string>Недоступно</string>
     <key>podcast_updates_ended</key>
     <string>Обновления завершены: %1$@</string>
     <key>podcast_updates_ends</key>
@@ -2344,6 +2615,8 @@ Pocket Casts на полную мощность.</string>
     <string>Только последний выпуск</string>
     <key>podcasts_badges</key>
     <string>Значки</string>
+    <key>podcasts_episode_sort_drag_and_drop</key>
+    <string>Произвольный порядок</string>
     <key>podcasts_episode_sort_longest_to_shortest</key>
     <string>От длинных к коротким</string>
     <key>podcasts_episode_sort_newest_to_oldest</key>
@@ -2495,7 +2768,7 @@ Pocket Casts на полную мощность.</string>
     <key>referrals_share_pass_long_message</key>
     <string>Здравствуйте!
 
-Это %1$@ гостевой пропуск в Pocket Casts Plus — мой любимый плеер подкастов. В нём есть множество уникальных функций, которых больше нет нигде: закладки, папки и многое другое. Надеюсь, вам он тоже понравится!
+Это гостевой пропуск на %1$@ в Pocket Casts Plus — мой любимый плеер подкастов. В нём есть множество уникальных функций, которых больше нет нигде: закладки, папки и многое другое. Надеюсь, вам он тоже понравится!
 </string>
     <key>referrals_share_pass_message</key>
     <string>Привет! По ссылке ниже лежит ваш гостевой пропуск в Pocket Casts Plus сроком на %1$@. Воспользуйтесь им и слушайте подкасты на любом из ваших устройств!</string>
@@ -2545,6 +2818,8 @@ Pocket Casts на полную мощность.</string>
     <string>Удалить все</string>
     <key>remove_download</key>
     <string>Удалить скачивание</string>
+    <key>remove_from_playlist</key>
+    <string>Удалить из плейлиста</string>
     <key>remove_from_up_next</key>
     <string>Удалить из следующих</string>
     <key>remove_up_next</key>
@@ -2569,6 +2844,10 @@ Pocket Casts на полную мощность.</string>
     <string>Сохранить закладку</string>
     <key>search</key>
     <string>Поиск</string>
+    <key>search_bookmarks</key>
+    <string>Поиск в закладках</string>
+    <key>search_episodes</key>
+    <string>Поиск выпусков</string>
     <key>search_label</key>
     <string>Ищите подкасты или добавляйте URL-адрес RSS</string>
     <key>search_podcasts</key>
@@ -2577,6 +2856,14 @@ Pocket Casts на полную мощность.</string>
     <string>Последний поиск</string>
     <key>search_results</key>
     <string>%1$@ из %2$@</string>
+    <key>search_results_empty_action</key>
+    <string>Отправить отзыв</string>
+    <key>search_results_empty_message</key>
+    <string>Попробуйте уточнить поиск, введя URL-адрес ленты подкаста</string>
+    <key>search_results_empty_title</key>
+    <string>Нет результатов</string>
+    <key>search_results_view_all</key>
+    <string>Просмотреть все результаты по запросу «%1$@»</string>
     <key>season</key>
     <string>Сезон</string>
     <key>season_episode_shorthand_format</key>
@@ -2709,10 +2996,16 @@ Pocket Casts на полную мощность.</string>
     <string>Выбран 1 фильтр</string>
     <key>settings_auto_downloads_no_filters_selected</key>
     <string>Фильтры не выбраны</string>
+    <key>settings_auto_downloads_no_playlists_selected</key>
+    <string>Списки воспроизведения не выбраны</string>
     <key>settings_auto_downloads_no_podcasts_selected</key>
     <string>Подкасты не выбраны</string>
     <key>settings_auto_downloads_on_follow</key>
     <string>По подписке</string>
+    <key>settings_auto_downloads_playlists_selected_format</key>
+    <string>Выбрано списков воспроизведения: %1$@</string>
+    <key>settings_auto_downloads_playlists_selected_singular</key>
+    <string>Выбран 1 список воспроизведения</string>
     <key>settings_auto_downloads_podcasts_selected_format</key>
     <string>Выбрано подкастов: %1$@</string>
     <key>settings_auto_downloads_podcasts_selected_singular</key>
@@ -2721,12 +3014,16 @@ Pocket Casts на полную мощность.</string>
     <string>Скачивать первые выпуски в фильтре.</string>
     <key>settings_auto_downloads_subtitle_new_episodes</key>
     <string>Автоматически загружайте новые выпуски, сохраняйте выпуски новых шоу, на которые вы подписаны, и управляйте памятью, устанавливая ограничения на количество сохранённых выпусков.</string>
+    <key>settings_auto_downloads_subtitle_playlists</key>
+    <string>Загрузка популярных выпусков в списке воспроизведения.</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>Скачивать выпуски, добавленные в «Следующие».</string>
     <key>settings_badge_filter_header</key>
     <string>СЧЕТЧИК ФИЛЬТРА ВЫПУСКОВ</string>
     <key>settings_badge_new_since_opened</key>
     <string>Новые выпуски с момента открытия</string>
+    <key>settings_badge_smart_playlist_header</key>
+    <string>СЧЕТЧИК ВЫПУСКОВ УМНОГО ПЛЕЙЛИСТА</string>
     <key>settings_badge_total_unplayed</key>
     <string>Всего не прослушано</string>
     <key>settings_bookmark_confirmation_sound</key>
@@ -2877,6 +3174,10 @@ Pocket Casts на полную мощность.</string>
     <string>При нажатии на выпуск в списке «Следующие» открывается страница действий. При долгом нажатии воспроизводится выпуск. Включите, чтобы поменять действия местами.</string>
     <key>settings_general_up_next_tap_on_subtitle</key>
     <string>При нажатии на выпуск в списке «Следующие» начнется его воспроизведение. При долгом нажатии появятся настройки выпуска. Выключите, чтобы поменять действия местами.</string>
+    <key>settings_general_voice_boost_n</key>
+    <string>VoiceBoostN</string>
+    <key>settings_general_voice_boost_n_subtitle</key>
+    <string>Пользуйтесь обновлённой функцией усиления громкости с более стабильными уровнями громкости голоса.</string>
     <key>settings_global_settings</key>
     <string>Глобальные настройки</string>
     <key>settings_headphone_controls</key>
@@ -2893,16 +3194,24 @@ Pocket Casts на полную мощность.</string>
     <string>Включен в 1 фильтр</string>
     <key>settings_in_menu</key>
     <string>В МЕНЮ</string>
+    <key>settings_in_smart_playlist_singular</key>
+    <string>Входит в 1 умный список воспроизведения</string>
+    <key>settings_in_smart_playlists_plural_format</key>
+    <string>Входит в умные списки воспроизведения: %1$@</string>
     <key>settings_inactive_episodes_msg</key>
     <string>Неактивные выпуски — это выпуски, которые вы не прослушивали и не скачивали в течение указанного выше времени. При архивировании выпуска скачивания удаляются.</string>
     <key>settings_next_action</key>
     <string>Следующее действие</string>
     <key>settings_not_in_filters</key>
     <string>Не включен ни в один фильтр</string>
+    <key>settings_not_in_smart_playlists</key>
+    <string>Не входит ни в один умный список воспроизведения</string>
     <key>settings_notifications</key>
     <string>Уведомления</string>
     <key>settings_notifications_filter_count</key>
     <string>Счетчик фильтра </string>
+    <key>settings_notifications_smart_playlist_count</key>
+    <string>Счётчик умного плейлиста</string>
     <key>settings_notifications_subtitle</key>
     <string>Уведомляет вас о выходе нового выпуска. Также полезно для повышения надежности автоматического скачивания.</string>
     <key>settings_opml</key>
@@ -2923,8 +3232,16 @@ Pocket Casts на полную мощность.</string>
     <string>Выбрать фильтр</string>
     <key>settings_select_filters_plural</key>
     <string>Выбрать фильтры</string>
+    <key>settings_select_playlist_singular</key>
+    <string>Выбрать плейлист</string>
+    <key>settings_select_playlists_plural</key>
+    <string>Выберите списки воспроизведения</string>
+    <key>settings_select_smart_playlists_plural</key>
+    <string>Выберите умные списки воспроизведения</string>
     <key>settings_shortcuts_filter_open_filter</key>
     <string>Открыть фильтр</string>
+    <key>settings_shortcuts_filter_open_playlist</key>
+    <string>Открыть плейлист</string>
     <key>settings_shortcuts_filter_play_all_episodes</key>
     <string>Воспроизвести все выпуски</string>
     <key>settings_shortcuts_filter_play_top_episode</key>
@@ -2941,6 +3258,8 @@ Pocket Casts на полную мощность.</string>
     <string>Включенные шорткаты</string>
     <key>settings_siri_shortcuts_specific_filter</key>
     <string>Шорткат для отдельного фильтра </string>
+    <key>settings_siri_shortcuts_specific_playlist</key>
+    <string>Шорткат отдельного подкаста</string>
     <key>settings_siri_shortcuts_specific_podcast</key>
     <string>Шорткат для отдельного подкаста</string>
     <key>settings_skip_first</key>
@@ -2961,6 +3280,12 @@ Pocket Casts на полную мощность.</string>
     <string>Поиск</string>
     <key>settings_status_discover_description</key>
     <string>Поисковый раздел приложения, включая поиск подкастов.</string>
+    <key>settings_status_expensive_network</key>
+    <string>Безлимитный Wi-Fi</string>
+    <key>settings_status_expensive_network_description</key>
+    <string>В случае успеха эта сеть будет использоваться для загрузок по безлимитному Wi-Fi.</string>
+    <key>settings_status_expensive_network_failure_message</key>
+    <string>Ваше текущее подключение помечено как дорогое. Попробуйте переключиться на Wi-Fi или отключить режим экономии трафика.</string>
     <key>settings_status_host</key>
     <string>Распространённые хостинги подкастов</string>
     <key>settings_status_host_description</key>
@@ -3087,16 +3412,24 @@ Pocket Casts на полную мощность.</string>
     <string>Заметки</string>
     <key>sign_in</key>
     <string>Войти</string>
+    <key>sign_in_continue_with_email</key>
+    <string>Чтобы продолжить, введите адрес электронной почты</string>
+    <key>sign_in_divider_label</key>
+    <string>ИЛИ</string>
     <key>sign_in_email_address_prompt</key>
     <string>Адрес электронной почты</string>
     <key>sign_in_forgot_password</key>
     <string>Я не помню свой пароль</string>
+    <key>sign_in_hide_password_label</key>
+    <string>Показать пароль</string>
     <key>sign_in_message</key>
     <string>Сохраняйте подписки на подкасты в облаке и синхронизируйте данные о прослушивании с другими устройствами.</string>
     <key>sign_in_password_prompt</key>
     <string>Пароль</string>
     <key>sign_in_prompt</key>
     <string>Войти или создать учетную запись</string>
+    <key>sign_in_show_password_label</key>
+    <string>Скрыть пароль</string>
     <key>signed_in_as</key>
     <string>ВЫПОЛНЕН ВХОД КАК</string>
     <key>signed_out</key>
@@ -3169,6 +3502,12 @@ Pocket Casts на полную мощность.</string>
     <string>Переход в режим ожидания по окончании текущего выпуска</string>
     <key>sleep_timer_time_remaining</key>
     <string>Таймер сна включен, осталось %1$@</string>
+    <key>smart_playlist</key>
+    <string>Умный плейлист</string>
+    <key>smart_playlists_tip_view_creation_description</key>
+    <string>Выбирайте выпуски самостоятельно или позвольте Smart Playlist автоматически составлять плейлисты на основе ваших умных правил.</string>
+    <key>smart_playlists_tip_view_creation_title</key>
+    <string>Создайте свой плейлист или позвольте нам помочь вам</string>
     <key>smart_playlists_tip_view_description</key>
     <string>Это поможет вам войти в курс дела. Они автоматически обновляются на основе ваших предпочтений.</string>
     <key>smart_playlists_tip_view_title</key>
@@ -3481,6 +3820,8 @@ Pocket Casts на полную мощность.</string>
     <string>От длинных к коротким</string>
     <key>upload_sort_shortest_to_longest</key>
     <string>От коротких к длинным</string>
+    <key>user_episodes_search_podcasts_title</key>
+    <string>Ваши подкасты</string>
     <key>user_satisfaction_survey_no_response</key>
     <string>Пожалуй, нет</string>
     <key>user_satisfaction_survey_subtitle</key>
@@ -3495,6 +3836,8 @@ Pocket Casts на полную мощность.</string>
     <string>Усилитель звука</string>
     <key>volume_boost_description</key>
     <string>Голоса звучат громче</string>
+    <key>volume_boost_n_description</key>
+    <string>Уровни громкости голоса более стабильны</string>
     <key>wait_for_wifi</key>
     <string>В ожидании WiFi</string>
     <key>watch</key>
@@ -3515,6 +3858,8 @@ Pocket Casts на полную мощность.</string>
     <string>Нет выпусков</string>
     <key>watch_no_filters</key>
     <string>Нет фильтров</string>
+    <key>watch_no_playlists</key>
+    <string>Нет плейлистов</string>
     <key>watch_no_podcasts</key>
     <string>Нет подкастов</string>
     <key>watch_nothing_playing_subtitle</key>

@@ -13,6 +13,16 @@ extension BackgroundSyncManager: URLSessionDelegate, URLSessionDownloadDelegate 
             FileLog.shared.addMessage("Failed to load background sync data: \(error.localizedDescription)")
         }
 
+        // Verify the download completed fully by comparing received bytes to Content-Length.
+        // A truncated download can produce valid-but-incomplete protobuf that silently drops fields.
+        if FeatureFlag.detectTruncatedBackgroundSyncDownloads.enabled {
+            let expectedLength = downloadTask.response?.expectedContentLength ?? BackgroundSyncManager.unknownContentLength
+            if let receivedData = data, !BackgroundSyncManager.isDownloadComplete(receivedBytes: receivedData.count, expectedContentLength: expectedLength) {
+                FileLog.shared.addMessage("Background sync data truncated for task \(downloadTask.taskDescription ?? "unknown"): received \(receivedData.count) bytes, expected \(expectedLength)")
+                data = nil
+            }
+        }
+
         if downloadTask.taskDescription == refreshTaskId {
             processRefreshResponse(data: data)
             haveProcessedRefresh = true
@@ -105,11 +115,7 @@ extension BackgroundSyncManager: URLSessionDelegate, URLSessionDownloadDelegate 
             // this is slightly problematic because this might not return the list that was originally synced, but also we can't store that in memory because the app can be killed between start and finish
             // if this turns out to be an issue we could perhaps persist the UUIDs to UserDefaults, or come up with some other solution to this
             let episodesSynced: [Episode]
-            if FeatureFlag.useSyncResponseEpisodeIDs.enabled {
-                episodesSynced = DataManager.sharedManager.unsyncedEpisodes(limit: ServerConstants.Limits.maxEpisodesToSync)
-            } else {
-                episodesSynced = []
-            }
+            episodesSynced = DataManager.sharedManager.unsyncedEpisodes(limit: ServerConstants.Limits.maxEpisodesToSync)
             _ = syncTask.processSyncData(data, httpStatus: httpCode, episodesToSync: episodesSynced)
         }
     }

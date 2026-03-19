@@ -1,10 +1,8 @@
 import Foundation
+import GRDB
+import GRDBMacros
 
-public enum PlaylistType: Int32 {
-    case smart = 0
-    case manual = 1
-}
-
+@GRDBRecord(table: "SJFilteredPlaylist")
 public class EpisodeFilter: NSObject {
     @objc public static let iconTypeCount = 8
     @objc public static let iconsPerType = 5
@@ -15,6 +13,7 @@ public class EpisodeFilter: NSObject {
     @objc public var filterAllPodcasts = false
     @objc public var filterAudioVideoType = 0 as Int32
     @objc public var filterDownloaded = false
+    @GRDBIgnore
     @objc public let filterDownloading = true // we no longer let the user change this, it's just always true
     @objc public var filterFinished = false
     @objc public var filterNotDownloaded = false
@@ -33,19 +32,25 @@ public class EpisodeFilter: NSObject {
     @objc public var shorterThan = 0 as Int32
     @objc public var syncStatus = 0 as Int32
     @objc public var wasDeleted = false
-    @objc public var rawPlaylistType = 0 as Int32
+    @objc public var manual: Bool = false
+    @objc public var showArchivedEpisodes: Bool = false
+    @objc public var playlistUpdateDate: Date?
 
     // Internal tracking
+    @GRDBIgnore
     public var isNew: Bool = false
+    @GRDBIgnore
     public var podcastSmartRuleApplied: Bool = false
+    @GRDBIgnore
     public var episodesSmartRuleApplied: Bool = false
+    @GRDBIgnore
     public var releaseDateSmartRuleApplied: Bool = false
+    @GRDBIgnore
     public var mediaTypeSmartRuleApplied: Bool = false
+    @GRDBIgnore
     public var downloadStatusSmartRuleApplied: Bool = false
 
-    public var playlistType: PlaylistType {
-        PlaylistType(rawValue: rawPlaylistType) ?? .smart
-    }
+    override public init() {}
 
     public func setTitle(_ title: String?, defaultTitle: String) {
         guard let title = title, title.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 else {

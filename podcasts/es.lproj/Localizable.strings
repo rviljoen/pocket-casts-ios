@@ -55,8 +55,12 @@
     <string>%1$@ de %2$@</string>
     <key>accessibility_player_effects_playback_speed</key>
     <string>Velocidad de reproducción x %1$@</string>
+    <key>accessibility_playlist_add_episode</key>
+    <string>Añadir episodio</string>
     <key>accessibility_playlist_color</key>
-    <string>Color de la lista de reproducción %1$@</string>
+    <string>Color de la playlist %1$@</string>
+    <key>accessibility_playlist_image</key>
+    <string>Imagen de la playlist</string>
     <key>accessibility_plus_only</key>
     <string>Bloqueada, es una función Plus</string>
     <key>accessibility_profile_settings</key>
@@ -143,6 +147,8 @@ Toca el botón de abajo para volver a acceder a tu cuenta de Pocket Casts.</stri
     <string>Añadir a la lista de A continuación</string>
     <key>after_playing</key>
     <string>Después de reproducirlo</string>
+    <key>all_results</key>
+    <string>Resultados principales</string>
     <key>announcement_autoplay_description</key>
     <string>Si empiezas a escuchar un episodio y no tienes más en cola, la reproducción automática seguirá reproduciendo episodios de ese programa o lista.</string>
     <key>announcement_autoplay_title</key>
@@ -297,6 +303,8 @@ Descarga la aplicación para disfrutar de la experiencia completa.</string>
     <string>¿Por qué denuncias este anuncio?</string>
     <key>banner_ads_report_broken</key>
     <string>Parece que el anuncio no funciona bien</string>
+    <key>banner_ads_report_confirmation</key>
+    <string>Denunciaste este anuncio.</string>
     <key>banner_ads_report_malicious</key>
     <string>Es un anuncio malicioso</string>
     <key>banner_ads_report_other</key>
@@ -374,7 +382,7 @@ Descarga la aplicación para disfrutar de la experiencia completa.</string>
     <key>cancel_subscription_claim_offer_button</key>
     <string>Reclamar oferta</string>
     <key>cancel_subscription_continue_button</key>
-    <string>Ir a Cancelación</string>
+    <string>Continuar con la cancelación</string>
     <key>cancel_subscription_generic_error</key>
     <string>Se ha producido un error. Inténtalo de nuevo más tarde.</string>
     <key>cancel_subscription_help_description</key>
@@ -561,6 +569,8 @@ Deja que te ayudemos</string>
     <string>Crear clip</string>
     <key>create_filter</key>
     <string>Crear filtro</string>
+    <key>create_up_next_snapshot</key>
+    <string>Crear instantánea</string>
     <key>creator_pick_modal_description</key>
     <string>Las selecciones de los creadores son podcasts recomendados por el creador del programa mediante PodRoll.</string>
     <key>creator_pick_modal_learn_more</key>
@@ -611,6 +621,10 @@ Deja que te ayudemos</string>
     <string>Borrar solo del dispositivo</string>
     <key>deselect_all</key>
     <string>Anular todas las selecciones</string>
+    <key>deselect_all_above</key>
+    <string>Anular la selección de todo lo anterior</string>
+    <key>deselect_all_below</key>
+    <string>Anular la selección de todo lo que aparece a continuación</string>
     <key>device_shake_sleep_timer</key>
     <string>El temporizador de suspensión se reinició porque se agitó el dispositivo</string>
     <key>discover</key>
@@ -808,7 +822,7 @@ Deja que te ayudemos</string>
     <key>download_data_warning</key>
     <string>La descarga utilizará datos.</string>
     <key>download_data_warning_with_settings_link</key>
-    <string>Esta descarga utilizará datos móviles. Puedes desactivar esta advertencia en [Configuración] (%@).</string>
+    <string>Esta descarga utilizará datos móviles. Puedes desactivar esta advertencia en [Configuración](%@).</string>
     <key>download_episode_plural_format</key>
     <string>Descargar %1$@ episodios</string>
     <key>download_episode_singular</key>
@@ -866,11 +880,11 @@ Deja que te ayudemos</string>
     <key>eac_informational_banner_listening_history_title</key>
     <string>Haz un seguimiento de lo que has reproducido</string>
     <key>eac_informational_banner_playlists_description</key>
-    <string>Crea una cuenta gratuita para sincronizar tus listas de reproducción en cualquier dispositivo.</string>
+    <string>Crea una cuenta gratuita para sincronizar tus playlists en cualquier dispositivo.</string>
     <key>eac_informational_banner_playlists_icon_accessibility</key>
-    <string>Icono de listas de reproducción</string>
+    <string>Icono de playlists</string>
     <key>eac_informational_banner_playlists_title</key>
-    <string>Mantén tus listas de reproducción sincronizadas</string>
+    <string>Mantén tus playlists sincronizadas</string>
     <key>eac_informational_banner_profile_description</key>
     <string>Crea una cuenta gratuita para sincronizar tus programas y escucharlos estés donde estés.</string>
     <key>eac_informational_banner_profile_icon_accessibility</key>
@@ -1044,6 +1058,8 @@ que has escuchado dura
     <string>%1$@ episodios</string>
     <key>episode_description_title</key>
     <string>Descripción del episodio</string>
+    <key>episode_detail_add</key>
+    <string>Añadir</string>
     <key>episode_details_title</key>
     <string>Detalles</string>
     <key>episode_filter_by_duration_label</key>
@@ -1062,6 +1078,10 @@ que has escuchado dura
     <string>EPISODIO %1$@</string>
     <key>episode_shorthand_format_short</key>
     <string>EP. %1$@</string>
+    <key>episode_unavailable_message</key>
+    <string>El creador del pódcast ha eliminado este episodio. Permanecerá en tu playlist hasta que la elimines.</string>
+    <key>episode_unavailable_title</key>
+    <string>Episodio no disponible</string>
     <key>episodes</key>
     <string>Episodios</string>
     <key>error</key>
@@ -1085,7 +1105,7 @@ que has escuchado dura
     <key>feature_marketing_bookmarks</key>
     <string>Guarda las marcas de tiempo con los marcadores</string>
     <key>feature_marketing_cloud_storage</key>
-    <string>%1$@ de almacenamiento en la nube para tus archivos</string>
+    <string>%1$@ GB de almacenamiento en la nube para tus archivos</string>
     <key>feature_marketing_early_access</key>
     <string>Acceso anticipado a las nuevas funciones</string>
     <key>feature_marketing_extra_themes_icons</key>
@@ -1146,6 +1166,8 @@ que has escuchado dura
     <string>Archivos</string>
     <key>files_how_to_title</key>
     <string>Cómo guardar un archivo</string>
+    <key>files_not_uploaded</key>
+    <string>No se ha subido ningún archivo</string>
     <key>files_sort</key>
     <string>Ordenar archivos</string>
     <key>filter_auto_add_subtitle</key>
@@ -1163,7 +1185,7 @@ que has escuchado dura
     <key>filter_create_filter_by</key>
     <string>FILTRAR POR</string>
     <key>filter_create_instructions</key>
-    <string>Selecciona los filtros con estos botones para crear una lista de reproducción de episodios inteligente y actualizada.</string>
+    <string>Selecciona los filtros con estos botones para crear una playlist de episodios inteligente y actualizada.</string>
     <key>filter_create_no_episodes</key>
     <string>No hay episodios que coincidan</string>
     <key>filter_create_no_episodes_description_explanation</key>
@@ -1361,7 +1383,7 @@ que has escuchado dura
     <key>go_to_podcast</key>
     <string>Ir al podcast</string>
     <key>got_it</key>
-    <string>De acuerdo</string>
+    <string>Entendido</string>
     <key>group_episodes</key>
     <string>Agrupar episodios</string>
     <key>hang_on</key>
@@ -1382,20 +1404,22 @@ que has escuchado dura
     <string>%1$@ horas</string>
     <key>hours_saved</key>
     <string>Horas guardadas</string>
+    <key>hours_singular_format</key>
+    <string>1 hora</string>
     <key>how_to_upload_explanation</key>
     <string>Primero, abre una aplicación que tenga los archivos de audio que quieras guardar.</string>
-    <key>how_to_upload_first_instruction</key>
-    <string>Elige compartir ese archivo.</string>
-    <key>how_to_upload_first_image_background_button_text</key>
-    <string>Archivo de Audio</string>
-    <key>how_to_upload_first_image_foreground_menu_option_text</key>
-    <string>Opción de menú</string>
-    <key>how_to_upload_second_instruction</key>
-    <string>En el menú, toca Copiar a Pocket Casts</string>
-    <key>how_to_upload_second_image_center_text</key>
+    <key>how_to_upload_share_action_image_center_text</key>
     <string>Copiar a Pocket Casts</string>
-    <key>how_to_upload_second_image_sides_text</key>
-    <string>Algo más</string>
+    <key>how_to_upload_share_action_image_sides_text</key>
+    <string>Otra cosa</string>
+    <key>how_to_upload_share_action_instruction</key>
+    <string>En el menú, toca «Copiar a Pocket Casts»</string>
+    <key>how_to_upload_share_menu_image_background_button_text</key>
+    <string>Archivo de audio</string>
+    <key>how_to_upload_share_menu_image_foreground_menu_option_text</key>
+    <string>Opción del menú</string>
+    <key>how_to_upload_share_menu_instruction</key>
+    <string>Elige compartir ese archivo.</string>
     <key>how_to_upload_summary</key>
     <string>Ya está, terminado. Cambia los datos que quieras, pulsa guardar y ya puedes reproducirlos.</string>
     <key>iap_product_monthly_pricing_format</key>
@@ -1470,6 +1494,14 @@ Nota: Es posible que tengas que mandarte el archivo OPML por correo electrónico
 pódcast contigo</string>
     <key>in_progress</key>
     <string>En progreso</string>
+    <key>interests_select_at_least</key>
+    <string>Seleccionar al menos %1$@</string>
+    <key>interests_show_more_categories</key>
+    <string>Mostrar más categorías</string>
+    <key>interests_subtitle</key>
+    <string>Te esperan podcast geniales, elegidos por personas reales.</string>
+    <key>interests_title</key>
+    <string>Háblanos de tus temas favoritos</string>
     <key>keycommand_close_player</key>
     <string>Cerrar reproductor</string>
     <key>keycommand_decrease_speed</key>
@@ -1518,6 +1550,10 @@ pódcast contigo</string>
     <string>No se ha encontrado ningún episodio</string>
     <key>loading</key>
     <string>Cargando...</string>
+    <key>login_landing_subtitle</key>
+    <string>Tus podcasts, siempre sincronizados. Mantén tu biblioteca a salvo, y disfruta de Pocket Casts en la web y en el escritorio.</string>
+    <key>login_landing_title</key>
+    <string>Crea tu cuenta de Pocket Casts</string>
     <key>login_subtitle</key>
     <string>Crea una cuenta para sincronizar tu experiencia auditiva en todos tus dispositivos.</string>
     <key>login_title</key>
@@ -1674,6 +1710,14 @@ pódcast contigo</string>
     <string>¿Vienes de otra aplicación? Trae todos tus programas favoritos a Pocket Casts.</string>
     <key>notifications_onboarding_import_title</key>
     <string>Importa fácilmente tus podcasts</string>
+    <key>notifications_onboarding_newsletter_subtitle</key>
+    <string>Lo mejor de los podcasts, una vez al mes</string>
+    <key>notifications_onboarding_newsletter_title</key>
+    <string>Suscribirse a nuestra newsletter</string>
+    <key>notifications_onboarding_notifications_subtitle</key>
+    <string>Recibe novedades, sugerencias de podcasts y mucho más</string>
+    <key>notifications_onboarding_notifications_title</key>
+    <string>Recibir notificaciones</string>
     <key>notifications_onboarding_signup_body</key>
     <string>Crea una cuenta gratuita para sincronizar tus programas y escucharlos estés donde estés.</string>
     <key>notifications_onboarding_signup_title</key>
@@ -1702,6 +1746,8 @@ pódcast contigo</string>
     <string>Permite las notificaciones en los ajustes de tu dispositivo</string>
     <key>notifications_permissions_open_settings</key>
     <string>Abrir Ajustes</string>
+    <key>notifications_permissions_save_preferences</key>
+    <string>Guardar preferencias</string>
     <key>notifications_permissions_title</key>
     <string>Mantente al día</string>
     <key>notifications_play_now</key>
@@ -1746,6 +1792,18 @@ pódcast contigo</string>
     <string>Desactivado</string>
     <key>ok</key>
     <string>Vale</string>
+    <key>onboarding_quote_author</key>
+    <string>Usuario de Pocket Casts</string>
+    <key>onboarding_quote_best</key>
+    <string>La mejor aplicación de podcasts, con diferencia</string>
+    <key>onboarding_quote_customization</key>
+    <string>La cantidad de personalización es una locura</string>
+    <key>onboarding_quote_folders</key>
+    <string>Organizar mis podcasts por carpetas es genial</string>
+    <key>onboarding_recommendations_subtitle</key>
+    <string>Aquí tienes programas fantásticos con los que empezar. Toca para seguir, buscar o importar desde otras aplicaciones.</string>
+    <key>onboarding_recommendations_title</key>
+    <string>Esperamos que te encanten estas sugerencias.</string>
     <key>only_on_unmetered_wifi</key>
     <string>Solo con Wi-Fi sin restricciones de datos</string>
     <key>only_on_unmetered_wifi_details</key>
@@ -1847,8 +1905,12 @@ ACTUALIZACIONES</string>
     <string>Reproducir todo</string>
     <key>play_last</key>
     <string>Reproducir al final</string>
+    <key>play_last_in_up_next</key>
+    <string>Reproducir el último en A continuación</string>
     <key>play_next</key>
     <string>Reproducir siguiente</string>
+    <key>play_next_in_up_next</key>
+    <string>Reproducir el siguiente en A continuación</string>
     <key>playback_2024_completion_rate_description</key>
     <string>De los %1$@ episodios que has comenzado, has escuchado por completo un total de %2$@</string>
     <key>playback_2024_completion_rate_title</key>
@@ -1909,6 +1971,83 @@ ACTUALIZACIONES</string>
     <string>En comparación con 2023, tu tiempo de escucha aumentó en un gran %1$@</string>
     <key>playback_2024_year_over_year_compare_title_up_over_500</key>
     <string>En comparación con 2023, tu tiempo de escucha aumentó más de un %1$@</string>
+    <key>playback_2025_completion_rate_message</key>
+    <string>De %1$@ episodios iniciados, has terminado %2$@. Un seguimiento más sólido que la mayoría de las suscripciones a gimnasios</string>
+    <key>playback_2025_completion_rate_title</key>
+    <string>Tu tasa de finalización de este año es de un %1$@</string>
+    <key>playback_2025_end_story_description</key>
+    <string>Comparte tu Playback con tus amigos y demuestra algo de amor a los creadores de pódcasts que te han acompañado durante todo el año</string>
+    <key>playback_2025_end_story_title</key>
+    <string>Gracias por pasar el año con Pocket Casts</string>
+    <key>playback_2025_failed_to_load</key>
+    <string>No hemos podido cargar la reproducción</string>
+    <key>playback_2025_feature_description</key>
+    <string>Consulta tus estadísticas de escuchas, los pódcasts principales y más.</string>
+    <key>playback_2025_feature_title</key>
+    <string>¡La reproducción ya está aquí!</string>
+    <key>playback_2025_intro_message</key>
+    <string>Tu año en pódcasts, concluido y listo para revivir</string>
+    <key>playback_2025_listened_to_numbers</key>
+    <string>Has escuchado %1$@ pódcasts y %2$@ episodios</string>
+    <key>playback_2025_listening_time</key>
+    <string>minutos escuchados</string>
+    <key>playback_2025_longest_episode_footer</key>
+    <string>El episodio más largo fue «%1$@» de «%2$@»</string>
+    <key>playback_2025_longest_episode_message</key>
+    <string>¡Esperamos que primero hayas estirado!</string>
+    <key>playback_2025_longest_episode_title</key>
+    <string>Tu maratón de escucha: %1$@</string>
+    <key>playback_2025_plus_thanks_description</key>
+    <string>Tus ventajas %1$@ desbloquean estadísticas adicionales y funciones avanzadas</string>
+    <key>playback_2025_plus_thanks_title</key>
+    <string>¡Gracias por apoyar Pocket Casts!</string>
+    <key>playback_2025_plus_upsell_button_title</key>
+    <string>Obtener Pocket Casts Plus</string>
+    <key>playback_2025_plus_upsell_description</key>
+    <string>Suscríbete a Pocket Casts Plus para consultar estadísticas, marcadores, carpetas, selección de capítulos y muchas más formas de profundizar en tus hábitos de escucha</string>
+    <key>playback_2025_plus_upsell_title</key>
+    <string>¿Quieres profundizar más?</string>
+    <key>playback_2025_ratings_description_1_to_3</key>
+    <string>Las reseñas ayudan a encontrar grandes programas</string>
+    <key>playback_2025_ratings_description_4_to_5</key>
+    <string>Los creadores de todo el mundo aprecian el amor</string>
+    <key>playback_2025_ratings_empty_description</key>
+    <string>Ayuda a tus creadores favoritos a darse a conocer compartiendo lo que más te gusta</string>
+    <key>playback_2025_ratings_empty_title</key>
+    <string>Aún no hay valoraciones, pero aún hay tiempo.</string>
+    <key>playback_2025_ratings_title_1_to_3</key>
+    <string>Gracias por compartir tu opinión.</string>
+    <key>playback_2025_ratings_title_4_to_5</key>
+    <string>Has dejado caer valoraciones de %1$@ estrellas como confeti</string>
+    <key>playback_2025_top_5_podcasts_message</key>
+    <string>Más favoritos, más reproducción, más tú</string>
+    <key>playback_2025_top_5_podcasts_title</key>
+    <string>Tus otras opciones</string>
+    <key>playback_2025_top_spot_description</key>
+    <string>%1$@ episodios, %2$@.
+¡Este es compromiso!</string>
+    <key>playback_2025_top_spot_subtitle</key>
+    <string>No hay algo más «tú» que esto</string>
+    <key>playback_2025_top_spot_title</key>
+    <string>Tus pódcasts favoritos de 2025</string>
+    <key>playback_2025_view_year</key>
+    <string>Ver Mi reproducción 2025</string>
+    <key>playback_2025_year_over_year_comparison_down_message</key>
+    <string>Pero oye, calidad sobre cantidad</string>
+    <key>playback_2025_year_over_year_comparison_down_title</key>
+    <string>Tu escucha ha disminuido un %1$@ este año</string>
+    <key>playback_2025_year_over_year_comparison_hero_message</key>
+    <string>Has escuchado un %1$@ más este año: te damos la bienvenida al club</string>
+    <key>playback_2025_year_over_year_comparison_hero_title</key>
+    <string>¡De cero a héroe!</string>
+    <key>playback_2025_year_over_year_comparison_same_message</key>
+    <string>Coherente y fiable, como tu café favorito</string>
+    <key>playback_2025_year_over_year_comparison_same_title</key>
+    <string>Tu escucha de 2025 se mantuvo estable</string>
+    <key>playback_2025_year_over_year_comparison_up_message</key>
+    <string>Más podcasts, más alegría</string>
+    <key>playback_2025_year_over_year_comparison_up_title</key>
+    <string>En comparación con 2024, tu tiempo de escucha se ha disparado un %1$@</string>
     <key>playback_effect_all_podcasts</key>
     <string>Todos los podcasts</string>
     <key>playback_effect_this_podcast</key>
@@ -1923,6 +2062,8 @@ ACTUALIZACIONES</string>
     <string>Efectos de reproducción</string>
     <key>playback_failed</key>
     <string>Se ha producido un error en la reproducción</string>
+    <key>playback_not_available</key>
+    <string>Reproducción no disponible</string>
     <key>playback_speed</key>
     <string>%1$@x</string>
     <key>player_accessibility_sleep_timer_on</key>
@@ -1989,16 +2130,142 @@ ACTUALIZACIONES</string>
     <string>Error de reproducción</string>
     <key>player_user_episode_upload_error</key>
     <string>Error de subida</string>
+    <key>playlist_add_to_title</key>
+    <string>Añadir a "%@"</string>
+    <key>playlist_create_no_episodes_description</key>
+    <string>Ninguno de los episodios de tus podcasts se ajusta a estas reglas.
+
+Intenta ajustar las reglas, o guarda esta playlist para futuros episodios que puedan encajar.</string>
+    <key>playlist_creation_create_playlist_button</key>
+    <string>Crear playlist</string>
+    <key>playlist_creation_create_smart_playlist_button_subtitle</key>
+    <string>Añade automáticamente episodios según las reglas.</string>
+    <key>playlist_creation_create_smart_playlist_button_title</key>
+    <string>Convertir en playlist inteligente</string>
+    <key>playlist_detail_description</key>
+    <string>%1$@ episodios • %2$@</string>
+    <key>playlist_detail_description_one_episode</key>
+    <string>1 episodio • %1$@</string>
+    <key>playlist_episode_added_title</key>
+    <string>Se ha añadido 1 episodio a  "%@"</string>
+    <key>playlist_episodes_added_title</key>
+    <string>Se han añadido %1$@ episodios a "%2$@"</string>
+    <key>playlist_episodes_added_to_multiple_playlists</key>
+    <string>Añadido a %1$@ playlists</string>
+    <key>playlist_episodes_added_to_single_playlist</key>
+    <string>Añadido a %1$@</string>
+    <key>playlist_episodes_count</key>
+    <string>%1$@ episodios</string>
+    <key>playlist_manual_add_episode_full_playlist_toast</key>
+    <string>Esta playlist está completa. Elimina algunos episodios o empieza una nueva.</string>
+    <key>playlist_manual_add_episodes</key>
+    <string>Añadir episodios</string>
+    <key>playlist_manual_archived_episode_placeholder</key>
+    <string>Se ha archivado tu episodio de esta playlist</string>
+    <key>playlist_manual_archived_episodes_placeholder</key>
+    <string>Se han archivado todos (%1$@) los episodios de esta playlist</string>
+    <key>playlist_manual_browse_shows_title</key>
+    <string>Buscar podcasts</string>
+    <key>playlist_manual_create_error_message</key>
+    <string>Se ha producido un error al crear tu playlist.</string>
+    <key>playlist_manual_empty_state_subtitle_no_podcasts</key>
+    <string>Desliza hacia la izquierda en un episodio para añadirlo a tu playlist.</string>
+    <key>playlist_manual_empty_state_title</key>
+    <string>Empieza a crear tu playlist</string>
+    <key>playlist_manual_empty_state_title_no_podcasts</key>
+    <string>Añade episodios a tu playlist</string>
+    <key>playlist_manual_episode_add_to_playlist</key>
+    <string>Añadir a playlist</string>
+    <key>playlist_manual_episodes_order_option</key>
+    <string>Reordenar episodios</string>
+    <key>playlist_manual_play_all_empty_list</key>
+    <string>Todos los episodios archivados. Añadir o desarchivar para reproducir.</string>
+    <key>playlist_options</key>
+    <string>Opciones de la playlist</string>
+    <key>playlist_play_all_option_save_queue</key>
+    <string>Guardar cola actual</string>
+    <key>playlist_play_all_picker_message</key>
+    <string>Tu Up Next se reemplazará cuando reproduzcas esta playlist. Guárdalo primero para conservarlo.</string>
+    <key>playlist_play_all_picker_title</key>
+    <string>¿Quieres guardar la cola de Up Next?</string>
+    <key>playlist_play_all_replace_picker_message</key>
+    <string>Esto borrará la cola actual de Up Next y empezará a reproducirse esta playlist.</string>
+    <key>playlist_play_all_replace_picker_title</key>
+    <string>¿Reemplazar Up Next actual?</string>
+    <key>playlist_play_all_sheet_button_title</key>
+    <string>Reemplazar y reproducir</string>
+    <key>playlist_play_all_sheet_description</key>
+    <string>Si reproduces esto, reemplazará a la cola Siguiente actual.</string>
+    <key>playlist_play_all_sheet_title</key>
+    <string>¿Reemplazar la cola Siguiente?</string>
+    <key>playlist_play_all_sheet_toggle</key>
+    <string>Guardar tu cola Siguiente actual como playlist.</string>
+    <key>playlist_play_all_up_next_saved</key>
+    <string>Up Next guardado como playlist</string>
+    <key>playlist_play_all_up_next_saved_plural</key>
+    <string>Up Next guardado como playlists</string>
+    <key>playlist_preview_create_smart_playlist</key>
+    <string>Crear playlist inteligente</string>
+    <key>playlist_preview_title</key>
+    <string>Previsualizar %@</string>
+    <key>playlist_search</key>
+    <string>Buscar playlist</string>
+    <key>playlist_smart_no_episodes_msg</key>
+    <string>Llegados aquí, puedes celebrar que la lista está terminada o modificar las reglas para encontrar más episodios.</string>
+    <key>playlist_smart_preview_description</key>
+    <string>Configura «Reglas inteligentes» para añadir automáticamente episodios a tu playlist inteligente.</string>
+    <key>playlist_smart_preview_enabled_rules</key>
+    <string>Reglas activadas</string>
+    <key>playlist_smart_preview_more_rules</key>
+    <string>Más normas</string>
+    <key>playlist_smart_rule_podcasts_header_subtitle_auto_add</key>
+    <string>Los podcasts nuevos que sigas se añadirán automáticamente.</string>
+    <key>playlist_smart_rule_podcasts_header_subtitle_manual_add</key>
+    <string>Los podcasts nuevos que sigas no se añadirán automáticamente.</string>
+    <key>playlist_smart_rule_podcasts_header_title</key>
+    <string>Todos los podcasts seguidos</string>
+    <key>playlist_smart_rule_save_button</key>
+    <string>Guardar regla inteligente</string>
+    <key>playlist_smart_rule_starred_header_subtitle_toggle_off</key>
+    <string>Los episodios destacados pueden seguir apareciendo si coinciden con tus otras reglas.</string>
+    <key>playlist_smart_rule_starred_header_subtitle_toggle_on</key>
+    <string>Solo incluye episodios destacados que coincidan con tus otras reglas.</string>
+    <key>playlist_smart_rule_starred_header_title</key>
+    <string>Episodios destacados</string>
+    <key>playlist_smart_rules_title</key>
+    <string>Reglas inteligentes</string>
     <key>playlists</key>
-    <string>Listas de reproducción</string>
+    <string>Playlists</string>
+    <key>playlists_auto_download_off_subtitle</key>
+    <string>Habilita la descarga automática de episodios en esta playlist</string>
+    <key>playlists_auto_download_on_plural_format</key>
+    <string>Se descargarán automáticamente los %1$@ primeros episodios de esta playlist</string>
+    <key>playlists_default_new_playlist</key>
+    <string>Nueva playlist</string>
+    <key>playlists_delete</key>
+    <string>Eliminar playlist</string>
+    <key>playlists_delete_alert_message</key>
+    <string>¿Seguro que quieres eliminar tu playlist? Esta acción no se puede deshacer.</string>
+    <key>playlists_delete_alert_title</key>
+    <string>¿Eliminar playlist?</string>
+    <key>playlists_empty_state_description</key>
+    <string>Las playlists te permiten organizar episodios de forma manual o automática con las reglas inteligentes.</string>
+    <key>playlists_empty_state_title</key>
+    <string>Organiza tus episodios como quieras</string>
     <key>playlists_onboarding_manual_description</key>
-    <string>¿Quieres tener más control? Con las listas de reproducción manuales puedes crear colas personalizadas, una opción ideal para viajes, temas o que se adapten a cómo te sientes en ese momento. Inteligentes o manuales, las listas de reproducción te siguen el ritmo.</string>
+    <string>Toma el control de lo que escuchas. Crea playlists personalizadas para viajes, por temas o según lo que te apetezca. Inteligentes o personalizadas, las playlists se adaptan a tu forma de escuchar.</string>
     <key>playlists_onboarding_manual_title</key>
-    <string>Presentamos las listas de reproducción</string>
+    <string>Presentamos las playlists</string>
     <key>playlists_onboarding_smart_description</key>
     <string>Funcionan exactamente igual que antes y utilizan reglas para añadir automáticamente tus episodios. Todos los filtros que utilizas siguen aquí, solo hemos cambiado el nombre.</string>
     <key>playlists_onboarding_smart_title</key>
-    <string>Los filtros son ahora listas de reproducción inteligentes</string>
+    <string>Los filtros son ahora playlists inteligentes</string>
+    <key>playlists_play_all</key>
+    <string>Reproducir todo</string>
+    <key>playlists_tip_drag_and_drop_description</key>
+    <string>Mantén pulsada una playlist para moverla.</string>
+    <key>playlists_tip_drag_and_drop_title</key>
+    <string>Reordenar tus playlists</string>
     <key>please_try_again</key>
     <string>Inténtalo de nuevo.</string>
     <key>please_try_again_later</key>
@@ -2079,6 +2346,8 @@ ACTUALIZACIONES</string>
     <string>Crea carpetas para organizar tu colección de podcast.</string>
     <key>plus_marketing_folders_title</key>
     <string>Carpetas</string>
+    <key>plus_marketing_generated_transcripts</key>
+    <string>Transcripciones generadas</string>
     <key>plus_marketing_hide_ads_description</key>
     <string>Experiencia sin anuncios que te da más de lo que te encanta y menos de lo que te desagrada</string>
     <key>plus_marketing_hide_ads_title</key>
@@ -2164,7 +2433,7 @@ ACTUALIZACIONES</string>
     <key>pocket_casts_newsletter</key>
     <string>Boletín de noticias de Pocket Casts</string>
     <key>pocket_casts_newsletter_description</key>
-    <string>Recibe noticias, actualizaciones de la aplicación, listas de reproducción por tema, entrevistas y más.</string>
+    <string>Recibe noticias, actualizaciones de la aplicación, playlists por tema, entrevistas y más.</string>
     <key>pocket_casts_plus</key>
     <string>Pocket Casts Plus</string>
     <key>pocket_casts_plus_short</key>
@@ -2322,6 +2591,8 @@ Si quieres nuevas ideas, ve a la pestaña Descubrir.</string>
     <string>mañana</string>
     <key>podcast_unarchive_all</key>
     <string>Desarchivar todo</string>
+    <key>podcast_unavailable</key>
+    <string>No disponible</string>
     <key>podcast_updates_ended</key>
     <string>Las actualizaciones terminaron: %1$@</string>
     <key>podcast_updates_ends</key>
@@ -2344,6 +2615,8 @@ Si quieres nuevas ideas, ve a la pestaña Descubrir.</string>
     <string>Solo el episodio más reciente</string>
     <key>podcasts_badges</key>
     <string>Insignias</string>
+    <key>podcasts_episode_sort_drag_and_drop</key>
+    <string>Orden personalizado</string>
     <key>podcasts_episode_sort_longest_to_shortest</key>
     <string>De más largos a más cortos</string>
     <key>podcasts_episode_sort_newest_to_oldest</key>
@@ -2545,6 +2818,8 @@ Aquí tienes un pase de invitado de %1$@ para Pocket Casts Plus, mi reproductor 
     <string>Eliminar todo</string>
     <key>remove_download</key>
     <string>Eliminar descarga</string>
+    <key>remove_from_playlist</key>
+    <string>Eliminar de la playlist</string>
     <key>remove_from_up_next</key>
     <string>Eliminar de la lista de A continuación</string>
     <key>remove_up_next</key>
@@ -2569,6 +2844,10 @@ Aquí tienes un pase de invitado de %1$@ para Pocket Casts Plus, mi reproductor 
     <string>Guardar marcador</string>
     <key>search</key>
     <string>Buscar</string>
+    <key>search_bookmarks</key>
+    <string>Buscar marcadores</string>
+    <key>search_episodes</key>
+    <string>Buscar episodios</string>
     <key>search_label</key>
     <string>Busca pódcast o añade la URL del RSS</string>
     <key>search_podcasts</key>
@@ -2577,6 +2856,14 @@ Aquí tienes un pase de invitado de %1$@ para Pocket Casts Plus, mi reproductor 
     <string>Búsquedas recientes</string>
     <key>search_results</key>
     <string>%1$@ de %2$@</string>
+    <key>search_results_empty_action</key>
+    <string>Envíanos comentarios</string>
+    <key>search_results_empty_message</key>
+    <string>Prueba una nueva búsqueda o añade una URL de feed de podcast</string>
+    <key>search_results_empty_title</key>
+    <string>Sin resultados</string>
+    <key>search_results_view_all</key>
+    <string>Ver todos los resultados para "%1$@"</string>
     <key>season</key>
     <string>Temporada</string>
     <key>season_episode_shorthand_format</key>
@@ -2709,10 +2996,16 @@ Aquí tienes un pase de invitado de %1$@ para Pocket Casts Plus, mi reproductor 
     <string>1 filtro seleccionado</string>
     <key>settings_auto_downloads_no_filters_selected</key>
     <string>No se ha seleccionado ningún filtro</string>
+    <key>settings_auto_downloads_no_playlists_selected</key>
+    <string>No hay playlists seleccionadas</string>
     <key>settings_auto_downloads_no_podcasts_selected</key>
     <string>No se ha seleccionado ningún podcast</string>
     <key>settings_auto_downloads_on_follow</key>
     <string>Siguiendo</string>
+    <key>settings_auto_downloads_playlists_selected_format</key>
+    <string>%1$@ playlists seleccionadas</string>
+    <key>settings_auto_downloads_playlists_selected_singular</key>
+    <string>1 playlist seleccionada</string>
     <key>settings_auto_downloads_podcasts_selected_format</key>
     <string>%1$@ podcasts seleccionados</string>
     <key>settings_auto_downloads_podcasts_selected_singular</key>
@@ -2721,12 +3014,16 @@ Aquí tienes un pase de invitado de %1$@ para Pocket Casts Plus, mi reproductor 
     <string>Descarga los mejores episodios en un filtro.</string>
     <key>settings_auto_downloads_subtitle_new_episodes</key>
     <string>Descarga automáticamente nuevos episodios, guarda episodios de programas que hayas seguido recientemente y gestiona tu almacenamiento estableciendo un límite en el número de episodios guardados.</string>
+    <key>settings_auto_downloads_subtitle_playlists</key>
+    <string>Descarga los mejores episodios en una playlist.</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>Descarga los episodios añadidos a la lista de A continuación.</string>
     <key>settings_badge_filter_header</key>
     <string>RECUENTO DEL FILTRO DE EPISODIOS</string>
     <key>settings_badge_new_since_opened</key>
     <string>Nuevos episodios desde que se abrió la aplicación</string>
+    <key>settings_badge_smart_playlist_header</key>
+    <string>NÚMERO DE EPISODIOS DE LA PLAYLIST INTELIGENTE</string>
     <key>settings_badge_total_unplayed</key>
     <string>Total de episodios no reproducidos</string>
     <key>settings_bookmark_confirmation_sound</key>
@@ -2877,6 +3174,10 @@ Aquí tienes un pase de invitado de %1$@ para Pocket Casts Plus, mi reproductor 
     <string>Al pulsar en un episodio en la lista A continuación se muestra la página de acciones. Al mantener pulsado se reproduce el episodio. Para cambiar una por la otra, activa esta opción. </string>
     <key>settings_general_up_next_tap_on_subtitle</key>
     <string>Pulsar en un episodio de la lista de A continuación hará que empiece la reproducción. Al mantener pulsado se mostrarán las opciones del episodio. Para cambiar una por la otra, desactiva esta opción.</string>
+    <key>settings_general_voice_boost_n</key>
+    <string>VoiceBoostN</string>
+    <key>settings_general_voice_boost_n_subtitle</key>
+    <string>Utiliza la actualización de Volume Boost con niveles de voz más consistentes.</string>
     <key>settings_global_settings</key>
     <string>Configuración Global</string>
     <key>settings_headphone_controls</key>
@@ -2893,16 +3194,24 @@ Aquí tienes un pase de invitado de %1$@ para Pocket Casts Plus, mi reproductor 
     <string>Se ha incluido en 1 filtro</string>
     <key>settings_in_menu</key>
     <string>EN EL MENÚ</string>
+    <key>settings_in_smart_playlist_singular</key>
+    <string>Incluido en 1 playlist inteligente</string>
+    <key>settings_in_smart_playlists_plural_format</key>
+    <string>Incluido en %1$@ playlists inteligentes</string>
     <key>settings_inactive_episodes_msg</key>
     <string>Los episodios inactivos son aquellos que no has reproducido o descargado en el tiempo que especificaste anteriormente. Las descargas se eliminan cuando el episodio se archiva.</string>
     <key>settings_next_action</key>
     <string>Acción siguiente</string>
     <key>settings_not_in_filters</key>
     <string>No se incluyen en ningún filtro</string>
+    <key>settings_not_in_smart_playlists</key>
+    <string>No incluido en ninguna playlist inteligente</string>
     <key>settings_notifications</key>
     <string>Avisos</string>
     <key>settings_notifications_filter_count</key>
     <string>Recuento de filtros</string>
+    <key>settings_notifications_smart_playlist_count</key>
+    <string>Número de playlists inteligentes</string>
     <key>settings_notifications_subtitle</key>
     <string>Te avisa cuando hay un nuevo episodio disponible. También es útil para mejorar la fiabilidad de las descargas automáticas.</string>
     <key>settings_opml</key>
@@ -2923,8 +3232,16 @@ Aquí tienes un pase de invitado de %1$@ para Pocket Casts Plus, mi reproductor 
     <string>Seleccionar filtro</string>
     <key>settings_select_filters_plural</key>
     <string>Seleccionar filtros</string>
+    <key>settings_select_playlist_singular</key>
+    <string>Elegir playlist</string>
+    <key>settings_select_playlists_plural</key>
+    <string>Seleccionar playlists</string>
+    <key>settings_select_smart_playlists_plural</key>
+    <string>Seleccionar playlists inteligentes</string>
     <key>settings_shortcuts_filter_open_filter</key>
     <string>Abrir filtro</string>
+    <key>settings_shortcuts_filter_open_playlist</key>
+    <string>Abrir playlist</string>
     <key>settings_shortcuts_filter_play_all_episodes</key>
     <string>Reproducir todos los episodios</string>
     <key>settings_shortcuts_filter_play_top_episode</key>
@@ -2941,6 +3258,8 @@ Aquí tienes un pase de invitado de %1$@ para Pocket Casts Plus, mi reproductor 
     <string>Accesos directos activados</string>
     <key>settings_siri_shortcuts_specific_filter</key>
     <string>Acceso directo a un filtro concreto</string>
+    <key>settings_siri_shortcuts_specific_playlist</key>
+    <string>Acceso directo a una playlist concreta</string>
     <key>settings_siri_shortcuts_specific_podcast</key>
     <string>Acceso directo a un podcast concreto</string>
     <key>settings_skip_first</key>
@@ -2961,6 +3280,12 @@ Aquí tienes un pase de invitado de %1$@ para Pocket Casts Plus, mi reproductor 
     <string>Descubrir y buscar</string>
     <key>settings_status_discover_description</key>
     <string>La sección Descubrir de la aplicación y la búsqueda de pódscast.</string>
+    <key>settings_status_expensive_network</key>
+    <string>Wi-Fi sin restricciones de datos</string>
+    <key>settings_status_expensive_network_description</key>
+    <string>Si se conecta correctamente, esta red se utilizará para las descargas en el Wi-Fi sin restricciones de datos.</string>
+    <key>settings_status_expensive_network_failure_message</key>
+    <string>Tu red actual está marcada como cara. Prueba a cambiar a una red Wi-Fi o a inhabilitar el Modo de bajo consumo de datos.</string>
     <key>settings_status_host</key>
     <string>Proveedores de alojamiento más frecuentes de pódscast</string>
     <key>settings_status_host_description</key>
@@ -3087,16 +3412,24 @@ Aquí tienes un pase de invitado de %1$@ para Pocket Casts Plus, mi reproductor 
     <string>Notas</string>
     <key>sign_in</key>
     <string>Inicia sesión</string>
+    <key>sign_in_continue_with_email</key>
+    <string>Continuar con correo electrónico</string>
+    <key>sign_in_divider_label</key>
+    <string>O</string>
     <key>sign_in_email_address_prompt</key>
     <string>Dirección de correo electrónico</string>
     <key>sign_in_forgot_password</key>
     <string>He olvidado mi contraseña</string>
+    <key>sign_in_hide_password_label</key>
+    <string>Mostrar contraseña</string>
     <key>sign_in_message</key>
     <string>Guarda tus suscripciones a podcasts en la nube y sincroniza tu progreso con otros dispositivos.</string>
     <key>sign_in_password_prompt</key>
     <string>Contraseña</string>
     <key>sign_in_prompt</key>
     <string>Inicia sesión o crea una cuenta</string>
+    <key>sign_in_show_password_label</key>
+    <string>Ocultar contraseña</string>
     <key>signed_in_as</key>
     <string>HAS INICIADO SESIÓN COMO</string>
     <key>signed_out</key>
@@ -3169,10 +3502,16 @@ Aquí tienes un pase de invitado de %1$@ para Pocket Casts Plus, mi reproductor 
     <string>Suspensión al final del episodio actual</string>
     <key>sleep_timer_time_remaining</key>
     <string>Temporizador activado, quedan %1$@</string>
+    <key>smart_playlist</key>
+    <string>Playlist inteligente</string>
+    <key>smart_playlists_tip_view_creation_description</key>
+    <string>Elige tú los episodios o deja que Smart Playlist la complete automáticamente en función de tus reglas inteligentes.</string>
+    <key>smart_playlists_tip_view_creation_title</key>
+    <string>Crea tu propia playlist o deja que te ayudemos</string>
     <key>smart_playlists_tip_view_description</key>
     <string>Hemos creado estas para ayudarte a empezar. Se actualizan automáticamente en función de tus escuchas.</string>
     <key>smart_playlists_tip_view_title</key>
-    <string>Listas de reproducción inteligentes, listas para usar</string>
+    <string>Playlist inteligentes, listas para usar</string>
     <key>social_sign_in_continue_with_apple</key>
     <string>Continuar con Apple</string>
     <key>social_sign_in_continue_with_google</key>
@@ -3481,6 +3820,8 @@ Esta aplicación puede ser tan sencilla o difícil de usar como tú quieras. Pue
     <string>De más largos a más cortos</string>
     <key>upload_sort_shortest_to_longest</key>
     <string>De más cortos a más largos</string>
+    <key>user_episodes_search_podcasts_title</key>
+    <string>Tus pódcasts</string>
     <key>user_satisfaction_survey_no_response</key>
     <string>En realidad no.</string>
     <key>user_satisfaction_survey_subtitle</key>
@@ -3495,6 +3836,8 @@ Esta aplicación puede ser tan sencilla o difícil de usar como tú quieras. Pue
     <string>Subir volumen</string>
     <key>volume_boost_description</key>
     <string>Las voces suenan más alto</string>
+    <key>volume_boost_n_description</key>
+    <string>Los niveles de voz son más consistentes</string>
     <key>wait_for_wifi</key>
     <string>Esperando a la red wifi</string>
     <key>watch</key>
@@ -3515,6 +3858,8 @@ Esta aplicación puede ser tan sencilla o difícil de usar como tú quieras. Pue
     <string>No hay episodios</string>
     <key>watch_no_filters</key>
     <string>No hay filtros</string>
+    <key>watch_no_playlists</key>
+    <string>No hay playlists</string>
     <key>watch_no_podcasts</key>
     <string>No hay podcasts</string>
     <key>watch_nothing_playing_subtitle</key>

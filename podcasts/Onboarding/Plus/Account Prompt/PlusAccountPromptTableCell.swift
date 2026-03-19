@@ -18,6 +18,7 @@ class PlusAccountPromptTableCell: ThemeableCell {
         let view: UIView
         if FeatureFlag.newOnboardingUpgrade.enabled {
             view = UpgradeBannerView(viewModel: UpgradeAccountViewModel(upgradeTier: .plus, selectedProduct: .yearly, viewSource: .profile, flowSource: .accountScreen), onSubscribeTap: {
+                Analytics.track(.plusPromotionBannerButtonTapped, properties: ["source": PlusUpgradeViewSource.profile.rawValue, "flow": OnboardingFlow.Flow.plusAccountUpgrade.rawValue])
                 let controller = OnboardingFlow.shared.begin(flow: .plusAccountUpgrade, in: model.parentController, source: .profile, context: nil)
                 model.parentController?.present(controller, animated: true)
             }).themedUIView
@@ -61,5 +62,21 @@ class PlusAccountPromptTableCell: ThemeableCell {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        guard FeatureFlag.newOnboardingUpgrade.enabled else {
+            return
+        }
+
+        for view in self.subviews {
+            if view == self.contentView {
+                continue
+            }
+            if (view.bounds.size.width == self.bounds.size.width) && (view.frame.origin.y == 0) {
+                view.isHidden = true
+            }
+        }
     }
 }

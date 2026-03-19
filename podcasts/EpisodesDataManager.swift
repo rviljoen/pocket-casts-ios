@@ -13,7 +13,7 @@ class EpisodesDataManager {
                 return episodes(for: podcast).flatMap { $0.elements.compactMap { ($0 as? ListEpisode)?.episode } }
             }
         case .filter(uuid: let uuid):
-            if let filter = DataManager.sharedManager.findFilter(uuid: uuid) {
+            if let filter = DataManager.sharedManager.findPlaylist(uuid: uuid) {
                 return episodes(for: filter).map { $0.episode }
             }
         case .downloads:
@@ -122,23 +122,45 @@ class EpisodesDataManager {
         case .serial:
             sortStr = "ORDER BY CASE WHEN seasonNumber < 1 THEN 9999 ELSE seasonNumber END, CASE WHEN episodeNumber < 1 THEN 9999 ELSE episodeNumber END ASC, publishedDate ASC"
         }
-        if let uuids = uuidsToFilter {
-            let inClause = "(\(uuids.map { "'\($0)'" }.joined(separator: ",")))"
-            return "podcast_id = \(podcast.id) AND uuid IN \(inClause) \(sortStr)"
-        }
-        if !podcast.shouldShowArchived {
-            return "podcast_id = \(podcast.id) AND archived = 0 \(sortStr)"
-        }
 
-        return "podcast_id = \(podcast.id) \(sortStr)"
+        var whereClauses = ["podcast_id = \(podcast.id)", "wasDeleted = 0"]
+        if !podcast.shouldShowArchived {
+            whereClauses.append("archived = 0")
+        }
+        if let uuids = uuidsToFilter { // ignore uuid filtering if uuid list is empty or nil
+            whereClauses.append("uuid IN (\(uuids.map { "'\($0)'" }.joined(separator: ",")))")
+        }
+        let whereStr = whereClauses.joined(separator: " AND ")
+
+        return "\(whereStr) \(sortStr)"
     }
 
-    // MARK: - Filters
+    // MARK: - Playlists
 
     func episodes(for filter: EpisodeFilter, limit: Int = Constants.Limits.maxFilterItems) -> [ListEpisode] {
-        let query = PlaylistHelper.queryFor(filter: filter, episodeUuidToAdd: filter.episodeUuidToAddToQueries(), limit: limit)
+        let query = PlaylistQueryBuilder.queryFor(filter: filter, episodeUuidToAdd: filter.episodeUuidToAddToQueries(), limit: limit)
         let tintColor = filter.playlistColor()
         return EpisodeTableHelper.loadEpisodes(tintColor: tintColor, query: query, arguments: nil)
+    }
+
+    func playlistEpisodes(
+        for playlist: EpisodeFilter,
+        limit: Int = Constants.Limits.maxFilterItems,
+        shouldShowArchived: Bool = false,
+        search: String? = nil
+    ) -> [ListEpisode] {
+        let query = PlaylistQueryBuilder.query(clause: .episode, for: playlist, episodeUuidToAdd: playlist.episodeUuidToAddToQueries(), searchTerm: search, limit: limit, shouldShowArchived: shouldShowArchived)
+        return EpisodeTableHelper.loadPlaylistEpisodes(query: query)
+    }
+
+    func playlistFirstDistinctEpisodes(
+        for playlist: EpisodeFilter,
+        limit: Int = 4,
+        shouldShowArchived: Bool = false,
+        search: String? = nil
+    ) -> [ListEpisode] {
+        let query = PlaylistQueryBuilder.query(clause: .firstDistinctEpisodes, for: playlist, episodeUuidToAdd: playlist.episodeUuidToAddToQueries(), searchTerm: search, limit: limit, shouldShowArchived: shouldShowArchived)
+        return EpisodeTableHelper.loadPlaylistEpisodes(query: query)
     }
 
     // MARK: - Downloads
@@ -164,8 +186,8 @@ class EpisodesDataManager {
         })
     }
 
-    func searchEpisodes(for search: String) -> [ArraySection<String, ListEpisode>] {
-        return EpisodeTableHelper.searchSectionedEpisodes(for: search, episodeShortKey: { episode -> String in
+    func searchEpisodes(for search: String, listenedTo: Bool = true) -> [ArraySection<String, ListEpisode>] {
+        return EpisodeTableHelper.searchSectionedEpisodes(for: search, listenedTo: listenedTo, episodeShortKey: { episode -> String in
             episode.shortLastPlaybackInteractionDate()
         })
     }

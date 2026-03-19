@@ -13,21 +13,13 @@ class Analytics {
 
     static func register(adapters: [AnalyticsAdapter]) {
         Self.shared.adapters = adapters
-        shared.adaptersRegistered = true
-        logCurrentAdapters()
+        Self.shared.setAdaptersRegisteredStatus(true)
     }
 
     /// Unregisters all the registered adapters, disabling analytics
     static func unregister() {
-        if FeatureFlag.podcastNewformAppsFlyer.enabled,
-           let adapters = Self.shared.adapters {
-            //Keep only third-party adapters
-            Self.shared.adapters = adapters.filter { $0.isThirdPartyAdapter }
-        } else {
-            Self.shared.adapters = nil
-        }
-        shared.adaptersRegistered = false
-        logCurrentAdapters()
+        Self.shared.adapters = nil
+        Self.shared.setAdaptersRegisteredStatus(false)
     }
 #if !os(watchOS) && !APPCLIP
     static func add(analyticsAppThemeProvider: AnalyticsAppThemeProviding) {
@@ -43,8 +35,10 @@ class Analytics {
     func track(_ event: AnalyticsEvent, properties: [AnyHashable: Any]? = nil) {
         var newProperties = (properties ?? [:]).mapValues { (($0 as? AnalyticsDescribable)?.analyticsDescription) ?? $0 }
 #if !os(watchOS) && !APPCLIP
-        analyticsAppThemeProvider?.appThemeProperties.forEach { key, value in
-            newProperties[key] = value
+        if FeatureFlag.appThemePropertiesLogging.enabled {
+            analyticsAppThemeProvider?.appThemeProperties.forEach { key, value in
+                newProperties[key] = value
+            }
         }
 #endif
         adapters?.forEach {
@@ -56,6 +50,11 @@ class Analytics {
 #if DEBUG
         FileLog.shared.console("Analytics adapters: \(Self.shared.adapters ?? [])")
 #endif
+    }
+
+    fileprivate func setAdaptersRegisteredStatus(_ value: Bool) {
+        adaptersRegistered = value
+        Self.logCurrentAdapters()
     }
 }
 
@@ -82,6 +81,7 @@ extension Analytics {
     func optInOfAnalytics() {
 #if !os(watchOS) && !APPCLIP
         Settings.setAnalytics(optOut: false)
+        setAdaptersRegisteredStatus(false)
         (UIApplication.shared.delegate as? AppDelegate)?.setupAnalytics()
         Analytics.track(.analyticsOptIn)
 #endif

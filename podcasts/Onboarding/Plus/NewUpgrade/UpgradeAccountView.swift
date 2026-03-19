@@ -91,7 +91,7 @@ struct UpgradeAccountView: View {
                         } else {
                             UpgradeFeaturesView(features: model.features)
                         }
-                        if model.isFreeTrialAvailable {
+                        if model.isFreeTrialAvailable, FeatureFlag.newOnboardingUpgradeTrialTimeline.enabled {
                             detailsButton(text: model.shouldShowVariation ? L10n.subscriptionPlanFeaturesInfoLink : L10n.subscriptionPlanFreeTrialInfoLink, proxy: proxy)
                             .padding(.bottom, 32)
                             .padding(.top, 16)
@@ -142,7 +142,7 @@ struct UpgradeAccountView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
                         pageOne(proxy: proxy)
-                            .frame(height: model.style == .generic ? nil : sizeProxy.size.height - (Constants.gradientHeight * 2))
+                            .frame(minHeight: model.style == .generic ? nil : sizeProxy.size.height - (Constants.gradientHeight * 2))
                         if expand, model.isFreeTrialAvailable || model.style == .contextual {
                             VStack {
                                 Spacer().frame(height: 16)

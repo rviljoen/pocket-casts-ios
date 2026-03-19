@@ -1,5 +1,5 @@
-import FMDB
 import GRDB
+import Foundation
 import PocketCastsUtils
 import SQLite3
 
@@ -7,7 +7,7 @@ public class DataManager {
     public static let podcastTableName = "SJPodcast"
     public static let episodeTableName = "SJEpisode"
     public static let userEpisodeTableName = "SJUserEpisode"
-    public static let filtersTableName = "SJFilteredPlaylist"
+    public static let playlistsTableName = "SJFilteredPlaylist"
     public static let playlistEpisodeTableName = "SJPlaylistEpisode"
     public static let upNextChangesTableName = "UpNextChanges"
     public static let folderTableName = "Folder"
@@ -15,7 +15,7 @@ public class DataManager {
     private let podcastManager = PodcastDataManager()
     private let upNextManager = UpNextDataManager()
     private let upNextChangesManager = UpNextChangesDataManager()
-    private let filterManager = EpisodeFilterDataManager()
+    private let playlistManager = PlaylistDataManager()
     private let episodeManager = EpisodeDataManager()
     private let userEpisodeManager = UserEpisodeDataManager()
     private let folderManager = FolderDataManager()
@@ -27,7 +27,7 @@ public class DataManager {
     public let bookmarks: BookmarkDataManager
     public let ratings: RatingsDataManager
 
-    private let dbQueue: PCDBQueue
+    let dbQueue: PCDBQueue
 
     public static internal(set) var sharedManager = DataManager()
 
@@ -39,19 +39,11 @@ public class DataManager {
     public convenience init() {
         DataManager.ensureDbFolderExists()
 
-        var dbQueue: PCDBQueue
-        if FeatureFlag.grdb.enabled {
-            var config = Configuration()
-            config.busyMode = .timeout(10)
-            let dbPool = try! DatabasePool(path: DataManager.pathToDb(), configuration: config)
-            dbQueue = GRDBQueue(dbPool: dbPool, logger: Self.logger)
-            DataManager.setDatabaseFileProtectionToNone()
-            FileLog.shared.addMessage("[DataManager] Initialized using GRDB")
-        } else {
-            let flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FILEPROTECTION_NONE
-            dbQueue = FMDBQueue(fmdbQueue: FMDatabaseQueue(path: DataManager.pathToDb(), flags: flags)!)
-            FileLog.shared.addMessage("[DataManager] Initialized using FMDB")
-        }
+        var config = Configuration()
+        config.busyMode = .timeout(10)
+        let dbPool = try! DatabasePool(path: DataManager.pathToDb(), configuration: config)
+        let dbQueue = GRDBQueue(dbPool: dbPool, logger: Self.logger)
+        DataManager.setDatabaseFileProtectionToNone()
 
         self.init(dbQueue: dbQueue)
     }
@@ -86,16 +78,10 @@ public class DataManager {
     }
 
     /// Creates a DataManager using the given `PCDBQueue`.
-    /// If `shouldCloseQueueAfterSetup` is true, `dbQueue.close()` is called after the schema is created, otherwise the queue is left open.
-    public init(dbQueue: PCDBQueue, shouldCloseQueueAfterSetup: Bool = true) {
+    public init(dbQueue: PCDBQueue) {
         self.dbQueue = dbQueue
 
         DatabaseHelper.setup(queue: dbQueue)
-
-        if shouldCloseQueueAfterSetup && !FeatureFlag.grdb.enabled {
-            // "You don't need to close it during the app lifecycle, unless you modify the schema." Since the above method can modify the schema, we do that here as recommended by the author of FMDB
-            dbQueue.close()
-        }
 
         // closing it above won't affect these calls, since they will re-open it
         podcastManager.setup(dbQueue: dbQueue)
@@ -176,6 +162,10 @@ public class DataManager {
 
     public func upNextPlayListContains(episodeUuid: String) -> Bool {
         upNextManager.isEpisodePresent(uuid: episodeUuid, dbQueue: dbQueue)
+    }
+
+    public func allUpNextEpisodes(from uuids: [String]) -> [Episode] {
+        episodeManager.allUpNextEpisodes(from: uuids, dbQueue: dbQueue)
     }
 
     public func allUpNextEpisodes() -> [BaseEpisode] {
@@ -314,6 +304,10 @@ public class DataManager {
 
     public func allPodcasts(includeUnsubscribed: Bool, reloadFromDatabase: Bool = false) -> [Podcast] {
         podcastManager.allPodcasts(includeUnsubscribed: includeUnsubscribed, reloadFromDatabase: reloadFromDatabase, dbQueue: dbQueue)
+    }
+
+    public func searchPodcasts(term: String) -> [Podcast] {
+        podcastManager.searchPodcasts(term: term, dbQueue: dbQueue)
     }
 
     public func allPodcastsOrderedByTitle(reloadFromDatabase: Bool = false) -> [Podcast] {
@@ -474,6 +468,10 @@ public class DataManager {
         episodeManager.findPlayedEpisodes(uuids: uuids, dbQueue: dbQueue)
     }
 
+    public func findMatchingEpisodes(uuids: [String]) -> [String] {
+        episodeManager.findMatchingEpisodes(uuids: uuids, dbQueue: dbQueue)
+    }
+
     public func findPlayedEpisodesCount(podcastId: Int64) async -> Int {
         await episodeManager.findPlayedEpisodesCount(podcastId: podcastId, dbQueue: dbQueue)
     }
@@ -509,8 +507,16 @@ public class DataManager {
         episodeManager.findEpisodesWhere(customWhere: customWhere, arguments: arguments, dbQueue: dbQueue)
     }
 
-    public func findEpisodesAndPodcastsWhere(customWhere: String) -> [Episode] {
-        episodeManager.findEpisodesAndPodcastsWhere(customWhere: customWhere, dbQueue: dbQueue)
+    public func findEpisodes(with term: String, podcastUUID: String) -> [Episode] {
+        episodeManager.findEpisodes(with: term, podcastUUID: podcastUUID, dbQueue: dbQueue)
+    }
+
+    public func findPlaylistEpisodesWhere(query: String, arguments: [Any]?) -> [Episode] {
+        episodeManager.findPlaylistEpisodesWhere(query: query, arguments: arguments, dbQueue: dbQueue)
+    }
+
+    public func findEpisodesAndPodcastsWhere(customWhere: String, listenedTo: Bool) -> [Episode] {
+        episodeManager.findEpisodesAndPodcastsWhere(customWhere: customWhere, listenedTo: listenedTo, dbQueue: dbQueue)
     }
 
     public func findLatestEpisode(podcast: Podcast) -> Episode? {
@@ -547,7 +553,7 @@ public class DataManager {
 
     public func findDownloadedEpisodes() -> [BaseEpisode] {
         let query = "episodeStatus = \(DownloadStatus.downloaded.rawValue)"
-        let downloadedEpisodes = DataManager.sharedManager.findEpisodesWhere(customWhere: query, arguments: nil)
+        let downloadedEpisodes = findEpisodesWhere(customWhere: query, arguments: nil)
 
         let downloadedUserEpisodes = userEpisodeManager.findAllDownloaded(sortedBy: .newestToOldest, dbQueue: dbQueue)
         var allEpisodes: [BaseEpisode] = downloadedEpisodes + downloadedUserEpisodes
@@ -903,54 +909,140 @@ public class DataManager {
         userEpisodeManager.removeOrphaned(dbQueue: dbQueue)
     }
 
-    // MARK: - Filters
+    // MARK: - Playlists
 
-    public func allFilters(includeDeleted: Bool) -> [EpisodeFilter] {
-        filterManager.allFilters(includeDeleted: includeDeleted, dbQueue: dbQueue)
+    public func allPlaylists(includeDeleted: Bool) -> [EpisodeFilter] {
+        playlistManager.allPlaylists(includeDeleted: includeDeleted, dbQueue: dbQueue)
     }
 
-    public func filterCount(includeDeleted: Bool) -> Int {
-        filterManager.count(includeDeleted: includeDeleted, dbQueue: dbQueue)
+    public func allSmartPlaylists(includeDeleted: Bool) -> [EpisodeFilter] {
+        playlistManager.allSmartPlaylists(includeDeleted: includeDeleted, dbQueue: dbQueue)
     }
 
-    public func findFilter(uuid: String) -> EpisodeFilter? {
-        filterManager.findBy(uuid: uuid, dbQueue: dbQueue)
+    public func allManualPlaylists(includeDeleted: Bool) -> [EpisodeFilter] {
+        playlistManager.allManualPlaylists(includeDeleted: includeDeleted, dbQueue: dbQueue)
     }
 
-    public func episodeCount(forFilter: EpisodeFilter, episodeUuidToAdd: String?) -> Int {
-        filterManager.episodeCount(forFilter: forFilter, episodeUuidToAdd: episodeUuidToAdd, dbQueue: dbQueue)
+    public func playlistsCount(includeDeleted: Bool) -> Int {
+        playlistManager.count(includeDeleted: includeDeleted, dbQueue: dbQueue)
     }
 
-    public func deleteDeletedFilters() {
-        filterManager.deleteDeletedFilters(dbQueue: dbQueue)
+    public func playlistContainsEpisode(episodeUuid: String, includeDeleted: Bool = false) -> Bool {
+        playlistManager.playlistContainsEpisode(episodeUuid: episodeUuid, includeDeleted: includeDeleted, dbQueue: dbQueue)
     }
 
-    public func allUnsyncedFilters() -> [EpisodeFilter] {
-        filterManager.allUnsyncedFilters(dbQueue: dbQueue)
+    public func manualPlaylistUUIDs(for episodeUUID: String) -> [String] {
+        playlistManager.manualPlaylistUUIDs(for: episodeUUID, dbQueue: dbQueue)
     }
 
-    public func save(filter: EpisodeFilter) {
-        filterManager.save(filter: filter, dbQueue: dbQueue)
+    public func playlistContainsPodcast(podcastUuid: String, includeDeleted: Bool = false) -> Bool {
+        playlistManager.playlistContainsPodcast(podcastUuid: podcastUuid, includeDeleted: includeDeleted, dbQueue: dbQueue)
     }
 
-    public func delete(filter: EpisodeFilter) {
-        filterManager.delete(filter: filter, dbQueue: dbQueue)
+    public func findPlaylist(uuid: String) -> EpisodeFilter? {
+        playlistManager.findBy(uuid: uuid, dbQueue: dbQueue)
     }
 
-    public func markAllEpisodeFiltersSynced() {
-        filterManager.markAllSynced(dbQueue: dbQueue)
+    public func episodeCount(for playlist: EpisodeFilter, episodeUuidToAdd: String?) -> Int {
+        if FeatureFlag.playlistsRebranding.enabled {
+            playlistEpisodeCount(for: playlist, episodeUuidToAdd: episodeUuidToAdd)
+        } else {
+            playlistManager.episodeCount(for: playlist, episodeUuidToAdd: episodeUuidToAdd, dbQueue: dbQueue)
+        }
     }
 
-    public func markAllEpisodeFiltersUnsynced() {
-        filterManager.markAllUnsynced(dbQueue: dbQueue)
+    public func playlistEpisodeCount(for playlist: EpisodeFilter, episodeUuidToAdd: String?) -> Int {
+        playlistManager.playlistEpisodeCount(clause: .episodeCount, playlist: playlist, episodeUuidToAdd: episodeUuidToAdd, shouldShowArchived: false, dbQueue: dbQueue)
     }
 
-    public func nextSortPositionForFilter() -> Int {
-        filterManager.nextSortPositionForFilter(dbQueue: dbQueue)
+    public func playlistArchivedEpisodeCount(for playlist: EpisodeFilter, episodeUuidToAdd: String?) -> Int {
+        playlistManager.playlistEpisodeCount(clause: .episodeCount, playlist: playlist, episodeUuidToAdd: episodeUuidToAdd, shouldShowArchived: true, dbQueue: dbQueue)
     }
 
-    public func updatePosition(filter: EpisodeFilter, newPosition: Int32) {
-        filterManager.updatePosition(filter: filter, newPosition: newPosition, dbQueue: dbQueue)
+    public func allPlaylistEpisodeCount(for playlist: EpisodeFilter, episodeUuidToAdd: String?, includingArchivedEpisodes: Bool = false) -> Int {
+        playlistManager.playlistEpisodeCount(clause: .allEpisodeCount, playlist: playlist, episodeUuidToAdd: episodeUuidToAdd, shouldShowArchived: includingArchivedEpisodes, dbQueue: dbQueue)
+    }
+
+    public func playlistEpisodes(for playlist: EpisodeFilter, limit: Int? = nil, sortType: PlaylistSort? = nil) -> [Episode] {
+        let limit = limit ?? EpisodeDataManager.Constants.Limits.maxPlaylistItems
+        let query = PlaylistQueryBuilder.query(
+            clause: .episode,
+            for: playlist,
+            episodeUuidToAdd: nil,
+            limit: limit,
+            sortType: sortType
+        )
+        return episodeManager.findPlaylistEpisodesWhere(query: query, arguments: nil, dbQueue: dbQueue)
+    }
+
+    public func deleteDeletedPlaylists() {
+        playlistManager.deleteDeletedPlaylists(dbQueue: dbQueue)
+    }
+
+    public func allUnsyncedPlaylists() -> [EpisodeFilter] {
+        playlistManager.allUnsyncedPlaylists(dbQueue: dbQueue)
+    }
+
+    public func save(playlist: EpisodeFilter) {
+        playlistManager.save(playlist: playlist, dbQueue: dbQueue)
+    }
+
+    public func updatePlaylistUpdateDate(for playlist: EpisodeFilter, to date: Date = .now) {
+        playlistManager.updatePlaylistUpdateDate(for: playlist, to: date, dbQueue: dbQueue)
+    }
+
+    @discardableResult
+    public func add(episodes: [Episode], to playlist: EpisodeFilter) -> Bool {
+        playlistManager.add(episodes: episodes, to: playlist, dbQueue: dbQueue)
+    }
+
+    public func delete(playlist: EpisodeFilter) {
+        playlistManager.delete(playlist: playlist, dbQueue: dbQueue)
+    }
+
+    public func markAllPlaylistsSynced() {
+        playlistManager.markAllSynced(dbQueue: dbQueue)
+    }
+
+    public func markAllPlaylistsUnsynced() {
+        playlistManager.markAllUnsynced(dbQueue: dbQueue)
+    }
+
+    public func nextSortPositionForPlaylist() -> Int {
+        playlistManager.nextSortPositionForPlaylist(dbQueue: dbQueue)
+    }
+
+    public func firstSortPositionForPlaylist() -> Int {
+        playlistManager.firstSortPositionForPlaylist(dbQueue: dbQueue)
+    }
+
+    public func bumpSortPositionForAllPlaylists(adding value: Int = 1) {
+        playlistManager.bumpSortPositionForAllPlaylists(adding: value, dbQueue: dbQueue)
+    }
+
+    public func updatePosition(playlist: EpisodeFilter, newPosition: Int32) {
+        playlistManager.updatePosition(playlist: playlist, newPosition: newPosition, dbQueue: dbQueue)
+    }
+
+    // Manual Playlist episode management
+    public func moveEpisode(_ episodeUuid: String, in playlist: EpisodeFilter, to index: Int) {
+        playlistManager.moveEpisode(episodeUuid, in: playlist, to: index, dbQueue: dbQueue)
+    }
+
+    public func updateEpisodePosition(_ episodeUuid: String, in playlist: EpisodeFilter, to position: Int32) {
+        playlistManager.updateEpisodePosition(episodeUuid, in: playlist, to: position, dbQueue: dbQueue)
+    }
+
+    public func deleteEpisodes(_ episodeUuids: [String], from playlist: EpisodeFilter) {
+        playlistManager.deleteEpisodes(episodeUuids, from: playlist, dbQueue: dbQueue)
+    }
+
+    public func rawDeleteEpisodes(_ episodeUuids: [String], from playlist: EpisodeFilter) {
+        playlistManager.rawDeleteEpisodes(episodeUuids, from: playlist, dbQueue: dbQueue)
+    }
+
+    public func deleteAllEpisodes(in playlist: EpisodeFilter) {
+        playlistManager.deleteAllEpisodes(in: playlist, dbQueue: dbQueue)
     }
 
     // MARK: - Folders

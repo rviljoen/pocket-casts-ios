@@ -1,6 +1,5 @@
 @testable import PocketCastsServer
 @testable import PocketCastsDataModel
-import FMDB
 import XCTest
 @testable import PocketCastsUtils
 
@@ -9,7 +8,6 @@ final class SyncTaskTests_EpisodeImport: XCTestCase {
 
     override func setUp() {
         syncTask = SyncTask(dataManager: DataManager.sharedManager)
-        FeatureFlagMock().set(.useSyncResponseEpisodeIDs, value: true)
     }
 
     override func tearDown() {

@@ -73,7 +73,8 @@ class ReleaseDateFilterOverlayController: FilterSettingsOverlayController, UITab
             saveButton.setTitle(L10n.playlistSmartRuleSaveButton, for: .normal)
         }
 
-        title = L10n.filterReleaseDate
+        title = SmartPlaylistRule.releaseDate.title
+
         tableView.contentInsetAdjustmentBehavior = .never
 
         navigationController?.navigationBar.setValue(true, forKey: "hidesShadow")
@@ -114,10 +115,10 @@ class ReleaseDateFilterOverlayController: FilterSettingsOverlayController, UITab
         cell.style = .primaryUi01
         cell.setSelectState(selectedIndex == indexPath.row)
         if FeatureFlag.playlistsRebranding.enabled {
-            cell.title.font = .systemFont(ofSize: 17, weight: .semibold)
+            cell.title.font = .font(ofSize: 17, weight: .semibold, scalingWith: .body)
             cell.setTintColor(color: AppTheme.colorForStyle(.primaryInteractive01))
         } else {
-            cell.title.font = .systemFont(ofSize: 16, weight: .medium)
+            cell.title.font = .font(ofSize: 16, weight: .medium, scalingWith: .callout)
             cell.setTintColor(color: filterToEdit.playlistColor())
         }
         cell.selectButton.tag = indexPath.row
@@ -131,6 +132,10 @@ class ReleaseDateFilterOverlayController: FilterSettingsOverlayController, UITab
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         FeatureFlag.playlistsRebranding.enabled ? 46 : 51
     }
 

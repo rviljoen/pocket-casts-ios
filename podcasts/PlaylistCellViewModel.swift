@@ -1,9 +1,68 @@
 import SwiftUI
 import PocketCastsDataModel
 
+#if canImport(UIKit)
+import UIKit
+#endif
+
 class PlaylistCellViewModel: ObservableObject {
+    enum DisplayType {
+        case count
+        case toggle
+        case check
+        case addNew
+        case plain
+    }
+
     @Published var episodesCount: Int = 0
-    @Published var imageURLs: [URL] = []
+    @Published var images: [PlaylistArtworkView.ImageItem] = []
+    var additionalEpisodesCount: Int = 0
+
+    var isBelowEpisodeLimit: Bool {
+#if DEBUG
+        episodesCount < Settings.debugPlaylistsLimit
+#else
+        episodesCount < Constants.Limits.maxFilterItems
+#endif
+    }
+
+    static func distinctPodcasts<T>(
+        from episodes: [T],
+        limit: Int,
+        podcastUuid: (T) -> String
+    ) -> [T] {
+        var seen = Set<String>()
+        var results: [T] = []
+
+        for episode in episodes {
+            if seen.insert(podcastUuid(episode)).inserted {
+                results.append(episode)
+
+                if results.count == limit {
+                    break
+                }
+            }
+        }
+        if !results.isEmpty, results.count < limit {
+            return Array(results.prefix(1))
+        }
+        return results
+    }
+
+    static func gridArtworkItems<T>(
+        from episodes: [T],
+        limit: Int,
+        imageManager: ImageManager = .sharedManager,
+        podcastUuid: (T) -> String
+    ) -> [PlaylistArtworkView.ImageItem] {
+        let distinctEpisodes = distinctPodcasts(from: episodes, limit: limit, podcastUuid: podcastUuid)
+
+        return distinctEpisodes.map { episode in
+            let uuid = podcastUuid(episode)
+            let url = imageManager.podcastUrl(imageSize: .grid, uuid: uuid)
+            return PlaylistArtworkView.ImageItem(id: uuid, url: url)
+        }
+    }
 
     private var playlist: EpisodeFilter
     private var isLoadingCount: Bool = false
@@ -14,13 +73,17 @@ class PlaylistCellViewModel: ObservableObject {
     private let episodesDataManager: EpisodesDataManager
     private let episodeArtWork: EpisodeArtwork
 
+    let displayType: DisplayType
+
     init(
         playlist: EpisodeFilter,
+        displayType: DisplayType = .count,
         dataManager: DataManager = .sharedManager,
         imageManager: ImageManager = .sharedManager,
         episodesDataManager: EpisodesDataManager = .init()
     ) {
         self.playlist = playlist
+        self.displayType = displayType
         self.dataManager = dataManager
         self.imageManager = imageManager
         self.episodeArtWork = .init(imageManager: imageManager)
@@ -32,17 +95,24 @@ class PlaylistCellViewModel: ObservableObject {
     }
 
     func isSmartPlaylist() -> Bool {
-        playlist.playlistType == .smart
+        playlist.manual == false
     }
 
     func loadData() {
-        imageURLs.removeAll()
+        images.removeAll()
 
-        loadCount()
-        loadImages()
+        switch displayType {
+        case .count, .check:
+            loadCount()
+            loadImages()
+        case .toggle, .plain:
+            loadImages()
+        case .addNew:
+            return
+        }
     }
 
-    func loadCount() {
+    private func loadCount() {
         if isLoadingCount { return }
         isLoadingCount = true
         Task { [weak self] in
@@ -55,16 +125,17 @@ class PlaylistCellViewModel: ObservableObject {
         }
     }
 
-    func loadImages() {
+    private func loadImages() {
         if isLoadingImages { return }
         isLoadingImages = true
         Task { [weak self] in
             guard let self else { return }
             do {
                 let list = await self.loadListEpisodes()
-                let imageURLs = try await self.loadImagesURLs(episodes: list)
+                let firstFourDistinct = self.firstDistinctPodcasts(from: list, limit: 4)
+                let images = try await self.loadImagesURLs(episodes: firstFourDistinct)
                 await MainActor.run {
-                    self.imageURLs = imageURLs
+                    self.images = images
                     self.isLoadingImages = false
                 }
             } catch {
@@ -78,37 +149,53 @@ class PlaylistCellViewModel: ObservableObject {
     private func loadListEpisodes() async -> [ListEpisode] {
         let playlist = self.playlist
         return await Task.detached(priority: .userInitiated) { [weak self] in
-            self?.episodesDataManager.episodes(for: playlist, limit: 4) ?? []
+            self?.episodesDataManager.playlistFirstDistinctEpisodes(for: playlist, shouldShowArchived: playlist.showArchivedEpisodes) ?? []
         }.value
     }
 
-    private func loadImagesURLs(episodes: [ListEpisode]) async throws -> [URL] {
-        try await withThrowingTaskGroup(of: URL.self) { group in
+    private func loadImagesURLs(episodes: [ListEpisode], includingEpisodeArtwork: Bool = false) async throws -> [PlaylistArtworkView.ImageItem] {
+        try await withThrowingTaskGroup(of: PlaylistArtworkView.ImageItem.self) { group in
             for episode in episodes {
                 group.addTask {
-                    if let imageUrl = try await ShowInfoCoordinator.shared.loadEpisodeArtworkUrl(podcastUuid: episode.episode.podcastUuid, episodeUuid: episode.episode.uuid),
+                    if includingEpisodeArtwork,
+                       let imageUrl = try await ShowInfoCoordinator.shared.loadEpisodeArtworkUrl(podcastUuid: episode.episode.podcastUuid, episodeUuid: episode.episode.uuid),
                        let url = URL(string: imageUrl) {
-                        return url
+                        return PlaylistArtworkView.ImageItem(id: episode.episode.uuid, url: url)
                     }
-                    return self.imageManager.podcastUrl(imageSize: .grid, uuid: episode.episode.podcastUuid)
+                    let url = self.imageManager.podcastUrl(imageSize: .grid, uuid: episode.episode.podcastUuid)
+                    return PlaylistArtworkView.ImageItem(id: episode.episode.podcastUuid, url: url)
                 }
             }
-            var results: [URL] = []
-            for try await url in group {
-                results.append(url)
+            var results: [PlaylistArtworkView.ImageItem] = []
+            for try await item in group {
+                results.append(item)
             }
-            return results
+
+            let mapEpisodes = Dictionary(uniqueKeysWithValues: episodes.enumerated().map { ($1.episode.uuid, $0) })
+            let mapPodcasts = Dictionary(uniqueKeysWithValues: episodes.enumerated().map { ($1.episode.podcastUuid, $0) })
+
+            return results.sorted { lhs, rhs in
+                let lhsIndex = (mapEpisodes[lhs.id] ?? mapPodcasts[lhs.id]) ?? Int.max
+                let rhsIndex = (mapEpisodes[rhs.id] ?? mapPodcasts[rhs.id]) ?? Int.max
+                return lhsIndex < rhsIndex
+            }
         }
     }
 
     private func getEpisodesCount() async -> Int {
         let playlist = self.playlist
         let dataManager = self.dataManager
+
         return await Task.detached(priority: .userInitiated) {
-            dataManager.episodeCount(
-                forFilter: playlist,
-                episodeUuidToAdd: playlist.episodeUuidToAddToQueries()
+            dataManager.allPlaylistEpisodeCount(
+                for: playlist,
+                episodeUuidToAdd: playlist.episodeUuidToAddToQueries(),
+                includingArchivedEpisodes: playlist.manual
             )
         }.value
+    }
+
+    private func firstDistinctPodcasts(from episodes: [ListEpisode], limit: Int) -> [ListEpisode] {
+        Self.distinctPodcasts(from: episodes, limit: limit) { $0.episode.podcastUuid }
     }
 }

@@ -55,8 +55,12 @@
     <string>%1$@ / %2$@</string>
     <key>accessibility_player_effects_playback_speed</key>
     <string>再生速度%1$@倍</string>
+    <key>accessibility_playlist_add_episode</key>
+    <string>エピソードを追加</string>
     <key>accessibility_playlist_color</key>
     <string>プレイリストの色%1$@</string>
+    <key>accessibility_playlist_image</key>
+    <string>プレイリスト画像</string>
     <key>accessibility_plus_only</key>
     <string>ロック済み、Plus 機能</string>
     <key>accessibility_profile_settings</key>
@@ -143,6 +147,8 @@
     <string>次のエピソードに追加</string>
     <key>after_playing</key>
     <string>再生後</string>
+    <key>all_results</key>
+    <string>上位の結果</string>
     <key>announcement_autoplay_description</key>
     <string>「次のエピソード」の待機リストが空の場合にエピソードの視聴を開始すると、自動再生機能により表示またはリストされているエピソードの再生が続行します。</string>
     <key>announcement_autoplay_title</key>
@@ -297,6 +303,8 @@
     <string>この広告を報告する理由</string>
     <key>banner_ads_report_broken</key>
     <string>この広告は表示に不具合がある</string>
+    <key>banner_ads_report_confirmation</key>
+    <string>この広告を報告しました。</string>
     <key>banner_ads_report_malicious</key>
     <string>この広告には悪意がある</string>
     <key>banner_ads_report_other</key>
@@ -374,7 +382,7 @@
     <key>cancel_subscription_claim_offer_button</key>
     <string>オファーを獲得</string>
     <key>cancel_subscription_continue_button</key>
-    <string>キャンセルに進む</string>
+    <string>キャンセルを続行</string>
     <key>cancel_subscription_generic_error</key>
     <string>エラーが発生しました。 後でもう一度お試しください。</string>
     <key>cancel_subscription_help_description</key>
@@ -561,6 +569,8 @@ Pocket Casts Plus</string>
     <string>クリップを作成</string>
     <key>create_filter</key>
     <string>フィルターを作成</string>
+    <key>create_up_next_snapshot</key>
+    <string>スナップショットを作成</string>
     <key>creator_pick_modal_description</key>
     <string>Creator Picks は、番組のクリエイターが Podroll を使用しておすすめするポッドキャストです。</string>
     <key>creator_pick_modal_learn_more</key>
@@ -611,6 +621,10 @@ Pocket Casts Plus</string>
     <string>端末からのみ削除</string>
     <key>deselect_all</key>
     <string>すべて選択解除</string>
+    <key>deselect_all_above</key>
+    <string>以上すべての選択を解除</string>
+    <key>deselect_all_below</key>
+    <string>以下すべての選択を解除</string>
     <key>device_shake_sleep_timer</key>
     <string>端末がシェイクされたためスリープタイマーが再開しました</string>
     <key>discover</key>
@@ -1044,6 +1058,8 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>%1$@件のエピソード</string>
     <key>episode_description_title</key>
     <string>エピソードの説明</string>
+    <key>episode_detail_add</key>
+    <string>追加</string>
     <key>episode_details_title</key>
     <string>詳細</string>
     <key>episode_filter_by_duration_label</key>
@@ -1062,6 +1078,10 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>エピソード%1$@</string>
     <key>episode_shorthand_format_short</key>
     <string>エピソード%1$@</string>
+    <key>episode_unavailable_message</key>
+    <string>ポッドキャスト作成者がこのエピソードを削除しました。 削除するまでプレイリストに残ります。</string>
+    <key>episode_unavailable_title</key>
+    <string>エピソードを利用できません。</string>
     <key>episodes</key>
     <string>エピソード</string>
     <key>error</key>
@@ -1085,7 +1105,7 @@ Pocket Casts を最大限に活用しましょう。</string>
     <key>feature_marketing_bookmarks</key>
     <string>ブックマークでタイムスタンプを保存</string>
     <key>feature_marketing_cloud_storage</key>
-    <string>ファイル用の%1$@ のクラウドストレージ</string>
+    <string>ファイル用の%1$@GB のクラウドストレージ</string>
     <key>feature_marketing_early_access</key>
     <string>新機能への早期アクセス</string>
     <key>feature_marketing_extra_themes_icons</key>
@@ -1146,6 +1166,8 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>ファイル</string>
     <key>files_how_to_title</key>
     <string>ファイルの保存方法</string>
+    <key>files_not_uploaded</key>
+    <string>アップロードされたファイルがありません</string>
     <key>files_sort</key>
     <string>ファイルを並び替え</string>
     <key>filter_auto_add_subtitle</key>
@@ -1382,20 +1404,22 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>%1$@時間</string>
     <key>hours_saved</key>
     <string>節約時間数</string>
+    <key>hours_singular_format</key>
+    <string>1時間</string>
     <key>how_to_upload_explanation</key>
     <string>まず、保存する音声ファイルがあるアプリを開きます</string>
-    <key>how_to_upload_first_instruction</key>
-    <string>そのファイルを共有するように選択</string>
-    <key>how_to_upload_first_image_background_button_text</key>
-    <string>音声ファイル</string>
-    <key>how_to_upload_first_image_foreground_menu_option_text</key>
-    <string>メニューオプション</string>
-    <key>how_to_upload_second_instruction</key>
-    <string>メニューで「Pocket Casts にコピー」をタップ</string>
-    <key>how_to_upload_second_image_center_text</key>
+    <key>how_to_upload_share_action_image_center_text</key>
     <string>Pocket Casts にコピー</string>
-    <key>how_to_upload_second_image_sides_text</key>
-    <string>別のもの</string>
+    <key>how_to_upload_share_action_image_sides_text</key>
+    <string>その他</string>
+    <key>how_to_upload_share_action_instruction</key>
+    <string>メニューで「Pocket Casts にコピー」をタップ</string>
+    <key>how_to_upload_share_menu_image_background_button_text</key>
+    <string>音声ファイル</string>
+    <key>how_to_upload_share_menu_image_foreground_menu_option_text</key>
+    <string>メニューオプション</string>
+    <key>how_to_upload_share_menu_instruction</key>
+    <string>そのファイルを共有するように選択</string>
     <key>how_to_upload_summary</key>
     <string>これで操作は完了です。 必要に応じて詳細を変更し「保存」をクリックして再生してみましょう。</string>
     <key>iap_product_monthly_pricing_format</key>
@@ -1470,6 +1494,14 @@ Pocket Casts を最大限に活用しましょう。</string>
 移すことができます</string>
     <key>in_progress</key>
     <string>進行中</string>
+    <key>interests_select_at_least</key>
+    <string>%1$@件以上を選択</string>
+    <key>interests_show_more_categories</key>
+    <string>カテゴリーをさらに表示</string>
+    <key>interests_subtitle</key>
+    <string>人間が選んだ素晴らしいポッドキャストをお届けします !</string>
+    <key>interests_title</key>
+    <string>お気に入りのトピックについて教えてください</string>
     <key>keycommand_close_player</key>
     <string>プレーヤーを閉じる</string>
     <key>keycommand_decrease_speed</key>
@@ -1518,6 +1550,10 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>エピソードがありません</string>
     <key>loading</key>
     <string>読み込み中...</string>
+    <key>login_landing_subtitle</key>
+    <string>ポッドキャストは常に同期されます。 ライブラリを安全に保ち、ウェブとデスクトップで Pocket Casts をお楽しみください。</string>
+    <key>login_landing_title</key>
+    <string>Pocket Casts アカウントを作成</string>
     <key>login_subtitle</key>
     <string>アカウントを作成すると、すべての端末で視聴内容を同期させることができます。</string>
     <key>login_title</key>
@@ -1674,6 +1710,14 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>別のアプリから切り替えますか ? お気に入りの番組をすべて Pocket Casts に移行しましょう。</string>
     <key>notifications_onboarding_import_title</key>
     <string>ポッドキャストを簡単にインポート</string>
+    <key>notifications_onboarding_newsletter_subtitle</key>
+    <string>月に1回、良質なポッドキャストをお届け</string>
+    <key>notifications_onboarding_newsletter_title</key>
+    <string>ニュースレターを購読</string>
+    <key>notifications_onboarding_notifications_subtitle</key>
+    <string>ニュースやポッドキャストの提案などを受け取る</string>
+    <key>notifications_onboarding_notifications_title</key>
+    <string>通知を受け取る</string>
     <key>notifications_onboarding_signup_body</key>
     <string>無料アカウントを作成すると、番組を同期して場所を問わず聴取できます。</string>
     <key>notifications_onboarding_signup_title</key>
@@ -1702,6 +1746,8 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>端末設定で通知を許可してください</string>
     <key>notifications_permissions_open_settings</key>
     <string>設定を開く</string>
+    <key>notifications_permissions_save_preferences</key>
+    <string>設定を保存</string>
     <key>notifications_permissions_title</key>
     <string>最新情報を受け取りましょう !</string>
     <key>notifications_play_now</key>
@@ -1746,6 +1792,18 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>オフ</string>
     <key>ok</key>
     <string>OK</string>
+    <key>onboarding_quote_author</key>
+    <string>Pocket Casts ユーザー</string>
+    <key>onboarding_quote_best</key>
+    <string>これまでで最高のポッドキャストアプリ 断然</string>
+    <key>onboarding_quote_customization</key>
+    <string>カスタマイズの幅は驚くほど広い</string>
+    <key>onboarding_quote_folders</key>
+    <string>ポッドキャストをフォルダー別に整理できるのがすばらしい</string>
+    <key>onboarding_recommendations_subtitle</key>
+    <string>初めてのご利用にぴったりの番組を紹介します。 タップしてフォロー、検索、他のアプリからインポートします。</string>
+    <key>onboarding_recommendations_title</key>
+    <string>おすすめの番組をぜひお楽しみください。</string>
     <key>only_on_unmetered_wifi</key>
     <string>従量制課金が行われない Wi-Fi のみ</string>
     <key>only_on_unmetered_wifi_details</key>
@@ -1847,8 +1905,12 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>すべてを再生</string>
     <key>play_last</key>
     <string>最後に再生</string>
+    <key>play_last_in_up_next</key>
+    <string>「次に再生」で最後に再生</string>
     <key>play_next</key>
     <string>次に再生</string>
+    <key>play_next_in_up_next</key>
+    <string>「次に再生」で次に再生</string>
     <key>playback_2024_completion_rate_description</key>
     <string>開始した%1$@件のエピソードから合計%2$@件を最後まで聴きました</string>
     <key>playback_2024_completion_rate_title</key>
@@ -1909,6 +1971,81 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>2023年と比較して、聴取時間が%1$@急増しました</string>
     <key>playback_2024_year_over_year_compare_title_up_over_500</key>
     <string>2023年と比較して、聴取時間が%1$@以上増加しました</string>
+    <key>playback_2025_completion_rate_message</key>
+    <string>開始した%1$@件のエピソードのうち、%2$@件が完了しました。 ほとんどのジム会員よりも強力に継続しています</string>
+    <key>playback_2025_completion_rate_title</key>
+    <string>完了率は%1$@です</string>
+    <key>playback_2025_end_story_description</key>
+    <string>プレイバックを友達と共有しましょう。1年間あなたを盛り上げてくれたポッドキャスターたちに感謝の気持ちを伝えましょう</string>
+    <key>playback_2025_end_story_title</key>
+    <string>1年間 Pocket Casts をご愛顧いただきありがとうございます</string>
+    <key>playback_2025_failed_to_load</key>
+    <string>振り返りを読み込めませんでした</string>
+    <key>playback_2025_feature_description</key>
+    <string>聴取統計、人気のポッドキャストなどをご覧ください。</string>
+    <key>playback_2025_feature_title</key>
+    <string>振り返りが到着 !</string>
+    <key>playback_2025_intro_message</key>
+    <string>ポッドキャストで1年を振り返り、まとめて思い出に残す準備ができました</string>
+    <key>playback_2025_listened_to_numbers</key>
+    <string>%1$@個のポッドキャストで%2$@話のエピソードを聴きました</string>
+    <key>playback_2025_listening_time</key>
+    <string>聴取分数</string>
+    <key>playback_2025_longest_episode_footer</key>
+    <string>最長エピソードは「%2$@」の「%1$@」でした</string>
+    <key>playback_2025_longest_episode_message</key>
+    <string>ストレッチは済ませましたね ?</string>
+    <key>playback_2025_longest_episode_title</key>
+    <string>マラソン聴取時間: %1$@</string>
+    <key>playback_2025_plus_thanks_description</key>
+    <string>%1$@ の特典でさらなる統計情報やパワフルな機能を利用できます</string>
+    <key>playback_2025_plus_thanks_title</key>
+    <string>Pocket Casts をご利用いただきありがとうございます。</string>
+    <key>playback_2025_plus_upsell_button_title</key>
+    <string>Pocket Casts Plus を入手</string>
+    <key>playback_2025_plus_upsell_description</key>
+    <string>Pocket Casts Plus に登録すると、詳細な統計情報、ブックマーク、フォルダー、チャプターの選択などの機能で、聴取習慣を詳しく知ることができます</string>
+    <key>playback_2025_plus_upsell_title</key>
+    <string>詳しく知りたいですか ?</string>
+    <key>playback_2025_ratings_description_1_to_3</key>
+    <string>レビューによって魅力的な番組が広まります</string>
+    <key>playback_2025_ratings_description_4_to_5</key>
+    <string>世界中のクリエイターが愛に感謝しています</string>
+    <key>playback_2025_ratings_empty_description</key>
+    <string>何が好きかを共有して、お気に入りのクリエイターを見つけてもらいましょう</string>
+    <key>playback_2025_ratings_empty_title</key>
+    <string>まだ評価はありませんが、まだ時間はあります !</string>
+    <key>playback_2025_ratings_title_1_to_3</key>
+    <string>フィードバックを共有していただきありがとうございます。</string>
+    <key>playback_2025_ratings_title_4_to_5</key>
+    <string>まるで紙吹雪のように%1$@つ星評価をつけました !</string>
+    <key>playback_2025_top_5_podcasts_message</key>
+    <string>お気に入りを増やし、再生時間を増やして、よりあなたらしく</string>
+    <key>playback_2025_top_5_podcasts_title</key>
+    <string>他の頼りになる人</string>
+    <key>playback_2025_top_spot_description</key>
+    <string>%1$@件のエピソード、%2$@。
+これはコミットメントです。</string>
+    <key>playback_2025_top_spot_subtitle</key>
+    <string>これ以上に「あなたらしい」ものはありません</string>
+    <key>playback_2025_top_spot_title</key>
+    <string>2025年の人気ポッドキャスト</string>
+    <key>playback_2025_view_year</key>
+    <string>マイプレイバック2025を表示</string>
+    <key>playback_2025_year_over_year_comparison_down_message</key>
+    <string>でも、量より質が大事ですよね</string>
+    <key>playback_2025_year_over_year_comparison_down_title</key>
+    <string>今年の聴取時間が%1$@減少しました</string>
+    <key>playback_2025_year_over_year_comparison_hero_message</key>
+    <string>今年はさらに%1$@多く聴いたんですね – クラブへようこそ</string>
+    <key>playback_2025_year_over_year_comparison_hero_title</key>
+    <string>ゼロからヒーローへ !</string>
+    <key>playback_2025_year_over_year_comparison_same_message</key>
+    <string>コーヒーショップでの注文のように、いつも変わらず、頼りになる存在です</string>
+    <key>playback_2025_year_over_year_comparison_same_title</key>
+    <string>2025年の聴取時間は変わりませんでした</string>
+    <key>playback_2025_year_over_year_comparison_up_message</key>
+    <string>より多くのポッドキャスト、より多くの喜び</string>
     <key>playback_effect_all_podcasts</key>
     <string>すべてのポッドキャスト</string>
     <key>playback_effect_this_podcast</key>
@@ -1923,6 +2060,8 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>再生エフェクト</string>
     <key>playback_failed</key>
     <string>再生に失敗</string>
+    <key>playback_not_available</key>
+    <string>振り返りを利用できません</string>
     <key>playback_speed</key>
     <string>%1$@倍</string>
     <key>player_accessibility_sleep_timer_on</key>
@@ -1989,16 +2128,142 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>再生エラー</string>
     <key>player_user_episode_upload_error</key>
     <string>アップロードエラー</string>
+    <key>playlist_add_to_title</key>
+    <string>「%@」に追加</string>
+    <key>playlist_create_no_episodes_description</key>
+    <string>これらのルールに一致するポッドキャストのエピソードはありません。
+
+ルールを調整するか、今後エピソードが一致した場合のためにこのプレイリストを保存できます。</string>
+    <key>playlist_creation_create_playlist_button</key>
+    <string>プレイリストを作成</string>
+    <key>playlist_creation_create_smart_playlist_button_subtitle</key>
+    <string>ルールに基づいてエピソードを自動追加します。</string>
+    <key>playlist_creation_create_smart_playlist_button_title</key>
+    <string>スマートプレイリストを作成</string>
+    <key>playlist_detail_description</key>
+    <string>%1$@件のエピソード • %2$@</string>
+    <key>playlist_detail_description_one_episode</key>
+    <string>1エピソード • %1$@</string>
+    <key>playlist_episode_added_title</key>
+    <string>1件のエピソードを「%@」に追加しました</string>
+    <key>playlist_episodes_added_title</key>
+    <string>%1$@件のエピソードを「%2$@」に追加しました</string>
+    <key>playlist_episodes_added_to_multiple_playlists</key>
+    <string>%1$@件のプレイリストに追加しました</string>
+    <key>playlist_episodes_added_to_single_playlist</key>
+    <string>%1$@ に追加しました</string>
+    <key>playlist_episodes_count</key>
+    <string>%1$@件のエピソード</string>
+    <key>playlist_manual_add_episode_full_playlist_toast</key>
+    <string>このプレイリストはいっぱいです。 エピソードをいくつか削除するか、新しいプレイリストを開始します。</string>
+    <key>playlist_manual_add_episodes</key>
+    <string>すべてのエピソード</string>
+    <key>playlist_manual_archived_episode_placeholder</key>
+    <string>このプレイリストのエピソードがアーカイブされました</string>
+    <key>playlist_manual_archived_episodes_placeholder</key>
+    <string>このプレイリストの%1$@件のエピソードがすべてアーカイブされました</string>
+    <key>playlist_manual_browse_shows_title</key>
+    <string>ポッドキャストを参照</string>
+    <key>playlist_manual_create_error_message</key>
+    <string>プレイリストの作成中にエラーが発生しました。</string>
+    <key>playlist_manual_empty_state_subtitle_no_podcasts</key>
+    <string>エピソードを左にスワイプしてプレイリストに追加します。</string>
+    <key>playlist_manual_empty_state_title</key>
+    <string>プレイリストの作成を開始</string>
+    <key>playlist_manual_empty_state_title_no_podcasts</key>
+    <string>プレイリストにエピソードを追加</string>
+    <key>playlist_manual_episode_add_to_playlist</key>
+    <string>プレイリストに追加</string>
+    <key>playlist_manual_episodes_order_option</key>
+    <string>エピソードを並べ替え</string>
+    <key>playlist_manual_play_all_empty_list</key>
+    <string>全エピソードをアーカイブしました。 再生するには、追加またはアーカイブを解除してください。</string>
+    <key>playlist_options</key>
+    <string>プレイリストのオプション</string>
+    <key>playlist_play_all_option_save_queue</key>
+    <string>現在のキューを保存</string>
+    <key>playlist_play_all_picker_message</key>
+    <string>このプレイリストを再生すると、現在の「次のエピソード」が置き換えられます。 保持するには、まず保存します。</string>
+    <key>playlist_play_all_picker_title</key>
+    <string>「次のエピソード」のキューを保存しますか ?</string>
+    <key>playlist_play_all_replace_picker_message</key>
+    <string>これにより、現在の「次のエピソード」待機リストがクリアされ、このプレイリストの再生が開始されます。</string>
+    <key>playlist_play_all_replace_picker_title</key>
+    <string>現在の「次のエピソード」を置き換えますか ?</string>
+    <key>playlist_play_all_sheet_button_title</key>
+    <string>置換して再生</string>
+    <key>playlist_play_all_sheet_description</key>
+    <string>これを再生すると、現在の「次のエピソード」が置き換えられます。</string>
+    <key>playlist_play_all_sheet_title</key>
+    <string>「次のエピソード」を置き換えますか ?</string>
+    <key>playlist_play_all_sheet_toggle</key>
+    <string>現在の「次のエピソード」待機リストをプレイリストとして保存します。</string>
+    <key>playlist_play_all_up_next_saved</key>
+    <string>次のエピソードをプレイリストとして保存しました</string>
+    <key>playlist_play_all_up_next_saved_plural</key>
+    <string>次のエピソードをプレイリストとして保存しました</string>
+    <key>playlist_preview_create_smart_playlist</key>
+    <string>スマートプレイリストを作成</string>
+    <key>playlist_preview_title</key>
+    <string>%@ をプレビュー</string>
+    <key>playlist_search</key>
+    <string>プレイリストを検索</string>
+    <key>playlist_smart_no_episodes_msg</key>
+    <string>リストにあるすべてのエピソードを再生しました。ルールを編集してさらに追加しますか ?</string>
+    <key>playlist_smart_preview_description</key>
+    <string>スマートルールを設定して、スマートプレイリストにエピソードを自動的に追加します。</string>
+    <key>playlist_smart_preview_enabled_rules</key>
+    <string>有効なルール</string>
+    <key>playlist_smart_preview_more_rules</key>
+    <string>その他のルール</string>
+    <key>playlist_smart_rule_podcasts_header_subtitle_auto_add</key>
+    <string>新たにフォローするポッドキャストは自動的に追加されます。</string>
+    <key>playlist_smart_rule_podcasts_header_subtitle_manual_add</key>
+    <string>新たにフォローするポッドキャストは自動的に追加されません。</string>
+    <key>playlist_smart_rule_podcasts_header_title</key>
+    <string>フォロー中のすべてのポッドキャスト</string>
+    <key>playlist_smart_rule_save_button</key>
+    <string>スマートルールを保存</string>
+    <key>playlist_smart_rule_starred_header_subtitle_toggle_off</key>
+    <string>星付きエピソードは、他のルールと一致する場合にも引き続き表示できます。</string>
+    <key>playlist_smart_rule_starred_header_subtitle_toggle_on</key>
+    <string>他のルールに一致する星付きエピソードのみを含めます。</string>
+    <key>playlist_smart_rule_starred_header_title</key>
+    <string>星付きエピソード</string>
+    <key>playlist_smart_rules_title</key>
+    <string>スマートルール</string>
     <key>playlists</key>
     <string>プレイリスト</string>
+    <key>playlists_auto_download_off_subtitle</key>
+    <string>有効化すると、このプレイリストのエピソードを自動ダウンロードできます</string>
+    <key>playlists_auto_download_on_plural_format</key>
+    <string>このプレイリストの最初の%1$@件のエピソードが自動的にダウンロードされます</string>
+    <key>playlists_default_new_playlist</key>
+    <string>新しいプレイリスト</string>
+    <key>playlists_delete</key>
+    <string>プレイリストを削除</string>
+    <key>playlists_delete_alert_message</key>
+    <string>プレイリストを削除してもよいですか ? この操作を元に戻すことはできません。</string>
+    <key>playlists_delete_alert_title</key>
+    <string>プレイリストを削除しますか ?</string>
+    <key>playlists_empty_state_description</key>
+    <string>プレイリストを使うと、手動またはスマートルールを適用して自動でエピソードを整理できます。</string>
+    <key>playlists_empty_state_title</key>
+    <string>エピソードを自分流に整理</string>
     <key>playlists_onboarding_manual_description</key>
-    <string>もっと詳細に制御したい場合 手動プレイリストを使用すると、旅行やテーマ、現在の雰囲気に最適なカスタムキューを作成できます。 スマートでも手動でも、プレイリストはあなたのスタイルに合わせて動作します。</string>
+    <string>聴取内容を管理できます。 旅行やその他のテーマなど、気分に合わせたカスタムプレイリストを作成できます。 スマートプレイリストでもカスタムプレイリストでも、お好みの聴き方で再生できます。</string>
     <key>playlists_onboarding_manual_title</key>
     <string>プレイリストのご紹介</string>
     <key>playlists_onboarding_smart_description</key>
     <string>ルールに則ってエピソードを自動的に追加するという点では、まったく同じように機能します。 既存のフィルターはすべてこちらにあります。変わったのは名前だけです。</string>
     <key>playlists_onboarding_smart_title</key>
     <string>フィルターがスマートプレイリストになりました</string>
+    <key>playlists_play_all</key>
+    <string>すべて再生</string>
+    <key>playlists_tip_drag_and_drop_description</key>
+    <string>プレイリストを移動するには、長押しします。</string>
+    <key>playlists_tip_drag_and_drop_title</key>
+    <string>プレイリストを並べ替え</string>
     <key>please_try_again</key>
     <string>もう一度お試しください</string>
     <key>please_try_again_later</key>
@@ -2079,6 +2344,8 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>フォルダーを作成してポッドキャストのコレクションを整理できます。</string>
     <key>plus_marketing_folders_title</key>
     <string>フォルダー</string>
+    <key>plus_marketing_generated_transcripts</key>
+    <string>生成されたトランスクリプト</string>
     <key>plus_marketing_hide_ads_description</key>
     <string>広告非表示の操作環境では気に入ったコンテンツを増やし、気に入らないコンテンツは減らすことができます</string>
     <key>plus_marketing_hide_ads_title</key>
@@ -2322,6 +2589,8 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>明日</string>
     <key>podcast_unarchive_all</key>
     <string>すべてのアーカイブを解除</string>
+    <key>podcast_unavailable</key>
+    <string>利用できません</string>
     <key>podcast_updates_ended</key>
     <string>更新終了日: %1$@</string>
     <key>podcast_updates_ends</key>
@@ -2344,6 +2613,8 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>最新エピソードのみ</string>
     <key>podcasts_badges</key>
     <string>バッジ</string>
+    <key>podcasts_episode_sort_drag_and_drop</key>
+    <string>カスタム順序</string>
     <key>podcasts_episode_sort_longest_to_shortest</key>
     <string>長い順</string>
     <key>podcasts_episode_sort_newest_to_oldest</key>
@@ -2545,6 +2816,8 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>すべて削除</string>
     <key>remove_download</key>
     <string>ダウンロードファイルを削除</string>
+    <key>remove_from_playlist</key>
+    <string>プレイリストから削除</string>
     <key>remove_from_up_next</key>
     <string>次のエピソードから削除</string>
     <key>remove_up_next</key>
@@ -2569,6 +2842,10 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>ブックマークを保存</string>
     <key>search</key>
     <string>検索</string>
+    <key>search_bookmarks</key>
+    <string>ブックマークを検索</string>
+    <key>search_episodes</key>
+    <string>エピソードを検索</string>
     <key>search_label</key>
     <string>ポッドキャストを検索または RSS の URL を追加</string>
     <key>search_podcasts</key>
@@ -2577,6 +2854,14 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>最近の検索</string>
     <key>search_results</key>
     <string>%1$@ / %2$@</string>
+    <key>search_results_empty_action</key>
+    <string>フィードバックを送信</string>
+    <key>search_results_empty_message</key>
+    <string>新しい検索を試すか、ポッドキャストフィードの URL を追加してください</string>
+    <key>search_results_empty_title</key>
+    <string>結果はありません</string>
+    <key>search_results_view_all</key>
+    <string>「%1$@」のすべての結果を表示</string>
     <key>season</key>
     <string>シーズン</string>
     <key>season_episode_shorthand_format</key>
@@ -2709,10 +2994,16 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>1件のフィルターを選択済み</string>
     <key>settings_auto_downloads_no_filters_selected</key>
     <string>選択済みフィルターなし</string>
+    <key>settings_auto_downloads_no_playlists_selected</key>
+    <string>プレイリストが選択されていません</string>
     <key>settings_auto_downloads_no_podcasts_selected</key>
     <string>選択済みポッドキャストなし</string>
     <key>settings_auto_downloads_on_follow</key>
     <string>フォロー中</string>
+    <key>settings_auto_downloads_playlists_selected_format</key>
+    <string>%1$@件のプレイリストを選択済み</string>
+    <key>settings_auto_downloads_playlists_selected_singular</key>
+    <string>1件のプレイリストを選択済み</string>
     <key>settings_auto_downloads_podcasts_selected_format</key>
     <string>%1$@件のポッドキャストを選択済み</string>
     <key>settings_auto_downloads_podcasts_selected_singular</key>
@@ -2721,12 +3012,16 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>フィルターの上位エピソードをダウンロードします。</string>
     <key>settings_auto_downloads_subtitle_new_episodes</key>
     <string>新しいエピソードを自動でダウンロードしたり、新しくフォローした番組からエピソードを保存したり、保存するエピソード数に制限を設定してストレージを管理したりできます。</string>
+    <key>settings_auto_downloads_subtitle_playlists</key>
+    <string>プレイリストの上位エピソードをダウンロードします。</string>
     <key>settings_auto_downloads_subtitle_up_next</key>
     <string>次のエピソードに追加された項目をダウンロードします。</string>
     <key>settings_badge_filter_header</key>
     <string>エピソードのフィルター数</string>
     <key>settings_badge_new_since_opened</key>
     <string>アプリ開始後の新エピソード</string>
+    <key>settings_badge_smart_playlist_header</key>
+    <string>スマートプレイリストのエピソード数</string>
     <key>settings_badge_total_unplayed</key>
     <string>合計未再生数</string>
     <key>settings_bookmark_confirmation_sound</key>
@@ -2877,6 +3172,10 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>次のエピソードでエピソード項目をタップすると「操作」ページが表示されます。 長押しするとエピソードが再生されます。 オンにすると逆になります。</string>
     <key>settings_general_up_next_tap_on_subtitle</key>
     <string>次のエピソードでエピソード項目をタップすると、その項目が再生されます。 長押しすると、エピソードオプションが表示されます。 オフにすると逆になります。</string>
+    <key>settings_general_voice_boost_n</key>
+    <string>VoiceBoostN</string>
+    <key>settings_general_voice_boost_n_subtitle</key>
+    <string>より安定した音声レベルで更新されたボリュームブーストを使用します。</string>
     <key>settings_global_settings</key>
     <string>グローバル設定</string>
     <key>settings_headphone_controls</key>
@@ -2893,16 +3192,24 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>1件のフィルターに含まれます</string>
     <key>settings_in_menu</key>
     <string>メニューに表示</string>
+    <key>settings_in_smart_playlist_singular</key>
+    <string>1件のスマートプレイリストに含まれる</string>
+    <key>settings_in_smart_playlists_plural_format</key>
+    <string>%1$@件のスマートプレイリストに含まれる</string>
     <key>settings_inactive_episodes_msg</key>
     <string>非アクティブエピソードとは上記指定時間に再生またはダウンロードされていないエピソードです。 エピソードがアーカイブされるとダウンロードファイルは削除されます。</string>
     <key>settings_next_action</key>
     <string>次のアクション</string>
     <key>settings_not_in_filters</key>
     <string>どのフィルターにも含まれていません</string>
+    <key>settings_not_in_smart_playlists</key>
+    <string>どのスマートプレイリストにも含まれない</string>
     <key>settings_notifications</key>
     <string>通知</string>
     <key>settings_notifications_filter_count</key>
     <string>フィルター数</string>
+    <key>settings_notifications_smart_playlist_count</key>
+    <string>スマートプレイリスト数</string>
     <key>settings_notifications_subtitle</key>
     <string>新規エピソードが追加されたら通知します。 自動ダウンロードの信頼度向上にも貢献します。</string>
     <key>settings_opml</key>
@@ -2923,8 +3230,16 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>フィルターを選択</string>
     <key>settings_select_filters_plural</key>
     <string>フィルターを選択</string>
+    <key>settings_select_playlist_singular</key>
+    <string>プレイリストを選択</string>
+    <key>settings_select_playlists_plural</key>
+    <string>プレイリストを選択</string>
+    <key>settings_select_smart_playlists_plural</key>
+    <string>スマートプレイリストを選択</string>
     <key>settings_shortcuts_filter_open_filter</key>
     <string>フィルターを開く</string>
+    <key>settings_shortcuts_filter_open_playlist</key>
+    <string>プレイリストを開く</string>
     <key>settings_shortcuts_filter_play_all_episodes</key>
     <string>すべてのエピソードを再生</string>
     <key>settings_shortcuts_filter_play_top_episode</key>
@@ -2941,6 +3256,8 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>有効化済みショートカット</string>
     <key>settings_siri_shortcuts_specific_filter</key>
     <string>特定のフィルターへのショートカット</string>
+    <key>settings_siri_shortcuts_specific_playlist</key>
+    <string>特定のポッドキャストへのショートカット</string>
     <key>settings_siri_shortcuts_specific_podcast</key>
     <string>特定のポッドキャストへのショートカット</string>
     <key>settings_skip_first</key>
@@ -2961,6 +3278,12 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>検出と検索</string>
     <key>settings_status_discover_description</key>
     <string>ポッドキャスト検索を含む、アプリの検出セクション。</string>
+    <key>settings_status_expensive_network</key>
+    <string>従量制課金でない Wi-Fi</string>
+    <key>settings_status_expensive_network_description</key>
+    <string>成功した場合、このネットワークは従量制課金でない Wi-Fi でダウンロードに使用されます。</string>
+    <key>settings_status_expensive_network_failure_message</key>
+    <string>現在のネットワークは費用が高くつくと判定されています。 Wi-Fi に切り替えるか、低データモードを無効にしてみてください。</string>
     <key>settings_status_host</key>
     <string>一般的なポッドキャストホスト</string>
     <key>settings_status_host_description</key>
@@ -3087,16 +3410,24 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>メモ</string>
     <key>sign_in</key>
     <string>ログイン</string>
+    <key>sign_in_continue_with_email</key>
+    <string>メールで続ける</string>
+    <key>sign_in_divider_label</key>
+    <string>または</string>
     <key>sign_in_email_address_prompt</key>
     <string>メールアドレス</string>
     <key>sign_in_forgot_password</key>
     <string>パスワードを忘れた場合</string>
+    <key>sign_in_hide_password_label</key>
+    <string>パスワードを表示</string>
     <key>sign_in_message</key>
     <string>ポッドキャストのサブスクリプションをクラウドに保存して、他の端末と進捗を同期します。</string>
     <key>sign_in_password_prompt</key>
     <string>パスワード</string>
     <key>sign_in_prompt</key>
     <string>ログインまたはアカウントを作成</string>
+    <key>sign_in_show_password_label</key>
+    <string>パスワードを隠す</string>
     <key>signed_in_as</key>
     <string>ログインアカウント:</string>
     <key>signed_out</key>
@@ -3165,6 +3496,12 @@ Pocket Casts を最大限に活用しましょう。</string>
     <string>現在のエピソードの最後でスリープ</string>
     <key>sleep_timer_time_remaining</key>
     <string>スリープタイマーがオンになるまで、あと%1$@分</string>
+    <key>smart_playlist</key>
+    <string>スマートプレイリスト</string>
+    <key>smart_playlists_tip_view_creation_description</key>
+    <string>エピソードを自分で選択するか、スマートルールに基づいて自動で追加するようスマートプレイリストに依頼します。</string>
+    <key>smart_playlists_tip_view_creation_title</key>
+    <string>独自のプレイリストを作成するか、サポートを受けましょう</string>
     <key>smart_playlists_tip_view_description</key>
     <string>ご利用開始をサポートするよう作られています。 聴取内容に基づいて自動更新されます。</string>
     <key>smart_playlists_tip_view_title</key>
@@ -3477,6 +3814,8 @@ Pocket Casts は間違いなく、ポッドキャストを聴くための最高�
     <string>長い順</string>
     <key>upload_sort_shortest_to_longest</key>
     <string>短い順</string>
+    <key>user_episodes_search_podcasts_title</key>
+    <string>あなたのポッドキャスト</string>
     <key>user_satisfaction_survey_no_response</key>
     <string>そこまででない</string>
     <key>user_satisfaction_survey_subtitle</key>
@@ -3491,6 +3830,8 @@ Pocket Casts は間違いなく、ポッドキャストを聴くための最高�
     <string>ボリュームブースト</string>
     <key>volume_boost_description</key>
     <string>音声のボリュームをアップ</string>
+    <key>volume_boost_n_description</key>
+    <string>音声レベルの安定性が向上</string>
     <key>wait_for_wifi</key>
     <string>Wi-Fi に再接続しています</string>
     <key>watch</key>
@@ -3511,6 +3852,8 @@ Pocket Casts は間違いなく、ポッドキャストを聴くための最高�
     <string>エピソードなし</string>
     <key>watch_no_filters</key>
     <string>フィルターなし</string>
+    <key>watch_no_playlists</key>
+    <string>プレイリストなし</string>
     <key>watch_no_podcasts</key>
     <string>ポッドキャストなし</string>
     <key>watch_nothing_playing_subtitle</key>

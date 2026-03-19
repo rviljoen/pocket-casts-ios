@@ -19,13 +19,10 @@ extension AppDelegate {
             adapters = [AnalyticsLoggingAdapter(), TracksAdapter(), CrashLoggingAdapter()]
         }
 
-        if FeatureFlag.podcastNewformAppsFlyer.enabled {
-            adapters.append(AppsFlyerAdapter(appTrackingTransparencyProvider: AppTrackingTransparencyController.shared))
-        }
+        // LiveAnalyticsStreamer buffers events for all builds, sends when server enables liveAnalyticsUrl
+        adapters.append(LiveAnalyticsStreamer())
 
-        if FeatureFlag.notificationsRevamp.enabled {
-            adapters.append(NotificationsCoordinator.shared)
-        }
+        adapters.append(NotificationsCoordinator.shared)
 
         if FeatureFlag.userSatisfactionSurvey.enabled {
             adapters.append(UserSatisfactionSurveyManager.shared)
