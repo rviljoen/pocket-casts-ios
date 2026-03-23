@@ -6,39 +6,43 @@ extension EpisodeDetailViewController {
     // MARK: - Button Actions
 
     @IBAction func addTapped(_ sender: UIButton) {
-        let addPicker = OptionsPicker(title: nil)
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
         let isInUpNext = PlaybackManager.shared.inUpNext(episode: episode) || PlaybackManager.shared.isNowPlayingEpisode(episodeUuid: episode.uuid)
 
         if isInUpNext {
-            let removeFromUpNextAction = OptionAction(label: L10n.removeFromUpNext, icon: "episode-removenext") { [weak self] in
+            alertController.addAction(UIAlertAction(title: L10n.removeFromUpNext, style: .default) { [weak self] _ in
                 guard let self else { return }
                 PlaybackManager.shared.removeIfPlayingOrQueued(episode: self.episode, fireNotification: true, userInitiated: true)
-            }
-            addPicker.addAction(action: removeFromUpNextAction)
+            })
         } else {
-            let playNextAction = OptionAction(label: L10n.playNextInUpNext, icon: "list_playnext") { [weak self] in
+            alertController.addAction(UIAlertAction(title: L10n.playNextInUpNext, style: .default) { [weak self] _ in
                 guard let self else { return }
                 PlaybackManager.shared.addToUpNext(episode: self.episode, ignoringQueueLimit: true, toTop: true, userInitiated: true)
-            }
-            addPicker.addAction(action: playNextAction)
+            })
 
-            let playLastAction = OptionAction(label: L10n.playLastInUpNext, icon: "list_playlast") { [weak self] in
+            alertController.addAction(UIAlertAction(title: L10n.playLastInUpNext, style: .default) { [weak self] _ in
                 guard let self else { return }
                 PlaybackManager.shared.addToUpNext(episode: self.episode, ignoringQueueLimit: true, toTop: false, userInitiated: true)
-            }
-            addPicker.addAction(action: playLastAction)
+            })
         }
 
-        let addToPlaylistAction = OptionAction(label: L10n.playlistManualEpisodeAddToPlaylist, icon: "plus-circle") { [weak self] in
+        alertController.addAction(UIAlertAction(title: L10n.playlistManualEpisodeAddToPlaylist, style: .default) { [weak self] _ in
             guard let self else { return }
             let chooser = ManualPlaylistsChooserViewController(episode: self.episode, analyticsSource: "episode_details")
             let navVC = SJUIUtils.navController(for: chooser)
             self.present(navVC, animated: true, completion: nil)
-        }
-        addPicker.addAction(action: addToPlaylistAction)
+        })
 
-        addPicker.show(statusBarStyle: preferredStatusBarStyle)
+        alertController.addAction(UIAlertAction(title: L10n.cancel, style: .cancel))
+
+        if let popover = alertController.popoverPresentationController {
+            popover.sourceView = sender
+            popover.sourceRect = sender.bounds
+            popover.permittedArrowDirections = .up
+        }
+
+        present(alertController, animated: true)
     }
 
     @IBAction func episodeStatusTapped(_ sender: Any) {
