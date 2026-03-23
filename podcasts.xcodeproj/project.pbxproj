@@ -314,6 +314,9 @@
 		46FBD8B5276A874F00867746 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 46FBD8B9276A874F00867746 /* Intents.intentdefinition */; };
 		46FBD8B6276A874F00867746 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 46FBD8B9276A874F00867746 /* Intents.intentdefinition */; settings = {ATTRIBUTES = (codegen, ); }; };
 		46FBD8B7276A874F00867746 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 46FBD8B9276A874F00867746 /* Intents.intentdefinition */; settings = {ATTRIBUTES = (codegen, ); }; };
+		549F9BB1F07C49E498B735F7 /* PlayLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BA8F393FEBF446085FA19E8 /* PlayLogView.swift */; };
+		5B104ADE91E4462C94DA3D4E /* PlayLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A423129B3C4C4D06B7223468 /* PlayLogViewController.swift */; };
+		647145BE2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647145BD2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift */; };
 		81C8677C17743B85BF586B0B /* VoiceBoostN.c in Sources */ = {isa = PBXBuildFile; fileRef = 14DD11DB5830A48ACE6928B2 /* VoiceBoostN.c */; };
 		8B0845932A66C86C00742C2F /* Share Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2F90990B2A4F88B00044FC55 /* Share Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8B087FC929DC976F0027EAE5 /* PodcastImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B087FC829DC976F0027EAE5 /* PodcastImage.swift */; };
@@ -1393,10 +1396,6 @@
 		FF91A0F62B64159D002A0590 /* UIScreen+Sizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF91A0F52B64159D002A0590 /* UIScreen+Sizes.swift */; };
 		FF9B6B752D0732D40057A504 /* LogsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9B6B742D0732CF0057A504 /* LogsViewController.swift */; };
 		FF9B6B772D0733670057A504 /* LogsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9B6B762D0733650057A504 /* LogsView.swift */; };
-		549F9BB1F07C49E498B735F7 /* PlayLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BA8F393FEBF446085FA19E8 /* PlayLogView.swift */; };
-		5B104ADE91E4462C94DA3D4E /* PlayLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A423129B3C4C4D06B7223468 /* PlayLogViewController.swift */; };
-		FF9BCB2B2EA2A14100A25F12 /* NumberListened2025.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9BCB2A2EA2A13500A25F12 /* NumberListened2025.swift */; };
-		FF9BCB312EA64DB700A25F12 /* StoryHeader2025.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9BCB302EA64DB000A25F12 /* StoryHeader2025.swift */; };
 		FF9BCB342EA659C900A25F12 /* playback_2025_listened.json in Resources */ = {isa = PBXBuildFile; fileRef = FF9BCB322EA659B400A25F12 /* playback_2025_listened.json */; };
 		FF9CBAF22EC9293000989151 /* playback2025_listening_time_numbers.json in Resources */ = {isa = PBXBuildFile; fileRef = FF9CBAF12EC9293000989151 /* playback2025_listening_time_numbers.json */; };
 		FF9ED3552C86010F00B6E630 /* TipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF9ED3542C86010F00B6E630 /* TipView.swift */; };
@@ -1914,6 +1913,7 @@
 		46FBD8CF276A876B00867746 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Intents.strings; sourceTree = "<group>"; };
 		46FBD8D1276A876D00867746 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Intents.strings; sourceTree = "<group>"; };
 		871975870906424F8C3C70B0 /* Modules */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Modules; sourceTree = SOURCE_ROOT; };
+		647145BD2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ChapterFilterKeywordsViewController.swift; path = podcasts/ChapterFilterKeywordsViewController.swift; sourceTree = "<group>"; };
 		8B087FC829DC976F0027EAE5 /* PodcastImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastImage.swift; sourceTree = "<group>"; };
 		8B10E78528D908A900702C54 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8B15E7212AD050EE0077F45A /* DMSans.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = DMSans.ttf; sourceTree = "<group>"; };
@@ -2052,6 +2052,8 @@
 		9AF646962E5E0BB700627836 /* PlaylistDetailViewController+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlaylistDetailViewController+Search.swift"; sourceTree = "<group>"; };
 		AA1B2C3D4E5F607100HEAT03 /* ListeningHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningHeatmapView.swift; sourceTree = "<group>"; };
 		AA1B2C3D4E5F607100HEAT04 /* ListeningHeatmapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningHeatmapViewModel.swift; sourceTree = "<group>"; };
+		9BA8F393FEBF446085FA19E8 /* PlayLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayLogView.swift; sourceTree = "<group>"; };
+		A423129B3C4C4D06B7223468 /* PlayLogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayLogViewController.swift; sourceTree = "<group>"; };
 		B7E0F1A42D4A1B5600123456 /* ProfileRefreshButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileRefreshButton.swift; sourceTree = "<group>"; };
 		BD00CB2924BD20CD00A10257 /* TimeStepperCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeStepperCell.swift; sourceTree = "<group>"; };
 		BD00CB2A24BD20CD00A10257 /* TimeStepperCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TimeStepperCell.xib; sourceTree = "<group>"; };
@@ -2732,10 +2734,6 @@
 		FF91A0F52B64159D002A0590 /* UIScreen+Sizes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIScreen+Sizes.swift"; sourceTree = "<group>"; };
 		FF9B6B742D0732CF0057A504 /* LogsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsViewController.swift; sourceTree = "<group>"; };
 		FF9B6B762D0733650057A504 /* LogsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogsView.swift; sourceTree = "<group>"; };
-		9BA8F393FEBF446085FA19E8 /* PlayLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayLogView.swift; sourceTree = "<group>"; };
-		A423129B3C4C4D06B7223468 /* PlayLogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayLogViewController.swift; sourceTree = "<group>"; };
-		FF9BCB2A2EA2A13500A25F12 /* NumberListened2025.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberListened2025.swift; sourceTree = "<group>"; };
-		FF9BCB302EA64DB000A25F12 /* StoryHeader2025.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryHeader2025.swift; sourceTree = "<group>"; };
 		FF9BCB322EA659B400A25F12 /* playback_2025_listened.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = playback_2025_listened.json; sourceTree = "<group>"; };
 		FF9CBAF12EC9293000989151 /* playback2025_listening_time_numbers.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = playback2025_listening_time_numbers.json; sourceTree = "<group>"; };
 		FF9ED3542C86010F00B6E630 /* TipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipView.swift; sourceTree = "<group>"; };
@@ -4694,6 +4692,7 @@
 		BDBD53E317019B290048C8C5 = {
 			isa = PBXGroup;
 			children = (
+				647145BD2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift */,
 				FF57373B2B4EB5B100F511C7 /* CHANGELOG.md */,
 				FF57373C2B4EB5B100F511C7 /* README.md */,
 				3F7463D02F55488A004C7FF6 /* config */,
@@ -6982,6 +6981,7 @@
 				BD74F15127F28E6600222785 /* HomeGridDataHelper.swift in Sources */,
 				BDE954F22366900900CEB6DA /* PlayerTabsView.swift in Sources */,
 				BDBD2AC7202D66B300E0A79E /* OptionsPickerRootController.swift in Sources */,
+				647145BE2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift in Sources */,
 				F5516DBE2E1C9D82005DC201 /* UserSatisfactionSurveyView.swift in Sources */,
 				F5AA0FD42E21D05D00ECDEEA /* SurveyDebugInfoView.swift in Sources */,
 				F5BA5C9E2C81254300BDA5B9 /* DiscoverCollectionViewController+DiscoverDelegate.swift in Sources */,
