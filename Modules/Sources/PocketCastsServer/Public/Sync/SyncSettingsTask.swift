@@ -136,7 +136,7 @@ class SyncSettingsTask: ApiBaseTask {
 
             if FeatureFlag.settingsSync.enabled {
                 settingsRequest.changedSettings.update(with: appSettings.settings)
-                FileLog.shared.addMessage("Syncing new settings: \(try! settingsRequest.changedSettings.jsonString())")
+                //FileLog.shared.addMessage("Syncing new settings: \(try! settingsRequest.changedSettings.jsonString())")
             } else {
                 if ServerSettings.skipBackNeedsSyncing() {
                     settingsRequest.settings.skipBack.value = Int32(ServerSettings.skipBackTime())
