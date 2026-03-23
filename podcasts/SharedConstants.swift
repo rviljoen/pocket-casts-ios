@@ -2,7 +2,7 @@ import Foundation
 
 enum SharedConstants {
     enum GroupUserDefaults {
-        public static let groupContainerId = "group.au.com.shiftyjelly.pocketcasts"
+        public static let groupContainerId = "group.pocketcasts.ruanviljoen.local.id"
         public static let upNextItems = "upNextItems"
         public static let upNextItemsCount = "upNextItemsCount"
         public static let siriSearchItems = "siriSearchItems"
