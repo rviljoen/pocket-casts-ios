@@ -278,7 +278,7 @@ struct Constants {
         static let tableSectionHeaderHeight: CGFloat = 38
         static let tableRowHeaderHeight: CGFloat = 64
 
-        static let refreshTaskId = "au.com.shiftyjelly.podcasts.Refresh"
+        static let refreshTaskId = "pocketcasts.ruanviljoen.local.id.Refresh"
 
         /// We show the offer by default since if the app was just downloaded
         /// there is a chance it doesn't have a receipt and we won't be able to do a server check

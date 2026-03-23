@@ -8,11 +8,16 @@ MARKETING_VERSION = $(VERSION_SHORT)
 CURRENT_PROJECT_VERSION = $(VERSION_LONG)
 
 // Define a root bundle identifier so that extensions can append to it
+// Overridden in Local.xcconfig for personal builds
 PRODUCT_BUNDLE_IDENTIFIER_ROOT = au.com.shiftyjelly.podcasts
 
+// Overridden in Local.xcconfig for personal builds
 DEVELOPMENT_TEAM = PZYM8XX95Q // Automattic, Inc. (Company)
 
 SECRETS_DIR = $(HOME)/.configure/pocketcasts-ios/secrets
 FIREBASE_SECRETS_PATH = $(SECRETS_DIR)/GoogleService-Info.plist
 CREDENTIALS_JSON_PATH = $(SECRETS_DIR)/pocket_casts_credentials.json
 GOOGLE_SIGN_IN_SECRETS_PATH = $(SECRETS_DIR)/GoogleSignIn.txt
+
+// Local overrides must come last so they take precedence
+#include? "Local.xcconfig"
