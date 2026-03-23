@@ -83,14 +83,17 @@ extension MiniPlayerViewController: UIGestureRecognizerDelegate {
 
             self.addUINotificationObservers()
         }
-        closeAction.destructive = true
-        optionsPicker.addAction(action: closeAction)
+        alertController.addAction(closeAction)
 
-        optionsPicker.setNoActionCallback {
+        let cancelAction = UIAlertAction(title: L10n.cancel, style: .cancel) { _ in
             Analytics.track(.miniPlayerLongPressMenuDismissed)
         }
+        alertController.addAction(cancelAction)
 
-        optionsPicker.show(statusBarStyle: preferredStatusBarStyle)
+        alertController.popoverPresentationController?.sourceView = view
+        alertController.popoverPresentationController?.sourceRect = CGRect(origin: touchPoint, size: .zero)
+
+        present(alertController, animated: true)
     }
 
     @objc private func miniPlayerTapped() {
