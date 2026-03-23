@@ -5,7 +5,7 @@ import UIKit
 
 class SleepTimerIntentHandler: NSObject, SJSleepTimerIntentHandling {
     func handle(intent: SJSleepTimerIntent, completion: @escaping (SJSleepTimerIntentResponse) -> Void) {
-        let userActivity = NSUserActivity(activityType: "au.com.shiftyjelly.podcasts")
+        let userActivity = NSUserActivity(activityType: "pocketcasts.ruanviljoen.local.id")
 
         userActivity.isEligibleForSearch = true
         let minutes = intent.minutes
