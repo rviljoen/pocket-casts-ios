@@ -67,13 +67,15 @@ class IAPHelper: NSObject {
     }
 
     func requestProductInfo() {
-        // Don't request if we're already requesting
-        guard !isRequestingProducts else { return }
+        #if !DEBUG
+            // Don't request if we're already requesting
+            guard !isRequestingProducts else { return }
 
-        isRequestingProducts = true
-        let request = SKProductsRequest(productIdentifiers: Set(productIdentifiers.map { $0.rawValue }))
-        request.delegate = self
-        request.start()
+            isRequestingProducts = true
+            let request = SKProductsRequest(productIdentifiers: Set(productIdentifiers.map { $0.rawValue }))
+            request.delegate = self
+            request.start()
+        #endif
     }
 
     func requestProductsInfo(for ids: [String]) async throws -> [Product] {
