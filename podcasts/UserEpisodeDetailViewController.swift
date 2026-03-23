@@ -20,7 +20,7 @@ extension UserEpisodeDetailProtocol where Self: UIViewController {
 class UserEpisodeDetailViewController: UIViewController {
     @IBOutlet var containerView: ThemeableView! {
         didSet {
-            containerView.style = .primaryUi01
+            containerView.style = .primaryUi02
             containerView.layer.cornerRadius = 8
         }
     }
@@ -55,7 +55,7 @@ class UserEpisodeDetailViewController: UIViewController {
     @IBOutlet var containerViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet var actionTable: ThemeableTable! {
         didSet {
-            actionTable.themeStyle = .primaryUi01
+            actionTable.themeStyle = .primaryUi02
         }
     }
 
@@ -156,11 +156,15 @@ class UserEpisodeDetailViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if PlaybackManager.shared.currentEpisode() != nil {
-            actionTable.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: Constants.Values.miniPlayerOffset, right: 0)
+        // Check if using UITabAccessory (iOS 26.0+) - no mini player offset needed
+        let miniPlayerOffset: CGFloat
+        if #available(iOS 26.0, *), isUsingTabAccessory() {
+            miniPlayerOffset = 0  // UITabAccessory handles content layout automatically
         } else {
-            actionTable.contentInset = UIEdgeInsets.zero
+            miniPlayerOffset = PlaybackManager.shared.currentEpisode() == nil ? 0 : Constants.Values.miniPlayerOffset
         }
+        
+        actionTable.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: miniPlayerOffset, right: 0)
         view.layoutIfNeeded()
 
         updateColors()
@@ -183,6 +187,17 @@ class UserEpisodeDetailViewController: UIViewController {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    @available(iOS 26.0, *)
+    private func isUsingTabAccessory() -> Bool {
+        // Check if the main tab bar controller has a bottom accessory
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let tabBarController = window.rootViewController as? UITabBarController else {
+            return false
+        }
+        return tabBarController.bottomAccessory != nil
     }
 
     @objc private func handleThemeChanged() {
@@ -231,7 +246,7 @@ class UserEpisodeDetailViewController: UIViewController {
         errorContainerView.themeOverride = themeOverride
 
         playPauseButton.circleColor = ThemeColor.primaryIcon01(for: themeOverride)
-        playPauseButton.playButtonColor = ThemeColor.primaryUi01(for: themeOverride)
+        playPauseButton.playButtonColor = ThemeColor.primaryUi02(for: themeOverride)
 
         downloadStatusImage.tintColor = AppTheme.successGreen()
         upNextStatusImage.tintColor = ThemeColor.primaryIcon01(for: themeOverride)

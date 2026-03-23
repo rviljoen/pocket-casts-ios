@@ -20,9 +20,7 @@ class MiniPlayerViewController: SimpleNotificationsViewController {
 
     @IBOutlet var podcastArtwork: PodcastImageView!
     @IBOutlet var mainView: UIView!
-    @IBOutlet var shadowView: UIView!
-
-    @IBOutlet var gradientView: MiniPlayerGradientView!
+    @IBOutlet var glassEffectView: UIVisualEffectView!
 
     private var lastEpisodeUuidImageLoaded = ""
     private var lastEpisodeUuidAutoOpened = ""
@@ -44,6 +42,9 @@ class MiniPlayerViewController: SimpleNotificationsViewController {
 
         view.isHidden = false
 
+        // UITabAccessory will handle sizing automatically
+        // Tab accessory trait handling will be added later
+
         setupCorners()
         addUINotificationObservers()
         playbackStateDidChange()
@@ -51,8 +52,27 @@ class MiniPlayerViewController: SimpleNotificationsViewController {
     }
 
     private func setupCorners() {
-        mainView.layer.cornerRadius = MiniPlayerShadowView.Constants.shadowCornerRadius
-        mainView.layer.masksToBounds = true
+        // Use capsule shape (height / 2) for modern look
+        let capsuleRadius = desiredHeight() / 2
+
+        // Only apply capsule radius to the glass effect view - let it handle all visual styling
+        glassEffectView.layer.cornerRadius = capsuleRadius
+        glassEffectView.clipsToBounds = true
+
+        // Remove corner radius from main view to avoid double-layered appearance
+        mainView.layer.cornerRadius = 0
+        mainView.layer.masksToBounds = false
+        mainView.clipsToBounds = false  // Disable clipping set in XIB
+
+        // Initialize with UIGlassEffect
+        setupGlassEffect()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        // Ensure perfect capsule corners after any layout changes
+        setupCorners()
     }
 
     deinit {
@@ -82,7 +102,46 @@ class MiniPlayerViewController: SimpleNotificationsViewController {
     }
 
     func desiredHeight() -> CGFloat {
-        70
+        // Increase height for UITabAccessory for better visual balance
+        if #available(iOS 26.0, *),
+           let tabController = rootViewController(),
+           tabController.bottomAccessory?.contentView == self.view {
+            return 200  // Taller for tab accessory
+        }
+        return 70  // Standard height for traditional layout
+    }
+
+    // MARK: - UITabAccessory Support
+    // UITabAccessory automatically handles view sizing based on constraints
+
+    private func setupTabAccessoryTraitHandling() {
+        // Register for trait changes when used as UITabAccessory
+        if #available(iOS 26.0, *) {
+            registerForTraitChanges([UITraitTabAccessoryEnvironment.self]) { (controller: MiniPlayerViewController, _) in
+                let isInline = controller.traitCollection.tabAccessoryEnvironment == .inline
+                controller.updatePlayerAppearance(inline: isInline)
+            }
+        }
+    }
+
+    // Automatic trait tracking with updateProperties()
+    @available(iOS 26.0, *)
+    override func updateProperties() {
+        super.updateProperties()
+        let environment = traitCollection.tabAccessoryEnvironment
+        let isInline = environment == .inline
+        updatePlayerAppearance(inline: isInline)
+    }
+
+    private func updatePlayerAppearance(inline: Bool) {
+        // Hide artwork and up next button when inline (minimized)
+        podcastArtwork.superview?.isHidden = inline
+        upNextBtn.isHidden = inline
+    }
+
+    // Manual test method - call this to test inline mode
+    func testInlineMode() {
+        updatePlayerAppearance(inline: true)
     }
 
     func aboutToDisplayFullScreenPlayer() {
@@ -108,11 +167,39 @@ class MiniPlayerViewController: SimpleNotificationsViewController {
     }
 
     func changeHeightTo(_ height: CGFloat) {
+        // UITabAccessory will use existing height constraints automatically
         if heightConstraint == nil {
             heightConstraint = view.heightAnchor.constraint(equalToConstant: height)
             heightConstraint?.isActive = true
         } else {
             heightConstraint?.constant = height
+        }
+
+        // Reapply corner radius after height change to ensure perfect capsule shape
+        DispatchQueue.main.async { [weak self] in
+            self?.setupCorners()
+        }
+    }
+
+    // MARK: - Liquid Glass Setup
+
+    private func setupGlassEffect() {
+        // Check if we're being used as a UITabAccessory
+        if #available(iOS 26.0, *),
+           let tabController = rootViewController(),
+           tabController.bottomAccessory?.contentView == self.view {
+            // When used as tab accessory, disable our glass effect - let the accessory handle it
+            glassEffectView.effect = nil
+            glassEffectView.isHidden = true
+        } else {
+            // Simple single UIGlassEffect implementation for standalone use
+            if #available(iOS 26.0, *) {
+                let glassEffect = UIGlassEffect()
+                glassEffectView.effect = glassEffect
+            } else {
+                // Fallback to system material for older iOS versions
+                glassEffectView.effect = UIBlurEffect(style: .systemThinMaterial)
+            }
         }
     }
 
@@ -255,10 +342,9 @@ class MiniPlayerViewController: SimpleNotificationsViewController {
         }
         view.backgroundColor = .clear
 
-        gradientView.colors = [ThemeColor.primaryUi02().withAlphaComponent(0), ThemeColor.primaryUi02()]
-
         let bgColor = ThemeColor.podcastUi02(podcastColor: actionColor)
-        mainView.backgroundColor = bgColor
+        // Remove background - let glass do all the work
+        mainView.backgroundColor = UIColor.clear
         playPauseBtn.playButtonColor = bgColor
 
         playbackProgressView.updateColors()

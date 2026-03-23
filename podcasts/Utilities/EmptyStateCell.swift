@@ -13,7 +13,7 @@ class EmptyStateCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure<Style: EmptyStateViewStyle>(title: String, message: String? = nil, icon: (() -> Image)? = nil, style: Style = DefaultEmptyStateStyle.defaultStyle, actions: [EmptyStateAction] = []) {
+    func configure<Style: EmptyStateViewStyle>(title: String, message: String? = nil, icon: (() -> Image)? = nil, style: Style = DefaultEmptyStateStyle.defaultStyle, actions: [EmptyStateAction] = [], compactVerticalSpacing: Bool = false, customVerticalPadding: CGFloat? = nil) {
         self.contentConfiguration = UIHostingConfiguration {
             VStack {
                 EmptyStateView(
@@ -21,13 +21,14 @@ class EmptyStateCell: UITableViewCell {
                     message: message,
                     icon: icon,
                     actions: actions,
-                    style: style
+                    style: style,
+                    customVerticalPadding: customVerticalPadding
                 )
             }
             .frame(maxWidth: .infinity, alignment: .center)
         }
         .margins(.horizontal, 16)
-        .margins(.vertical, 8)
+        .margins(.vertical, compactVerticalSpacing ? 0 : 8)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {}

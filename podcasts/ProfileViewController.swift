@@ -7,7 +7,7 @@ import SwiftUI
 class ProfileViewController: PCViewController, UITableViewDataSource, UITableViewDelegate {
     fileprivate enum StatValueType { case listened, saved }
 
-    var refreshControl: PCRefreshControl?
+    // var refreshControl: PCRefreshControl? - Removed: pull to refresh disabled for profile page
 
     @IBOutlet var footerView: UIView!
     @IBOutlet var alertIcon: UIImageView!
@@ -101,6 +101,11 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
             profileTable.register(KidsProfileBannerTableCell.self, forCellReuseIdentifier: KidsProfileBannerTableCell.identifier)
             profileTable.register(ReferralsClaimBannerTableCell.self, forCellReuseIdentifier: ReferralsClaimBannerTableCell.identifier)
             profileTable.register(InformationalProfileBannerCell.self, forCellReuseIdentifier: InformationalProfileBannerCell.identifier)
+
+            // Set transparent background for liquid glass effect
+            if let themeableTable = profileTable as? ThemeableTable {
+                themeableTable.themeStyle = .primaryUi02
+            }
         }
     }
 
@@ -128,12 +133,18 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
     // MARK: - View Events
 
     override func viewDidLoad() {
-        customRightBtn = UIBarButtonItem(image: UIImage(named: "profile-settings"), style: .plain, target: self, action: #selector(settingsTapped))
-        customRightBtn?.accessibilityLabel = L10n.accessibilityProfileSettings
-        customRightBtn?.accessibilityIdentifier = "Settings"
+        // Create a custom button to avoid constraint conflicts
+        let settingsButton = UIButton(type: .system)
+        settingsButton.setImage(UIImage(named: "profile-settings"), for: .normal)
+        settingsButton.addTarget(self, action: #selector(settingsTapped), for: .touchUpInside)
+        settingsButton.accessibilityLabel = L10n.accessibilityProfileSettings
+        settingsButton.accessibilityIdentifier = "Settings"
+        settingsButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+        customRightBtn = UIBarButtonItem(customView: settingsButton)
 
         super.viewDidLoad()
         navigationItem.title = L10n.profile
+
 
         profileTable.tableFooterView = footerView
 
@@ -141,8 +152,11 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
         updateDisplayedData()
         updateRefreshFooterColors()
         updateFooterFrame()
-        setupRefreshControl()
+        // setupRefreshControl() - Removed: pull to refresh disabled for profile page
         insetAdjuster.setupInsetAdjustmentsForMiniPlayer(scrollView: profileTable)
+
+        // Set transparent background for liquid glass effect
+        view.backgroundColor = ThemeColor.primaryUi02()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -156,7 +170,7 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        refreshControl?.parentViewControllerDidAppear()
+        // refreshControl?.parentViewControllerDidAppear() - Removed: pull to refresh disabled
 
         addCustomObserver(ServerNotifications.podcastsRefreshed, selector: #selector(refreshComplete))
         addCustomObserver(Constants.Notifications.podcastAdded, selector: #selector(handleDataChangedNotification))
@@ -200,7 +214,7 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         removeAllCustomObservers()
-        refreshControl?.parentViewControllerDidDisappear()
+        // refreshControl?.parentViewControllerDidDisappear() - Removed: pull to refresh disabled
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -209,7 +223,11 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
     }
 
     override func handleThemeChanged() {
+        super.handleThemeChanged()
         updateRefreshFooterColors()
+
+        // Set transparent background for liquid glass effect
+        view.backgroundColor = ThemeColor.primaryUi02()
     }
 
     private func updateRefreshFooterColors() {
@@ -250,7 +268,7 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
 
-            self.refreshControl?.endRefreshing(true)
+            // self.refreshControl?.endRefreshing(true) - Removed: pull to refresh disabled
             self.isRefreshAnimating = false
             self.updateLastRefreshDetails()
         }
@@ -671,22 +689,6 @@ extension ProfileViewController: PlusLockedInfoDelegate {
 
 // MARK: - Refresh Control
 
-extension ProfileViewController {
-    private func setupRefreshControl() {
-        guard let navController = navigationController else {
-            return
-        }
-
-        refreshControl = PCRefreshControl(scrollView: profileTable,
-                                          navBar: navController.navigationBar,
-                                          source: .profile)
-    }
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        refreshControl?.scrollViewDidScroll(scrollView)
-    }
-
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        refreshControl?.scrollViewDidEndDragging(scrollView)
-    }
-}
+// MARK: - Pull to Refresh (Disabled)
+// Pull to refresh functionality has been removed from the profile page
+// The setupRefreshControl method and scroll delegate methods have been commented out
