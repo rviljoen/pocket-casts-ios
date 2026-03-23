@@ -17,7 +17,11 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
         didSet {
             registerCells()
             if FeatureFlag.playlistsRebranding.enabled {
-                filtersTable.themeStyle = .primaryUi02
+                if #available(iOS 26.0, *) {
+                    filtersTable.backgroundColor = .clear
+                } else {
+                    filtersTable.themeStyle = .primaryUi02
+                }
                 filtersTable.dragDelegate = self
                 filtersTable.dropDelegate = self
                 filtersTable.separatorStyle = .none
@@ -224,7 +228,11 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
         newFilterButton.layer.borderColor = ThemeColor.primaryInteractive01().cgColor
         newFilterButton.titleLabel?.textColor = ThemeColor.primaryInteractive01()
         if FeatureFlag.playlistsRebranding.enabled {
-            view.backgroundColor = ThemeColor.primaryUi04()
+            if #available(iOS 26.0, *) {
+                view.backgroundColor = .clear
+            } else {
+                view.backgroundColor = ThemeColor.primaryUi04()
+            }
             customRightBtn?.tintColor = ThemeColor.secondaryIcon01()
         }
     }

@@ -68,12 +68,20 @@ class NewPlaylistCell: ThemeableCell {
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
+        if #available(iOS 26.0, *) {
+            // Skip ThemeableCell's setHighlightedState which applies themed background
+        } else {
+            super.setSelected(selected, animated: animated)
+        }
         ensureCorrectReorderColor()
     }
 
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
-        super.setHighlighted(highlighted, animated: animated)
+        if #available(iOS 26.0, *) {
+            // Skip ThemeableCell's setHighlightedState which applies themed background
+        } else {
+            super.setHighlighted(highlighted, animated: animated)
+        }
         ensureCorrectReorderColor()
     }
 
@@ -84,7 +92,13 @@ class NewPlaylistCell: ThemeableCell {
     }
 
     override func updateColor() {
-        super.updateColor()
+        if #available(iOS 26.0, *) {
+            backgroundColor = .clear
+            contentView.backgroundColor = .clear
+            accessoryView?.backgroundColor = .clear
+        } else {
+            super.updateColor()
+        }
         separatorView.backgroundColor = AppTheme.colorForStyle(.primaryUi05)
     }
 

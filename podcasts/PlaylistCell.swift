@@ -20,10 +20,13 @@ class PlaylistCell: ThemeableCell {
 
         accessoryType = .disclosureIndicator
 
-        self.style = .primaryUi02
+        if #available(iOS 26.0, *) {
+            self.backgroundColor = .clear
+        } else {
+            self.style = .primaryUi02
+            updateColor()
+        }
         iconStyle = .primaryIcon02
-
-        updateColor()
 
         separatorInset = UIEdgeInsets(top: 0, left: .greatestFiniteMagnitude, bottom: 0, right: 0)
         layoutMargins = .zero
@@ -36,6 +39,16 @@ class PlaylistCell: ThemeableCell {
             separatorView.trailingAnchor.constraint(equalTo: trailingAnchor),
             separatorView.heightAnchor.constraint(equalToConstant: 1.0)
         ])
+    }
+
+    override func updateColor() {
+        if #available(iOS 26.0, *) {
+            backgroundColor = .clear
+            contentView.backgroundColor = .clear
+            accessoryView?.backgroundColor = .clear
+        } else {
+            super.updateColor()
+        }
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
