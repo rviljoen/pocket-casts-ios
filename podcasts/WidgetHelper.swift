@@ -6,7 +6,7 @@ import WidgetKit
 
 class WidgetHelper {
     static let shared = WidgetHelper()
-    static let appGroupId = "group.au.com.shiftyjelly.pocketcasts"
+    static let appGroupId = "group.pocketcasts.ruanviljoen.local.id"
     static let maxUpNextToPublish = 10
     static let maxFilterToPublish = 5
     init() {
