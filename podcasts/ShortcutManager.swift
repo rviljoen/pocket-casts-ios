@@ -86,7 +86,7 @@ class ShortcutManager: CustomObserver {
         if let topPlaylist = DataManager.shared.allPlaylists(includeDeleted: false).first, let iconName = topPlaylist.iconImageName() {
             shortcutItems.append(
                 UIMutableApplicationShortcutItem(
-                    type: "au.com.shiftyjelly.podcasts",
+                    type: "pocketcasts.ruanviljoen.local.id",
                     localizedTitle: topPlaylist.playlistName,
                     localizedSubtitle: "\(DataManager.shared.episodeCount(for: topPlaylist, episodeUuidToAdd: topPlaylist.episodeUuidToAddToQueries())) items",
                     icon: UIApplicationShortcutIcon(templateImageName: iconName),
@@ -100,7 +100,7 @@ class ShortcutManager: CustomObserver {
             if isPlaying {
                 shortcutItems.append(
                     UIMutableApplicationShortcutItem(
-                        type: "au.com.shiftyjelly.podcasts",
+                        type: "pocketcasts.ruanviljoen.local.id",
                         localizedTitle: L10n.pause,
                         localizedSubtitle: currentEpisodeTitle,
                         icon: UIApplicationShortcutIcon(type: .pause),
@@ -110,7 +110,7 @@ class ShortcutManager: CustomObserver {
             } else {
                 shortcutItems.append(
                     UIMutableApplicationShortcutItem(
-                        type: "au.com.shiftyjelly.podcasts",
+                        type: "pocketcasts.ruanviljoen.local.id",
                         localizedTitle: L10n.play,
                         localizedSubtitle: currentEpisodeTitle,
                         icon: UIApplicationShortcutIcon(type: .play),
@@ -122,7 +122,7 @@ class ShortcutManager: CustomObserver {
             // discover
             shortcutItems.append(
                 UIMutableApplicationShortcutItem(
-                    type: "au.com.shiftyjelly.podcasts",
+                    type: "pocketcasts.ruanviljoen.local.id",
                     localizedTitle: "Find New Podcasts",
                     localizedSubtitle: nil,
                     icon: UIApplicationShortcutIcon(type: .search),
