@@ -1,0 +1,18 @@
+//
+//  Local.xcconfig
+//  podcasts
+//
+//  Created by Ruan Viljoen on 2022/12/07.
+//  Copyright © 2022 Shifty Jelly. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+// Override the root bundle identifier used by all targets
+PRODUCT_BUNDLE_IDENTIFIER_ROOT = pocketcasts.$(USER).local.id
+PRODUCT_BUNDLE_IDENTIFIER = pocketcasts.$(USER).local.id
+
+
+// Set in Local/DevTeam.xcconfig
+DEVELOPMENT_TEAM = 98NNRBB9FJ
