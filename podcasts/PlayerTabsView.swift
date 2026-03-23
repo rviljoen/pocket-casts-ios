@@ -284,6 +284,7 @@ private class PlayerTabButton: UIButton {
 
         var config = UIButton.Configuration.plain()
         config.automaticallyUpdateForSelection = true
+        config.cornerStyle = .capsule
 
         switch state {
 

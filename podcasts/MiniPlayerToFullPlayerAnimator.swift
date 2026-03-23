@@ -239,13 +239,8 @@ class MiniPlayerToFullPlayerAnimator: NSObject, UIViewControllerAnimatedTransiti
         let hiddenTabBarFrame = CGRect(x: tabBarFrame.origin.x, y: tabBarFrame.origin.y + tabBarFrame.height, width: tabBarFrame.width, height: tabBarFrame.height)
         tabBarSnapshot?.frame = isPresenting ? tabBarFrame : hiddenTabBarFrame
 
-        let gradientView = MiniPlayerGradientView()
-        gradientView.frame = fromViewController.view.frame
-        gradientView.layer.opacity = isPresenting ? 1 : 0
-        if let miniPlayerVC = fromViewController as? MiniPlayerViewController {
-            gradientView.colors = miniPlayerVC.gradientView.colors
-        }
-        containerView.insertSubview(gradientView, belowSubview: backgroundTransitionView)
+        // No longer need gradient view since we're using pure UIGlassEffect
+        // The glass effect handles all visual transitions
 
         self.fromViewController.view.layer.opacity = 0
         animate(withDuration: duration) { [self] in
@@ -270,7 +265,7 @@ class MiniPlayerToFullPlayerAnimator: NSObject, UIViewControllerAnimatedTransiti
             // Tab Bar
             tabBarSnapshot?.frame = !self.isPresenting ? tabBarFrame : hiddenTabBarFrame
 
-            gradientView.layer.opacity = isPresenting ? 0 : 1
+            // No gradient animation needed with glass effect
         } completion: { completed in
             self.fullPlayerArtwork.layer.opacity = !self.isVideoPodcast ? 1 : 0
             self.miniPlayerArtwork.layer.opacity = 1

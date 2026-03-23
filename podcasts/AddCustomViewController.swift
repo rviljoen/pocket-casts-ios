@@ -79,7 +79,7 @@ class AddCustomViewController: PCViewController, UITextFieldDelegate {
 
     @IBOutlet var errorView: ThemeableView! {
         didSet {
-            errorView.style = .primaryUi01
+            errorView.style = .primaryUi02
         }
     }
 

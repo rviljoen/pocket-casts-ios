@@ -206,6 +206,9 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
         if FeatureFlag.upNextShuffle.enabled {
             themeDidChange()
         }
+
+        // Ensure the navigation bar adopts Liquid Glass/blur appearance
+        applyGlassNavBarAppearance()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -224,6 +227,8 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
         guard isViewLoaded else { return } // This method was called as a result of `setSelectedIndex` on UITabBarController. The view is not loaded at this point so we don't need to do anything to reset.
         selectedPlayListEpisodes.removeAll()
         isMultiSelectEnabled = false
+
+        // No-op: nav bar uses system-provided background; nothing to remove
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -296,6 +301,9 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
         shuffleButton.imageView?.adjustsImageSizeForAccessibilityContentSizeCategory = true
         shuffleButton.imageView?.contentMode = .scaleAspectFit
         shuffleButton.imageView?.translatesAutoresizingMaskIntoConstraints = false
+
+        // Keep nav appearance in sync with theme
+        applyGlassNavBarAppearance()
     }
 
     @objc private func subscriptionStatusDidChange() {
@@ -329,6 +337,38 @@ class UpNextViewController: UIViewController, UIGestureRecognizerDelegate {
             clearQueueButton.titleLabel?.adjustsFontForContentSizeCategory = true
             clearQueueButton.addTarget(self, action: #selector(clearQueueTapped), for: .touchUpInside)
         }
+    }
+
+    // MARK: - Liquid Glass Navigation Appearance
+    private func applyGlassNavBarAppearance() {
+        let titleColor = AppTheme.navBarTitleColor(themeOverride: themeOverride)
+        let iconsColor = AppTheme.navBarIconsColor(themeOverride: themeOverride)
+
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: titleColor]
+        appearance.largeTitleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: titleColor,
+            NSAttributedString.Key.font: UIFont.systemFont(ofSize: 31, weight: .bold)
+        ]
+        appearance.shadowColor = nil
+
+        // For iOS 26+, let the system apply Liquid Glass when the bar is transparent.
+        // For earlier iOS, use a thin material blur to approximate the effect.
+        if #available(iOS 26.0, *) {
+            appearance.backgroundEffect = nil
+            appearance.backgroundColor = .clear
+        } else {
+            appearance.backgroundEffect = UIBlurEffect(style: .systemThinMaterial)
+        }
+
+        navigationItem.standardAppearance = appearance
+        navigationItem.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.isTranslucent = true
+        navigationController?.navigationBar.tintColor = iconsColor
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.backgroundColor = .clear
     }
 
     @objc private func updateShuffleButtonState() {

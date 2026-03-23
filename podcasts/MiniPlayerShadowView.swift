@@ -3,10 +3,10 @@ import UIKit
 class MiniPlayerShadowView: UIView {
 
     enum Constants {
-        static let shadowRadius = CGFloat(15)
-        static let shadowOffset = CGSize(width: 0, height: -4)
-        static let shadowOpacity = Float(1)
-        static let shadowCornerRadius = CGFloat(12)
+        static let shadowRadius = CGFloat(8)        // Reduced from 15 for softer glass shadow
+        static let shadowOffset = CGSize(width: 0, height: -2)  // Reduced from -4 for subtlety
+        static let shadowOpacity = Float(0.15)      // Reduced from 1.0 for glass effect
+        static let shadowCornerRadius = CGFloat(16) // Match tab bar roundedness
     }
 
     var shadowRadius: CGFloat = Constants.shadowRadius {
@@ -48,7 +48,9 @@ class MiniPlayerShadowView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: shadowCornerRadius).cgPath
+        // Use capsule shape for shadow path
+        let capsuleRadius = bounds.height / 2
+        layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: capsuleRadius).cgPath
     }
 
     private func setup() {
@@ -60,11 +62,15 @@ class MiniPlayerShadowView: UIView {
     private func updateView() {
         if shadowOpacity == 0 { return }
         backgroundColor = .clear
-        layer.cornerRadius = shadowCornerRadius
+
+        // Use capsule radius for the shadow layer
+        let capsuleRadius = bounds.height > 0 ? bounds.height / 2 : shadowCornerRadius
+        layer.cornerRadius = capsuleRadius
+
         layer.shadowRadius = shadowRadius
         layer.shadowOffset = shadowOffset
         layer.shadowOpacity = shadowOpacity
-        layer.shadowColor = UIColor.black.withAlphaComponent(0.3).cgColor
+        layer.shadowColor = UIColor.black.withAlphaComponent(0.1).cgColor
         layer.shouldRasterize = true
         layer.rasterizationScale = UIScreen.main.scale
     }

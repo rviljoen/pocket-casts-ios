@@ -335,9 +335,27 @@ extension DiscoverCollectionViewController {
     }
 
     @objc func miniPlayerStatusDidChange() {
-        let miniPlayerOffset: CGFloat = PlaybackManager.shared.currentEpisode() == nil ? 0 : Constants.Values.miniPlayerOffset
+        // Check if using UITabAccessory (iOS 26.0+) - no mini player offset needed
+        let miniPlayerOffset: CGFloat
+        if #available(iOS 26.0, *), isUsingTabAccessory() {
+            miniPlayerOffset = 0  // UITabAccessory handles content layout automatically
+        } else {
+            miniPlayerOffset = PlaybackManager.shared.currentEpisode() == nil ? 0 : Constants.Values.miniPlayerOffset
+        }
+
         collectionView.contentInset = UIEdgeInsets(top: PCSearchBarController.defaultHeight, left: 0, bottom: miniPlayerOffset, right: 0)
         collectionView.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: miniPlayerOffset, right: 0)
+    }
+
+    @available(iOS 26.0, *)
+    private func isUsingTabAccessory() -> Bool {
+        // Check if the main tab bar controller has a bottom accessory
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let tabBarController = window.rootViewController as? UITabBarController else {
+            return false
+        }
+        return tabBarController.bottomAccessory != nil
     }
 }
 

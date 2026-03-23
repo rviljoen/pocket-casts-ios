@@ -17,7 +17,7 @@ class PlaylistsViewController: PCViewController, FilterCreatedDelegate {
         didSet {
             registerCells()
             if FeatureFlag.playlistsRebranding.enabled {
-                filtersTable.themeStyle = .primaryUi01
+                filtersTable.themeStyle = .primaryUi02
                 filtersTable.dragDelegate = self
                 filtersTable.dropDelegate = self
                 filtersTable.separatorStyle = .none

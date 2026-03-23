@@ -139,6 +139,10 @@ class MainTabBarController: UITabBarController, NavigationProtocol {
             setupErrorBanner()
             setupErrorObservers()
         }
+
+        if #available(iOS 26.0, *) {
+            self.tabBarMinimizeBehavior = .onScrollDown
+        }
     }
 
     private var cancellables = Set<AnyCancellable>()
@@ -263,16 +267,24 @@ class MainTabBarController: UITabBarController, NavigationProtocol {
         let miniPlayer = MiniPlayerViewController(nibName: "MiniPlayerViewController", bundle: nil)
         NavigationManager.sharedManager.miniPlayer = miniPlayer
 
-        miniPlayer.view.translatesAutoresizingMaskIntoConstraints = false
-        view.insertSubview(miniPlayer.view, belowSubview: tabBar)
+        // Use iOS tab bar accessory for native glass effects and animations
+        if #available(iOS 26.0, *) {
+            // Use the full view but disable competing visual effects
+            let accessory = UITabAccessory(contentView: miniPlayer.view)
+            self.bottomAccessory = accessory
+        } else {
+            // Fallback for older iOS versions
+            miniPlayer.view.translatesAutoresizingMaskIntoConstraints = false
+            view.insertSubview(miniPlayer.view, belowSubview: tabBar)
 
-        NSLayoutConstraint.activate([
-            miniPlayer.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            miniPlayer.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            miniPlayer.view.bottomAnchor.constraint(equalTo: tabBar.topAnchor)
-        ])
+            NSLayoutConstraint.activate([
+                miniPlayer.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                miniPlayer.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                miniPlayer.view.bottomAnchor.constraint(equalTo: tabBar.topAnchor)
+            ])
 
-        miniPlayer.changeHeightTo(miniPlayer.desiredHeight())
+            miniPlayer.changeHeightTo(miniPlayer.desiredHeight())
+        }
     }
 
     // MARK: - UITabBarDelegate
@@ -797,8 +809,17 @@ class MainTabBarController: UITabBarController, NavigationProtocol {
     private func updateTabBarColor() {
         self.view.backgroundColor = AppTheme.viewBackgroundColor()
         let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = AppTheme.tabBarBackgroundColor()
+
+        // Use transparent appearance to allow Liquid Glass on modern iOS,
+        // keep opaque fallback for older versions.
+        if #available(iOS 26.0, *) {
+            appearance.configureWithTransparentBackground()
+            appearance.backgroundEffect = nil
+            appearance.backgroundColor = .clear
+        } else {
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = AppTheme.tabBarBackgroundColor()
+        }
 
         // Change badge colors
         [appearance.stackedLayoutAppearance,
@@ -811,6 +832,7 @@ class MainTabBarController: UITabBarController, NavigationProtocol {
 
         tabBar.standardAppearance = appearance
         tabBar.scrollEdgeAppearance = appearance
+        tabBar.isTranslucent = true
         tabBar.unselectedItemTintColor = AppTheme.unselectedTabBarItemColor()
         tabBar.tintColor = AppTheme.tabBarItemTintColor()
     }

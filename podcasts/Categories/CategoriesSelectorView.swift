@@ -27,7 +27,7 @@ struct CategoriesSelectorView: View {
                 PlaceholderPillsView()
             }
         }
-        .background(theme.secondaryUi01)
+        .background(Color.clear)
         .task(id: discoverItemObservable.item?.source) {
             let result = await discoverItemObservable.load()
             self.categories = result?.categories
