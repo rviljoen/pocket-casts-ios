@@ -99,15 +99,22 @@ extension EpisodeDetailViewController {
 
     @IBAction func downloadTapped(_ sender: UIButton) {
         if episode.downloaded(pathFinder: DownloadManager.shared) {
-            let confirmation = OptionsPicker(title: L10n.podcastDetailsRemoveDownload)
-            let yesAction = OptionAction(label: L10n.remove, icon: nil) {
-                self.deleteDownloadedFile()
-                self.updateColors()
-            }
-            yesAction.destructive = true
-            confirmation.addAction(action: yesAction)
+            let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
-            confirmation.show(statusBarStyle: preferredStatusBarStyle)
+            alertController.addAction(UIAlertAction(title: L10n.remove, style: .destructive) { [weak self] _ in
+                self?.deleteDownloadedFile()
+                self?.updateColors()
+            })
+
+            alertController.addAction(UIAlertAction(title: L10n.cancel, style: .cancel))
+
+            if let popover = alertController.popoverPresentationController {
+                popover.sourceView = sender
+                popover.sourceRect = sender.bounds
+                popover.permittedArrowDirections = .up
+            }
+
+            present(alertController, animated: true)
         } else if episode.downloading() || episode.queued() || episode.waitingForWifi() {
             PlaybackActionHelper.stopDownload(episodeUuid: episode.uuid)
         } else {
