@@ -18,7 +18,7 @@ extension UserEpisodeDetailViewController: UITableViewDelegate, UITableViewDataS
         let cell = actionTable.dequeueReusableCell(withIdentifier: actionCellId) as! UserEpisodeActionCell
         cell.themeOverride = themeOverride
         cell.titleLabel.themeOverride = themeOverride
-        cell.style = .primaryUi01
+        cell.style = .primaryUi02
         let tableRow = tableData()[indexPath.row]
 
         switch tableRow {

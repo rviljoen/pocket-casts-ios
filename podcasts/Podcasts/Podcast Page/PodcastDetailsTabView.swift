@@ -47,7 +47,8 @@ struct PodcastDetailsTabView: View {
                     delegate?.showEpisodes()
                 } customize: { config in
                     config.label
-                        .applyStyle(theme: theme, highlighted: selectedTab == .episodes)
+                        .fixedSize()
+                        .applyCapsuleStyle(theme: theme, highlighted: selectedTab == .episodes)
                         .applyButtonEffect(isPressed: config.isPressed)
                 }
 
@@ -57,7 +58,8 @@ struct PodcastDetailsTabView: View {
                     delegate?.showBookmarks()
                 } customize: { config in
                     config.label
-                        .applyStyle(theme: theme, highlighted: selectedTab == .bookmarks)
+                        .fixedSize()
+                        .applyCapsuleStyle(theme: theme, highlighted: selectedTab == .bookmarks)
                         .applyButtonEffect(isPressed: config.isPressed)
                 }
 
@@ -67,7 +69,8 @@ struct PodcastDetailsTabView: View {
                     delegate?.showYouMightLike()
                 } customize: { config in
                     config.label
-                        .applyStyle(theme: theme, highlighted: selectedTab == .youMightLike)
+                        .fixedSize()
+                        .applyCapsuleStyle(theme: theme, highlighted: selectedTab == .youMightLike)
                         .applyButtonEffect(isPressed: config.isPressed)
                 }
 
@@ -80,14 +83,21 @@ struct PodcastDetailsTabView: View {
 // MARK: - View Extension
 
 private extension View {
-    func applyStyle(theme: Theme, highlighted: Bool = false) -> some View {
+    func applyCapsuleStyle(theme: Theme, highlighted: Bool = false) -> some View {
         self
-            .contentShape(Rectangle())
+            .contentShape(Capsule())
             .padding(.vertical, 8)
-            .padding(.horizontal, 12)
+            .padding(.horizontal, 14)
             .foregroundColor(highlighted ? theme.primaryUi01 : theme.primaryText02)
-            .background(highlighted ? theme.primaryText01 : nil)
-            .cornerRadius(8)
+            .background(
+                Capsule()
+                    .fill(highlighted ? theme.primaryText01 : .clear)
+            )
+            .overlay(
+                Capsule()
+                    .stroke(theme.primaryText02.opacity(highlighted ? 0 : 0.25), lineWidth: 1)
+            )
+            .animation(.linear(duration: 0.1), value: highlighted)
     }
 }
 

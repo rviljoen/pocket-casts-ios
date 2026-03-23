@@ -90,8 +90,12 @@ extension MiniPlayerViewController: UIGestureRecognizerDelegate {
         }
         alertController.addAction(cancelAction)
 
-        alertController.popoverPresentationController?.sourceView = view
-        alertController.popoverPresentationController?.sourceRect = CGRect(origin: touchPoint, size: .zero)
+        // For iPad, set up popover presentation
+        if let popover = alertController.popoverPresentationController {
+            popover.sourceView = view
+            popover.sourceRect = CGRect(origin: touchPoint, size: .zero)
+            popover.permittedArrowDirections = []
+        }
 
         present(alertController, animated: true)
     }

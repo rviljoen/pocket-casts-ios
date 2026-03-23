@@ -39,7 +39,7 @@ class GeneralSettingsViewController: PCViewController, UITableViewDelegate, UITa
         super.viewDidLoad()
 
         title = L10n.settingsGeneral
-
+        setupTableView()
         insetAdjuster.setupInsetAdjustmentsForMiniPlayer(scrollView: settingsTable)
 
         Analytics.track(.settingsGeneralShown)
@@ -47,6 +47,27 @@ class GeneralSettingsViewController: PCViewController, UITableViewDelegate, UITa
         if let scrollToRow {
             self.scrollToRow(scrollToRow)
         }
+    }
+
+    private func setupTableView() {
+        settingsTable = UITableView(frame: view.bounds, style: .insetGrouped)
+        settingsTable.translatesAutoresizingMaskIntoConstraints = false
+        settingsTable.dataSource = self
+        settingsTable.delegate = self
+        settingsTable.register(UINib(nibName: "TimeStepperCell", bundle: nil), forCellReuseIdentifier: timeStepperCellId)
+        settingsTable.register(UINib(nibName: "SwitchCell", bundle: nil), forCellReuseIdentifier: switchCellId)
+        settingsTable.register(UINib(nibName: "DisclosureCell", bundle: nil), forCellReuseIdentifier: disclosureCellId)
+        settingsTable.rowHeight = 54
+        settingsTable.estimatedRowHeight = 54
+
+        view.addSubview(settingsTable)
+
+        NSLayoutConstraint.activate([
+            settingsTable.topAnchor.constraint(equalTo: view.topAnchor),
+            settingsTable.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            settingsTable.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            settingsTable.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -334,114 +355,83 @@ class GeneralSettingsViewController: PCViewController, UITableViewDelegate, UITa
         if row == .defaultRowAction {
             let currentAction = Settings.primaryRowAction()
 
-            let options = OptionsPicker(title: L10n.settingsGeneralRowAction)
-            let playAction = OptionAction(label: L10n.play, selected: currentAction == .stream) {
-                Settings.setPrimaryRowAction(.stream)
-                tableView.reloadData()
-            }
-            options.addAction(action: playAction)
+            let options = [
+                SettingsDetailViewController.SettingsOption(title: L10n.play, value: PrimaryRowAction.stream, isSelected: currentAction == .stream),
+                SettingsDetailViewController.SettingsOption(title: L10n.download, value: PrimaryRowAction.download, isSelected: currentAction == .download)
+            ]
 
-            let downloadAction = OptionAction(label: L10n.download, selected: currentAction == .download) {
-                Settings.setPrimaryRowAction(.download)
-                tableView.reloadData()
+            let detailVC = SettingsDetailViewController(title: L10n.settingsGeneralRowAction, options: options) { value in
+                if let action = value as? PrimaryRowAction {
+                    Settings.setPrimaryRowAction(action)
+                    tableView.reloadData()
+                }
             }
-            options.addAction(action: downloadAction)
-            options.show(statusBarStyle: preferredStatusBarStyle)
+
+            navigationController?.pushViewController(detailVC, animated: true)
         } else if row == .defaultGrouping {
             let currentGrouping = Settings.defaultPodcastGrouping()
 
-            let options = OptionsPicker(title: L10n.settingsGeneralEpisodeGroups)
-            let noneAction = OptionAction(label: L10n.none, selected: currentGrouping == .none) { [weak self] in
-                Settings.setDefaultPodcastGrouping(.none)
+            let options = [
+                SettingsDetailViewController.SettingsOption(title: L10n.none, value: PodcastGrouping.none, isSelected: currentGrouping == .none),
+                SettingsDetailViewController.SettingsOption(title: L10n.statusDownloaded, value: PodcastGrouping.downloaded, isSelected: currentGrouping == .downloaded),
+                SettingsDetailViewController.SettingsOption(title: L10n.statusUnplayed, value: PodcastGrouping.unplayed, isSelected: currentGrouping == .unplayed),
+                SettingsDetailViewController.SettingsOption(title: L10n.season, value: PodcastGrouping.season, isSelected: currentGrouping == .season),
+                SettingsDetailViewController.SettingsOption(title: L10n.statusStarred, value: PodcastGrouping.starred, isSelected: currentGrouping == .starred)
+            ]
 
-                tableView.reloadData()
-                self?.promptToApplyGroupingToAll(grouping: Settings.defaultPodcastGrouping())
+            let detailVC = SettingsDetailViewController(title: L10n.settingsGeneralEpisodeGroups, options: options) { [weak self] value in
+                if let grouping = value as? PodcastGrouping {
+                    Settings.setDefaultPodcastGrouping(grouping)
+                    tableView.reloadData()
+                    self?.promptToApplyGroupingToAll(grouping: grouping)
+                }
             }
-            options.addAction(action: noneAction)
 
-            let downloadedAction = OptionAction(label: L10n.statusDownloaded, selected: currentGrouping == .downloaded) { [weak self] in
-                Settings.setDefaultPodcastGrouping(.downloaded)
-
-                tableView.reloadData()
-                self?.promptToApplyGroupingToAll(grouping: Settings.defaultPodcastGrouping())
-            }
-            options.addAction(action: downloadedAction)
-
-            let unplayedAction = OptionAction(label: L10n.statusUnplayed, selected: currentGrouping == .unplayed) { [weak self] in
-                Settings.setDefaultPodcastGrouping(.unplayed)
-
-                tableView.reloadData()
-                self?.promptToApplyGroupingToAll(grouping: Settings.defaultPodcastGrouping())
-            }
-            options.addAction(action: unplayedAction)
-
-            let seasonAction = OptionAction(label: L10n.season, selected: currentGrouping == .season) { [weak self] in
-                Settings.setDefaultPodcastGrouping(.season)
-
-                tableView.reloadData()
-                self?.promptToApplyGroupingToAll(grouping: Settings.defaultPodcastGrouping())
-            }
-            options.addAction(action: seasonAction)
-
-            let starredAction = OptionAction(label: L10n.statusStarred, selected: currentGrouping == .starred) { [weak self] in
-                Settings.setDefaultPodcastGrouping(.starred)
-
-                tableView.reloadData()
-                self?.promptToApplyGroupingToAll(grouping: Settings.defaultPodcastGrouping())
-            }
-            options.addAction(action: starredAction)
-
-            options.show(statusBarStyle: preferredStatusBarStyle)
+            navigationController?.pushViewController(detailVC, animated: true)
         } else if row == .defaultArchive {
             let currentlyShowingArchived = Settings.showArchivedDefault()
 
-            let options = OptionsPicker(title: L10n.settingsGeneralArchivedEpisodes)
-            let hideAction = OptionAction(label: L10n.settingsGeneralHide, selected: !currentlyShowingArchived) { [weak self] in
-                Settings.setShowArchivedDefault(false)
+            let options = [
+                SettingsDetailViewController.SettingsOption(title: L10n.settingsGeneralHide, value: false, isSelected: !currentlyShowingArchived),
+                SettingsDetailViewController.SettingsOption(title: L10n.settingsGeneralShow, value: true, isSelected: currentlyShowingArchived)
+            ]
 
-                tableView.reloadData()
-                self?.promptToApplyShowArchiveToAll(false)
+            let detailVC = SettingsDetailViewController(title: L10n.settingsGeneralArchivedEpisodes, options: options) { [weak self] value in
+                if let showArchived = value as? Bool {
+                    Settings.setShowArchivedDefault(showArchived)
+                    tableView.reloadData()
+                    self?.promptToApplyShowArchiveToAll(showArchived)
+                }
             }
-            options.addAction(action: hideAction)
 
-            let showAction = OptionAction(label: L10n.settingsGeneralShow, selected: currentlyShowingArchived) { [weak self] in
-                Settings.setShowArchivedDefault(true)
-
-                tableView.reloadData()
-                self?.promptToApplyShowArchiveToAll(true)
-            }
-            options.addAction(action: showAction)
-
-            options.show(statusBarStyle: preferredStatusBarStyle)
+            navigationController?.pushViewController(detailVC, animated: true)
         } else if row == .defaultAddToUpNextSwipe {
             let currentAction = Settings.primaryUpNextSwipeAction()
 
-            let options = OptionsPicker(title: L10n.settingsGeneralUpNextSwipe)
-            let playNextAction = OptionAction(label: L10n.playNext, selected: currentAction == .playNext) {
-                Settings.setPrimaryUpNextSwipeAction(.playNext)
-                tableView.reloadData()
-            }
-            options.addAction(action: playNextAction)
+            let options = [
+                SettingsDetailViewController.SettingsOption(title: L10n.playNext, value: PrimaryUpNextSwipeAction.playNext, isSelected: currentAction == .playNext),
+                SettingsDetailViewController.SettingsOption(title: L10n.playLast, value: PrimaryUpNextSwipeAction.playLast, isSelected: currentAction == .playLast)
+            ]
 
-            let playLastAction = OptionAction(label: L10n.playLast, selected: currentAction == .playLast) {
-                Settings.setPrimaryUpNextSwipeAction(.playLast)
-                tableView.reloadData()
+            let detailVC = SettingsDetailViewController(title: L10n.settingsGeneralUpNextSwipe, options: options) { value in
+                if let swipeAction = value as? PrimaryUpNextSwipeAction {
+                    Settings.setPrimaryUpNextSwipeAction(swipeAction)
+                    tableView.reloadData()
+                }
             }
-            options.addAction(action: playLastAction)
-            options.show(statusBarStyle: preferredStatusBarStyle)
+
+            navigationController?.pushViewController(detailVC, animated: true)
         }
     }
 
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerFrame = CGRect(x: 0, y: 0, width: 0, height: Constants.Values.tableSectionHeaderHeight)
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section == 0 {
-            return SettingsTableHeader(frame: headerFrame, title: L10n.settingsGeneralDefaultsHeader)
+            return L10n.settingsGeneralDefaultsHeader
         } else if section == 1 {
-            return SettingsTableHeader(frame: headerFrame, title: L10n.settingsGeneralPlayerHeader)
+            return L10n.settingsGeneralPlayerHeader
         } else if tableData[safe: section]?.contains(.autoRestartSleepTimer) == true {
-            return SettingsTableHeader(frame: headerFrame, title: L10n.sleepTimer)
+            return L10n.sleepTimer
         }
-
         return nil
     }
 
@@ -474,9 +464,6 @@ class GeneralSettingsViewController: PCViewController, UITableViewDelegate, UITa
         }
     }
 
-    func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int) {
-        ThemeableTable.setHeaderFooterTextColor(on: view)
-    }
 
     private func promptToApplyGroupingToAll(grouping: PodcastGrouping) {
         let groupingPrompt = OptionsPicker(title: nil)

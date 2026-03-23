@@ -26,6 +26,8 @@ extension UpNextViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard tableData[section] == .upNextSection, tableData.count > 1 else { return nil }
         let headerView = self.headerView
+        // Ensure section header is transparent so Liquid Glass shows through
+        headerView.backgroundColor = .clear
 
         updateTimeRemainingLabel()
 

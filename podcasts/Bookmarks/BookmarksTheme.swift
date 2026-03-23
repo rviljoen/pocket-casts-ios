@@ -62,7 +62,7 @@ class BookmarksPlayerTabStyle: ThemeObserver, BookmarksStyle {
 // MARK: - Default Themed Style
 
 class ThemedBookmarksStyle: ThemeObserver, BookmarksStyle {
-    var background: Color { theme.primaryUi01 }
+    var background: Color { theme.primaryUi02 }
     var primaryText: Color { theme.primaryText01 }
     var secondaryText: Color { theme.primaryText02 }
     var tertiaryText: Color { theme.primaryText02 }
@@ -74,7 +74,7 @@ class ThemedBookmarksStyle: ThemeObserver, BookmarksStyle {
     var selectButton: Color { theme.primaryInteractive01 }
     var selectCheck: Color { theme.primaryInteractive02 }
     var playButtonText: Color { theme.primaryText01 }
-    var playButtonBackground: Color? { theme.primaryUi01 }
+    var playButtonBackground: Color? { theme.primaryUi02 }
     var playButtonStroke: Color? { theme.primaryText01 }
     var actionBarStyle = ThemedActionBarStyle()
     var emptyStyle = DefaultEmptyStateStyle()
@@ -89,7 +89,7 @@ class OverrideThemedBookmarksStyle: ThemedBookmarksStyle {
         self.overrideTheme = overrideTheme
     }
 
-    override var background: Color { Color(ThemeColor.primaryUi01(for: overrideTheme)) }
+    override var background: Color { Color(ThemeColor.primaryUi02(for: overrideTheme)) }
     override var primaryText: Color { Color(ThemeColor.primaryText01(for: overrideTheme)) }
     override var secondaryText: Color { Color(ThemeColor.primaryText02(for: overrideTheme)) }
     override var tertiaryText: Color { Color(ThemeColor.primaryText02(for: overrideTheme)) }
@@ -101,7 +101,7 @@ class OverrideThemedBookmarksStyle: ThemedBookmarksStyle {
     override var selectButton: Color { Color(ThemeColor.primaryInteractive01(for: overrideTheme)) }
     override var selectCheck: Color { Color(ThemeColor.primaryInteractive02(for: overrideTheme)) }
     override var playButtonText: Color { Color(ThemeColor.primaryText01(for: overrideTheme)) }
-    override var playButtonBackground: Color? { Color(ThemeColor.primaryUi01(for: overrideTheme)) }
+    override var playButtonBackground: Color? { Color(ThemeColor.primaryUi02(for: overrideTheme)) }
     override var playButtonStroke: Color? {
         set { }
         get { Color(ThemeColor.primaryText01(for: overrideTheme)) }

@@ -139,15 +139,15 @@ class PCViewController: SimpleNotificationsViewController {
         let navigationBar = navController.navigationBar
         let titleColor = navTitleColor ?? AppTheme.navBarTitleColor()
         let iconsColor = navIconsColor ?? AppTheme.navBarIconsColor()
-        let backgroundColor = navBgColor ?? ThemeColor.secondaryUi01()
 
         navigationBar.backIndicatorImage = UIImage(named: "nav-back")?.tintedImage(iconsColor)
         navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "nav-back")?.tintedImage(iconsColor)
         googleCastBtn?.customView?.tintColor = iconsColor
 
         let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = backgroundColor
+        
+        appearance.configureWithTransparentBackground()
+
         appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: titleColor]
         appearance.largeTitleTextAttributes = [
             NSAttributedString.Key.foregroundColor: titleColor,

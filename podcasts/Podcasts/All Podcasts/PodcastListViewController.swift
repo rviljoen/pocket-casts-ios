@@ -9,7 +9,6 @@ import SafariServices
 
 class PodcastListViewController: PCViewController, UIGestureRecognizerDelegate, ShareListDelegate {
     let gridHelper = GridHelper()
-    var refreshControl: PCRefreshControl?
     var bannerAdModel: BannerAdModel?
 
     /// Indicates whether the banner ad is currently animating to indicate to the collection view layout which size to use
@@ -82,7 +81,6 @@ class PodcastListViewController: PCViewController, UIGestureRecognizerDelegate, 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        refreshControl?.parentViewControllerDidAppear()
 
         updateInsets()
         refreshGridItems()
@@ -128,7 +126,6 @@ class PodcastListViewController: PCViewController, UIGestureRecognizerDelegate, 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         bannerTask?.cancel()
-        refreshControl?.parentViewControllerDidDisappear()
         navigationController?.navigationBar.shadowImage = nil
         removeAllCustomObservers()
     }
@@ -499,16 +496,127 @@ class PodcastListViewController: PCViewController, UIGestureRecognizerDelegate, 
 
 extension PodcastListViewController {
     private func setupRefreshControl() {
-        guard let navController = navigationController else {
-            return
+        let refreshControl = UIRefreshControl()
+        refreshControl.tintColor = .clear // Hide default spinner
+        refreshControl.addTarget(self, action: #selector(refreshData(_:)), for: .valueChanged)
+        
+        // Add custom animation views
+        setupCustomRefreshAnimation(in: refreshControl)
+        
+        podcastsCollectionView.refreshControl = refreshControl
+        
+        // Add notification observers to end refresh when complete
+        addCustomObserver(ServerNotifications.podcastsRefreshed, selector: #selector(endRefreshControl))
+        addCustomObserver(ServerNotifications.podcastRefreshFailed, selector: #selector(endRefreshControl))
+        addCustomObserver(ServerNotifications.syncCompleted, selector: #selector(endRefreshControl))
+        addCustomObserver(ServerNotifications.syncFailed, selector: #selector(endRefreshControl))
+    }
+    
+    private func setupCustomRefreshAnimation(in refreshControl: UIRefreshControl) {
+        let refreshInnerImage = UIImageView()
+        let refreshOuterImage = UIImageView()
+        let refreshLabel = UILabel()
+        
+        // Setup label
+        refreshLabel.text = L10n.refreshControlPullToRefresh
+        refreshLabel.textAlignment = .center
+        refreshLabel.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        refreshLabel.textColor = UIColor(hex: "#B8C3C9")
+        refreshLabel.tag = 100 // For finding later
+        
+        // Setup images
+        refreshInnerImage.image = UIImage(named: "refresh_inner")?.withRenderingMode(.alwaysTemplate)
+        refreshInnerImage.tintColor = UIColor(hex: "#B8C3C9")
+        refreshInnerImage.tag = 101
+        
+        refreshOuterImage.image = UIImage(named: "refresh_outer")?.withRenderingMode(.alwaysTemplate)
+        refreshOuterImage.tintColor = UIColor(hex: "#B8C3C9")
+        refreshOuterImage.tag = 102
+        
+        // Add to refresh control
+        refreshControl.addSubview(refreshLabel)
+        refreshControl.addSubview(refreshInnerImage)
+        refreshControl.addSubview(refreshOuterImage)
+        
+        // Setup constraints
+        refreshLabel.translatesAutoresizingMaskIntoConstraints = false
+        refreshInnerImage.translatesAutoresizingMaskIntoConstraints = false
+        refreshOuterImage.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            refreshLabel.centerXAnchor.constraint(equalTo: refreshControl.centerXAnchor),
+            refreshLabel.topAnchor.constraint(equalTo: refreshControl.topAnchor, constant: 30),
+            
+            refreshInnerImage.centerXAnchor.constraint(equalTo: refreshControl.centerXAnchor),
+            refreshInnerImage.topAnchor.constraint(equalTo: refreshControl.topAnchor, constant: 5),
+            
+            refreshOuterImage.centerXAnchor.constraint(equalTo: refreshControl.centerXAnchor),
+            refreshOuterImage.topAnchor.constraint(equalTo: refreshControl.topAnchor, constant: 5)
+        ])
+    }
+    
+    @objc private func refreshData(_ sender: UIRefreshControl) {
+        // Update label and start animation
+        if let label = sender.viewWithTag(100) as? UILabel {
+            label.text = L10n.refreshControlFetchingEpisodes
         }
-
-        refreshControl = PCRefreshControl(scrollView: podcastsCollectionView,
-                                          navBar: navController.navigationBar,
-                                          searchBar: searchController,
-                                          source: .podcastsList)
+        startCustomAnimation(in: sender)
+        
+        RefreshManager.shared.refreshPodcasts()
+    }
+    
+    private func startCustomAnimation(in refreshControl: UIRefreshControl) {
+        guard let innerImage = refreshControl.viewWithTag(101) as? UIImageView,
+              let outerImage = refreshControl.viewWithTag(102) as? UIImageView else { return }
+        
+        let innerRotation = CABasicAnimation(keyPath: "transform.rotation.z")
+        innerRotation.fromValue = 0
+        innerRotation.toValue = Double.pi * 2
+        innerRotation.duration = 1.0
+        innerRotation.repeatCount = Float.infinity
+        innerImage.layer.add(innerRotation, forKey: "innerRotation")
+        
+        let outerRotation = CABasicAnimation(keyPath: "transform.rotation.z")
+        outerRotation.fromValue = 0
+        outerRotation.toValue = Double.pi * 2
+        outerRotation.duration = 1.5
+        outerRotation.repeatCount = Float.infinity
+        outerImage.layer.add(outerRotation, forKey: "outerRotation")
+    }
+    
+    private func stopCustomAnimation(in refreshControl: UIRefreshControl) {
+        guard let innerImage = refreshControl.viewWithTag(101) as? UIImageView,
+              let outerImage = refreshControl.viewWithTag(102) as? UIImageView else { return }
+        
+        innerImage.layer.removeAnimation(forKey: "innerRotation")
+        outerImage.layer.removeAnimation(forKey: "outerRotation")
+    }
+    
+    @objc private func endRefreshControl() {
+        DispatchQueue.main.async { [weak self] in
+            guard let refreshControl = self?.podcastsCollectionView.refreshControl else { return }
+            
+            // Update label
+            if let label = refreshControl.viewWithTag(100) as? UILabel {
+                label.text = L10n.refreshControlRefreshComplete
+            }
+            
+            // Stop animation and end refreshing after a brief delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self?.stopCustomAnimation(in: refreshControl)
+                refreshControl.endRefreshing()
+                
+                // Reset label only after refresh control is fully hidden
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    if let label = refreshControl.viewWithTag(100) as? UILabel {
+                        label.text = L10n.refreshControlPullToRefresh
+                    }
+                }
+            }
+        }
     }
 }
+
 
 // MARK: - Podcast list
 

@@ -17,7 +17,8 @@ struct BookmarksProfileListView: View {
         .toolbar {
             toolbar
         }
-        .background(style.background.ignoresSafeArea())
+        .background(style.background)
+        .ignoresSafeArea(edges: .bottom)
     }
 
     @ToolbarContentBuilder

@@ -91,12 +91,18 @@ struct EpisodeDetailTabView: View {
 private extension View {
     func applyStyle(theme: Theme, highlighted: Bool = false, isSmallScreen: Bool) -> some View {
         self
-            .contentShape(Rectangle())
+            .contentShape(Capsule())
             .padding(.vertical, 8)
-            .padding(.horizontal, isSmallScreen ? 6 : 12)
+            .padding(.horizontal, isSmallScreen ? 10 : 14)
             .foregroundColor(highlighted ? theme.primaryUi01 : theme.primaryText02)
-            .background(highlighted ? theme.primaryText01 : nil)
+            .background(
+                Capsule()
+                    .fill(highlighted ? theme.primaryText01 : .clear)
+            )
+            .overlay(
+                Capsule()
+                    .stroke(theme.primaryText02.opacity(highlighted ? 0 : 0.25), lineWidth: 1)
+            )
             .animation(.linear(duration: 0.1), value: highlighted)
-            .cornerRadius(8)
     }
 }
