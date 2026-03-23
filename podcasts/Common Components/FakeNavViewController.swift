@@ -271,10 +271,12 @@ class FakeNavViewController: PCViewController, UIScrollViewDelegate {
         } else {
             fakeNavView.backgroundColor = ThemeColor.primaryUi01()
             fakeNavTitle.textColor = AppTheme.mainTextColor()
-            updateButtonsBackgroundColors(tintColor: ThemeColor.primaryIcon01(), backgroundColor: .clear)
+            //updateButtonsBackgroundColors(tintColor: ThemeColor.primaryIcon01(), backgroundColor: .clear)
+            updateButtonsBackgroundColors(tintColor: .white, backgroundColor: .black.withAlphaComponent(0.35))
             let config = UIImage.SymbolConfiguration(pointSize: 22, weight: .semibold)
-            backBtn.setImage(UIImage(systemName: "chevron.backward")?.withConfiguration(config), for: .normal)
-            backBtnLeadingConstraint?.constant = 6
+            //backBtn.setImage(UIImage(systemName: "chevron.backward")?.withConfiguration(config), for: .normal)
+            backBtn.setImage(UIImage(systemName: "chevron.backward"), for: .normal)
+            backBtnLeadingConstraint?.constant = 16
         }
     }
 
