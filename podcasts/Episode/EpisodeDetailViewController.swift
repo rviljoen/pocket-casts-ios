@@ -15,6 +15,7 @@ class EpisodeDetailViewController: FakeNavViewController, UIDocumentInteractionC
     private var tabContainerView: UIView? = nil
     private var tabContainerTrailingAnchor: NSLayoutConstraint? = nil
     private var tabViewModel: EpisodeTabsViewModel? = nil
+    private var tabSpacerView: UIView? = nil
 
     private lazy var bookmarksController: BookmarkEpisodeListController = {
         return BookmarkEpisodeListController(episode: episode, themeOverride: themeOverride)
@@ -448,6 +449,7 @@ class EpisodeDetailViewController: FakeNavViewController, UIDocumentInteractionC
         let bgColor = ThemeColor.primaryUi01(for: themeOverride)
         showNotesWebView.backgroundColor = bgColor
         view.backgroundColor = bgColor
+        tabSpacerView?.backgroundColor = bgColor
 
         let podcastColor = (themeOverride?.isDark ?? Theme.isDarkTheme()) ? ColorManager.darkThemeTintForPodcast(podcast) : ColorManager.lightThemeTintForPodcast(podcast)
         podcastName.textColor = ThemeColor.podcastText02(podcastColor: podcastColor, for: themeOverride)
@@ -647,11 +649,14 @@ private extension EpisodeDetailViewController {
             tabContainerView.leadingAnchor.constraint(equalTo: backBtn.trailingAnchor),
             trailingAnchor,
             tabContainerView.topAnchor.constraint(equalTo: backBtn.topAnchor),
-            tabContainerView.bottomAnchor.constraint(equalTo: backBtn.bottomAnchor)
+            tabContainerView.bottomAnchor.constraint(equalTo: backBtn.bottomAnchor),
         ])
 
         self.tabContainerView = tabContainerView
         self.tabContainerTrailingAnchor = trailingAnchor
+
+        // Add spacer view between tabs and scroll view
+        addTabSpacerView()
 
         let viewModel = EpisodeTabsViewModel(tabs: [
             .init(title: L10n.episodeDetailsTitle),
@@ -747,6 +752,29 @@ private extension EpisodeDetailViewController {
 
         self.tabContainerTrailingAnchor = trailingAnchor
     }
+
+    private func addTabSpacerView() {
+        let spacerView = UIView()
+        spacerView.backgroundColor = ThemeColor.primaryUi01(for: themeOverride)
+        spacerView.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(spacerView)
+        view.bringSubviewToFront(fakeNavView)
+
+        NSLayoutConstraint.activate([
+            spacerView.topAnchor.constraint(equalTo: fakeNavView.bottomAnchor),
+            spacerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            spacerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            spacerView.heightAnchor.constraint(equalToConstant: EpisodeDetailConstants.tabSpacing)
+        ])
+
+        self.tabSpacerView = spacerView
+
+        // Adjust content insets to prevent scrolling under the spacer
+        let totalTopInset = EpisodeDetailConstants.topPadding + EpisodeDetailConstants.tabSpacing
+        mainScrollView.contentInset = UIEdgeInsets(top: totalTopInset, left: 0, bottom: Constants.Values.miniPlayerOffset, right: 0)
+        mainScrollView.scrollIndicatorInsets = UIEdgeInsets(top: totalTopInset, left: 0, bottom: Constants.Values.miniPlayerOffset, right: 0)
+    }
 }
 
 enum EpisodeDetailViewSource: String, AnalyticsDescribable {
@@ -767,6 +795,9 @@ private enum EpisodeDetailConstants {
     /// The amount of padding to apply to the top of the view
     /// This allows it to clear the fake nav bar
     static let topPadding = 56.0
+
+    /// The spacing between the tab bar and scroll view content
+    static let tabSpacing = 12.0
 }
 
 // MARK: - Dynamic Type support

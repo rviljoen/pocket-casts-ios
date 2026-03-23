@@ -18,7 +18,8 @@ extension PCSearchBarController {
             let offset = PCSearchBarController.defaultHeight + yPos
             newValue = min(0, -offset)
         } else {
-            newValue = -PCSearchBarController.defaultHeight
+            // Allow search bar to scroll completely out of view instead of stopping at the top
+            newValue = -PCSearchBarController.defaultHeight - yPos
         }
 
         if searchControllerTopConstant.constant != newValue {
@@ -33,7 +34,8 @@ extension PCSearchBarController {
         let scrollingDown = scrollView.panGestureRecognizer.velocity(in: scrollView).y >= 0
         let shouldChangeInset = (yPos < -PCSearchBarController.peekAmountBeforeAutoOpen)
         let shouldAnimateDown = (!decelerate && scrollingDown && shouldChangeInset && yPos > -PCSearchBarController.defaultHeight)
-        let shouldAnimateUp = (!decelerate && !scrollingDown && yPos > -PCSearchBarController.defaultHeight && yPos < 0)
+        
+        // Remove shouldAnimateUp logic since we want the search bar to stay scrolled out when scrolling up
 
         if shouldChangeInset, scrollView.contentInset.top != PCSearchBarController.defaultHeight {
             scrollView.contentInset = UIEdgeInsets(top: PCSearchBarController.defaultHeight, left: scrollView.contentInset.left, bottom: scrollView.contentInset.bottom, right: scrollView.contentInset.right)
@@ -41,8 +43,6 @@ extension PCSearchBarController {
 
         if shouldAnimateDown {
             scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: -PCSearchBarController.defaultHeight - topOffset), animated: true)
-        } else if shouldAnimateUp {
-            scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: -topOffset), animated: true)
         }
     }
 }

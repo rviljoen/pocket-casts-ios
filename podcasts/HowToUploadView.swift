@@ -10,7 +10,7 @@ struct HowToUploadView: View {
             instructionsScrollView()
             doneButton()
         }
-        .background(theme.primaryUi01)
+        .background(theme.primaryUi02)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 dismissButton()

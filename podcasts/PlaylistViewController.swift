@@ -8,8 +8,6 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
     var filter: EpisodeFilter
     var isNewFilter = false
 
-    private var tableRefreshControl: PCRefreshControl?
-    private var noEpisodesRefreshControl: PCRefreshControl?
 
     private lazy var operationQueue: OperationQueue = {
         let queue = OperationQueue()
@@ -158,10 +156,7 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
 
         insetAdjuster.setupInsetAdjustmentsForMiniPlayer(scrollView: tableView)
 
-        if let navController = navigationController {
-            tableRefreshControl = PCRefreshControl(scrollView: tableView, navBar: navController.navigationBar, source: analyticsSource)
-            noEpisodesRefreshControl = PCRefreshControl(scrollView: noEpisodesScrollView, navBar: navController.navigationBar, source: .noFilters)
-        }
+        setupRefreshControls()
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(navTitleTapped(shortPress:)))
         navigationController?.navigationBar.addGestureRecognizer(tap)
@@ -177,6 +172,8 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
         filterCollectionView.filter = filter
 
         isChipHidden = !isNewFilter
+        filterCollectionView.isHidden = isChipHidden
+        filterCollectionView.alpha = isChipHidden ? 0 : 1
 
         loadingIndicator = ThemeLoadingIndicator()
 
@@ -204,8 +201,6 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
 
         addEventObservers()
 
-        tableRefreshControl?.parentViewControllerDidAppear()
-        noEpisodesRefreshControl?.parentViewControllerDidAppear()
 
         updateNavTintColor()
 
@@ -215,8 +210,6 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         removeAllCustomObservers()
-        tableRefreshControl?.parentViewControllerDidDisappear()
-        noEpisodesRefreshControl?.parentViewControllerDidDisappear()
         navigationController?.navigationBar.shadowImage = nil
     }
 
@@ -279,31 +272,6 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
         }
     }
 
-    // MARK: - UIScrollView
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard !isMultiSelectEnabled else { return }
-        let selectedRefreshControl: PCRefreshControl?
-        if scrollView == noEpisodesScrollView {
-            selectedRefreshControl = noEpisodesRefreshControl
-        } else {
-            selectedRefreshControl = tableRefreshControl
-        }
-
-        selectedRefreshControl?.scrollViewDidScroll(scrollView)
-    }
-
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        guard !isMultiSelectEnabled else { return }
-        let selectedRefreshControl: PCRefreshControl?
-        if scrollView == noEpisodesScrollView {
-            selectedRefreshControl = noEpisodesRefreshControl
-        } else {
-            selectedRefreshControl = tableRefreshControl
-        }
-
-        selectedRefreshControl?.scrollViewDidEndDragging(scrollView)
-    }
 
     @objc func moreTapped() {
         Analytics.track(.filterOptionsButtonTapped)
@@ -423,11 +391,11 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
         let titleColor = ThemeColor.filterText01(filterColor: filterColor)
         let iconColor = ThemeColor.filterIcon01(filterColor: filterColor)
         let backgroundColor = ThemeColor.filterUi01(filterColor: filterColor)
-        changeNavTint(titleColor: titleColor, iconsColor: iconColor, backgroundColor: backgroundColor)
+        // Use transparent navigation bar for modern glass effect
+        changeNavTint(titleColor: titleColor, iconsColor: iconColor, backgroundColor: .clear)
         titleView.setTintColor(newColor: iconColor)
         themeDividerTop.backgroundColor = ThemeColor.filterUi04(filterColor: filterColor)
 
-        filterCollectionView.backgroundColor = backgroundColor
     }
 
     func arrowTapped() {
@@ -453,8 +421,10 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
         titleView.arrowButton.setExpanded(false)
         themeDividerTopAnchor.constant = 0
         UIView.animate(withDuration: Constants.Animation.defaultAnimationTime, delay: 0, options: .curveEaseInOut, animations: {
+            self.filterCollectionView.alpha = 0
             self.view.layoutIfNeeded()
         }, completion: { _ in
+            self.filterCollectionView.isHidden = true
             self.titleView.accessibilityHint = L10n.accessibilityShowFilterDetails
         })
     }
@@ -462,8 +432,10 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
     func showFilterChips() {
         isChipHidden = false
         titleView.arrowButton.setExpanded(true)
+        filterCollectionView.isHidden = false
         themeDividerTopAnchor.constant = 52
         UIView.animate(withDuration: Constants.Animation.defaultAnimationTime, delay: 0, options: .curveEaseInOut, animations: {
+            self.filterCollectionView.alpha = 1
             self.view.layoutIfNeeded()
         }, completion: { _ in
             self.titleView.accessibilityHint = L10n.accessibilityHideFilterDetails
@@ -587,6 +559,167 @@ class PlaylistViewController: PCViewController, TitleButtonDelegate {
             }
         }
         return count
+    }
+}
+
+// MARK: - Refresh Control
+
+extension PlaylistViewController {
+    private func setupRefreshControls() {
+        setupTableRefreshControl()
+        setupNoEpisodesRefreshControl()
+        
+        // Add notification observers to end refresh when complete
+        addCustomObserver(ServerNotifications.podcastsRefreshed, selector: #selector(endRefreshControl))
+        addCustomObserver(ServerNotifications.podcastRefreshFailed, selector: #selector(endRefreshControl))
+        addCustomObserver(ServerNotifications.syncCompleted, selector: #selector(endRefreshControl))
+        addCustomObserver(ServerNotifications.syncFailed, selector: #selector(endRefreshControl))
+    }
+    
+    private func setupTableRefreshControl() {
+        let refreshControl = UIRefreshControl()
+        refreshControl.tintColor = .clear // Hide default spinner
+        refreshControl.addTarget(self, action: #selector(tableRefreshData(_:)), for: .valueChanged)
+        
+        // Add custom animation views
+        setupCustomRefreshAnimation(in: refreshControl)
+        
+        tableView.refreshControl = refreshControl
+    }
+    
+    private func setupNoEpisodesRefreshControl() {
+        let refreshControl = UIRefreshControl()
+        refreshControl.tintColor = .clear // Hide default spinner
+        refreshControl.addTarget(self, action: #selector(noEpisodesRefreshData(_:)), for: .valueChanged)
+        
+        // Add custom animation views
+        setupCustomRefreshAnimation(in: refreshControl)
+        
+        noEpisodesScrollView.refreshControl = refreshControl
+    }
+    
+    private func setupCustomRefreshAnimation(in refreshControl: UIRefreshControl) {
+        let refreshInnerImage = UIImageView()
+        let refreshOuterImage = UIImageView()
+        let refreshLabel = UILabel()
+        
+        // Setup label
+        refreshLabel.text = L10n.refreshControlPullToRefresh
+        refreshLabel.textAlignment = .center
+        refreshLabel.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        refreshLabel.textColor = UIColor(hex: "#B8C3C9")
+        refreshLabel.tag = 100 // For finding later
+        
+        // Setup images
+        refreshInnerImage.image = UIImage(named: "refresh_inner")?.withRenderingMode(.alwaysTemplate)
+        refreshInnerImage.tintColor = UIColor(hex: "#B8C3C9")
+        refreshInnerImage.tag = 101
+        
+        refreshOuterImage.image = UIImage(named: "refresh_outer")?.withRenderingMode(.alwaysTemplate)
+        refreshOuterImage.tintColor = UIColor(hex: "#B8C3C9")
+        refreshOuterImage.tag = 102
+        
+        // Add to refresh control
+        refreshControl.addSubview(refreshLabel)
+        refreshControl.addSubview(refreshInnerImage)
+        refreshControl.addSubview(refreshOuterImage)
+        
+        // Setup constraints
+        refreshLabel.translatesAutoresizingMaskIntoConstraints = false
+        refreshInnerImage.translatesAutoresizingMaskIntoConstraints = false
+        refreshOuterImage.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            refreshLabel.centerXAnchor.constraint(equalTo: refreshControl.centerXAnchor),
+            refreshLabel.topAnchor.constraint(equalTo: refreshControl.topAnchor, constant: 30),
+            
+            refreshInnerImage.centerXAnchor.constraint(equalTo: refreshControl.centerXAnchor),
+            refreshInnerImage.topAnchor.constraint(equalTo: refreshControl.topAnchor, constant: 5),
+            
+            refreshOuterImage.centerXAnchor.constraint(equalTo: refreshControl.centerXAnchor),
+            refreshOuterImage.topAnchor.constraint(equalTo: refreshControl.topAnchor, constant: 5)
+        ])
+    }
+    
+    @objc private func tableRefreshData(_ sender: UIRefreshControl) {
+        // Update label and start animation
+        if let label = sender.viewWithTag(100) as? UILabel {
+            label.text = L10n.refreshControlFetchingEpisodes
+        }
+        startCustomAnimation(in: sender)
+        
+        RefreshManager.shared.refreshPodcasts()
+    }
+    
+    @objc private func noEpisodesRefreshData(_ sender: UIRefreshControl) {
+        // Update label and start animation
+        if let label = sender.viewWithTag(100) as? UILabel {
+            label.text = L10n.refreshControlFetchingEpisodes
+        }
+        startCustomAnimation(in: sender)
+        
+        RefreshManager.shared.refreshPodcasts()
+    }
+    
+    private func startCustomAnimation(in refreshControl: UIRefreshControl) {
+        guard let innerImage = refreshControl.viewWithTag(101) as? UIImageView,
+              let outerImage = refreshControl.viewWithTag(102) as? UIImageView else { return }
+        
+        let innerRotation = CABasicAnimation(keyPath: "transform.rotation.z")
+        innerRotation.fromValue = 0
+        innerRotation.toValue = Double.pi * 2
+        innerRotation.duration = 1.0
+        innerRotation.repeatCount = Float.infinity
+        innerImage.layer.add(innerRotation, forKey: "innerRotation")
+        
+        let outerRotation = CABasicAnimation(keyPath: "transform.rotation.z")
+        outerRotation.fromValue = 0
+        outerRotation.toValue = Double.pi * 2
+        outerRotation.duration = 1.5
+        outerRotation.repeatCount = Float.infinity
+        outerImage.layer.add(outerRotation, forKey: "outerRotation")
+    }
+    
+    private func stopCustomAnimation(in refreshControl: UIRefreshControl) {
+        guard let innerImage = refreshControl.viewWithTag(101) as? UIImageView,
+              let outerImage = refreshControl.viewWithTag(102) as? UIImageView else { return }
+        
+        innerImage.layer.removeAnimation(forKey: "innerRotation")
+        outerImage.layer.removeAnimation(forKey: "outerRotation")
+    }
+    
+    @objc private func endRefreshControl() {
+        DispatchQueue.main.async { [weak self] in
+            // End refresh for table view
+            if let tableRefreshControl = self?.tableView.refreshControl {
+                self?.endSpecificRefreshControl(tableRefreshControl)
+            }
+            
+            // End refresh for no episodes scroll view
+            if let noEpisodesRefreshControl = self?.noEpisodesScrollView.refreshControl {
+                self?.endSpecificRefreshControl(noEpisodesRefreshControl)
+            }
+        }
+    }
+    
+    private func endSpecificRefreshControl(_ refreshControl: UIRefreshControl) {
+        // Update label
+        if let label = refreshControl.viewWithTag(100) as? UILabel {
+            label.text = L10n.refreshControlRefreshComplete
+        }
+        
+        // Stop animation and end refreshing after a brief delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.stopCustomAnimation(in: refreshControl)
+            refreshControl.endRefreshing()
+            
+            // Reset label only after refresh control is fully hidden
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                if let label = refreshControl.viewWithTag(100) as? UILabel {
+                    label.text = L10n.refreshControlPullToRefresh
+                }
+            }
+        }
     }
 }
 

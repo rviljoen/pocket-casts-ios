@@ -5,18 +5,29 @@ extension MiniPlayerViewController {
     func hideMiniPlayer(_ animated: Bool) {
         if !miniPlayerShowing() { return } // already hidden
 
-        if animated {
-            view.superview?.layoutIfNeeded()
-            UIView.animate(withDuration: Constants.Animation.defaultAnimationTime, animations: { () in
-                self.moveToHiddenBottomPosition()
-            }, completion: { _ in
-                NotificationCenter.postOnMainThread(notification: Constants.Notifications.miniPlayerDidDisappear)
-                self.view.isHidden = true
-            })
-        } else {
-            moveToHiddenBottomPosition()
+        // Check if we're operating as a UITabAccessory (iOS 26.0+)
+        if #available(iOS 26.0, *),
+           let tabController = rootViewController(),
+           tabController.bottomAccessory?.contentView == self.view {
+            // For tab accessories, simply remove the accessory - iOS handles animation
+            tabController.bottomAccessory = nil
             NotificationCenter.postOnMainThread(notification: Constants.Notifications.miniPlayerDidDisappear)
             view.isHidden = true
+        } else {
+            // Traditional animation approach for older iOS or non-accessory usage
+            if animated {
+                view.superview?.layoutIfNeeded()
+                UIView.animate(withDuration: Constants.Animation.defaultAnimationTime, animations: { () in
+                    self.moveToHiddenBottomPosition()
+                }, completion: { _ in
+                    NotificationCenter.postOnMainThread(notification: Constants.Notifications.miniPlayerDidDisappear)
+                    self.view.isHidden = true
+                })
+            } else {
+                moveToHiddenBottomPosition()
+                NotificationCenter.postOnMainThread(notification: Constants.Notifications.miniPlayerDidDisappear)
+                view.isHidden = true
+            }
         }
     }
 
@@ -26,16 +37,27 @@ extension MiniPlayerViewController {
         // only show if something is playing
         if PlaybackManager.shared.currentEpisode() == nil { return }
 
-        changeHeightTo(desiredHeight())
-        moveToHiddenBottomPosition()
-        self.view.isHidden = false
-        view.superview?.layoutIfNeeded()
-        UIView.animate(withDuration: 0.2, animations: { () in
-            self.moveToShownPosition()
-        }, completion: { _ in
-            self.moveToShownPosition() // call this again in case the animation block wasn't called. It's ok to call this twice
+        // Check if we're operating as a UITabAccessory (iOS 26.0+)
+        if #available(iOS 26.0, *),
+           let tabController = rootViewController() {
+            // For tab accessories, recreate the accessory - iOS handles animation
+            let accessory = UITabAccessory(contentView: self.view)
+            tabController.bottomAccessory = accessory
+            self.view.isHidden = false
             NotificationCenter.postOnMainThread(notification: Constants.Notifications.miniPlayerDidAppear)
-        })
+        } else {
+            // Traditional animation approach for older iOS or non-accessory usage
+            changeHeightTo(desiredHeight())
+            moveToHiddenBottomPosition()
+            self.view.isHidden = false
+            view.superview?.layoutIfNeeded()
+            UIView.animate(withDuration: 0.2, animations: { () in
+                self.moveToShownPosition()
+            }, completion: { _ in
+                self.moveToShownPosition() // call this again in case the animation block wasn't called. It's ok to call this twice
+                NotificationCenter.postOnMainThread(notification: Constants.Notifications.miniPlayerDidAppear)
+            })
+        }
     }
 
     func openFullScreenPlayer(completion: (() -> Void)? = nil) {
