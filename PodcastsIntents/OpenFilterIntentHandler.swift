@@ -5,7 +5,7 @@ import UIKit
 
 class OpenFilterIntentHandler: NSObject, SJOpenFilterIntentHandling {
     func handle(intent: SJOpenFilterIntent, completion: @escaping (SJOpenFilterIntentResponse) -> Void) {
-        let userActivity = NSUserActivity(activityType: "au.com.shiftyjelly.podcasts")
+        let userActivity = NSUserActivity(activityType: "pocketcasts.ruanviljoen.local.id")
 
         userActivity.isEligibleForSearch = true
         if let filterName = intent.filterName {
