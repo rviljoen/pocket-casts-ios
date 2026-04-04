@@ -325,6 +325,13 @@
 		5B104ADE91E4462C94DA3D4E /* PlayLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A423129B3C4C4D06B7223468 /* PlayLogViewController.swift */; };
 		647145BE2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647145BD2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift */; };
 		647145C02F71795000080287 /* SettingsDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647145BF2F71786400080287 /* SettingsDetailViewController.swift */; };
+		64CB6E0F2F819FB3008BDCCA /* OnDeviceTranscriptModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CB6E0B2F819FB3008BDCCA /* OnDeviceTranscriptModels.swift */; };
+		64CB6E102F819FB3008BDCCA /* OnDeviceTranscriptFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CB6E0A2F819FB3008BDCCA /* OnDeviceTranscriptFormatter.swift */; };
+		64CB6E112F819FB3008BDCCA /* OnDeviceTranscriptService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CB6E0C2F819FB3008BDCCA /* OnDeviceTranscriptService.swift */; };
+		64CB6E122F819FB3008BDCCA /* OnDeviceTranscriptViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CB6E0E2F819FB3008BDCCA /* OnDeviceTranscriptViewModel.swift */; };
+		64CB6E132F819FB3008BDCCA /* OnDeviceTranscriptCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CB6E092F819FB3008BDCCA /* OnDeviceTranscriptCache.swift */; };
+		64CB6E142F819FB3008BDCCA /* OnDeviceTranscriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CB6E0D2F819FB3008BDCCA /* OnDeviceTranscriptView.swift */; };
+		64CB6E162F81A013008BDCCA /* Speech.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64CB6E152F81A013008BDCCA /* Speech.framework */; };
 		81C8677C17743B85BF586B0B /* VoiceBoostN.c in Sources */ = {isa = PBXBuildFile; fileRef = 14DD11DB5830A48ACE6928B2 /* VoiceBoostN.c */; };
 		8B0845932A66C86C00742C2F /* Share Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2F90990B2A4F88B00044FC55 /* Share Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8B087FC929DC976F0027EAE5 /* PodcastImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B087FC829DC976F0027EAE5 /* PodcastImage.swift */; };
@@ -1861,9 +1868,16 @@
 		46FBD8CD276A876900867746 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Intents.strings; sourceTree = "<group>"; };
 		46FBD8CF276A876B00867746 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Intents.strings; sourceTree = "<group>"; };
 		46FBD8D1276A876D00867746 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Intents.strings; sourceTree = "<group>"; };
-		871975870906424F8C3C70B0 /* Modules */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Modules; sourceTree = SOURCE_ROOT; };
 		647145BD2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ChapterFilterKeywordsViewController.swift; path = podcasts/ChapterFilterKeywordsViewController.swift; sourceTree = "<group>"; };
 		647145BF2F71786400080287 /* SettingsDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SettingsDetailViewController.swift; path = podcasts/SettingsDetailViewController.swift; sourceTree = "<group>"; };
+		64CB6E092F819FB3008BDCCA /* OnDeviceTranscriptCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OnDeviceTranscriptCache.swift; path = podcasts/Transcripts/OnDevice/OnDeviceTranscriptCache.swift; sourceTree = "<group>"; };
+		64CB6E0A2F819FB3008BDCCA /* OnDeviceTranscriptFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OnDeviceTranscriptFormatter.swift; path = podcasts/Transcripts/OnDevice/OnDeviceTranscriptFormatter.swift; sourceTree = "<group>"; };
+		64CB6E0B2F819FB3008BDCCA /* OnDeviceTranscriptModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OnDeviceTranscriptModels.swift; path = podcasts/Transcripts/OnDevice/OnDeviceTranscriptModels.swift; sourceTree = "<group>"; };
+		64CB6E0C2F819FB3008BDCCA /* OnDeviceTranscriptService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OnDeviceTranscriptService.swift; path = podcasts/Transcripts/OnDevice/OnDeviceTranscriptService.swift; sourceTree = "<group>"; };
+		64CB6E0D2F819FB3008BDCCA /* OnDeviceTranscriptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OnDeviceTranscriptView.swift; path = podcasts/Transcripts/OnDevice/OnDeviceTranscriptView.swift; sourceTree = "<group>"; };
+		64CB6E0E2F819FB3008BDCCA /* OnDeviceTranscriptViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OnDeviceTranscriptViewModel.swift; path = podcasts/Transcripts/OnDevice/OnDeviceTranscriptViewModel.swift; sourceTree = "<group>"; };
+		64CB6E152F81A013008BDCCA /* Speech.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Speech.framework; path = System/Library/Frameworks/Speech.framework; sourceTree = SDKROOT; };
+		871975870906424F8C3C70B0 /* Modules */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Modules; sourceTree = SOURCE_ROOT; };
 		8B087FC829DC976F0027EAE5 /* PodcastImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastImage.swift; sourceTree = "<group>"; };
 		8B10E78528D908A900702C54 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8B15E7212AD050EE0077F45A /* DMSans.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = DMSans.ttf; sourceTree = "<group>"; };
@@ -2973,6 +2987,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				64CB6E162F81A013008BDCCA /* Speech.framework in Frameworks */,
 				46C22EE028F73D9A00F4173B /* AuthenticationServices.framework in Frameworks */,
 				468F00D327CD575C00FFAAAA /* FirebasePerformance in Frameworks */,
 				BD11C41D2524741C00E308E6 /* CarPlay.framework in Frameworks */,
@@ -4563,6 +4578,12 @@
 		BDBD53E317019B290048C8C5 = {
 			isa = PBXGroup;
 			children = (
+				64CB6E092F819FB3008BDCCA /* OnDeviceTranscriptCache.swift */,
+				64CB6E0A2F819FB3008BDCCA /* OnDeviceTranscriptFormatter.swift */,
+				64CB6E0B2F819FB3008BDCCA /* OnDeviceTranscriptModels.swift */,
+				64CB6E0C2F819FB3008BDCCA /* OnDeviceTranscriptService.swift */,
+				64CB6E0D2F819FB3008BDCCA /* OnDeviceTranscriptView.swift */,
+				64CB6E0E2F819FB3008BDCCA /* OnDeviceTranscriptViewModel.swift */,
 				647145BF2F71786400080287 /* SettingsDetailViewController.swift */,
 				647145BD2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift */,
 				FF57373B2B4EB5B100F511C7 /* CHANGELOG.md */,
@@ -4608,6 +4629,7 @@
 		BDBD53EE17019B2A0048C8C5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				64CB6E152F81A013008BDCCA /* Speech.framework */,
 				46C22EDF28F73D9900F4173B /* AuthenticationServices.framework */,
 				BD11C41C2524741C00E308E6 /* CarPlay.framework */,
 				BD3C61A5221A91150061341D /* liblottie-ios.a */,
@@ -7206,6 +7228,12 @@
 				8BFB434E2A1FFB4B00F3D409 /* StatusPageViewModel.swift in Sources */,
 				4006E31123A88AE600174DEB /* ExpandedCollectionViewController.swift in Sources */,
 				BD5E8D3D2061E0FB00C84B43 /* PodcastManager+Cleanup.swift in Sources */,
+				64CB6E0F2F819FB3008BDCCA /* OnDeviceTranscriptModels.swift in Sources */,
+				64CB6E102F819FB3008BDCCA /* OnDeviceTranscriptFormatter.swift in Sources */,
+				64CB6E112F819FB3008BDCCA /* OnDeviceTranscriptService.swift in Sources */,
+				64CB6E122F819FB3008BDCCA /* OnDeviceTranscriptViewModel.swift in Sources */,
+				64CB6E132F819FB3008BDCCA /* OnDeviceTranscriptCache.swift in Sources */,
+				64CB6E142F819FB3008BDCCA /* OnDeviceTranscriptView.swift in Sources */,
 				407083CF25424840002FC9F8 /* FilterPreviewViewController+TableView.swift in Sources */,
 				9AF646912E5B775300627836 /* PlaylistDetailViewController+EditActions.swift in Sources */,
 				BDEAA17D1BB140CE001097D9 /* SwitchCell.swift in Sources */,

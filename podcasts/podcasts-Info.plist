@@ -1032,6 +1032,8 @@
 	<string>Pocket Casts needs permission to save this image to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Pocket Casts needs permission to save this image to your photo library.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Pocket Casts uses on-device speech recognition to generate transcripts.</string>
 	<key>NSSupportsLiveActivities</key>
 	<true/>
 	<key>NSUserActivityTypes</key>
