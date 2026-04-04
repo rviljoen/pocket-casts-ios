@@ -72,7 +72,7 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
         return item
     }()
 
-    lazy var transcriptsItem: TranscriptViewController = {
+    private func makeTranscriptViewController() -> TranscriptViewController {
         let playbackManager = PlaybackManager.shared
         let item = TranscriptViewController(playbackManager: playbackManager)
 
@@ -80,7 +80,9 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
         item.scrollViewHandler = self
         item.containerDelegate = self
         return item
-    }()
+    }
+
+    private var transcriptsItem: TranscriptViewController?
 
     private lazy var generatedTranscriptsPremiumOverlay: GeneratedTranscriptsPremiumOverlay = {
         let playbackManager = PlaybackManager.shared
@@ -130,9 +132,8 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
 
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppWillBecomeActive), name: UIApplication.willEnterForegroundNotification, object: nil)
 
-        // To avoid weird animations when apearing, we add the transcript view here
         #if !APPCLIP
-        configureTranscriptView()
+        configureTranscriptContainerView()
         #endif
     }
 
@@ -149,7 +150,7 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
 
         #if !APPCLIP
         if nowPlayingItem.displayTranscript {
-            transcriptsItem.didDisappear()
+            transcriptsItem?.didDisappear()
             generatedTranscriptsPremiumOverlay.didDisappear()
         }
         #endif
@@ -255,7 +256,7 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
         #if !APPCLIP
         chaptersItem.themeDidChange()
         showNotesItem.themeDidChange()
-        transcriptsItem.themeDidChange()
+        transcriptsItem?.themeDidChange()
         #endif
     }
 
@@ -334,6 +335,9 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
 
     #if !APPCLIP
     func showTranscript() {
+        let transcriptsItem = transcriptsItem ?? makeTranscriptViewController()
+        self.transcriptsItem = transcriptsItem
+
         addChild(transcriptsItem)
         transcriptContainerView.addSubview(transcriptsItem.view)
         transcriptsItem.view.anchorToAllSidesOf(view: transcriptContainerView)
@@ -369,19 +373,18 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
     }
 
     func hideTranscript() {
+        guard let transcriptsItem else { return }
         transcriptsItem.willBeRemovedFromPlayer()
         transcriptsItem.willMove(toParent: nil)
         transcriptsItem.removeFromParent()
         transcriptsItem.view.removeFromSuperview()
         transcriptsItem.didDisappear()
+        self.transcriptsItem = nil
     }
 
-    private func configureTranscriptView() {
+    private func configureTranscriptContainerView() {
         transcriptContainerView.bottomAnchor.constraint(equalTo: nowPlayingItem.bottomControlsStackView.topAnchor).isActive = true
         transcriptContainerView.backgroundColor = PlayerColorHelper.playerBackgroundColor01()
-
-        transcriptContainerView.addSubview(transcriptsItem.view)
-        transcriptsItem.view.anchorToAllSidesOf(view: transcriptContainerView)
     }
     #endif
 }
