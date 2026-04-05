@@ -87,7 +87,7 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
     private let settingsCellId = "SettingsCell"
     private let endOfYearPromptCell = "EndOfYearPromptCell"
 
-    enum TableRow { case informationalBanner, kidsProfile, referralsClaim, allStats, downloaded, starred, listeningHistory, help, uploadedFiles, endOfYearPrompt, bookmarks, playLogs }
+    enum TableRow { case informationalBanner, kidsProfile, referralsClaim, allStats, downloaded, transcriptionQueue, onDeviceTranscripts, starred, listeningHistory, help, uploadedFiles, endOfYearPrompt, bookmarks, playLogs }
 
     lazy private var informationalBannerCoordinator: InformationalBannerViewCoordinator = {
         let viewModel = InformationalBannerViewModel(bannerType: .profile)
@@ -387,6 +387,12 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
         case .downloaded:
             cell.settingsImage.image = UIImage(named: "profile-download")
             cell.settingsLabel.text = L10n.downloads
+        case .transcriptionQueue:
+            cell.settingsImage.image = UIImage(systemName: "captions.bubble")
+            cell.settingsLabel.text = L10n.transcriptionQueue
+        case .onDeviceTranscripts:
+            cell.settingsImage.image = UIImage(systemName: "text.page")
+            cell.settingsLabel.text = L10n.onDeviceTranscripts
         case .uploadedFiles:
             cell.settingsImage.image = UIImage(named: "profile_files")
             cell.settingsLabel.text = L10n.files
@@ -466,6 +472,22 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
         case .downloaded:
             let downloadController = DownloadsViewController()
             navigationController?.pushViewController(downloadController, animated: true)
+        case .transcriptionQueue:
+            if #available(iOS 26.0, *) {
+                let queueController = OnDeviceTranscriptQueueViewController()
+                navigationController?.pushViewController(queueController, animated: true)
+            }
+        case .onDeviceTranscripts:
+            if #available(iOS 26.0, *) {
+                let transcriptsController = OnDeviceTranscriptLibraryViewController { [weak navigationController] item in
+                    let detailController = OnDeviceTranscriptReaderViewController(
+                        episodeUUID: item.episodeUUID,
+                        title: item.title
+                    )
+                    navigationController?.pushViewController(detailController, animated: true)
+                }
+                navigationController?.pushViewController(transcriptsController, animated: true)
+            }
         case .uploadedFiles:
             let uploadedController = UploadedViewController()
             navigationController?.pushViewController(uploadedController, animated: true)
@@ -514,7 +536,13 @@ class ProfileViewController: PCViewController, UITableViewDataSource, UITableVie
 
     private func refreshTableData() {
         var data: [[ProfileViewController.TableRow]]
-        data = [[.allStats, .downloaded, .uploadedFiles, .starred, .bookmarks, .listeningHistory, .playLogs, .help]]
+        var primaryRows: [ProfileViewController.TableRow] = [.allStats, .downloaded]
+        if #available(iOS 26.0, *) {
+            primaryRows.append(.transcriptionQueue)
+            primaryRows.append(.onDeviceTranscripts)
+        }
+        primaryRows.append(contentsOf: [.uploadedFiles, .starred, .bookmarks, .listeningHistory, .playLogs, .help])
+        data = [primaryRows]
 
         if EndOfYear.isEndOfYearActive, EndOfYear.isEligible {
             data[0].insert(.endOfYearPrompt, at: 0)
@@ -692,3 +720,250 @@ extension ProfileViewController: PlusLockedInfoDelegate {
 // MARK: - Pull to Refresh (Disabled)
 // Pull to refresh functionality has been removed from the profile page
 // The setupRefreshControl method and scroll delegate methods have been commented out
+
+@available(iOS 26.0, *)
+private struct OnDeviceTranscriptQueueScreen: View {
+    @ObservedObject private var queueStore = OnDeviceTranscriptQueueStore.shared
+    @EnvironmentObject private var theme: Theme
+
+    var body: some View {
+        Group {
+            if queueStore.queueState.activeItem == nil, queueStore.queueState.queuedItems.isEmpty {
+                emptyState
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        if let activeItem = queueStore.queueState.activeItem {
+                            section(title: "Transcribing now") {
+                                queueCard(for: activeItem, showsProgress: true)
+                            }
+                        }
+
+                        if !queueStore.queueState.queuedItems.isEmpty {
+                            section(title: "Queued episodes") {
+                                VStack(spacing: 12) {
+                                    ForEach(queueStore.queueState.queuedItems) { item in
+                                        queueCard(for: item, showsProgress: false)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(16)
+                }
+            }
+        }
+        .background(theme.primaryUi02)
+        .navigationTitle(L10n.transcriptionQueue)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 12) {
+            Text(L10n.transcriptionQueue)
+                .font(.headline)
+                .foregroundStyle(theme.primaryText01)
+
+            Text("Downloaded episodes will appear here while they wait to be transcribed.")
+                .font(.subheadline)
+                .foregroundStyle(theme.primaryText02)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(24)
+    }
+
+    private func section<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(theme.primaryText02)
+            content()
+        }
+    }
+
+    private func queueCard(for item: OnDeviceTranscriptQueueStore.QueueItem, showsProgress: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(item.title)
+                .font(.body.weight(.semibold))
+                .foregroundStyle(theme.primaryText01)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if showsProgress {
+                ProgressView(value: item.progress)
+                    .tint(theme.primaryText01)
+
+                if !item.progressLabel.isEmpty {
+                    Text(item.progressLabel)
+                        .font(.footnote)
+                        .foregroundStyle(theme.primaryText02)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
+        .background(theme.primaryUi01)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+    }
+}
+
+@available(iOS 26.0, *)
+private final class OnDeviceTranscriptQueueViewController: PCHostingController<OnDeviceTranscriptQueueScreen> {
+    init() {
+        super.init(rootView: OnDeviceTranscriptQueueScreen())
+        title = L10n.transcriptionQueue
+    }
+
+    @MainActor required dynamic init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+@available(iOS 26.0, *)
+private struct OnDeviceTranscriptLibraryScreen: View {
+    @ObservedObject private var queueStore = OnDeviceTranscriptQueueStore.shared
+    @EnvironmentObject private var theme: Theme
+    let onSelect: (OnDeviceTranscriptQueueStore.TranscriptLibraryItem) -> Void
+
+    var body: some View {
+        Group {
+            if queueStore.transcriptLibrary.isEmpty {
+                emptyState
+            } else {
+                List(queueStore.transcriptLibrary) { item in
+                    Button {
+                        onSelect(item)
+                    } label: {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(item.title)
+                                .foregroundStyle(theme.primaryText01)
+
+                            if let subtitle = subtitle(for: item), !subtitle.isEmpty {
+                                Text(subtitle)
+                                    .font(.footnote)
+                                    .foregroundStyle(theme.primaryText02)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    .buttonStyle(.plain)
+                    .listRowBackground(theme.primaryUi02)
+                    .listRowSeparatorTint(theme.primaryUi05)
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(theme.primaryUi04)
+            }
+        }
+        .background(theme.primaryUi04)
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 12) {
+            Text(L10n.onDeviceTranscripts)
+                .font(.headline)
+                .foregroundStyle(theme.primaryText01)
+
+            Text("Completed transcripts will appear here once they have been processed on device.")
+                .font(.subheadline)
+                .foregroundStyle(theme.primaryText02)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(24)
+        .background(theme.primaryUi04)
+    }
+
+    private func subtitle(for item: OnDeviceTranscriptQueueStore.TranscriptLibraryItem) -> String? {
+        let dateString = item.publishedDate.map(Self.dateFormatter.string(from:))
+
+        switch (item.podcastTitle, dateString) {
+        case let (podcastTitle?, dateString?):
+            return "\(podcastTitle) • \(dateString)"
+        case let (podcastTitle?, nil):
+            return podcastTitle
+        case let (nil, dateString?):
+            return dateString
+        case (nil, nil):
+            return nil
+        }
+    }
+
+    private static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter
+    }()
+}
+
+@available(iOS 26.0, *)
+private struct OnDeviceTranscriptReaderScreen: View {
+    let episodeUUID: String
+    let title: String
+
+    @ObservedObject private var queueStore = OnDeviceTranscriptQueueStore.shared
+    @EnvironmentObject private var theme: Theme
+
+    private var paragraphs: [OnDeviceTranscriptParagraph] {
+        queueStore.snapshot(for: episodeUUID)?.paragraphs ?? []
+    }
+
+    var body: some View {
+        Group {
+            if paragraphs.isEmpty {
+                VStack(spacing: 12) {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundStyle(theme.primaryText01)
+
+                    Text("This transcript is not available in memory yet.")
+                        .font(.subheadline)
+                        .foregroundStyle(theme.primaryText02)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(24)
+            } else {
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        ForEach(paragraphs) { paragraph in
+                            Text(paragraph.text)
+                                .font(size: 17, style: .body, weight: .regular)
+                                .foregroundStyle(theme.primaryText01)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.vertical, 12)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 24)
+                }
+            }
+        }
+        .background(theme.primaryUi04)
+    }
+}
+
+@available(iOS 26.0, *)
+private final class OnDeviceTranscriptLibraryViewController: PCHostingController<OnDeviceTranscriptLibraryScreen> {
+    init(onSelect: @escaping (OnDeviceTranscriptQueueStore.TranscriptLibraryItem) -> Void) {
+        super.init(rootView: OnDeviceTranscriptLibraryScreen(onSelect: onSelect))
+        title = L10n.onDeviceTranscripts
+    }
+
+    @MainActor required dynamic init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+@available(iOS 26.0, *)
+private final class OnDeviceTranscriptReaderViewController: PCHostingController<OnDeviceTranscriptReaderScreen> {
+    init(episodeUUID: String, title: String) {
+        super.init(rootView: OnDeviceTranscriptReaderScreen(episodeUUID: episodeUUID, title: title))
+        self.title = title
+    }
+
+    @MainActor required dynamic init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}

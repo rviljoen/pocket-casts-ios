@@ -2,49 +2,56 @@ import Combine
 import Foundation
 import PocketCastsUtils
 
-/// Drives the on-device transcript UI. Loads transcript data for a given episode,
-/// and keeps `currentWordIndex` / `currentParagraphIndex` in sync with the player.
+/// Drives the on-device transcript UI and keeps `currentParagraphIndex` in sync
+/// with the player.
 @MainActor
 final class OnDeviceTranscriptViewModel: ObservableObject {
+    struct ScrollRequest: Equatable {
+        let paragraphID: Int
+        let token = UUID()
+    }
 
     @Published private(set) var state: OnDeviceTranscriptionState = .idle
     @Published private(set) var paragraphs: [OnDeviceTranscriptParagraph] = []
-    @Published private(set) var words: [OnDeviceTranscriptWord] = []
-    @Published private(set) var rawResults: [OnDeviceRawTranscriptionResult] = []
     @Published private(set) var progress: Double = 0
     @Published private(set) var progressLabel: String = ""
-    @Published private(set) var currentWordIndex: Int? = nil
     @Published private(set) var currentParagraphIndex: Int? = nil
+    @Published private(set) var scrollRequest: ScrollRequest? = nil
+    @Published private(set) var isOutOfSync = false
+    @Published private(set) var activeQueueItem: OnDeviceTranscriptQueueStore.QueueItem?
+    @Published private(set) var queuedQueueItems: [OnDeviceTranscriptQueueStore.QueueItem] = []
 
     private let playbackManager: TranscriptPlaybackManaging
+    private let transcriptQueueStore = OnDeviceTranscriptQueueStore.shared
     private var syncTimer: AnyCancellable?
-    private var transcriptionTask: Task<Void, Never>?
+    private var queueSubscription: AnyCancellable?
+    private var observedEpisodeUUID: String?
+    private var lastSyncedPlaybackTime: TimeInterval?
+    private var autoSyncEnabled = true
+    private var autoSyncResumeTask: Task<Void, Never>?
 
     init(playbackManager: TranscriptPlaybackManaging) {
         self.playbackManager = playbackManager
+        queueSubscription = transcriptQueueStore.objectWillChange
+            .sink { [weak self] in
+                self?.refreshFromQueue()
+            }
     }
 
-    deinit {
-        transcriptionTask?.cancel()
-    }
+    // MARK: - Observe
 
-    // MARK: - Load
-
-    func load(episodeFileURL: URL) {
-        guard #available(iOS 26.0, *) else {
-            state = .unavailable
-            return
+    func observe(episodeUUID: String) {
+        if observedEpisodeUUID != episodeUUID {
+            observedEpisodeUUID = episodeUUID
+            autoSyncEnabled = true
+            isOutOfSync = false
+            autoSyncResumeTask?.cancel()
+            stopSync()
         }
-
-        transcriptionTask?.cancel()
-        transcriptionTask = Task {
-            await runTranscription(fileURL: episodeFileURL)
-        }
+        refreshFromQueue()
     }
 
     func cancel() {
-        transcriptionTask?.cancel()
-        transcriptionTask = nil
         stopSync()
     }
 
@@ -70,53 +77,102 @@ final class OnDeviceTranscriptViewModel: ObservableObject {
         PlaybackManager.shared.seekTo(time: paragraph.startTime)
     }
 
+    func userDidStartManualScroll() {
+        autoSyncResumeTask?.cancel()
+        autoSyncEnabled = false
+        isOutOfSync = true
+    }
+
+    func userDidStopManualScroll() {
+        autoSyncResumeTask?.cancel()
+        autoSyncResumeTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(3))
+            guard !Task.isCancelled else { return }
+            await self?.resumeAutoSync()
+        }
+    }
+
+    func resyncNow() {
+        autoSyncResumeTask?.cancel()
+        resumeAutoSync()
+    }
+
     // MARK: - Private
 
-    @available(iOS 26.0, *)
-    private func runTranscription(fileURL: URL) async {
-        let service = OnDeviceTranscriptService()
-
-        do {
-            state = .preparingAssets
-            let payload = try await service.transcribe(fileURL: fileURL) { [weak self] fraction, label in
-                guard let self else { return }
-                self.progress = fraction
-                self.progressLabel = label
-                if fraction > 0 && fraction < 1 {
-                    self.state = fraction < 0.5 ? .preparingAssets : .transcribing
-                }
-            }
-
-            guard !Task.isCancelled else { return }
-
-            words = payload.words
-            paragraphs = payload.paragraphs
-            rawResults = payload.rawResults
-            state = .completed
-            startSync()
-        } catch {
-            guard !Task.isCancelled else { return }
-            state = .error(error.localizedDescription)
+    private func refreshFromQueue() {
+        guard let observedEpisodeUUID else {
+            applyIdleState()
+            return
         }
+
+        guard let snapshot = transcriptQueueStore.snapshot(for: observedEpisodeUUID) else {
+            applyIdleState()
+            return
+        }
+
+        progress = snapshot.progress
+        progressLabel = snapshot.progressLabel
+        state = snapshot.state
+        activeQueueItem = transcriptQueueStore.queueState.activeItem
+        queuedQueueItems = transcriptQueueStore.queueState.queuedItems
+
+        if case .completed = snapshot.state {
+            paragraphs = snapshot.paragraphs
+            startSync()
+        } else {
+            paragraphs = []
+            currentParagraphIndex = nil
+            scrollRequest = nil
+            lastSyncedPlaybackTime = nil
+            autoSyncEnabled = true
+            isOutOfSync = false
+            autoSyncResumeTask?.cancel()
+            stopSync()
+        }
+    }
+
+    private func applyIdleState() {
+        state = .idle
+        paragraphs = []
+        progress = 0
+        progressLabel = ""
+        currentParagraphIndex = nil
+        scrollRequest = nil
+        lastSyncedPlaybackTime = nil
+        autoSyncEnabled = true
+        isOutOfSync = false
+        autoSyncResumeTask?.cancel()
+        activeQueueItem = transcriptQueueStore.queueState.activeItem
+        queuedQueueItems = transcriptQueueStore.queueState.queuedItems
+        stopSync()
     }
 
     private func updateSyncPosition() {
         let time = playbackManager.currentTime()
-        guard time >= 0, !words.isEmpty else {
-            currentWordIndex = nil
+        guard time >= 0, !paragraphs.isEmpty else {
             currentParagraphIndex = nil
             return
         }
 
-        if #available(iOS 26.0, *) {
-            currentWordIndex = OnDeviceTranscriptFormatter.currentWordIndex(in: words, at: time)
+        let newParagraphIndex = paragraphs.firstIndex { paragraph in
+            time >= paragraph.startTime && time < paragraph.endTime
+        } ?? paragraphs.lastIndex(where: { time >= $0.startTime })
+
+        if autoSyncEnabled,
+           let newParagraphIndex,
+           newParagraphIndex != currentParagraphIndex {
+            scrollRequest = ScrollRequest(paragraphID: paragraphs[newParagraphIndex].id)
         }
 
-        if let wordIndex = currentWordIndex {
-            let wordID = words[wordIndex].id
-            currentParagraphIndex = paragraphs.firstIndex { $0.words.contains { $0.id == wordID } }
-        } else {
-            currentParagraphIndex = nil
-        }
+        currentParagraphIndex = newParagraphIndex
+        lastSyncedPlaybackTime = time
+    }
+
+    private func resumeAutoSync() {
+        autoSyncEnabled = true
+        isOutOfSync = false
+        guard let currentParagraphIndex,
+              currentParagraphIndex < paragraphs.count else { return }
+        scrollRequest = ScrollRequest(paragraphID: paragraphs[currentParagraphIndex].id)
     }
 }

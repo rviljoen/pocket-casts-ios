@@ -20,8 +20,6 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
 
     private var onDeviceHostingController: UIViewController?
     private var onDeviceViewModel: OnDeviceTranscriptViewModel?
-    private var currentEpisodeUUID: String?
-    private var onDeviceTranscriptEpisodeUUID: String?
 
     // MARK: - Init
 
@@ -109,14 +107,6 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
     private func loadTranscript() {
         guard let episodeUUID = playbackManager.episodeUUID else { return }
 
-        if onDeviceTranscriptEpisodeUUID != episodeUUID {
-            onDeviceViewModel?.cancel()
-            onDeviceViewModel = nil
-            onDeviceTranscriptEpisodeUUID = episodeUUID
-        }
-
-        currentEpisodeUUID = episodeUUID
-
         if #available(iOS 26.0, *),
            let episode = DataManager.sharedManager.findEpisode(uuid: episodeUUID),
            episode.downloaded(pathFinder: DownloadManager.shared) {
@@ -128,25 +118,11 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
 
     @available(iOS 26.0, *)
     private func loadOnDeviceTranscript(for episode: Episode) {
-        let filePath = episode.pathToDownloadedFile(pathFinder: DownloadManager.shared)
-        let fileURL = URL(fileURLWithPath: filePath)
-
-        // Reuse the viewModel if transcription is already done, but always
-        // recreate the hosting controller — UIHostingController doesn't
-        // reliably re-render after its parent view leaves the window.
-        let needsTranscription: Bool
-        if let existing = onDeviceViewModel, existing.state == .completed {
-            needsTranscription = false
-        } else {
-            onDeviceViewModel?.cancel()
-            onDeviceViewModel = nil
-            needsTranscription = true
-        }
-
         removeOnDeviceHostingController()
 
         let viewModel = onDeviceViewModel ?? OnDeviceTranscriptViewModel(playbackManager: playbackManager)
         self.onDeviceViewModel = viewModel
+        viewModel.observe(episodeUUID: episode.uuid)
 
         let swiftUIView = OnDeviceTranscriptView(viewModel: viewModel) { [weak self] in
             self?.closeTapped()
@@ -167,12 +143,6 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
         hostingVC.didMove(toParent: self)
         onDeviceHostingController = hostingVC
         closeButton.isHidden = true
-
-        if needsTranscription {
-            viewModel.load(episodeFileURL: fileURL)
-        } else {
-            viewModel.startSync()
-        }
     }
 
     private func removeOnDeviceHostingController() {

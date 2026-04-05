@@ -2006,6 +2006,8 @@ internal enum L10n {
   internal static var off: String { return L10n.tr("Localizable", "off", fallback: "Off") }
   /// A common string used throughout the app. Used as a confirmation or acceptance.
   internal static var ok: String { return L10n.tr("Localizable", "ok", fallback: "OK") }
+  /// Title for the list of completed on-device transcripts shown under Profile.
+  internal static var onDeviceTranscripts: String { return L10n.tr("Localizable", "on_device_transcripts", fallback: "On-Device Transcripts") }
   /// A generic label representing the authour of the onboarding quotes describing users of the app
   internal static var onboardingQuoteAuthor: String { return L10n.tr("Localizable", "onboarding_quote_author", fallback: "Pocket Casts user") }
   /// A user review quote shown during onboarding
@@ -4223,6 +4225,8 @@ internal enum L10n {
   internal static func transcriptErrorNotSupported(_ p1: Any) -> String {
     return L10n.tr("Localizable", "transcript_error_not_supported", String(describing: p1), fallback: "Sorry, but this transcript format is not supported: %1$@")
   }
+  /// Title for the on-device transcription queue screen shown under Profile.
+  internal static var transcriptionQueue: String { return L10n.tr("Localizable", "transcription_queue", fallback: "Transcription Queue") }
   /// Label indicating that the trial period for the subscription or promotion has ended.
   internal static var trialFinished: String { return L10n.tr("Localizable", "trial_finished", fallback: "Trial Finished") }
   /// The Trim Silence feature, removes silence from podcasts to make them shorter.

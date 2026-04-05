@@ -1,6 +1,6 @@
 import Foundation
 
-struct OnDeviceTranscriptWord: Identifiable {
+struct OnDeviceTranscriptWord: Identifiable, Sendable {
     let id: Int
     let text: String
     let displayText: String
@@ -8,7 +8,7 @@ struct OnDeviceTranscriptWord: Identifiable {
     let duration: TimeInterval
 }
 
-struct OnDeviceTranscriptParagraph: Identifiable {
+struct OnDeviceTranscriptParagraph: Identifiable, Sendable {
     let id: Int
     let words: [OnDeviceTranscriptWord]
     let startTime: TimeInterval
@@ -19,14 +19,14 @@ struct OnDeviceTranscriptParagraph: Identifiable {
     }
 }
 
-struct OnDeviceTranscriptPayload {
+struct OnDeviceTranscriptPayload: Sendable {
     let audioHash: String
     let words: [OnDeviceTranscriptWord]
     let paragraphs: [OnDeviceTranscriptParagraph]
     let rawResults: [OnDeviceRawTranscriptionResult]
 }
 
-struct OnDeviceRawTranscriptionResult: Identifiable {
+struct OnDeviceRawTranscriptionResult: Identifiable, Sendable {
     let id: Int
     let text: String
     let rangeDescription: String
@@ -35,20 +35,20 @@ struct OnDeviceRawTranscriptionResult: Identifiable {
 
 // MARK: - Cache structs (Codable)
 
-struct CachedOnDeviceTranscript: Codable {
+struct CachedOnDeviceTranscript: Codable, Sendable {
     let audioHash: String
     let words: [CachedOnDeviceTranscriptWord]
     let rawResults: [CachedOnDeviceRawResult]
 }
 
-struct CachedOnDeviceTranscriptWord: Codable {
+struct CachedOnDeviceTranscriptWord: Codable, Sendable {
     let text: String
     let displayText: String
     let startTime: TimeInterval
     let duration: TimeInterval
 }
 
-struct CachedOnDeviceRawResult: Codable {
+struct CachedOnDeviceRawResult: Codable, Sendable {
     let text: String
     let rangeDescription: String
     let finalizationDescription: String
@@ -56,8 +56,9 @@ struct CachedOnDeviceRawResult: Codable {
 
 // MARK: - State
 
-enum OnDeviceTranscriptionState: Equatable {
+enum OnDeviceTranscriptionState: Equatable, Sendable {
     case idle
+    case queued
     case unavailable
     case preparingAssets
     case transcribing

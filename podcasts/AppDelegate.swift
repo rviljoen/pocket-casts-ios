@@ -94,6 +94,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         NotificationsHelper.shared.register(checkToken: false)
 
+        Task {
+            await OnDeviceTranscriptQueue.shared.start()
+        }
+
         DispatchQueue.global().async { [weak self] in
             guard let self else {
                 return
