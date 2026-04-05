@@ -9,16 +9,20 @@ struct OnDeviceTranscriptView: View {
     @EnvironmentObject var theme: Theme
 
     var body: some View {
-        ScrollViewReader { proxy in
-            ZStack(alignment: .top) {
-                contentView(proxy: proxy)
-                    .padding(.top, headerHeight)
+        GeometryReader { geometry in
+            ScrollViewReader { proxy in
+                ZStack(alignment: .topLeading) {
+                    contentView(proxy: proxy)
+                        .padding(.top, headerHeight)
 
-                topBar
-                    .zIndex(1)
-                    .ignoresSafeArea(.keyboard)
+                    header
+                        .padding(.horizontal, 12)
+                        .padding(.top, geometry.safeAreaInsets.top + 12)
+                        .zIndex(1)
+                        .ignoresSafeArea(.keyboard)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 
@@ -28,11 +32,14 @@ struct OnDeviceTranscriptView: View {
         case .idle:
             EmptyView()
 
+        case .queued:
+            queueStatusView
+
         case .unavailable:
             statusMessage("On-device transcription is not available on this device.")
 
         case .preparingAssets, .transcribing:
-            progressView
+            queueStatusView
 
         case .completed:
             transcriptScrollView(proxy: proxy)
@@ -44,10 +51,10 @@ struct OnDeviceTranscriptView: View {
 
     // MARK: - Progress
 
-    private var progressView: some View {
+    private func progressView(progress: Double, label: String) -> some View {
         VStack(spacing: 16) {
-            if viewModel.progress > 0 {
-                ProgressView(value: viewModel.progress)
+            if progress > 0 {
+                ProgressView(value: progress)
                     .tint(theme.playerContrast01)
                     .frame(maxWidth: 260)
             } else {
@@ -55,13 +62,55 @@ struct OnDeviceTranscriptView: View {
                     .tint(theme.playerContrast01)
             }
 
-            if !viewModel.progressLabel.isEmpty {
-                Text(viewModel.progressLabel)
+            if !label.isEmpty {
+                Text(label)
                     .font(size: 14, style: .footnote, weight: .regular)
                     .foregroundStyle(theme.playerContrast02)
             }
         }
         .padding()
+    }
+
+    private var queueStatusView: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                if let activeItem = viewModel.activeQueueItem {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Transcribing now")
+                            .font(size: 13, style: .footnote, weight: .semibold)
+                            .foregroundStyle(theme.playerContrast02)
+
+                        Text(activeItem.title)
+                            .font(size: 20, style: .body, weight: .semibold)
+                            .foregroundStyle(theme.playerContrast01)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        progressView(progress: activeItem.progress, label: activeItem.progressLabel)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+
+                if !viewModel.queuedQueueItems.isEmpty {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Queued episodes")
+                            .font(size: 13, style: .footnote, weight: .semibold)
+                            .foregroundStyle(theme.playerContrast02)
+
+                        VStack(alignment: .leading, spacing: 10) {
+                            ForEach(viewModel.queuedQueueItems) { item in
+                                Text(item.title)
+                                    .font(size: 16, style: .body, weight: .regular)
+                                    .foregroundStyle(theme.playerContrast01)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 24)
+        }
     }
 
     // MARK: - Transcript
@@ -82,43 +131,41 @@ struct OnDeviceTranscriptView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 24)
         }
-        .onChange(of: viewModel.currentParagraphIndex) { _, newIndex in
-            guard let newIndex,
-                  newIndex < viewModel.paragraphs.count else { return }
-            let paragraph = viewModel.paragraphs[newIndex]
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 8)
+                .onChanged { _ in
+                    viewModel.userDidStartManualScroll()
+                }
+                .onEnded { _ in
+                    viewModel.userDidStopManualScroll()
+                }
+        )
+        .onChange(of: viewModel.scrollRequest) { _, request in
+            guard let request else { return }
             withAnimation(.easeInOut(duration: 0.25)) {
-                proxy.scrollTo(paragraph.id, anchor: .center)
+                proxy.scrollTo(request.paragraphID, anchor: .center)
             }
         }
     }
 
     @ViewBuilder
     private func paragraphView(_ paragraph: OnDeviceTranscriptParagraph) -> some View {
-        let paragraphIndex = viewModel.paragraphs.firstIndex(where: { $0.id == paragraph.id })
-        let isActive = paragraphIndex != nil && viewModel.currentParagraphIndex == paragraphIndex
+        let isActive = viewModel.currentParagraphIndex == paragraph.id
 
         VStack(alignment: .leading, spacing: 0) {
-            WrappingWordLayout(spacing: 2, lineSpacing: 6) {
-                ForEach(paragraph.words) { word in
-                    Text(word.displayText + " ")
-                        .font(size: 17, style: .body, weight: .regular)
-                        .foregroundStyle(wordColor(for: word, paragraphIsActive: isActive))
-                        .fixedSize()
-                }
-            }
+            Text(paragraph.text)
+                .font(size: 17, style: .body, weight: .regular)
+                .foregroundStyle(paragraphColor(isActive: isActive))
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, 12)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle())
     }
 
-    private func wordColor(for word: OnDeviceTranscriptWord, paragraphIsActive: Bool) -> Color {
-        guard paragraphIsActive, let currentIndex = viewModel.currentWordIndex else {
-            return theme.playerContrast02
-        }
-        return word.id <= currentIndex
-            ? theme.playerContrast01
-            : theme.playerContrast02
+    private func paragraphColor(isActive: Bool) -> Color {
+        isActive ? theme.playerContrast01 : theme.playerContrast02
     }
 
     private func statusMessage(_ message: String) -> some View {
@@ -129,23 +176,40 @@ struct OnDeviceTranscriptView: View {
             .padding(32)
     }
 
-    private var topBar: some View {
+    private var header: some View {
         HStack {
-            Button(action: onClose) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(theme.playerContrast01)
-                    .frame(width: 44, height: 44)
-            }
-            .buttonStyle(.plain)
-            .glassEffect(.regular.interactive(), in: .circle)
-
+            closeButton
             Spacer()
+            if viewModel.isOutOfSync {
+                syncButton
+            }
         }
-        .padding(.horizontal, 12)
-        .padding(.top, 12)
-        .padding(.bottom, 8)
-        .frame(maxWidth: .infinity, alignment: .topLeading)
+    }
+
+    private var closeButton: some View {
+        Button(action: onClose) {
+            Image(systemName: "xmark")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(theme.playerContrast01)
+                .frame(width: 44, height: 44)
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.regular.interactive(), in: .circle)
+    }
+
+    private var syncButton: some View {
+        Button(action: viewModel.resyncNow) {
+            HStack(spacing: 6) {
+                Image(systemName: "location.north.line")
+                Text("Sync")
+            }
+            .font(.system(size: 14, weight: .semibold))
+            .foregroundStyle(theme.playerContrast01)
+            .frame(height: 44)
+            .padding(.horizontal, 14)
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.regular.interactive(), in: .capsule)
     }
 
     private var headerHeight: CGFloat {

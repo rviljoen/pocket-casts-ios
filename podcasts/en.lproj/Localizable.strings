@@ -5865,3 +5865,9 @@
 
 /* Generic error used when no internet connection is available. */
 "player_error_short_no_connection" = "You’re offline";
+
+/* Title for the on-device transcription queue screen shown under Profile. */
+"transcription_queue" = "Transcription Queue";
+
+/* Title for the list of completed on-device transcripts shown under Profile. */
+"on_device_transcripts" = "On-Device Transcripts";

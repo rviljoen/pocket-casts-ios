@@ -331,6 +331,7 @@
 		64CB6E122F819FB3008BDCCA /* OnDeviceTranscriptViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CB6E0E2F819FB3008BDCCA /* OnDeviceTranscriptViewModel.swift */; };
 		64CB6E132F819FB3008BDCCA /* OnDeviceTranscriptCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CB6E092F819FB3008BDCCA /* OnDeviceTranscriptCache.swift */; };
 		64CB6E142F819FB3008BDCCA /* OnDeviceTranscriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CB6E0D2F819FB3008BDCCA /* OnDeviceTranscriptView.swift */; };
+		64CB6E172F81A113008BDCCA /* OnDeviceTranscriptQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CB6E182F81A113008BDCCA /* OnDeviceTranscriptQueue.swift */; };
 		64CB6E162F81A013008BDCCA /* Speech.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64CB6E152F81A013008BDCCA /* Speech.framework */; };
 		81C8677C17743B85BF586B0B /* VoiceBoostN.c in Sources */ = {isa = PBXBuildFile; fileRef = 14DD11DB5830A48ACE6928B2 /* VoiceBoostN.c */; };
 		8B0845932A66C86C00742C2F /* Share Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2F90990B2A4F88B00044FC55 /* Share Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -1876,6 +1877,7 @@
 		64CB6E0C2F819FB3008BDCCA /* OnDeviceTranscriptService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OnDeviceTranscriptService.swift; path = podcasts/Transcripts/OnDevice/OnDeviceTranscriptService.swift; sourceTree = "<group>"; };
 		64CB6E0D2F819FB3008BDCCA /* OnDeviceTranscriptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OnDeviceTranscriptView.swift; path = podcasts/Transcripts/OnDevice/OnDeviceTranscriptView.swift; sourceTree = "<group>"; };
 		64CB6E0E2F819FB3008BDCCA /* OnDeviceTranscriptViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OnDeviceTranscriptViewModel.swift; path = podcasts/Transcripts/OnDevice/OnDeviceTranscriptViewModel.swift; sourceTree = "<group>"; };
+		64CB6E182F81A113008BDCCA /* OnDeviceTranscriptQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OnDeviceTranscriptQueue.swift; path = podcasts/Transcripts/OnDevice/OnDeviceTranscriptQueue.swift; sourceTree = "<group>"; };
 		64CB6E152F81A013008BDCCA /* Speech.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Speech.framework; path = System/Library/Frameworks/Speech.framework; sourceTree = SDKROOT; };
 		871975870906424F8C3C70B0 /* Modules */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Modules; sourceTree = SOURCE_ROOT; };
 		8B087FC829DC976F0027EAE5 /* PodcastImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastImage.swift; sourceTree = "<group>"; };
@@ -4584,6 +4586,7 @@
 				64CB6E0C2F819FB3008BDCCA /* OnDeviceTranscriptService.swift */,
 				64CB6E0D2F819FB3008BDCCA /* OnDeviceTranscriptView.swift */,
 				64CB6E0E2F819FB3008BDCCA /* OnDeviceTranscriptViewModel.swift */,
+				64CB6E182F81A113008BDCCA /* OnDeviceTranscriptQueue.swift */,
 				647145BF2F71786400080287 /* SettingsDetailViewController.swift */,
 				647145BD2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift */,
 				FF57373B2B4EB5B100F511C7 /* CHANGELOG.md */,
@@ -7234,6 +7237,7 @@
 				64CB6E122F819FB3008BDCCA /* OnDeviceTranscriptViewModel.swift in Sources */,
 				64CB6E132F819FB3008BDCCA /* OnDeviceTranscriptCache.swift in Sources */,
 				64CB6E142F819FB3008BDCCA /* OnDeviceTranscriptView.swift in Sources */,
+				64CB6E172F81A113008BDCCA /* OnDeviceTranscriptQueue.swift in Sources */,
 				407083CF25424840002FC9F8 /* FilterPreviewViewController+TableView.swift in Sources */,
 				9AF646912E5B775300627836 /* PlaylistDetailViewController+EditActions.swift in Sources */,
 				BDEAA17D1BB140CE001097D9 /* SwitchCell.swift in Sources */,
