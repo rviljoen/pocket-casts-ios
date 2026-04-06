@@ -24,6 +24,7 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
     private let compactArtworkView = UIImageView()
     private let compactEpisodeTitleLabel = UILabel()
     private let compactPodcastTitleLabel = UILabel()
+    private let dismissHandleView = UIView()
 
     // MARK: - Init
 
@@ -83,6 +84,12 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
     }()
 
     private func setupViews() {
+        dismissHandleView.translatesAutoresizingMaskIntoConstraints = false
+        dismissHandleView.backgroundColor = showFromEpisode ? ThemeColor.primaryText02().withAlphaComponent(0.35) : .clear
+        dismissHandleView.layer.cornerRadius = 2.5
+        dismissHandleView.isHidden = !showFromEpisode
+        view.addSubview(dismissHandleView)
+
         compactHeaderView.translatesAutoresizingMaskIntoConstraints = false
         compactHeaderView.isHidden = true
         view.addSubview(compactHeaderView)
@@ -111,6 +118,10 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         let topMargin = showFromEpisode ? 24.0 : 0.0
         NSLayoutConstraint.activate([
+            dismissHandleView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            dismissHandleView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            dismissHandleView.widthAnchor.constraint(equalToConstant: 36),
+            dismissHandleView.heightAnchor.constraint(equalToConstant: 5),
             compactHeaderView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12),
             compactHeaderView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             compactHeaderView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -178,7 +189,9 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
     @available(iOS 26.0, *)
     private func loadOnDeviceTranscript(for episode: Episode) {
         removeOnDeviceHostingController()
-        updateCompactHeader(for: episode)
+        if !showFromEpisode {
+            updateCompactHeader(for: episode)
+        }
 
         let viewModel = (onDeviceViewModelStorage as? OnDeviceTranscriptViewModel) ?? OnDeviceTranscriptViewModel(playbackManager: playbackManager)
         onDeviceViewModelStorage = viewModel
@@ -192,8 +205,10 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
 
         addChild(hostingVC)
         view.insertSubview(hostingVC.view, at: 0)
+        let topAnchor = showFromEpisode ? view.topAnchor : compactHeaderView.bottomAnchor
+        let topSpacing = showFromEpisode ? 0.0 : 12.0
         NSLayoutConstraint.activate([
-            hostingVC.view.topAnchor.constraint(equalTo: compactHeaderView.bottomAnchor, constant: 12),
+            hostingVC.view.topAnchor.constraint(equalTo: topAnchor, constant: topSpacing),
             hostingVC.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             hostingVC.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             hostingVC.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
@@ -201,7 +216,7 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
         hostingVC.didMove(toParent: self)
         onDeviceHostingController = hostingVC
         closeButton.isHidden = true
-        compactHeaderView.isHidden = false
+        compactHeaderView.isHidden = showFromEpisode
     }
 
     private func removeOnDeviceHostingController() {

@@ -50,8 +50,15 @@ extension EpisodeDetailViewController: WKNavigationDelegate, SFSafariViewControl
                     vc?.showNotesHolderTopAnchor?.constant = 0.0
                     vc?.showNotesWebViewTopConstraint?.constant = 20.0
                 }
-                if let metadata = try? await ShowInfoCoordinator.shared.loadTranscriptsMetadata(podcastUuid: parentIdentifier, episodeUuid: episodeUUID), !metadata.transcripts.isEmpty {
-                    let viewModel = TranscriptExcerptViewModel(episodeUUID: episodeUUID, podcastUUID: parentIdentifier, isGeneratedTranscript: metadata.hasGeneratedTranscripts) {
+                let hasLocalTranscriptAccess: Bool
+                if #available(iOS 26.0, *) {
+                    hasLocalTranscriptAccess = episode.downloaded(pathFinder: DownloadManager.shared) && OnDeviceTranscriptService.isSupported
+                } else {
+                    hasLocalTranscriptAccess = false
+                }
+
+                if hasLocalTranscriptAccess {
+                    let viewModel = TranscriptExcerptViewModel(episodeUUID: episodeUUID, podcastUUID: parentIdentifier, isGeneratedTranscript: false) {
                         DispatchQueue.main.async { [weak self] in
                             let playbackManager = TranscriptEpisodeInfoProvider(episodeUUID: episodeUUID, podcastUUID: parentIdentifier)
                             let controller = TranscriptContainerViewController(playbackManager: playbackManager)
