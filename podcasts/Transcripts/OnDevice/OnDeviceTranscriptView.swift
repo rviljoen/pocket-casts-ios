@@ -5,23 +5,23 @@ import SwiftUI
 @available(iOS 26.0, *)
 struct OnDeviceTranscriptView: View {
     @ObservedObject var viewModel: OnDeviceTranscriptViewModel
-    let onClose: () -> Void
     @EnvironmentObject var theme: Theme
 
     var body: some View {
         GeometryReader { geometry in
             ScrollViewReader { proxy in
-                ZStack(alignment: .topLeading) {
+                ZStack(alignment: .bottomTrailing) {
                     contentView(proxy: proxy)
-                        .padding(.top, headerHeight)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                    header
-                        .padding(.horizontal, 12)
-                        .padding(.top, geometry.safeAreaInsets.top + 12)
-                        .zIndex(1)
-                        .ignoresSafeArea(.keyboard)
+                    if viewModel.isOutOfSync {
+                        syncButton
+                            .padding(.horizontal, 12)
+                            .padding(.bottom, geometry.safeAreaInsets.bottom + 12)
+                            .zIndex(1)
+                            .ignoresSafeArea(.keyboard)
+                    }
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
     }
@@ -131,6 +131,9 @@ struct OnDeviceTranscriptView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 24)
         }
+        .mask {
+            transcriptEdgeFadeMask
+        }
         .simultaneousGesture(
             DragGesture(minimumDistance: 8)
                 .onChanged { _ in
@@ -148,13 +151,28 @@ struct OnDeviceTranscriptView: View {
         }
     }
 
+    private var transcriptEdgeFadeMask: some View {
+        GeometryReader { geometry in
+            let fadeHeight = min(28.0, geometry.size.height / 6)
+
+            VStack(spacing: 0) {
+                LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
+                    .frame(height: fadeHeight)
+                Rectangle()
+                    .fill(.black)
+                LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom)
+                    .frame(height: fadeHeight)
+            }
+        }
+    }
+
     @ViewBuilder
     private func paragraphView(_ paragraph: OnDeviceTranscriptParagraph) -> some View {
         let isActive = viewModel.currentParagraphIndex == paragraph.id
 
         VStack(alignment: .leading, spacing: 0) {
             if isActive {
-                WrappingWordLayout(spacing: 4, lineSpacing: 6) {
+                WrappingWordLayout(spacing: 4, lineSpacing: 2) {
                     ForEach(paragraph.words) { word in
                         Text(word.displayText)
                             .font(size: 17, style: .body, weight: .regular)
@@ -196,44 +214,15 @@ struct OnDeviceTranscriptView: View {
             .padding(32)
     }
 
-    private var header: some View {
-        HStack {
-            closeButton
-            Spacer()
-            if viewModel.isOutOfSync {
-                syncButton
-            }
-        }
-    }
-
-    private var closeButton: some View {
-        Button(action: onClose) {
-            Image(systemName: "xmark")
+    private var syncButton: some View {
+        Button(action: viewModel.resyncNow) {
+            Image(systemName: "arrow.counterclockwise")
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(theme.playerContrast01)
                 .frame(width: 44, height: 44)
         }
         .buttonStyle(.plain)
         .glassEffect(.regular.interactive(), in: .circle)
-    }
-
-    private var syncButton: some View {
-        Button(action: viewModel.resyncNow) {
-            HStack(spacing: 6) {
-                Image(systemName: "location.north.line")
-                Text("Sync")
-            }
-            .font(.system(size: 14, weight: .semibold))
-            .foregroundStyle(theme.playerContrast01)
-            .frame(height: 44)
-            .padding(.horizontal, 14)
-        }
-        .buttonStyle(.plain)
-        .glassEffect(.regular.interactive(), in: .capsule)
-    }
-
-    private var headerHeight: CGFloat {
-        72
     }
 }
 

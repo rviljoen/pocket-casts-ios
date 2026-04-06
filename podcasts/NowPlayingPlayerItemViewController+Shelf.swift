@@ -159,6 +159,8 @@ extension NowPlayingPlayerItemViewController: NowPlayingActionsDelegate {
             button.setImage(UIImage(named: action.largeIconName(episode: playingEpisode)), for: .normal)
             button.addTarget(self, action: #selector(transcriptTapped(_:)), for: .touchUpInside)
             button.accessibilityLabel = L10n.transcript
+            button.isTranscriptVisible = displayTranscript
+            transcriptShelfButton = button
 
             addToShelf(on: button)
             #endif
@@ -276,7 +278,7 @@ extension NowPlayingPlayerItemViewController: NowPlayingActionsDelegate {
 
     func transcriptTapped() {
         #if !APPCLIP
-        displayTranscript = true
+        displayTranscript.toggle()
         #endif
     }
 
@@ -404,7 +406,7 @@ extension NowPlayingPlayerItemViewController: NowPlayingActionsDelegate {
         }
         shelfButtonTapped(.transcript)
 
-        displayTranscript = true
+        displayTranscript.toggle()
         #endif
     }
 

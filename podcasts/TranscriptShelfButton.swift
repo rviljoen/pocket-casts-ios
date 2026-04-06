@@ -3,9 +3,14 @@ import PocketCastsDataModel
 
 class TranscriptShelfButton: UIButton, CheckTranscriptAvailability {
     var hasGeneratedTranscripts: Bool = false
+    var isTranscriptVisible = false {
+        didSet {
+            updateAppearance()
+        }
+    }
     var isTranscriptEnabled: Bool {
         didSet {
-            imageView?.tintColor = isTranscriptEnabled ? ThemeColor.playerContrast02() : ThemeColor.playerContrast06()
+            updateAppearance()
         }
     }
 
@@ -22,6 +27,16 @@ class TranscriptShelfButton: UIButton, CheckTranscriptAvailability {
 
     func addObservers() {
         addTranscriptObservers()
+    }
+
+    private func updateAppearance() {
+        if !isTranscriptEnabled {
+            imageView?.tintColor = ThemeColor.playerContrast06()
+        } else if isTranscriptVisible {
+            imageView?.tintColor = PlayerColorHelper.playerHighlightColor01(for: .dark)
+        } else {
+            imageView?.tintColor = ThemeColor.playerContrast02()
+        }
     }
 }
 
