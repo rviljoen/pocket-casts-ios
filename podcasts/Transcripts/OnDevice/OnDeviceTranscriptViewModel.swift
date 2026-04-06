@@ -5,6 +5,7 @@ import PocketCastsUtils
 /// Drives the on-device transcript UI and keeps `currentParagraphIndex` in sync
 /// with the player.
 @MainActor
+@available(iOS 26.0, *)
 final class OnDeviceTranscriptViewModel: ObservableObject {
     struct ScrollRequest: Equatable {
         let paragraphID: Int
@@ -16,6 +17,7 @@ final class OnDeviceTranscriptViewModel: ObservableObject {
     @Published private(set) var progress: Double = 0
     @Published private(set) var progressLabel: String = ""
     @Published private(set) var currentParagraphIndex: Int? = nil
+    @Published private(set) var currentWordID: Int? = nil
     @Published private(set) var scrollRequest: ScrollRequest? = nil
     @Published private(set) var isOutOfSync = false
     @Published private(set) var activeQueueItem: OnDeviceTranscriptQueueStore.QueueItem?
@@ -122,6 +124,7 @@ final class OnDeviceTranscriptViewModel: ObservableObject {
         } else {
             paragraphs = []
             currentParagraphIndex = nil
+            currentWordID = nil
             scrollRequest = nil
             lastSyncedPlaybackTime = nil
             autoSyncEnabled = true
@@ -137,6 +140,7 @@ final class OnDeviceTranscriptViewModel: ObservableObject {
         progress = 0
         progressLabel = ""
         currentParagraphIndex = nil
+        currentWordID = nil
         scrollRequest = nil
         lastSyncedPlaybackTime = nil
         autoSyncEnabled = true
@@ -151,6 +155,7 @@ final class OnDeviceTranscriptViewModel: ObservableObject {
         let time = playbackManager.currentTime()
         guard time >= 0, !paragraphs.isEmpty else {
             currentParagraphIndex = nil
+            currentWordID = nil
             return
         }
 
@@ -165,6 +170,16 @@ final class OnDeviceTranscriptViewModel: ObservableObject {
         }
 
         currentParagraphIndex = newParagraphIndex
+        if let newParagraphIndex {
+            let activeParagraph = paragraphs[newParagraphIndex]
+            if let wordIndex = OnDeviceTranscriptFormatter.currentWordIndex(in: activeParagraph.words, at: time) {
+                currentWordID = activeParagraph.words[wordIndex].id
+            } else {
+                currentWordID = activeParagraph.words.last(where: { time >= $0.startTime })?.id
+            }
+        } else {
+            currentWordID = nil
+        }
         lastSyncedPlaybackTime = time
     }
 

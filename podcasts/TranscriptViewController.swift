@@ -19,7 +19,7 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
     // MARK: - On-device transcript
 
     private var onDeviceHostingController: UIViewController?
-    private var onDeviceViewModel: OnDeviceTranscriptViewModel?
+    private var onDeviceViewModelStorage: AnyObject?
 
     // MARK: - Init
 
@@ -54,7 +54,10 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
 
     override func willBeRemovedFromPlayer() {
         removeAllCustomObservers()
-        onDeviceViewModel?.stopSync()
+        if #available(iOS 26.0, *),
+           let onDeviceViewModel = onDeviceViewModelStorage as? OnDeviceTranscriptViewModel {
+            onDeviceViewModel.stopSync()
+        }
         closeButton.isHidden = false
     }
 
@@ -120,8 +123,8 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
     private func loadOnDeviceTranscript(for episode: Episode) {
         removeOnDeviceHostingController()
 
-        let viewModel = onDeviceViewModel ?? OnDeviceTranscriptViewModel(playbackManager: playbackManager)
-        self.onDeviceViewModel = viewModel
+        let viewModel = (onDeviceViewModelStorage as? OnDeviceTranscriptViewModel) ?? OnDeviceTranscriptViewModel(playbackManager: playbackManager)
+        onDeviceViewModelStorage = viewModel
         viewModel.observe(episodeUUID: episode.uuid)
 
         let swiftUIView = OnDeviceTranscriptView(viewModel: viewModel) { [weak self] in
