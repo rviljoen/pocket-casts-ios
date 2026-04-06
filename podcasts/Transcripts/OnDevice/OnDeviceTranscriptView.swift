@@ -153,12 +153,24 @@ struct OnDeviceTranscriptView: View {
         let isActive = viewModel.currentParagraphIndex == paragraph.id
 
         VStack(alignment: .leading, spacing: 0) {
-            Text(paragraph.text)
-                .font(size: 17, style: .body, weight: .regular)
-                .foregroundStyle(paragraphColor(isActive: isActive))
-                .multilineTextAlignment(.leading)
+            if isActive {
+                WrappingWordLayout(spacing: 4, lineSpacing: 6) {
+                    ForEach(paragraph.words) { word in
+                        Text(word.displayText)
+                            .font(size: 17, style: .body, weight: .regular)
+                            .foregroundStyle(wordColor(for: word))
+                    }
+                }
                 .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 12)
+                .padding(.vertical, 12)
+            } else {
+                Text(paragraph.text)
+                    .font(size: 17, style: .body, weight: .regular)
+                    .foregroundStyle(paragraphColor(isActive: isActive))
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 12)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle())
@@ -166,6 +178,14 @@ struct OnDeviceTranscriptView: View {
 
     private func paragraphColor(isActive: Bool) -> Color {
         isActive ? theme.playerContrast01 : theme.playerContrast02
+    }
+
+    private func wordColor(for word: OnDeviceTranscriptWord) -> Color {
+        if let currentWordID = viewModel.currentWordID,
+           word.id <= currentWordID {
+            return theme.playerContrast01
+        }
+        return theme.playerContrast02
     }
 
     private func statusMessage(_ message: String) -> some View {
