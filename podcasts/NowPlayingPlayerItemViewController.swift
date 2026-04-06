@@ -242,6 +242,7 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
 
     private var bannerAdHostingController: PCHostingController<AnyView>?
     private var bannerAdHeightConstraint: NSLayoutConstraint?
+    weak var transcriptShelfButton: UIButton?
 
     private let analyticsPlaybackHelper = AnalyticsPlaybackHelper.shared
 
@@ -351,14 +352,11 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
 
         if playerControlsStackView.spacing != spacing { playerControlsStackView.spacing = spacing }
 
-        // Base height for play/pause. If zoomed and not showing transcript, scale down a bit.
-        let baseHeight: CGFloat = displayTranscript ? 40 : (view.bounds.height > 710 ? 100 : 80)
-        let scaledHeight: CGFloat = (!displayTranscript && isZoomed) ? baseHeight * 0.9 : baseHeight
+        let baseHeight: CGFloat = view.bounds.height > 710 ? 100 : 80
+        let scaledHeight: CGFloat = isZoomed ? baseHeight * 0.9 : baseHeight
         if playPauseHeightConstraint.constant != scaledHeight { playPauseHeightConstraint.constant = scaledHeight }
 
-        // Ensure skip buttons are not too large on zoomed displays.
-        // Use small size either when showing transcript or when display is zoomed.
-        let skipSize: SkipButton.Size = (displayTranscript || isZoomed) ? .small : .large
+        let skipSize: SkipButton.Size = isZoomed ? .small : .large
         skipBackBtn.changeSize(to: skipSize)
         skipFwdBtn.changeSize(to: skipSize)
 
@@ -534,47 +532,22 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
     private func toggleTranscript() {
         let isShowing = displayTranscript
 
-        skipBackBtn.prepareForAnimateTransition(withBackground: view.backgroundColor)
-        skipFwdBtn.prepareForAnimateTransition(withBackground: view.backgroundColor)
-        playPauseBtn.prepareForAnimateTransition()
-
         playerContainer?.transcriptContainerView.layer.opacity = isShowing ? 0 : 1
 
         episodeImage.layer.opacity = 1
+        (transcriptShelfButton as? TranscriptShelfButton)?.isTranscriptVisible = isShowing
 
         if isShowing {
             playerContainer?.showTranscript()
         }
 
-        UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.75, initialSpringVelocity: 1, animations: { [weak self] in
+        UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseInOut], animations: { [weak self] in
             guard let self else { return }
 
-            // Hide/show shelf
-            shelfBg.isHidden = isShowing
-            shelfBg.layer.opacity = isShowing ? 0 : 1
-
-            // Show/hide transcript container view
             playerContainer?.transcriptContainerView.isHidden = false
             playerContainer?.transcriptContainerView.layer.opacity = isShowing ? 1 : 0
 
-            // Change the stack view that contains the player button
-            bottomControlsStackView.distribution = isShowing ? .fill : .equalSpacing
-            bottomControlsStackView.spacing = isShowing ? 10 : 30
-
-            // Display/hide the view that will fill the empty space
-            fillView.isHidden = !isShowing
-
-            // Change skip back and forward size (also keep small on zoomed displays)
-            let skipButtonSize: SkipButton.Size = (isShowing || isZoomed) ? .small : .large
-            skipBackBtn.changeSize(to: skipButtonSize)
-            skipFwdBtn.changeSize(to: skipButtonSize)
-            skipBackBtn.layoutIfNeeded()
-            skipFwdBtn.layoutIfNeeded()
-
-            // Ask parent VC to hide/show tabs
             playerContainer?.scrollView(isEnabled: !isShowing)
-
-            resizeControls()
         }, completion: { [weak self] _ in
             guard let self else { return }
 
@@ -585,10 +558,6 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
             } else {
                 episodeImage.layer.opacity = 0
             }
-
-            playPauseBtn.finishedTransition()
-            skipBackBtn.finishedTransition()
-            skipFwdBtn.finishedTransition()
         })
     }
 
