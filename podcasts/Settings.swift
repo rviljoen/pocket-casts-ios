@@ -518,6 +518,32 @@ class Settings: NSObject {
         trackValueToggled(.settingsFilesDeleteCloudFileAfterPlayingToggled, enabled: value)
     }
 
+    // MARK: - LLM Chapters
+
+    #if !os(watchOS) && !os(tvOS) && !APPCLIP
+    private static let llmChapterAPIKeyKeychainKey = "LLMChapterAnthropicAPIKey"
+    private static let llmChapterModelKey = "LLMChapterModel"
+    static let defaultLLMChapterModel = "claude-opus-5-5"
+
+    /// Kept in the Keychain so it stays out of backups. Readable after first unlock so
+    /// extraction still works when an episode starts while the phone is locked.
+    static var llmChapterAPIKey: String? {
+        get { try? KeychainHelper.string(for: llmChapterAPIKeyKeychainKey) }
+        set {
+            if let newValue, !newValue.isEmpty {
+                KeychainHelper.save(string: newValue, key: llmChapterAPIKeyKeychainKey, accessibility: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly)
+            } else {
+                KeychainHelper.removeKey(llmChapterAPIKeyKeychainKey)
+            }
+        }
+    }
+
+    static var llmChapterModel: String {
+        get { UserDefaults.standard.string(forKey: llmChapterModelKey) ?? defaultLLMChapterModel }
+        set { UserDefaults.standard.set(newValue, forKey: llmChapterModelKey) }
+    }
+    #endif
+
     // MARK: - Chapter Filter Keywords
 
     private static let chapterFilterKeywordsKey = "ChapterFilterKeywords"

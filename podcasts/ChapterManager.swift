@@ -1,4 +1,5 @@
 import Foundation
+import PocketCastsServer
 import PocketCastsDataModel
 import PocketCastsUtils
 import CoreMedia
@@ -8,6 +9,7 @@ enum ChapterOrigin {
     case nativeMedia
     case generated
     case showNotes
+    case llmShowNotes
     case unknown
 
     var analyticsDescription: String {
@@ -18,6 +20,8 @@ enum ChapterOrigin {
             "native_media"
         case .showNotes:
             "show_notes"
+        case .llmShowNotes:
+            "llm_show_notes"
         case .podcastIndex:
             "podcast_index"
         case .unknown:
@@ -41,6 +45,10 @@ class ChapterManager {
     var currentChapters = Chapters()
 
     var chaptersOrigin: ChapterOrigin = .unknown
+
+    var chaptersFromShowNotes: Bool {
+        chaptersOrigin == .llmShowNotes
+    }
 
     private var playableChapters: [ChapterInfo] {
         visibleChapters.filter { $0.isPlayable() }
@@ -148,6 +156,10 @@ class ChapterManager {
         showInfoCoordinator.loadChapters(podcastUuid: episode.parentIdentifier(), episodeUuid: episode.uuid)
 
         var chapters: [ChapterInfo]
+        // Clear the previous episode's origin up front: the loads below are async, and
+        // until one of the branches sets a new value anything reading the origin (the
+        // fingerprint seek gate, the header warning) would answer for the old episode.
+        chaptersOrigin = .unknown
 
         do {
             let (fileChapters, podloveChapters, podcastIndexChapters, generatedChapters) = try await (fileChaptersAsync, podloveChaptersAsync, podcastIndexChaptersAsync, generatedChaptersAsync)
@@ -158,15 +170,26 @@ class ChapterManager {
                 chapters = fileChapters
                 FileLog.shared.addMessage("ChapterManager: using file chapters")
                 chaptersOrigin = .nativeMedia
-            } else if let externalChapters = parseExternalChapters(podlove: podloveChapters, podcastIndex: podcastIndexChapters, generated: generatedChapters, duration: duration) {
-                chapters = externalChapters
-                FileLog.shared.addMessage("ChapterManager: using external chapters")
+            } else if let explicitChapters = parseExplicitChapters(podlove: podloveChapters, podcastIndex: podcastIndexChapters, duration: duration), !explicitChapters.isEmpty {
+                chapters = explicitChapters
+                FileLog.shared.addMessage("ChapterManager: using explicit chapters")
+            } else if let llmChapters = await loadLLMChaptersLogged(for: episode, duration: duration), !llmChapters.isEmpty {
+                // The creator's own show notes text takes priority over server-generated
+                // chapters, since it's a first-party source rather than an inference.
+                chapters = llmChapters
+                chaptersOrigin = .llmShowNotes
+                FileLog.shared.addMessage("ChapterManager: using LLM-parsed chapters from show notes")
+            } else if let generatedChapters, let parsedGeneratedChapters = parseServerGeneratedChapters(generatedChapters, duration: duration), !parsedGeneratedChapters.isEmpty {
+                chapters = parsedGeneratedChapters
+                FileLog.shared.addMessage("ChapterManager: using server-generated chapters")
             } else {
                 chapters = []
+                chaptersOrigin = .unknown
                 FileLog.shared.addMessage("ChapterManager: failed. Displaying no chapters.")
             }
         } catch {
             chapters = await fileChaptersAsync
+            chaptersOrigin = chapters.isEmpty ? .unknown : .nativeMedia
             FileLog.shared.addMessage("ChapterManager: using file chapters because there was an error retrieving external sources")
         }
 
@@ -174,6 +197,44 @@ class ChapterManager {
             handleChaptersLoaded(chapters, for: episode)
         }
     }
+
+    /// Wraps `loadLLMChapters` so every way it can come back empty (no show notes,
+    /// a thrown error, or a zero-chapter extraction) leaves a trace in the log —
+    /// otherwise falling back to server-generated chapters looks identical to a bug.
+    private func loadLLMChaptersLogged(for episode: BaseEpisode, duration: TimeInterval) async -> [ChapterInfo]? {
+        #if !os(watchOS) && !os(tvOS) && !APPCLIP
+        do {
+            let chapters = try await loadLLMChapters(for: episode, duration: duration)
+            if chapters == nil {
+                FileLog.shared.addMessage("ChapterManager: no LLM chapters (no usable show notes or empty extraction) for \(episode.uuid)")
+            }
+            return chapters
+        } catch {
+            FileLog.shared.addMessage("ChapterManager: LLM chapter extraction threw - \(error.localizedDescription)")
+            return nil
+        }
+        #else
+        // LLM extraction is only compiled into the main app.
+        return nil
+        #endif
+    }
+
+    #if !os(watchOS) && !os(tvOS) && !APPCLIP
+    private func loadLLMChapters(for episode: BaseEpisode, duration: TimeInterval) async throws -> [ChapterInfo]? {
+        let showNotes = try await showInfoCoordinator.loadShowNotes(podcastUuid: episode.parentIdentifier(), episodeUuid: episode.uuid)
+        guard !showNotes.isEmpty, showNotes != CacheServerHandler.noShowNotesMessage else {
+            return nil
+        }
+
+        let chapters = await LLMChapterService.shared.extractChapters(
+            episodeUUID: episode.uuid,
+            showNotes: showNotes,
+            episodeTitle: episode.title,
+            duration: duration
+        )
+        return chapters.isEmpty ? nil : chapters
+    }
+    #endif
 
     private func loadChapters(for episode: BaseEpisode, duration: TimeInterval) async -> [ChapterInfo] {
         if episode.downloaded(pathFinder: DownloadManager.shared) {
@@ -185,7 +246,7 @@ class ChapterManager {
         return []
     }
 
-    private func parseExternalChapters(podlove: [Episode.Metadata.EpisodeChapter]?, podcastIndex: [PodcastIndexChapter]?, generated: [GeneratedChapter]?, duration: TimeInterval) -> [ChapterInfo]? {
+    private func parseExplicitChapters(podlove: [Episode.Metadata.EpisodeChapter]?, podcastIndex: [PodcastIndexChapter]?, duration: TimeInterval) -> [ChapterInfo]? {
         if let podcastIndex {
             chaptersOrigin = .podcastIndex
             return chapterParser.parsePodcastIndexChapters(podcastIndex, episodeDuration: duration)
@@ -196,18 +257,18 @@ class ChapterManager {
             return chapterParser.parsePodloveChapters(podlove, episodeDuration: duration)
         }
 
-        if let generated {
-            chaptersOrigin = .generated
-            return chapterParser.parseGeneratedChapters(generated, episodeDuration: duration)
-        }
-
-        chaptersOrigin = .unknown
         return nil
+    }
+
+    private func parseServerGeneratedChapters(_ generated: [GeneratedChapter], duration: TimeInterval) -> [ChapterInfo]? {
+        chaptersOrigin = .generated
+        return chapterParser.parseGeneratedChapters(generated, episodeDuration: duration)
     }
 
     func clearChapterInfo() {
         lastEpisodeUuid = ""
         chapters.removeAll()
+        chaptersOrigin = .unknown
         currentChapters = Chapters()
 
         NotificationCenter.postOnMainThread(notification: Constants.Notifications.podcastChaptersDidUpdate)
