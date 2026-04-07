@@ -316,6 +316,13 @@
 		46FBD8B7276A874F00867746 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 46FBD8B9276A874F00867746 /* Intents.intentdefinition */; settings = {ATTRIBUTES = (codegen, ); }; };
 		549F9BB1F07C49E498B735F7 /* PlayLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BA8F393FEBF446085FA19E8 /* PlayLogView.swift */; };
 		5B104ADE91E4462C94DA3D4E /* PlayLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A423129B3C4C4D06B7223468 /* PlayLogViewController.swift */; };
+		643B19612F84114200D35952 /* LLMChapterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643B19602F84114200D35952 /* LLMChapterService.swift */; };
+		643B19622F8411DD00D35952 /* LLMChapterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643B19602F84114200D35952 /* LLMChapterService.swift */; };
+		643B19632F8411DD00D35952 /* LLMChapterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643B19602F84114200D35952 /* LLMChapterService.swift */; };
+		643B209A2F84E3FF00D35952 /* LLMChapterCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643B20992F84E3FF00D35952 /* LLMChapterCache.swift */; };
+		643B209B2F84E3FF00D35952 /* LLMChapterCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643B20992F84E3FF00D35952 /* LLMChapterCache.swift */; };
+		643B209C2F84E3FF00D35952 /* LLMChapterCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643B20992F84E3FF00D35952 /* LLMChapterCache.swift */; };
+		643B209E2F85484200D35952 /* LLMChapterServerSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643B209D2F85484200D35952 /* LLMChapterServerSettingsViewController.swift */; };
 		647145BE2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647145BD2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift */; };
 		81C8677C17743B85BF586B0B /* VoiceBoostN.c in Sources */ = {isa = PBXBuildFile; fileRef = 14DD11DB5830A48ACE6928B2 /* VoiceBoostN.c */; };
 		8B0845932A66C86C00742C2F /* Share Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2F90990B2A4F88B00044FC55 /* Share Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -1912,8 +1919,11 @@
 		46FBD8CD276A876900867746 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Intents.strings; sourceTree = "<group>"; };
 		46FBD8CF276A876B00867746 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Intents.strings; sourceTree = "<group>"; };
 		46FBD8D1276A876D00867746 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Intents.strings; sourceTree = "<group>"; };
-		871975870906424F8C3C70B0 /* Modules */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Modules; sourceTree = SOURCE_ROOT; };
+		643B19602F84114200D35952 /* LLMChapterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMChapterService.swift; sourceTree = "<group>"; };
+		643B20992F84E3FF00D35952 /* LLMChapterCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMChapterCache.swift; sourceTree = "<group>"; };
+		643B209D2F85484200D35952 /* LLMChapterServerSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMChapterServerSettingsViewController.swift; sourceTree = "<group>"; };
 		647145BD2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ChapterFilterKeywordsViewController.swift; path = podcasts/ChapterFilterKeywordsViewController.swift; sourceTree = "<group>"; };
+		871975870906424F8C3C70B0 /* Modules */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Modules; sourceTree = SOURCE_ROOT; };
 		8B087FC829DC976F0027EAE5 /* PodcastImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastImage.swift; sourceTree = "<group>"; };
 		8B10E78528D908A900702C54 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8B15E7212AD050EE0077F45A /* DMSans.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = DMSans.ttf; sourceTree = "<group>"; };
@@ -2050,10 +2060,10 @@
 		9AF646922E5DEB1300627836 /* PlaylistDetailViewController+MultiSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlaylistDetailViewController+MultiSelect.swift"; sourceTree = "<group>"; };
 		9AF646942E5E081400627836 /* PlaylistDetailViewController+TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlaylistDetailViewController+TableView.swift"; sourceTree = "<group>"; };
 		9AF646962E5E0BB700627836 /* PlaylistDetailViewController+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlaylistDetailViewController+Search.swift"; sourceTree = "<group>"; };
-		AA1B2C3D4E5F607100HEAT03 /* ListeningHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningHeatmapView.swift; sourceTree = "<group>"; };
-		AA1B2C3D4E5F607100HEAT04 /* ListeningHeatmapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningHeatmapViewModel.swift; sourceTree = "<group>"; };
 		9BA8F393FEBF446085FA19E8 /* PlayLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayLogView.swift; sourceTree = "<group>"; };
 		A423129B3C4C4D06B7223468 /* PlayLogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayLogViewController.swift; sourceTree = "<group>"; };
+		AA1B2C3D4E5F607100HEAT03 /* ListeningHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningHeatmapView.swift; sourceTree = "<group>"; };
+		AA1B2C3D4E5F607100HEAT04 /* ListeningHeatmapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningHeatmapViewModel.swift; sourceTree = "<group>"; };
 		B7E0F1A42D4A1B5600123456 /* ProfileRefreshButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileRefreshButton.swift; sourceTree = "<group>"; };
 		BD00CB2924BD20CD00A10257 /* TimeStepperCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeStepperCell.swift; sourceTree = "<group>"; };
 		BD00CB2A24BD20CD00A10257 /* TimeStepperCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TimeStepperCell.xib; sourceTree = "<group>"; };
@@ -4712,6 +4722,9 @@
 				FF4B83AF2F981D8E001B8C56 /* Pocket Casts TV App */,
 				BDBD53EE17019B2A0048C8C5 /* Frameworks */,
 				BDBD53ED17019B2A0048C8C5 /* Products */,
+				643B19602F84114200D35952 /* LLMChapterService.swift */,
+				643B20992F84E3FF00D35952 /* LLMChapterCache.swift */,
+				643B209D2F85484200D35952 /* LLMChapterServerSettingsViewController.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -7093,6 +7106,7 @@
 				9AF6468D2E5B57D800627836 /* PlaylistHeaderView.swift in Sources */,
 				BDC063D2246A66B900208446 /* DownloadManager+SessionManagement.swift in Sources */,
 				9AA14FA72E37EA5900464A5A /* PlaylistsOnboardingCardView.swift in Sources */,
+				643B209C2F84E3FF00D35952 /* LLMChapterCache.swift in Sources */,
 				BDE954EC2366898900CEB6DA /* ChaptersViewController+Table.swift in Sources */,
 				BD874EF31C9A3A1B00F5B2A5 /* TopLevelSettingsCell.swift in Sources */,
 				BD47E7FA1DD57F7B00C18EE7 /* ShowNotesFormatter.swift in Sources */,
@@ -7396,6 +7410,8 @@
 				FCE96E162D9230A800AC50E3 /* HowToShareActionImageView.swift in Sources */,
 				4041FE95218A828F0089D4A1 /* SiriShortcutSuggestedCell.swift in Sources */,
 				BDFFC9AF2148A1460026D875 /* PCRoutePickerView.swift in Sources */,
+				643B209E2F85484200D35952 /* LLMChapterServerSettingsViewController.swift in Sources */,
+				643B19612F84114200D35952 /* LLMChapterService.swift in Sources */,
 				40A4FCD0221938A700252170 /* SinglePodcastViewController.swift in Sources */,
 				BDADFA062574AB1800BB6FF4 /* AutoAddToUpNextViewController.swift in Sources */,
 				403B5B0021796F2F00821A54 /* DownloadFilterOverlayController.swift in Sources */,
@@ -7516,6 +7532,7 @@
 				8B1B782C2BC7104000DC3373 /* SleepTimerManager.swift in Sources */,
 				FF05C9902C0A255600E41EB3 /* FileManager+Helper.swift in Sources */,
 				BDE48A332410D48900ECA6CA /* ChapterManager.swift in Sources */,
+				643B209A2F84E3FF00D35952 /* LLMChapterCache.swift in Sources */,
 				BDE48A172410CFD100ECA6CA /* PlaybackManager.swift in Sources */,
 				BDE48A392410D5BD00ECA6CA /* PodcastManager+Cleanup.swift in Sources */,
 				FF06AFA42CB6928B0099EC9B /* MediaExporterResourceLoaderDelegate.swift in Sources */,
@@ -7548,6 +7565,7 @@
 				F5CDD79F2F4D1AE100D1B221 /* ApiCredentials.swift in Sources */,
 				4054146F2435B82B00431FD5 /* PlaylistManager.swift in Sources */,
 				FF06AFA82CB692D30099EC9B /* MediaFileHandle.swift in Sources */,
+				643B19622F8411DD00D35952 /* LLMChapterService.swift in Sources */,
 				10756F892C59449C0089D34F /* Folder+Sortable.swift in Sources */,
 				BD74F15427F293E400222785 /* HomeGridItem.swift in Sources */,
 				FF8FFE592FAA5FEC0086A867 /* BackgroundShakeObserver.swift in Sources */,
@@ -7640,6 +7658,7 @@
 				F5F5092B2CEBEF2C007D6E39 /* DownloadManager+URLSessionDelegate.swift in Sources */,
 				F5F5092C2CEBEF34007D6E39 /* StorageManager.swift in Sources */,
 				F553A1612CECF979006581A1 /* UIScreen+Sizes.swift in Sources */,
+				643B209B2F84E3FF00D35952 /* LLMChapterCache.swift in Sources */,
 				F5F5090E2CEBEBAA007D6E39 /* PlaybackQueue.swift in Sources */,
 				F5F509672CEBF7AF007D6E39 /* UserEpisode+Formatting.swift in Sources */,
 				F5F509172CEBEC14007D6E39 /* Debounce.swift in Sources */,
@@ -7647,6 +7666,7 @@
 				F57ABC242CECF8AC00CC50AF /* NowPlayingPlayerItemViewController+Shelf.swift in Sources */,
 				F5F509052CEBEA80007D6E39 /* Theme.swift in Sources */,
 				F5F509202CEBEDF4007D6E39 /* Strings+L10n.swift in Sources */,
+				643B19632F8411DD00D35952 /* LLMChapterService.swift in Sources */,
 				F5F509472CEBF318007D6E39 /* SharedConstants.swift in Sources */,
 				F5F509632CEBF70E007D6E39 /* Queue.swift in Sources */,
 				F5F509302CEBEF95007D6E39 /* URLSession+Episode.swift in Sources */,

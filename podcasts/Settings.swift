@@ -523,6 +523,16 @@ class Settings: NSObject {
         UserDefaults.standard.set(value, forKey: playerChaptersExpandedKey)
     }
 
+    // MARK: - LLM Chapter Server
+
+    private static let llmChapterServerURLKey = "LLMChapterServerURL"
+    static let defaultLLMChapterServerURL = "http://MBP-2.local:8765"
+
+    static var llmChapterServerURL: String {
+        get { UserDefaults.standard.string(forKey: llmChapterServerURLKey) ?? defaultLLMChapterServerURL }
+        set { UserDefaults.standard.set(newValue, forKey: llmChapterServerURLKey) }
+    }
+
     // MARK: - Chapter Filter Keywords
 
     private static let chapterFilterKeywordsKey = "ChapterFilterKeywords"

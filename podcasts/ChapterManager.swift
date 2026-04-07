@@ -1,4 +1,5 @@
 import Foundation
+import PocketCastsServer
 import PocketCastsDataModel
 import PocketCastsUtils
 import CoreMedia
@@ -39,6 +40,7 @@ class ChapterManager {
     private var lastEpisodeUuid = ""
 
     var numberOfChaptersSkipped = 0
+    private(set) var chaptersFromShowNotes = false
 
     var currentChapters = Chapters()
 
@@ -158,13 +160,21 @@ class ChapterManager {
             // into account dynamic ads
             if !fileChapters.isEmpty {
                 chapters = fileChapters
+                chaptersFromShowNotes = false
                 FileLog.shared.addMessage("ChapterManager: using file chapters")
                 chaptersOrigin = .nativeMedia
-            } else if let externalChapters = parseExternalChapters(podlove: podloveChapters, podcastIndex: podcastIndexChapters, generated: generatedChapters, duration: duration) {
+            } else if let externalChapters = parseExternalChapters(podlove: podloveChapters, podcastIndex: podcastIndexChapters, generated: generatedChapters, duration: duration), !externalChapters.isEmpty {
                 chapters = externalChapters
+                chaptersFromShowNotes = false
                 FileLog.shared.addMessage("ChapterManager: using external chapters")
+            } else if let llmChapters = try? await loadLLMChapters(for: episode, duration: duration), !llmChapters.isEmpty {
+                chapters = llmChapters
+                chaptersFromShowNotes = true
+                chaptersOrigin = .showNotes
+                FileLog.shared.addMessage("ChapterManager: using LLM-parsed chapters from show notes")
             } else {
                 chapters = []
+                chaptersFromShowNotes = false
                 FileLog.shared.addMessage("ChapterManager: failed. Displaying no chapters.")
             }
         } catch {
@@ -175,6 +185,21 @@ class ChapterManager {
         if lastEpisodeUuid == episode.uuid {
             handleChaptersLoaded(chapters, for: episode)
         }
+    }
+
+    private func loadLLMChapters(for episode: BaseEpisode, duration: TimeInterval) async throws -> [ChapterInfo]? {
+        let showNotes = try await showInfoCoordinator.loadShowNotes(podcastUuid: episode.parentIdentifier(), episodeUuid: episode.uuid)
+        guard !showNotes.isEmpty, showNotes != CacheServerHandler.noShowNotesMessage else {
+            return nil
+        }
+
+        let chapters = await LLMChapterService.shared.extractChapters(
+            episodeUUID: episode.uuid,
+            showNotes: showNotes,
+            episodeTitle: episode.title,
+            duration: duration
+        )
+        return chapters.isEmpty ? nil : chapters
     }
 
     private func loadChapters(for episode: BaseEpisode, duration: TimeInterval) async -> [ChapterInfo] {
@@ -210,6 +235,7 @@ class ChapterManager {
     func clearChapterInfo() {
         lastEpisodeUuid = ""
         chapters.removeAll()
+        chaptersFromShowNotes = false
         currentChapters = Chapters()
 
         NotificationCenter.postOnMainThread(notification: Constants.Notifications.podcastChaptersDidUpdate)

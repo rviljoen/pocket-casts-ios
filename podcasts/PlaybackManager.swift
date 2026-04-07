@@ -489,6 +489,10 @@ class PlaybackManager: ServerPlaybackDelegate {
         chapterManager.chaptersOrigin.analyticsDescription
     }
 
+    var chaptersFromShowNotes: Bool {
+        chapterManager.chaptersFromShowNotes
+    }
+
     func index(for chapter: Chapters) -> Int? {
         chapterManager.index(for: chapter)
     }
