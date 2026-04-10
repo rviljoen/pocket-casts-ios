@@ -241,6 +241,17 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        fillView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        fillView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        bottomControlsStackView.setContentHuggingPriority(.required, for: .vertical)
+        bottomControlsStackView.setContentCompressionResistancePriority(.required, for: .vertical)
+        timeSliderHolderView.setContentHuggingPriority(.required, for: .vertical)
+        timeSliderHolderView.setContentCompressionResistancePriority(.required, for: .vertical)
+        playSkipStackView?.setContentHuggingPriority(.required, for: .vertical)
+        playSkipStackView?.setContentCompressionResistancePriority(.required, for: .vertical)
+        shelfBg.setContentHuggingPriority(.required, for: .vertical)
+        shelfBg.setContentCompressionResistancePriority(.required, for: .vertical)
+
         #if !APPCLIP
         let upNextPan = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerHandler(_:)))
         upNextPan.delegate = self
@@ -315,6 +326,20 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         parent as? PlayerContainerViewController
     }
 
+    private var playerContentStackView: UIStackView? {
+        episodeImage?.superview as? UIStackView
+    }
+
+    private var titleInfoContainerView: UIView? {
+        episodeInfoView?.superview
+    }
+
+    private var playSkipStackView: UIView? {
+        bottomControlsStackView.arrangedSubviews.first {
+            $0 !== timeSliderHolderView && $0 !== shelfBg
+        }
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
@@ -333,6 +358,8 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
     }
 
     private func resizeControls() {
+        updateTranscriptSpacerPosition()
+
         let spacing: CGFloat
         if view.bounds.width <= 320 {
             spacing = 8
@@ -344,15 +371,47 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
 
         if playerControlsStackView.spacing != spacing { playerControlsStackView.spacing = spacing }
 
-        let baseHeight: CGFloat = view.bounds.height > 710 ? 100 : 80
+        if bottomControlsStackView.spacing != 30 { bottomControlsStackView.spacing = 30 }
+        if bottomControlsStackView.distribution != .equalSpacing { bottomControlsStackView.distribution = .equalSpacing }
+
+        let baseHeight: CGFloat
+        if displayTranscript {
+            baseHeight = view.bounds.height > 710 ? 52 : 44
+        } else {
+            baseHeight = view.bounds.height > 710 ? 100 : 80
+        }
         let scaledHeight: CGFloat = isZoomed ? baseHeight * 0.9 : baseHeight
         if playPauseHeightConstraint.constant != scaledHeight { playPauseHeightConstraint.constant = scaledHeight }
 
-        let skipSize: SkipButton.Size = isZoomed ? .small : .large
+        let skipSize: SkipButton.Size = displayTranscript || isZoomed ? .small : .large
         skipBackBtn.changeSize(to: skipSize)
         skipFwdBtn.changeSize(to: skipSize)
 
+        bottomControlsStackView.setCustomSpacing(30, after: timeSliderHolderView)
+        if let playSkipStackView {
+            bottomControlsStackView.setCustomSpacing(30, after: playSkipStackView)
+        }
+
+        fillView.isHidden = !displayTranscript
+
         view.layoutIfNeeded()
+    }
+
+    private func updateTranscriptSpacerPosition() {
+        guard let playerContentStackView,
+              let titleInfoContainerView else {
+            return
+        }
+
+        playerContentStackView.removeArrangedSubview(fillView)
+
+        let arrangedSubviews = playerContentStackView.arrangedSubviews.filter { $0 !== fillView }
+        guard let titleInfoIndex = arrangedSubviews.firstIndex(of: titleInfoContainerView) else {
+            return
+        }
+
+        let insertIndex = displayTranscript ? titleInfoIndex : titleInfoIndex + 1
+        playerContentStackView.insertArrangedSubview(fillView, at: insertIndex)
     }
 
     override func willBeAddedToPlayer() {
@@ -525,6 +584,9 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         let isShowing = displayTranscript
 
         playerContainer?.transcriptContainerView.layer.opacity = isShowing ? 0 : 1
+        playerContainer?.setTranscriptHeaderHidden(isShowing)
+        resizeControls()
+        playerContainer?.view.setNeedsLayout()
 
         episodeImage.layer.opacity = 1
         (transcriptShelfButton as? TranscriptShelfButton)?.isTranscriptVisible = isShowing

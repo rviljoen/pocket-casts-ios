@@ -108,7 +108,7 @@ struct OnDeviceTranscriptView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 10)
             .padding(.vertical, 24)
         }
     }
@@ -128,7 +128,7 @@ struct OnDeviceTranscriptView: View {
                     .id(paragraph.id)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 10)
             .padding(.vertical, 24)
         }
         .mask {

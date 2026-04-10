@@ -33,6 +33,11 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
     @IBOutlet var headerHeightConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var transcriptContainerView: UIView!
+    private var transcriptLeadingConstraint: NSLayoutConstraint?
+    private var transcriptTopConstraint: NSLayoutConstraint?
+    private var transcriptWidthConstraint: NSLayoutConstraint?
+    private var transcriptHeightConstraint: NSLayoutConstraint?
+    private var transcriptHeaderHidden = false
 
     lazy var nowPlayingItem: NowPlayingPlayerItemViewController = {
         let item = NowPlayingPlayerItemViewController()
@@ -161,6 +166,9 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
 
         adjustHeaderConstraintIfNeeded()
         adjustPlayerNoSlidingRegion()
+        #if !APPCLIP
+        updateTranscriptContainerLayout()
+        #endif
     }
 
     @IBAction func upNextTapped(_ sender: Any) {
@@ -296,11 +304,18 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
     private func adjustHeaderConstraintIfNeeded() {
         guard let window = view.window else { return }
 
-        let requiredHeight = 50 + UIUtil.statusBarHeight(in: window)
+        let requiredHeight = (transcriptHeaderHidden ? 0 : 50) + UIUtil.statusBarHeight(in: window)
 
         if headerHeightConstraint.constant != requiredHeight {
             headerHeightConstraint.constant = requiredHeight
         }
+    }
+
+    func setTranscriptHeaderHidden(_ hidden: Bool) {
+        transcriptHeaderHidden = hidden
+        headerView.alpha = hidden ? 0 : 1
+        headerView.isUserInteractionEnabled = !hidden
+        view.setNeedsLayout()
     }
 
     func adjustPlayerNoSlidingRegion() {
@@ -335,6 +350,8 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
 
     #if !APPCLIP
     func showTranscript() {
+        updateTranscriptContainerLayout()
+
         let transcriptsItem = transcriptsItem ?? makeTranscriptViewController()
         self.transcriptsItem = transcriptsItem
 
@@ -383,8 +400,47 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
     }
 
     private func configureTranscriptContainerView() {
-        transcriptContainerView.bottomAnchor.constraint(equalTo: nowPlayingItem.bottomControlsStackView.topAnchor).isActive = true
+        let transcriptConstraints = view.constraints.filter { constraint in
+            (constraint.firstItem as? UIView) === transcriptContainerView ||
+            (constraint.secondItem as? UIView) === transcriptContainerView
+        }
+        NSLayoutConstraint.deactivate(transcriptConstraints)
+
+        transcriptLeadingConstraint = transcriptContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
+        transcriptTopConstraint = transcriptContainerView.topAnchor.constraint(equalTo: view.topAnchor)
+        transcriptWidthConstraint = transcriptContainerView.widthAnchor.constraint(equalToConstant: 0)
+        transcriptHeightConstraint = transcriptContainerView.heightAnchor.constraint(equalToConstant: 0)
+
+        NSLayoutConstraint.activate([
+            transcriptLeadingConstraint,
+            transcriptTopConstraint,
+            transcriptWidthConstraint,
+            transcriptHeightConstraint
+        ].compactMap { $0 })
+
         transcriptContainerView.backgroundColor = PlayerColorHelper.playerBackgroundColor01()
+        transcriptContainerView.layer.cornerRadius = 8
+        transcriptContainerView.layer.masksToBounds = true
+        transcriptContainerView.layer.cornerCurve = .continuous
+        updateTranscriptContainerLayout()
+    }
+
+    private func updateTranscriptContainerLayout() {
+        guard let mediaSourceView = nowPlayingItem.floatingVideoView?.isHidden == false
+            ? nowPlayingItem.floatingVideoView
+            : nowPlayingItem.episodeImage,
+              let titleInfoView = nowPlayingItem.episodeInfoView?.superview else {
+            return
+        }
+        let mediaFrame = view.convert(mediaSourceView.bounds, from: mediaSourceView)
+        let titleInfoFrame = view.convert(titleInfoView.bounds, from: titleInfoView)
+        let transcriptBottom = max(mediaFrame.maxY, titleInfoFrame.minY - 6)
+        let horizontalInset: CGFloat = 10
+
+        transcriptLeadingConstraint?.constant = horizontalInset
+        transcriptTopConstraint?.constant = mediaFrame.minY
+        transcriptWidthConstraint?.constant = view.bounds.width - (horizontalInset * 2)
+        transcriptHeightConstraint?.constant = transcriptBottom - mediaFrame.minY
     }
     #endif
 }
