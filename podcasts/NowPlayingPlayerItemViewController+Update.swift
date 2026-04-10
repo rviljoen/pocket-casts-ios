@@ -138,7 +138,7 @@ extension NowPlayingPlayerItemViewController {
 
             chapterSkipBackBtn.isEnabled = !visibleChapter.isFirst
             chapterSkipFwdBtn.isEnabled = !visibleChapter.isLast
-            chapterCounter.text = chapterCounterText(index: visibleChapter.index + 1)
+            chapterCounter.attributedText = chapterCounterText(index: visibleChapter.index + 1)
 
             if let artwork = chapters.artwork {
                 showingCustomImage = true
@@ -277,16 +277,29 @@ extension NowPlayingPlayerItemViewController {
             episodeName.text = !chapters.title.isEmpty ? chapters.title : playingEpisode.displayableTitle()
             updateChapterProgress(for: chapters.visibleChapter, playheadPosition: time)
             updateUpTo(upTo: time, duration: chapters.duration, moveSlider: false)
-            chapterCounter.text = chapterCounterText(index: chapters.index + 1)
+            chapterCounter.attributedText = chapterCounterText(index: chapters.index + 1)
         }
     }
 
-    private func chapterCounterText(index: Int) -> String {
+    private func chapterCounterText(index: Int) -> NSAttributedString {
         let base = L10n.playerChapterCount(index.localized(), PlaybackManager.shared.chapterCount().localized())
-        if PlaybackManager.shared.chaptersFromShowNotes {
-            return "\(base) (from shownotes)"
+        let result = NSMutableAttributedString(string: base)
+
+        guard PlaybackManager.shared.chaptersFromShowNotes,
+              let sparklesImage = UIImage(systemName: "sparkles") else {
+            return result
         }
-        return base
+
+        let attachment = NSTextAttachment()
+        attachment.image = sparklesImage.withTintColor(ThemeColor.playerContrast02(), renderingMode: .alwaysOriginal)
+        attachment.bounds = CGRect(x: 0, y: -1, width: 12, height: 12)
+
+        let sparkles = NSAttributedString(attachment: attachment)
+        result.insert(sparkles, at: 0)
+        result.insert(NSAttributedString(string: " "), at: 1)
+        result.append(NSAttributedString(string: " "))
+        result.append(sparkles)
+        return result
     }
 
     private func updateChaptersControls() {
