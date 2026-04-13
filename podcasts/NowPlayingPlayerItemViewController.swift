@@ -9,6 +9,12 @@ import SwiftUI
 import PocketCastsServer
 
 class NowPlayingPlayerItemViewController: PlayerItemViewController {
+    private enum PlayerOverlayMode {
+        case none
+        case transcript
+        case chapters
+    }
+
     var showingCustomImage = false
     var lastChapterIndexRendered = -1
 
@@ -235,12 +241,36 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
     private var bannerAdHostingController: PCHostingController<AnyView>?
     private var bannerAdHeightConstraint: NSLayoutConstraint?
     weak var transcriptShelfButton: UIButton?
+    #if !APPCLIP
+    private lazy var transcriptControlButton: TranscriptShelfButton = {
+        let button = TranscriptShelfButton(frame: .zero)
+        button.isPointerInteractionEnabled = true
+        button.setImage(UIImage(named: "transcript"), for: .normal)
+        button.accessibilityLabel = L10n.transcript
+        button.contentHorizontalAlignment = .center
+        button.addTarget(self, action: #selector(transcriptControlTapped(_:)), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    #endif
+    lazy var chaptersControlButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.isPointerInteractionEnabled = true
+        button.setImage(UIImage(systemName: "list.bullet"), for: .normal)
+        button.accessibilityLabel = L10n.chapters
+        button.contentHorizontalAlignment = .center
+        button.tintColor = ThemeColor.playerContrast01()
+        button.addTarget(self, action: #selector(chaptersControlTapped(_:)), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
 
     private let analyticsPlaybackHelper = AnalyticsPlaybackHelper.shared
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        configurePrimaryControlButtons()
         fillView.setContentHuggingPriority(.defaultLow, for: .vertical)
         fillView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         bottomControlsStackView.setContentHuggingPriority(.required, for: .vertical)
@@ -293,12 +323,39 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         .player
     }
 
-    var displayTranscript = false {
+    private var overlayMode: PlayerOverlayMode = .none {
         didSet {
 #if !APPCLIP
-            toggleTranscript()
+            guard oldValue != overlayMode else { return }
+            transitionOverlay(from: oldValue, to: overlayMode)
 #endif
         }
+    }
+
+    var displayTranscript: Bool {
+        get { overlayMode == .transcript }
+        set {
+            if newValue {
+                overlayMode = .transcript
+            } else if overlayMode == .transcript {
+                overlayMode = .none
+            }
+        }
+    }
+
+    private var displayChapters: Bool {
+        get { overlayMode == .chapters }
+        set {
+            if newValue {
+                overlayMode = .chapters
+            } else if overlayMode == .chapters {
+                overlayMode = .none
+            }
+        }
+    }
+
+    private var isOverlayVisible: Bool {
+        overlayMode != .none
     }
 
     private func loadBannerAd() {
@@ -340,6 +397,55 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         }
     }
 
+    private func configurePrimaryControlButtons() {
+        guard let playSkipStackView = playSkipStackView as? UIStackView else {
+            return
+        }
+        #if !APPCLIP
+        if !playSkipStackView.arrangedSubviews.contains(transcriptControlButton) {
+            playSkipStackView.insertArrangedSubview(transcriptControlButton, at: 0)
+        }
+        #endif
+        if !playSkipStackView.arrangedSubviews.contains(chaptersControlButton) {
+            playSkipStackView.addArrangedSubview(chaptersControlButton)
+        }
+
+        #if !APPCLIP
+        NSLayoutConstraint.activate([
+            transcriptControlButton.widthAnchor.constraint(equalToConstant: 44),
+            transcriptControlButton.heightAnchor.constraint(equalToConstant: 44),
+            chaptersControlButton.widthAnchor.constraint(equalToConstant: 44),
+            chaptersControlButton.heightAnchor.constraint(equalToConstant: 44)
+        ])
+        #else
+        NSLayoutConstraint.activate([
+            chaptersControlButton.widthAnchor.constraint(equalToConstant: 44),
+            chaptersControlButton.heightAnchor.constraint(equalToConstant: 44)
+        ])
+        #endif
+
+        playSkipStackView.spacing = 12
+        playSkipStackView.isLayoutMarginsRelativeArrangement = true
+        playSkipStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)
+        updatePrimaryControlButtonState()
+    }
+
+    func updatePrimaryControlButtonState() {
+        #if !APPCLIP
+        transcriptControlButton.isTranscriptVisible = displayTranscript
+        #endif
+
+        let chaptersAvailable = PlaybackManager.shared.chapterCount() > 0
+        chaptersControlButton.isEnabled = chaptersAvailable
+        if !chaptersAvailable {
+            chaptersControlButton.tintColor = ThemeColor.playerContrast06()
+        } else if displayChapters {
+            chaptersControlButton.tintColor = PlayerColorHelper.playerHighlightColor01(for: .dark)
+        } else {
+            chaptersControlButton.tintColor = ThemeColor.playerContrast01()
+        }
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
@@ -359,6 +465,7 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
 
     private func resizeControls() {
         updateTranscriptSpacerPosition()
+        (playSkipStackView as? UIStackView)?.spacing = 12
 
         let spacing: CGFloat
         if view.bounds.width <= 320 {
@@ -374,16 +481,11 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         if bottomControlsStackView.spacing != 30 { bottomControlsStackView.spacing = 30 }
         if bottomControlsStackView.distribution != .equalSpacing { bottomControlsStackView.distribution = .equalSpacing }
 
-        let baseHeight: CGFloat
-        if displayTranscript {
-            baseHeight = view.bounds.height > 710 ? 52 : 44
-        } else {
-            baseHeight = view.bounds.height > 710 ? 100 : 80
-        }
+        let baseHeight: CGFloat = view.bounds.height > 710 ? 52 : 44
         let scaledHeight: CGFloat = isZoomed ? baseHeight * 0.9 : baseHeight
         if playPauseHeightConstraint.constant != scaledHeight { playPauseHeightConstraint.constant = scaledHeight }
 
-        let skipSize: SkipButton.Size = displayTranscript || isZoomed ? .small : .large
+        let skipSize: SkipButton.Size = .small
         skipBackBtn.changeSize(to: skipSize)
         skipFwdBtn.changeSize(to: skipSize)
 
@@ -392,7 +494,8 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
             bottomControlsStackView.setCustomSpacing(30, after: playSkipStackView)
         }
 
-        fillView.isHidden = !displayTranscript
+        fillView.isHidden = !isOverlayVisible
+        updatePrimaryControlButtonState()
 
         view.layoutIfNeeded()
     }
@@ -410,7 +513,7 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
             return
         }
 
-        let insertIndex = displayTranscript ? titleInfoIndex : titleInfoIndex + 1
+        let insertIndex = isOverlayVisible ? titleInfoIndex : titleInfoIndex + 1
         playerContentStackView.insertArrangedSubview(fillView, at: insertIndex)
     }
 
@@ -482,6 +585,30 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         analyticsPlaybackHelper.currentSource = analyticsSource
         HapticsHelper.triggerSkipForwardHaptic()
         PlaybackManager.shared.skipForward()
+    }
+
+    #if !APPCLIP
+    @objc private func transcriptControlTapped(_ sender: UIButton) {
+        guard transcriptControlButton.isTranscriptEnabled else {
+            Toast.show(TranscriptError.notAvailable.localizedDescription)
+            return
+        }
+
+        shelfButtonTapped(.transcript)
+        displayTranscript.toggle()
+    }
+    #endif
+
+    @objc private func chaptersControlTapped(_ sender: UIButton) {
+        guard PlaybackManager.shared.chapterCount() > 0 else {
+            return
+        }
+
+        #if !APPCLIP
+        displayChapters.toggle()
+        #else
+        containerDelegate?.scrollToCurrentChapter()
+        #endif
     }
 
     @IBAction func chapterSkipBackTapped(_ sender: Any) {
@@ -580,8 +707,24 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         present(navController, animated: true, completion: nil)
     }
 
-    private func toggleTranscript() {
-        let isShowing = displayTranscript
+    private func transitionOverlay(from oldMode: PlayerOverlayMode, to newMode: PlayerOverlayMode) {
+        if oldMode != .none, newMode != .none {
+            hideOverlay(oldMode)
+            showOverlay(newMode)
+            playerContainer?.setTranscriptHeaderHidden(true)
+            resizeControls()
+            playerContainer?.view.setNeedsLayout()
+            playerContainer?.scrollView(isEnabled: false)
+            playerContainer?.transcriptContainerView.isHidden = false
+            playerContainer?.transcriptContainerView.layer.opacity = 1
+            episodeImage.layer.opacity = 0
+            (transcriptShelfButton as? TranscriptShelfButton)?.isTranscriptVisible = displayTranscript
+            transcriptControlButton.isTranscriptVisible = displayTranscript
+            updatePrimaryControlButtonState()
+            return
+        }
+
+        let isShowing = newMode != .none
 
         playerContainer?.transcriptContainerView.layer.opacity = isShowing ? 0 : 1
         playerContainer?.setTranscriptHeaderHidden(isShowing)
@@ -589,10 +732,12 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         playerContainer?.view.setNeedsLayout()
 
         episodeImage.layer.opacity = 1
-        (transcriptShelfButton as? TranscriptShelfButton)?.isTranscriptVisible = isShowing
+        (transcriptShelfButton as? TranscriptShelfButton)?.isTranscriptVisible = displayTranscript
+        transcriptControlButton.isTranscriptVisible = displayTranscript
+        updatePrimaryControlButtonState()
 
         if isShowing {
-            playerContainer?.showTranscript()
+            showOverlay(newMode)
         }
 
         UIView.animate(withDuration: 0.25, delay: 0, options: [.curveEaseInOut], animations: { [weak self] in
@@ -600,7 +745,6 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
 
             playerContainer?.transcriptContainerView.isHidden = false
             playerContainer?.transcriptContainerView.layer.opacity = isShowing ? 1 : 0
-
             playerContainer?.scrollView(isEnabled: !isShowing)
         }, completion: { [weak self] _ in
             guard let self else { return }
@@ -608,11 +752,33 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
             playerContainer?.transcriptContainerView.isHidden = isShowing ? false : true
 
             if !isShowing {
-                playerContainer?.hideTranscript()
+                hideOverlay(oldMode)
             } else {
                 episodeImage.layer.opacity = 0
             }
         })
+    }
+
+    private func showOverlay(_ mode: PlayerOverlayMode) {
+        switch mode {
+        case .none:
+            break
+        case .transcript:
+            playerContainer?.showTranscript()
+        case .chapters:
+            playerContainer?.showChaptersOverlay()
+        }
+    }
+
+    private func hideOverlay(_ mode: PlayerOverlayMode) {
+        switch mode {
+        case .none:
+            break
+        case .transcript:
+            playerContainer?.hideTranscript()
+        case .chapters:
+            playerContainer?.hideChaptersOverlay()
+        }
     }
 
     // MARK: Banner Ad

@@ -89,6 +89,17 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
 
     private var transcriptsItem: TranscriptViewController?
 
+    private func makeOverlayChaptersViewController() -> ChaptersViewController {
+        let item = ChaptersViewController()
+        item.showsCompactPlayerHeader = true
+        item.scrollViewHandler = self
+        item.containerDelegate = self
+        item.view.translatesAutoresizingMaskIntoConstraints = false
+        return item
+    }
+
+    private var overlayChaptersItem: ChaptersViewController?
+
     private lazy var generatedTranscriptsPremiumOverlay: GeneratedTranscriptsPremiumOverlay = {
         let playbackManager = PlaybackManager.shared
         let item = GeneratedTranscriptsPremiumOverlay(playbackManager: playbackManager)
@@ -265,6 +276,7 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
         chaptersItem.themeDidChange()
         showNotesItem.themeDidChange()
         transcriptsItem?.themeDidChange()
+        overlayChaptersItem?.themeDidChange()
         #endif
     }
 
@@ -350,6 +362,7 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
 
     #if !APPCLIP
     func showTranscript() {
+        hideChaptersOverlay()
         updateTranscriptContainerLayout()
 
         let transcriptsItem = transcriptsItem ?? makeTranscriptViewController()
@@ -397,6 +410,31 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
         transcriptsItem.view.removeFromSuperview()
         transcriptsItem.didDisappear()
         self.transcriptsItem = nil
+    }
+
+    func showChaptersOverlay() {
+        hideTranscript()
+        updateTranscriptContainerLayout()
+
+        let overlayChaptersItem = overlayChaptersItem ?? makeOverlayChaptersViewController()
+        self.overlayChaptersItem = overlayChaptersItem
+
+        addChild(overlayChaptersItem)
+        transcriptContainerView.addSubview(overlayChaptersItem.view)
+        overlayChaptersItem.view.anchorToAllSidesOf(view: transcriptContainerView)
+        overlayChaptersItem.didMove(toParent: self)
+        overlayChaptersItem.willBeAddedToPlayer()
+        overlayChaptersItem.themeDidChange()
+        overlayChaptersItem.scrollToCurrentlyPlayingChapter(animated: false)
+    }
+
+    func hideChaptersOverlay() {
+        guard let overlayChaptersItem else { return }
+        overlayChaptersItem.willBeRemovedFromPlayer()
+        overlayChaptersItem.willMove(toParent: nil)
+        overlayChaptersItem.removeFromParent()
+        overlayChaptersItem.view.removeFromSuperview()
+        self.overlayChaptersItem = nil
     }
 
     private func configureTranscriptContainerView() {
