@@ -66,6 +66,7 @@ extension NowPlayingPlayerItemViewController {
         updateChapterInfo()
         updateChapterProgress()
         updateColors()
+        updatePrimaryControlButtonState()
         let errorRelevantNotifications = Set([Constants.Notifications.playbackFailed, Constants.Notifications.playbackStarted, Constants.Notifications.playbackPaused])
         if let notificationName = notification?.name, errorRelevantNotifications.contains(notificationName) {
             updateError()
@@ -84,6 +85,7 @@ extension NowPlayingPlayerItemViewController {
         playPauseBtn.circleColor = buttonColor
         skipBackBtn.tintColor = buttonColor
         skipFwdBtn.tintColor = buttonColor
+        chaptersControlButton.tintColor = chaptersControlButton.isEnabled ? buttonColor : ThemeColor.playerContrast06()
 
         let highlightColor = PlayerColorHelper.playerHighlightColor01(for: .dark)
         timeSlider.leftColor = highlightColor

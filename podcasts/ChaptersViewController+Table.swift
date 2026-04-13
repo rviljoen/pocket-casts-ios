@@ -10,6 +10,9 @@ extension ChaptersViewController: UITableViewDataSource, UITableViewDelegate, UI
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard !showsCompactPlayerHeader else {
+            return
+        }
         scrollViewHandler?.scrollViewDidScroll?(scrollView)
     }
 

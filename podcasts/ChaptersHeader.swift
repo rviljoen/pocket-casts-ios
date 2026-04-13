@@ -115,7 +115,7 @@ class ChaptersHeader: UIView {
             chaptersLabel.leadingAnchor.constraint(equalTo: container.layoutMarginsGuide.leadingAnchor),
             chaptersLabel.topAnchor.constraint(equalTo: container.topAnchor),
             chaptersLabel.bottomAnchor.constraint(equalTo: container.bottomAnchor),
-            chaptersLabel.trailingAnchor.constraint(greaterThanOrEqualTo: toggleButton.leadingAnchor, constant: 8),
+            chaptersLabel.trailingAnchor.constraint(lessThanOrEqualTo: toggleButton.leadingAnchor, constant: -8),
             chaptersLabel.widthAnchor.constraint(equalTo: container.widthAnchor, multiplier: 0.40),
 
             toggleButton.trailingAnchor.constraint(equalTo: container.layoutMarginsGuide.trailingAnchor),
