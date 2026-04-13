@@ -85,7 +85,7 @@ extension NowPlayingPlayerItemViewController {
         playPauseBtn.circleColor = buttonColor
         skipBackBtn.tintColor = buttonColor
         skipFwdBtn.tintColor = buttonColor
-        chaptersControlButton.tintColor = chaptersControlButton.isEnabled ? buttonColor : ThemeColor.playerContrast06()
+        chaptersControlButton.tintColor = chaptersControlButton.isEnabled ? ThemeColor.playerContrast01() : ThemeColor.playerContrast02()
 
         let highlightColor = PlayerColorHelper.playerHighlightColor01(for: .dark)
         timeSlider.leftColor = highlightColor
@@ -136,7 +136,7 @@ extension NowPlayingPlayerItemViewController {
             }
             chapterLink.isHidden = chapters.url == nil
         } else {
-            episodeInfoView.isHidden = false
+            episodeInfoView.isHidden = displayTranscript
             chapterInfoView.isHidden = true
             episodeName.text = playingEpisode.displayableTitle()
             podcastName.text = playingEpisode.subTitle()

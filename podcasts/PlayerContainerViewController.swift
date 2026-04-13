@@ -472,7 +472,9 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
         }
         let mediaFrame = view.convert(mediaSourceView.bounds, from: mediaSourceView)
         let titleInfoFrame = view.convert(titleInfoView.bounds, from: titleInfoView)
-        let transcriptBottom = max(mediaFrame.maxY, titleInfoFrame.minY - 6)
+        let infoIsHidden = nowPlayingItem.episodeInfoView?.isHidden == true && nowPlayingItem.chapterInfoView?.isHidden == true
+        let titleInfoEdge = infoIsHidden ? titleInfoFrame.maxY : titleInfoFrame.minY - 6
+        let transcriptBottom = max(mediaFrame.maxY, titleInfoEdge)
         let horizontalInset: CGFloat = 10
 
         transcriptLeadingConstraint?.constant = horizontalInset

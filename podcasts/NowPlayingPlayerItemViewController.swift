@@ -260,6 +260,7 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         button.accessibilityLabel = L10n.chapters
         button.contentHorizontalAlignment = .center
         button.tintColor = ThemeColor.playerContrast01()
+        button.adjustsImageWhenDisabled = false
         button.addTarget(self, action: #selector(chaptersControlTapped(_:)), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -426,7 +427,7 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
 
         playSkipStackView.spacing = 12
         playSkipStackView.isLayoutMarginsRelativeArrangement = true
-        playSkipStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8)
+        playSkipStackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
         updatePrimaryControlButtonState()
     }
 
@@ -438,7 +439,7 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         let chaptersAvailable = PlaybackManager.shared.chapterCount() > 0
         chaptersControlButton.isEnabled = chaptersAvailable
         if !chaptersAvailable {
-            chaptersControlButton.tintColor = ThemeColor.playerContrast06()
+            chaptersControlButton.tintColor = ThemeColor.playerContrast02()
         } else if displayChapters {
             chaptersControlButton.tintColor = PlayerColorHelper.playerHighlightColor01(for: .dark)
         } else {
@@ -721,6 +722,7 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
             (transcriptShelfButton as? TranscriptShelfButton)?.isTranscriptVisible = displayTranscript
             transcriptControlButton.isTranscriptVisible = displayTranscript
             updatePrimaryControlButtonState()
+            updateChapterInfo()
             return
         }
 
@@ -735,6 +737,7 @@ class NowPlayingPlayerItemViewController: PlayerItemViewController {
         (transcriptShelfButton as? TranscriptShelfButton)?.isTranscriptVisible = displayTranscript
         transcriptControlButton.isTranscriptVisible = displayTranscript
         updatePrimaryControlButtonState()
+        updateChapterInfo()
 
         if isShowing {
             showOverlay(newMode)

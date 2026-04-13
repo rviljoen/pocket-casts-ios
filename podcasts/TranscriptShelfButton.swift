@@ -35,7 +35,7 @@ class TranscriptShelfButton: UIButton, CheckTranscriptAvailability {
         } else if isTranscriptVisible {
             imageView?.tintColor = PlayerColorHelper.playerHighlightColor01(for: .dark)
         } else {
-            imageView?.tintColor = ThemeColor.playerContrast02()
+            imageView?.tintColor = ThemeColor.playerContrast01()
         }
     }
 }
