@@ -34,12 +34,11 @@ public struct FileRotator: FileRotating {
             return
         }
 
-        guard fileSizeInBytes > maxFileSizeInBytes else {
-            // File is small enough that it doesn't need to be rotated.
+        guard fileSizeInBytes > UInt64(maxFileSizeInBytes) else {
             return
         }
 
-        do { try fileManager.removeItem(atPath: LogFilePaths.backupLogFilePath) }
+        do { try fileManager.removeItem(atPath: backupFilePath) }
         catch { /* The file doesn't exist, which is perfectly fine */ }
 
         do {
