@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import SwiftUI
 import WebKit
@@ -6,6 +7,23 @@ import PocketCastsUtils
 
 class PlayLogViewModel: ObservableObject {
     @Published var logs = ""
+
+    private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        let notifications: [NSNotification.Name] = [
+            Constants.Notifications.playbackStarted,
+            Constants.Notifications.playbackPaused,
+            Constants.Notifications.playbackEnded
+        ]
+
+        notifications.forEach { name in
+            NotificationCenter.default.publisher(for: name)
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in Task { await self?.load() } }
+                .store(in: &cancellables)
+        }
+    }
 
     func load() async {
         let result = await PlayLog.shared.logFileAsString()
@@ -83,18 +101,11 @@ struct PlayLogWebView: UIViewRepresentable {
     func updateUIView(_ webView: WKWebView, context: Context) {
         let html = buildHTML(from: logContent)
         webView.loadHTMLString(html, baseURL: nil)
-
-        // Scroll to bottom after content loads
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            let js = "window.scrollTo(0, document.body.scrollHeight);"
-            webView.evaluateJavaScript(js, completionHandler: nil)
-        }
     }
 
     private func buildHTML(from content: String) -> String {
         let lines = content.components(separatedBy: "\n")
-            .filter { !$0.isEmpty }
-            .map { "<p>\($0)</p>" }
+            .map { $0.isEmpty ? "<br>" : "<p>\($0)</p>" }
             .joined(separator: "\n")
 
         return """
@@ -138,6 +149,10 @@ struct PlayLogWebView: UIViewRepresentable {
     // MARK: - Coordinator
 
     class Coordinator: NSObject, WKNavigationDelegate {
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            webView.evaluateJavaScript("window.scrollTo(0, document.body.scrollHeight);", completionHandler: nil)
+        }
+
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
             guard let url = navigationAction.request.url,
                   navigationAction.navigationType == .linkActivated else {
