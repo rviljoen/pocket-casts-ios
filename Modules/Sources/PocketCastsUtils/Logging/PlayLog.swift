@@ -32,11 +32,7 @@ public final class PlayLog {
     private let logger: Logger?
     private let queue = DispatchQueue(label: "au.com.pocketcasts.playlog")
 
-    #if os(watchOS)
-        private let maxFileSize = 65.kilobytes
-    #else
-        private let maxFileSize = 1.megabytes
-    #endif
+    private let maxFileSize = 65.kilobytes
 
     init(
         logPersistence: PersistentTextWriting,
@@ -57,6 +53,18 @@ public final class PlayLog {
         queue.sync {
             logRotator.rotateFile(ifSizeExceeds: maxFileSize)
             logPersistence.write(formatted)
+        }
+    }
+
+    public func addLine(_ text: String) {
+        queue.sync {
+            logPersistence.write("\(text)\n")
+        }
+    }
+
+    public func addSpacer() {
+        queue.sync {
+            logPersistence.write("\n")
         }
     }
 
