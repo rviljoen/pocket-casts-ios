@@ -88,7 +88,7 @@ class DiscoverCollectionViewController: PCViewController {
     }
 
     override func handleThemeChanged() {
-        collectionView.backgroundColor = ThemeColor.primaryUi02()
+        collectionView.backgroundColor = ThemeColor.primaryUi04()
         collectionView.reloadData()
     }
 
