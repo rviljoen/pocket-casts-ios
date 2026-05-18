@@ -327,7 +327,7 @@ class PodcastListViewController: PCViewController, ShareListDelegate {
         updateInsets()
         gridHelper.configureLayout(collectionView: podcastsCollectionView)
         if let themeableCollectionView = podcastsCollectionView as? ThemeableCollectionView {
-            themeableCollectionView.style = .primaryUi02
+            themeableCollectionView.style = .primaryUi04
         }
     }
 

@@ -126,7 +126,11 @@ class MainTabBarController: UITabBarController, NavigationProtocol {
 
         displayEndOfYearBadgeIfNeeded()
 
-        viewControllers = vcsInTab.map { SJUIUtils.navController(for: $0) }
+        let navControllers = vcsInTab.map { SJUIUtils.navController(for: $0) }
+        if LiquidGlass.isEnabled {
+            navControllers.forEach { $0.view.backgroundColor = ThemeColor.primaryUi04() }
+        }
+        viewControllers = navControllers
         selectedIndex = UserDefaults.standard.integer(forKey: Constants.UserDefaults.lastTabOpened)
 
         // Track the initial tab opened event
