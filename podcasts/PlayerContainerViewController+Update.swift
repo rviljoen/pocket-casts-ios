@@ -5,7 +5,24 @@ import UIKit
 
 extension PlayerContainerViewController {
     func updateColors() {
-        view.backgroundColor = PlayerColorHelper.playerBackgroundColor01()
+        view.backgroundColor = .clear
+        guard let episode = PlaybackManager.shared.currentEpisode() else { return }
+        ImageManager.sharedManager.imageForEpisode(episode, size: .page) { [weak self] image in
+            let blurred = image.flatMap { Self.gaussianBlur($0, radius: 50) } ?? image
+            DispatchQueue.main.async {
+                self?.backgroundImageView.image = blurred
+            }
+        }
+    }
+
+    private static func gaussianBlur(_ image: UIImage, radius: CGFloat) -> UIImage? {
+        guard let ciImage = CIImage(image: image) else { return nil }
+        let filter = CIFilter(name: "CIGaussianBlur")
+        filter?.setValue(ciImage, forKey: kCIInputImageKey)
+        filter?.setValue(radius, forKey: kCIInputRadiusKey)
+        guard let output = filter?.outputImage,
+              let cgImage = CIContext().createCGImage(output, from: ciImage.extent) else { return nil }
+        return UIImage(cgImage: cgImage)
     }
 
     @objc func update() {
