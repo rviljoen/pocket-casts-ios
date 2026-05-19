@@ -58,8 +58,6 @@ class PlayerTabsView: UIScrollView {
 
     weak var tabDelegate: PlayerTabDelegate?
 
-    private let lineLayer = CAShapeLayer()
-
     private lazy var tabsStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -69,15 +67,6 @@ class PlayerTabsView: UIScrollView {
         stackView.spacing = TabConstants.spacing
 
         return stackView
-    }()
-
-    // Fade Layers
-    private lazy var fadeLeading = {
-        FadeOutLayer(fadePosition: .leading)
-    }()
-
-    private lazy var fadeTrailing = {
-        FadeOutLayer(fadePosition: .trailing)
     }()
 
     func setup() {
@@ -102,23 +91,15 @@ class PlayerTabsView: UIScrollView {
             tabsStackView.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
             tabsStackView.heightAnchor.constraint(equalTo: frameLayoutGuide.heightAnchor)
         ])
-
-        layer.addSublayer(fadeLeading)
-        layer.addSublayer(fadeTrailing)
     }
 
     func themeDidChange() {
         updateTabs()
-
-        fadeLeading.updateColors()
-        fadeTrailing.updateColors()
     }
 
     var lastLayedOutWidth: CGFloat = 0
     override func layoutSubviews() {
         super.layoutSubviews()
-
-        updateFadeLayers()
 
         let currentWidth = bounds.width
         if lastLayedOutWidth == currentWidth { return }
@@ -166,8 +147,7 @@ class PlayerTabsView: UIScrollView {
             UIView.transition(with: toTab, duration: animationDuration, options: .transitionCrossDissolve, animations: {
                 toTab.isSelected = true
 
-                // Scroll the button into view, but make sure it clears the fade
-                self.scrollRectToVisible(toTab.frame.insetBy(dx: -TabConstants.fadeSize, dy: 0), animated: false)
+                self.scrollRectToVisible(toTab.frame, animated: false)
             })
         }
     }
@@ -182,71 +162,6 @@ private enum TabConstants {
     static let lineOffset: CGFloat = 8
 
     static let fadeSize: CGFloat = 50
-}
-
-// MARK: - Private: Scroll Fading
-
-private extension PlayerTabsView {
-    private func updateFadeLayers() {
-        let offset = contentOffset.x
-        let size = CGSize(width: TabConstants.fadeSize, height: bounds.height)
-
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        fadeLeading.frame = .init(origin: .init(x: offset, y: 0), size: size)
-        fadeTrailing.frame = .init(origin: .init(x: offset + bounds.width - TabConstants.fadeSize, y: 0), size: size)
-        CATransaction.commit()
-
-        fadeLeading.opacity = contentOffset.x > 0 ? 1 : 0
-        fadeTrailing.opacity = (contentOffset.x + bounds.width) < contentSize.width ? 1 : 0
-    }
-
-    private class FadeOutLayer: CAGradientLayer {
-        enum FadePosition {
-            case leading, trailing
-        }
-
-        var fadePosition: FadePosition = .leading
-
-        init(fadePosition: FadePosition) {
-            self.fadePosition = fadePosition
-
-            super.init()
-
-            updateColors()
-
-            switch fadePosition {
-            case .leading:
-                startPoint = .init(x: 1, y: 0)
-                endPoint = .zero
-
-            case .trailing:
-                startPoint = .zero
-                endPoint = .init(x: 1, y: 0)
-            }
-        }
-
-        func updateColors() {
-            let color = PlayerColorHelper.playerBackgroundColor01()
-
-            colors = [
-                color.withAlphaComponent(0).cgColor,
-                color.cgColor
-            ]
-        }
-
-        override init(layer: Any) {
-            if let layer = layer as? Self {
-                fadePosition = layer.fadePosition
-            }
-
-            super.init(layer: layer)
-        }
-
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-    }
 }
 
 // MARK: - Private: Analytics

@@ -218,7 +218,11 @@ final class PlayerZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning 
             panel.layer.cornerRadius = finalCornerRadius
             toView.frame = CGRect(x: 0, y: 0, width: finalFrame.width, height: finalFrame.height)
             floating?.frame = destArtFrame
-            floating?.layer.cornerRadius = toArtwork.layer.cornerRadius
+            // `destArtFrame` reflects the artwork's scaled on-screen size (its
+            // `episodeImage` superview carries a scale transform), so scale the
+            // corner radius to match — otherwise it snaps from the raw radius to
+            // the smaller scaled radius when the real artwork is revealed.
+            floating?.layer.cornerRadius = toArtwork.layer.cornerRadius * (toArtwork.superview?.transform.a ?? 1)
             // Mini chrome rides up pinned to the panel's top edge and fades out
             // over the full duration, so it animates the whole way rather than
             // vanishing in the first frames.
@@ -298,7 +302,11 @@ final class PlayerZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning 
         // morph because `episodeImage` is hidden behind the floating video.
         let shouldMorphArtwork = fromVC.tabsView.currentTab == 0 && !isVideoShown
         let sourceArtFrame = container.convert(fromArtwork.convert(fromArtwork.bounds, to: fromView), from: fromView)
-        let sourceArtCornerRadius = fromArtwork.layer.cornerRadius
+        // `episodeImage` (the artwork's superview) carries a scale transform, so
+        // the artwork's cornerRadius is visually scaled on screen. `sourceArtFrame`
+        // already reflects that scaled size — scale the corner radius to match so
+        // the floating artwork picks up the settled artwork's real rounding.
+        let sourceArtCornerRadius = fromArtwork.layer.cornerRadius * (fromArtwork.superview?.transform.a ?? 1)
         let isMiniInline = mini.traitCollection.tabAccessoryEnvironment == .inline
 
         if shouldMorphArtwork {

@@ -57,7 +57,7 @@ class ChapterFilterKeywordsViewController: PCTableViewController {
 
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         alert.addAction(UIAlertAction(title: "Add", style: .default) { [weak self, weak alert] _ in
-            guard let self = self,
+            guard let self,
                   let textField = alert?.textFields?.first,
                   let keyword = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
                   !keyword.isEmpty else {

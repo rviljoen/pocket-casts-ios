@@ -137,7 +137,9 @@ class ShowNotesPlayerItemViewController: PlayerItemViewController, SFSafariViewC
     }
 
     private func updateColors() {
-        view.backgroundColor = PlayerColorHelper.playerBackgroundColor01()
+        view.backgroundColor = .clear
+        showNotesScrollView.backgroundColor = .clear
+        showNotesHolderView.backgroundColor = .clear
         episodeTitle.textColor = ThemeColor.playerContrast01()
         dateImageView.tintColor = ThemeColor.playerContrast02()
         durationImageView.tintColor = ThemeColor.playerContrast02()
