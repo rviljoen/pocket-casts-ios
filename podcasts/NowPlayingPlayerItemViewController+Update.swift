@@ -78,7 +78,9 @@ extension NowPlayingPlayerItemViewController {
         let skipFwdAmount = Settings.skipForwardTime
         skipFwdBtn.skipAmount = skipFwdAmount
 
-        updatePlayPauseButton(isPlaying: PlaybackManager.shared.isPlaying)
+        let isPlaying = PlaybackManager.shared.isPlaying
+        updatePlayPauseButton(isPlaying: isPlaying)
+        updateImageScale(isPlaying: isPlaying)
         updateUpTo(upTo: PlaybackManager.shared.currentTime, duration: PlaybackManager.shared.duration, moveSlider: true)
         reloadShelfActions()
         updateChaptersControls()
@@ -92,6 +94,13 @@ extension NowPlayingPlayerItemViewController {
         if !showingCustomImage {
             ImageManager.shared.loadImage(episode: playingEpisode, imageView: artworkImageView, size: .page)
         }
+    }
+
+    private func updateImageScale(isPlaying: Bool) {
+        let scale: CGFloat = isPlaying ? 0.88 : 0.75
+        UIView.animate(withDuration: 0.35, delay: 0, usingSpringWithDamping: 0.75, initialSpringVelocity: 1, animations: { [weak self] in
+            self?.episodeImage.transform = CGAffineTransform(scaleX: scale, y: scale)
+        })
     }
 
     private func updateColors() {
