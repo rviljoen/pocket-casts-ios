@@ -162,9 +162,23 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
     /// The final yPosition when dismissing
     var finalYPositionWhenDismissing: CGFloat = 0
 
+    let backgroundImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFill
+        iv.clipsToBounds = true
+        return iv
+    }()
+
+    private let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.accessibilityViewIsModal = true
+        view.layer.masksToBounds = true
+
+        view.insertSubview(backgroundImageView, at: 0)
+        view.insertSubview(blurView, at: 1)
+
         setupPlayer()
         setupGestures()
         setupObservers()
@@ -203,6 +217,8 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
+        backgroundImageView.frame = view.bounds
+        blurView.frame = view.bounds
         adjustHeaderConstraintIfNeeded()
         #if !APPCLIP
         if #available(iOS 27.1, *) {
@@ -475,7 +491,7 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
 
     private func configureTranscriptView() {
         transcriptContainerView.bottomAnchor.constraint(equalTo: nowPlayingItem.bottomControlsStackView.topAnchor).isActive = true
-        transcriptContainerView.backgroundColor = PlayerColorHelper.playerBackgroundColor01()
+        transcriptContainerView.backgroundColor = .clear
 
         transcriptContainerView.addSubview(transcriptsItem.view)
         transcriptsItem.view.anchorToAllSidesOf(view: transcriptContainerView)

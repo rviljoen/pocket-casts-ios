@@ -94,22 +94,20 @@ class ChaptersViewController: PlayerItemViewController {
     }
 
     private func updateColors() {
-        let backgroundColor = usesLargeScreenStyle ? .clear : PlayerColorHelper.playerBackgroundColor01()
-        view.backgroundColor = backgroundColor
-        chaptersTable.backgroundColor = backgroundColor
+        view.backgroundColor = .clear
+        chaptersTable.backgroundColor = .clear
         updateHeaderColor()
     }
 
-    /// The header sticks to the top, so it's filled to hide the chapters under it. Over the large
-    /// screen player background, it's only filled once there are chapters to hide.
+    /// The header sticks to the top. Over the large screen player background, it's filled once
+    /// there are chapters to hide under it.
     func updateHeaderColor() {
-        let color = PlayerColorHelper.playerBackgroundColor01()
         guard usesLargeScreenStyle else {
-            header.backgroundColor = color
+            header.backgroundColor = .clear
             return
         }
         let scrolledDistance = chaptersTable.contentOffset.y + chaptersTable.adjustedContentInset.top
-        header.backgroundColor = color.withAlphaComponent(min(1, max(0, scrolledDistance / 16)))
+        header.backgroundColor = PlayerColorHelper.playerBackgroundColor01().withAlphaComponent(min(1, max(0, scrolledDistance / 16)))
     }
 
     func updateSize() {
