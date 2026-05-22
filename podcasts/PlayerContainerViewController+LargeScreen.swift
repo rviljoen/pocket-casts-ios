@@ -81,11 +81,10 @@ extension PlayerContainerViewController {
             headerStackView.removeFromSuperview()
         }
         mainScrollView.removeFromSuperview()
-        closeBtn.removeFromSuperview()
         tabsView.fadesEdgesWithMask = true
 
-        layout.grabber.accessibilityLabel = closeBtn.accessibilityLabel
-        layout.grabber.accessibilityIdentifier = closeBtn.accessibilityIdentifier
+        layout.grabber.accessibilityLabel = L10n.keycommandClosePlayer
+        layout.grabber.accessibilityIdentifier = "Close player"
         layout.grabber.onTap = { [weak self] in
             self?.closeNowPlaying()
         }
@@ -145,7 +144,7 @@ extension PlayerContainerViewController {
         NSLayoutConstraint.deactivate(layout.constraints)
         // The tab pages leave before their scroll view can move to the other pane.
         removeLargeScreenTabPages()
-        for movingView: UIView in [headerView, mainScrollView, transcriptContainerView, closeBtn, layout.grabber, layout.divider, nowPlayingView] {
+        for movingView: UIView in [headerView, mainScrollView, transcriptContainerView, layout.grabber, layout.divider, nowPlayingView] {
             movingView.removeFromSuperview()
         }
 
@@ -180,17 +179,16 @@ extension PlayerContainerViewController {
                 layout.divider.bottomAnchor.constraint(equalTo: tabsHostView.bottomAnchor),
                 layout.divider.leadingAnchor.constraint(equalTo: tabsHostView.leadingAnchor),
                 layout.divider.widthAnchor.constraint(equalToConstant: 1),
-                tabsView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 16)
+                // The drag handle is replaced by the grabber, so the tabs sit at the bottom of the header.
+                upNextBtn.bottomAnchor.constraint(equalTo: headerView.bottomAnchor)
             ]
         } else {
-            headerView.addSubview(closeBtn)
             addNowPlayingPage()
             constraints += [
-                closeBtn.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 14),
-                closeBtn.bottomAnchor.constraint(equalTo: headerView.bottomAnchor),
-                tabsView.leadingAnchor.constraint(equalTo: closeBtn.trailingAnchor, constant: 4)
+                tabsView.topAnchor.constraint(equalTo: dragHandle.bottomAnchor, constant: 10)
             ]
         }
+        dragHandle.isHidden = isSplit
 
         // The transcript covers Now Playing down to its playback controls, like it does on iPhone.
         playerPaneView.addSubview(transcriptContainerView)

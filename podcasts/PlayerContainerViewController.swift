@@ -136,12 +136,6 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
     private lazy var upNextViewController = UpNextViewController(source: .player)
     #endif
 
-    @IBOutlet var closeBtn: ThemeableUIButton! {
-        didSet {
-            closeBtn.style = .playerContrast02
-        }
-    }
-
     var initialTouchPoint = CGPoint.zero
 
     /// The inner vertical scroll view (if any) under the touch when the dismiss
@@ -170,6 +164,8 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
     }()
 
     private let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+    let dragHandle = UIView()
+    private var dragHandleTopConstraint: NSLayoutConstraint?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -182,6 +178,7 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
         setupPlayer()
         setupGestures()
         setupObservers()
+        setupDragHandle()
         update()
 
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppWillBecomeActive), name: UIApplication.willEnterForegroundNotification, object: nil)
@@ -228,16 +225,28 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
         adjustPlayerNoSlidingRegion()
     }
 
-    @IBAction func upNextTapped(_ sender: Any) {
-        showUpNext()
+    private func setupDragHandle() {
+        dragHandle.backgroundColor = UIColor.white.withAlphaComponent(0.3)
+        dragHandle.layer.cornerRadius = 2.5
+        dragHandle.translatesAutoresizingMaskIntoConstraints = false
+        dragHandle.isUserInteractionEnabled = false
+        view.addSubview(dragHandle)
+
+        let topConstraint = dragHandle.topAnchor.constraint(equalTo: view.topAnchor, constant: 8)
+        dragHandleTopConstraint = topConstraint
+
+        NSLayoutConstraint.activate([
+            topConstraint,
+            dragHandle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            dragHandle.widthAnchor.constraint(equalToConstant: 72),
+            dragHandle.heightAnchor.constraint(equalToConstant: 5),
+            tabsView.topAnchor.constraint(equalTo: dragHandle.bottomAnchor, constant: 10),
+            upNextBtn.centerYAnchor.constraint(equalTo: tabsView.centerYAnchor)
+        ])
     }
 
-    @IBAction func closeTapped(_ sender: Any) {
-        #if APPCLIP
-        // Close doesn't exist in the App Clip
-        #else
-        appDelegate()?.miniPlayer()?.closeFullScreenPlayer()
-        #endif
+    @IBAction func upNextTapped(_ sender: Any) {
+        showUpNext()
     }
 
     @objc private func showUpNext() {
@@ -386,10 +395,16 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
     private func adjustHeaderConstraintIfNeeded() {
         guard let window = view.window else { return }
 
-        let requiredHeight = 50 + window.safeAreaInsets.top
+        let topInset = window.safeAreaInsets.top
+        let requiredHeight = 50 + topInset
 
         if headerHeightConstraint.constant != requiredHeight {
             headerHeightConstraint.constant = requiredHeight
+        }
+
+        let requiredHandleTop = topInset + 8
+        if dragHandleTopConstraint?.constant != requiredHandleTop {
+            dragHandleTopConstraint?.constant = requiredHandleTop
         }
     }
 
