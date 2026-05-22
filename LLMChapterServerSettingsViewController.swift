@@ -16,15 +16,15 @@ class LLMChapterServerSettingsViewController: PCTableViewController, UITextField
         [.testConnection]
     ]
 
-    private let textEntryCellId = "TextEntryCellId"
+    private let urlCellId = "URLCellId"
     private let buttonCellId = "ButtonCell"
 
-    private var serverURLTextField: UITextField?
+    private weak var serverURLTextField: UITextField?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "LLM Chapter Server"
-        tableView.register(UINib(nibName: "TextEntryCell", bundle: nil), forCellReuseIdentifier: textEntryCellId)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: urlCellId)
         tableView.register(UINib(nibName: "ButtonCell", bundle: nil), forCellReuseIdentifier: buttonCellId)
     }
 
@@ -42,17 +42,33 @@ class LLMChapterServerSettingsViewController: PCTableViewController, UITextField
         let row = tableStructure[indexPath.section][indexPath.row]
         switch row {
         case .urlField:
-            let cell = tableView.dequeueReusableCell(withIdentifier: textEntryCellId, for: indexPath) as! TextEntryCell
-            cell.textField.text = Settings.llmChapterServerURL
-            cell.textField.placeholder = Settings.defaultLLMChapterServerURL
-            cell.textField.keyboardType = .URL
-            cell.textField.autocapitalizationType = .none
-            cell.textField.autocorrectionType = .no
-            cell.textField.returnKeyType = .done
-            cell.textField.delegate = self
-            cell.style = .primaryUi01
-            cell.borderView.style = .primaryField02
-            serverURLTextField = cell.textField
+            let cell = tableView.dequeueReusableCell(withIdentifier: urlCellId, for: indexPath)
+            cell.selectionStyle = .none
+
+            let textField: UITextField
+            if let existing = cell.contentView.subviews.first(where: { $0 is UITextField }) as? UITextField {
+                textField = existing
+            } else {
+                let newField = UITextField()
+                newField.translatesAutoresizingMaskIntoConstraints = false
+                newField.keyboardType = .URL
+                newField.autocapitalizationType = .none
+                newField.autocorrectionType = .no
+                newField.returnKeyType = .done
+                newField.delegate = self
+                cell.contentView.addSubview(newField)
+                NSLayoutConstraint.activate([
+                    newField.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 16),
+                    newField.trailingAnchor.constraint(equalTo: cell.contentView.trailingAnchor, constant: -16),
+                    newField.topAnchor.constraint(equalTo: cell.contentView.topAnchor),
+                    newField.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor),
+                ])
+                textField = newField
+            }
+
+            textField.text = Settings.llmChapterServerURL
+            textField.placeholder = Settings.defaultLLMChapterServerURL
+            serverURLTextField = textField
             return cell
 
         case .testConnection:
@@ -74,16 +90,14 @@ class LLMChapterServerSettingsViewController: PCTableViewController, UITextField
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch Section(rawValue: section) {
         case .serverURL: return "Server URL"
-        case .connection: return nil
-        case .none: return nil
+        case .connection, .none: return nil
         }
     }
 
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         switch Section(rawValue: section) {
         case .serverURL: return "The URL of the LLM chapter server running on your local network. Chapters will be extracted from show notes when no embedded chapters are found."
-        case .connection: return nil
-        case .none: return nil
+        case .connection, .none: return nil
         }
     }
 
