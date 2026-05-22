@@ -6,6 +6,7 @@ import UIKit
 extension PlayerContainerViewController {
     func updateColors() {
         view.backgroundColor = PlayerColorHelper.playerBackgroundColor01()
+        dragHandle.updateColors()
         #if !APPCLIP
         updateArtworkBackground()
         if #available(iOS 27.1, *) {
