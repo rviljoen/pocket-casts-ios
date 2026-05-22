@@ -37,7 +37,8 @@ class PlayerTabsView: UIScrollView {
     static let largeScreenTitleInset = largeScreenLeadingMargin + TabConstants.titleInset
 
     /// The gap between the leading edge of the large screen player's tabs and the first tab.
-    static let largeScreenLeadingMargin: CGFloat = 16
+    /// Keep it in sync with the tabs' 20pt leading constraint in `PlayerContainerViewController.xib`.
+    static let largeScreenLeadingMargin: CGFloat = 20
 
     var tabs: [PlayerTabs] = [.nowPlaying] {
         didSet {

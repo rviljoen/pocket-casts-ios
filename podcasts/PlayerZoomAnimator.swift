@@ -591,7 +591,7 @@ extension PlayerContainerViewController {
         return radii
     }
 
-    /// Toggles the player header (close button, up next, tabs row) so the
+    /// Toggles the player header (drag handle, up next, tabs row) so the
     /// transition can fade it back in after the panel has grown past the
     /// header's frame.
     fileprivate func setPlayerHeaderHidden(_ hidden: Bool, animated: Bool, delay: TimeInterval = 0) {

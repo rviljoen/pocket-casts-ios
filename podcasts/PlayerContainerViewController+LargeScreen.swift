@@ -76,10 +76,9 @@ extension PlayerContainerViewController {
             headerStackView.removeFromSuperview()
         }
         mainScrollView.removeFromSuperview()
-        closeBtn.removeFromSuperview()
 
-        layout.grabber.accessibilityLabel = closeBtn.accessibilityLabel
-        layout.grabber.accessibilityIdentifier = closeBtn.accessibilityIdentifier
+        layout.grabber.accessibilityLabel = L10n.accessibilityClosePlayer
+        layout.grabber.accessibilityIdentifier = "Close player"
         layout.grabber.onTap = { [weak self] in
             self?.closeNowPlaying()
         }
@@ -138,7 +137,7 @@ extension PlayerContainerViewController {
         NSLayoutConstraint.deactivate(layout.constraints)
         // The tab pages leave before their scroll view can move to the other pane.
         removeLargeScreenTabPages()
-        for movingView: UIView in [headerView, mainScrollView, transcriptContainerView, closeBtn, layout.grabber, layout.divider, nowPlayingView] {
+        for movingView: UIView in [headerView, mainScrollView, transcriptContainerView, layout.grabber, layout.divider, nowPlayingView] {
             movingView.removeFromSuperview()
         }
 
@@ -173,17 +172,15 @@ extension PlayerContainerViewController {
                 layout.divider.bottomAnchor.constraint(equalTo: tabsHostView.bottomAnchor),
                 layout.divider.leadingAnchor.constraint(equalTo: tabsHostView.leadingAnchor),
                 layout.divider.widthAnchor.constraint(equalToConstant: 1),
-                tabsView.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: PlayerTabsView.largeScreenLeadingMargin)
+                // The drag handle is replaced by the grabber, so the tabs sit at the bottom of the header.
+                upNextBtn.bottomAnchor.constraint(equalTo: headerView.bottomAnchor)
             ]
         } else {
-            headerView.addSubview(closeBtn)
             addNowPlayingPage()
-            constraints += [
-                closeBtn.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 14),
-                closeBtn.bottomAnchor.constraint(equalTo: headerView.bottomAnchor),
-                tabsView.leadingAnchor.constraint(equalTo: closeBtn.trailingAnchor, constant: 4)
-            ]
+            constraints.append(dragHandleTabsConstraint())
         }
+        // Next to the tabs, the grabber above Now Playing takes the place of the drag handle.
+        dragHandle.isHidden = isSplit
 
         // The transcript covers Now Playing down to its playback controls, like it does on iPhone.
         playerPaneView.addSubview(transcriptContainerView)
@@ -469,7 +466,7 @@ extension PlayerContainerViewController {
     }
 
     /// The height of the header with the tabs, below the top safe area.
-    private static var largeScreenHeaderHeight: CGFloat {
+    static var largeScreenHeaderHeight: CGFloat {
         50
     }
 }
@@ -479,55 +476,5 @@ final class PlayerArrangementPaneViewController: UIViewController {
     override func loadView() {
         view = UIView()
         view.backgroundColor = .clear
-    }
-}
-
-/// The handle above Now Playing when the tabs are next to it. Tapping it closes the player. It's
-/// not a `UIControl`, so the player's dismiss pan can still start on it.
-final class PlayerGrabberView: UIView {
-    var onTap: (() -> Void)?
-
-    private let handle = UIView()
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        translatesAutoresizingMaskIntoConstraints = false
-        handle.translatesAutoresizingMaskIntoConstraints = false
-        handle.isUserInteractionEnabled = false
-        handle.layer.cornerRadius = 2.5
-        addSubview(handle)
-
-        NSLayoutConstraint.activate([
-            widthAnchor.constraint(equalToConstant: 88),
-            heightAnchor.constraint(equalToConstant: 44),
-            handle.centerXAnchor.constraint(equalTo: centerXAnchor),
-            handle.centerYAnchor.constraint(equalTo: centerYAnchor),
-            handle.widthAnchor.constraint(equalToConstant: 36),
-            handle.heightAnchor.constraint(equalToConstant: 5)
-        ])
-
-        isAccessibilityElement = true
-        accessibilityTraits = .button
-        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
-
-        updateColors()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func updateColors() {
-        handle.backgroundColor = ThemeColor.playerContrast03()
-    }
-
-    override func accessibilityActivate() -> Bool {
-        onTap?()
-        return true
-    }
-
-    @objc private func handleTap() {
-        onTap?()
     }
 }

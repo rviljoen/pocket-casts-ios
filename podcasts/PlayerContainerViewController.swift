@@ -161,13 +161,6 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
     private lazy var upNextViewController = UpNextViewController(source: .player)
     #endif
 
-    @IBOutlet var closeBtn: ThemeableUIButton! {
-        didSet {
-            closeBtn.style = .playerContrast02
-            closeBtn.accessibilityLabel = L10n.accessibilityClosePlayer
-        }
-    }
-
     var initialTouchPoint = CGPoint.zero
 
     /// The inner vertical scroll view (if any) under the touch when the dismiss
@@ -188,9 +181,26 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
     /// The final yPosition when dismissing
     var finalYPositionWhenDismissing: CGFloat = 0
 
+    /// The handle above the tabs. It's in the header, so it fades and moves with it.
+    let dragHandle = PlayerGrabberView()
+    private var dragHandleCenterYConstraint: NSLayoutConstraint?
+
+    /// The gap between the top safe area and the drag handle.
+    private static let dragHandleTopMargin: CGFloat = 8
+    /// The gap between the drag handle and the tabs.
+    private static let dragHandleTabsSpacing: CGFloat = 16
+    /// The height of the tabs capsule.
+    private static let tabsHeight: CGFloat = 40
+    /// The gap between the tabs and the bottom of the header.
+    private static let headerBottomPadding: CGFloat = 5
+    /// The height of the header below the top safe area: the drag handle, then the tabs.
+    private static let headerHeight = dragHandleTopMargin + PlayerGrabberView.handleSize.height + dragHandleTabsSpacing + tabsHeight + headerBottomPadding
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.accessibilityViewIsModal = true
+        // Before `setupPlayer()`, as the large screen layout constrains the tabs to the drag handle.
+        setupDragHandle()
         setupPlayer()
         setupGestures()
         setupObservers()
@@ -229,26 +239,51 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        adjustHeaderConstraintIfNeeded()
         #if !APPCLIP
         if #available(iOS 27.1, *) {
             updateLargeScreenLayoutIfNeeded()
         }
+        #endif
+        // After the large screen layout, since its header height depends on whether it's split.
+        adjustHeaderConstraintIfNeeded()
+        #if !APPCLIP
         updateTranscriptBackground()
         #endif
         adjustPlayerNoSlidingRegion()
     }
 
-    @IBAction func upNextTapped(_ sender: Any) {
-        showUpNext()
+    private func setupDragHandle() {
+        dragHandle.accessibilityLabel = L10n.accessibilityClosePlayer
+        dragHandle.accessibilityIdentifier = "Close player"
+        dragHandle.onTap = { [weak self] in
+            self?.closeNowPlaying()
+        }
+        // Below the tabs, so they keep the taps where the grabber's tap target overlaps them.
+        headerView.insertSubview(dragHandle, belowSubview: tabsView)
+
+        // `adjustHeaderConstraintIfNeeded()` adds the top safe area once there's a window.
+        let centerYConstraint = dragHandle.centerYAnchor.constraint(equalTo: headerView.topAnchor, constant: Self.dragHandleTopMargin + PlayerGrabberView.handleSize.height / 2)
+        dragHandleCenterYConstraint = centerYConstraint
+
+        var constraints = [
+            centerYConstraint,
+            dragHandle.centerXAnchor.constraint(equalTo: headerView.centerXAnchor),
+            upNextBtn.centerYAnchor.constraint(equalTo: tabsView.centerYAnchor)
+        ]
+        // The large screen layout pins the tabs itself, as they're not under the drag handle when split.
+        if !usesLargeScreenLayout {
+            constraints.append(dragHandleTabsConstraint())
+        }
+        NSLayoutConstraint.activate(constraints)
     }
 
-    @IBAction func closeTapped(_ sender: Any) {
-        #if APPCLIP
-        // Close doesn't exist in the App Clip
-        #else
-        appDelegate()?.miniPlayer()?.closeFullScreenPlayer()
-        #endif
+    /// Pins the tabs below the drag handle's visible handle.
+    func dragHandleTabsConstraint() -> NSLayoutConstraint {
+        tabsView.topAnchor.constraint(equalTo: dragHandle.centerYAnchor, constant: PlayerGrabberView.handleSize.height / 2 + Self.dragHandleTabsSpacing)
+    }
+
+    @IBAction func upNextTapped(_ sender: Any) {
+        showUpNext()
     }
 
     @objc private func showUpNext() {
@@ -398,10 +433,23 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
     func adjustHeaderConstraintIfNeeded() {
         guard let window = view.window else { return }
 
-        let requiredHeight = 50 + window.safeAreaInsets.top
+        let topInset = window.safeAreaInsets.top
+        var headerHeight = Self.headerHeight
+        #if !APPCLIP
+        // Next to Now Playing, the drag handle is hidden and the header lines the pages up with it.
+        if #available(iOS 27.1, *), isShowingLargeScreenSplit {
+            headerHeight = Self.largeScreenHeaderHeight
+        }
+        #endif
+        let requiredHeight = headerHeight + topInset
 
         if headerHeightConstraint.constant != requiredHeight {
             headerHeightConstraint.constant = requiredHeight
+        }
+
+        let requiredHandleCenterY = topInset + Self.dragHandleTopMargin + PlayerGrabberView.handleSize.height / 2
+        if dragHandleCenterYConstraint?.constant != requiredHandleCenterY {
+            dragHandleCenterYConstraint?.constant = requiredHandleCenterY
         }
     }
 
