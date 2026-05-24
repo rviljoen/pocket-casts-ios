@@ -11,7 +11,6 @@
 
 // Override the root bundle identifier used by all targets
 PRODUCT_BUNDLE_IDENTIFIER_ROOT = pocketcasts.$(USER).local.id
-PRODUCT_BUNDLE_IDENTIFIER = pocketcasts.$(USER).local.id
 
 
 // Set in Local/DevTeam.xcconfig
