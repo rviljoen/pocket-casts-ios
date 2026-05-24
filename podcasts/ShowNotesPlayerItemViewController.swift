@@ -57,6 +57,8 @@ class ShowNotesPlayerItemViewController: PlayerItemViewController, SFSafariViewC
 
     private var episode: Episode?
 
+    private let topFadeMask = CAGradientLayer()
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -67,6 +69,31 @@ class ShowNotesPlayerItemViewController: PlayerItemViewController, SFSafariViewC
         setupWebView()
         updateColors()
         updateSize()
+        setupTopFadeMask()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateTopFadeMask()
+    }
+
+    private func setupTopFadeMask() {
+        topFadeMask.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
+        topFadeMask.startPoint = CGPoint(x: 0.5, y: 0)
+        topFadeMask.endPoint = CGPoint(x: 0.5, y: 1)
+        view.layer.mask = topFadeMask
+        updateTopFadeMask()
+    }
+
+    private func updateTopFadeMask() {
+        let height = view.bounds.height
+        guard height > 0 else { return }
+        let fadeHeight: CGFloat = 20
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        topFadeMask.frame = view.bounds
+        topFadeMask.locations = [0, NSNumber(value: Double(fadeHeight / height))]
+        CATransaction.commit()
     }
 
     private func setupWebView() {
