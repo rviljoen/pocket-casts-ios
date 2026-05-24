@@ -185,7 +185,7 @@ extension PlayerContainerViewController {
         } else {
             addNowPlayingPage()
             constraints += [
-                tabsView.topAnchor.constraint(equalTo: dragHandle.bottomAnchor, constant: 10)
+                tabsView.topAnchor.constraint(equalTo: dragHandle.bottomAnchor, constant: 16)
             ]
         }
         dragHandle.isHidden = isSplit
