@@ -201,7 +201,7 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
             dragHandle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             dragHandle.widthAnchor.constraint(equalToConstant: 72),
             dragHandle.heightAnchor.constraint(equalToConstant: 5),
-            tabsView.topAnchor.constraint(equalTo: dragHandle.bottomAnchor, constant: 10),
+            tabsView.topAnchor.constraint(equalTo: dragHandle.bottomAnchor, constant: 16),
             upNextBtn.centerYAnchor.constraint(equalTo: tabsView.centerYAnchor)
         ])
     }
