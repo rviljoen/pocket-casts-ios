@@ -396,7 +396,8 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
         guard let window = view.window else { return }
 
         let topInset = window.safeAreaInsets.top
-        let requiredHeight = 50 + topInset
+        // drag handle (8 top + 5 height + 10 gap) + capsule (40) + 10 padding = 73
+        let requiredHeight = 73 + topInset
 
         if headerHeightConstraint.constant != requiredHeight {
             headerHeightConstraint.constant = requiredHeight
