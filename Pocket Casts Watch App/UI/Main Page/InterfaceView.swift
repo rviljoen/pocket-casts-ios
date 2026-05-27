@@ -110,7 +110,7 @@ struct InterfaceView: View {
             PlaylistsListView()
         case .nowPlaying:
             NowPlayingContainerView()
-        case .unknown, .effects, .episodeDetails, .filter, .interface:
+        case .unknown, .effects, .episodeDetails, .filter, .sleepTimer, .interface:
             EmptyView()
         }
     }
