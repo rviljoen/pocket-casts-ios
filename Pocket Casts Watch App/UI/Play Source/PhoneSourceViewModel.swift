@@ -142,6 +142,32 @@ class PhoneSourceViewModel: PlaySourceViewModel {
         SessionManager.shared.markUnplayed(episodeUuid: episode.uuid)
     }
 
+    // MARK: Sleep Timer
+
+    var sleepTimeRemaining: TimeInterval {
+        WatchDataManager.sleepTimeRemaining()
+    }
+
+    var sleepEpisodeCount: Int {
+        WatchDataManager.sleepEpisodeCount()
+    }
+
+    func setSleepTimer(duration: TimeInterval) {
+        SessionManager.shared.setSleepTimer(duration: duration)
+    }
+
+    func setSleepTimerEndOfEpisode() {
+        SessionManager.shared.setSleepTimerEndOfEpisode()
+    }
+
+    func cancelSleepTimer() {
+        SessionManager.shared.cancelSleepTimer()
+    }
+
+    func extendSleepTimer(by duration: TimeInterval) {
+        SessionManager.shared.extendSleepTimer(by: duration)
+    }
+
     // MARK: Downloads
 
     func fetchDownloadedEpisodes() -> AnyPublisher<[BaseEpisode], PlaySourceError> {

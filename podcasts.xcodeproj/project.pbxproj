@@ -309,7 +309,6 @@
 		46FBD8B5276A874F00867746 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 46FBD8B9276A874F00867746 /* Intents.intentdefinition */; };
 		46FBD8B6276A874F00867746 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 46FBD8B9276A874F00867746 /* Intents.intentdefinition */; settings = {ATTRIBUTES = (codegen, ); }; };
 		46FBD8B7276A874F00867746 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 46FBD8B9276A874F00867746 /* Intents.intentdefinition */; settings = {ATTRIBUTES = (codegen, ); }; };
-		8B0845932A66C86C00742C2F /* Share Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2F90990B2A4F88B00044FC55 /* Share Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		549F9BB1F07C49E498B735F7 /* PlayLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BA8F393FEBF446085FA19E8 /* PlayLogView.swift */; };
 		5B104ADE91E4462C94DA3D4E /* PlayLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A423129B3C4C4D06B7223468 /* PlayLogViewController.swift */; };
 		643B19612F84114200D35952 /* LLMChapterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643B19602F84114200D35952 /* LLMChapterService.swift */; };
@@ -320,7 +319,7 @@
 		643B209C2F84E3FF00D35952 /* LLMChapterCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643B20992F84E3FF00D35952 /* LLMChapterCache.swift */; };
 		643B209E2F85484200D35952 /* LLMChapterServerSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643B209D2F85484200D35952 /* LLMChapterServerSettingsViewController.swift */; };
 		647145BE2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 647145BD2F716FCF00080287 /* ChapterFilterKeywordsViewController.swift */; };
-		8B0845932A66C86C00742C2F /* Share Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 2F90990B2A4F88B00044FC55 /* Share Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8B0845932A66C86C00742C2F /* Share Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2F90990B2A4F88B00044FC55 /* Share Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8B087FC929DC976F0027EAE5 /* PodcastImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B087FC829DC976F0027EAE5 /* PodcastImage.swift */; };
 		8B10E78628D9093E00702C54 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B10E78528D908A900702C54 /* GoogleService-Info.plist */; };
 		8B10E78728D9093F00702C54 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B10E78528D908A900702C54 /* GoogleService-Info.plist */; };
@@ -2025,14 +2024,12 @@
 		9AF646922E5DEB1300627836 /* PlaylistDetailViewController+MultiSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlaylistDetailViewController+MultiSelect.swift"; sourceTree = "<group>"; };
 		9AF646942E5E081400627836 /* PlaylistDetailViewController+TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlaylistDetailViewController+TableView.swift"; sourceTree = "<group>"; };
 		9AF646962E5E0BB700627836 /* PlaylistDetailViewController+Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlaylistDetailViewController+Search.swift"; sourceTree = "<group>"; };
+		9BA8F393FEBF446085FA19E8 /* PlayLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayLogView.swift; sourceTree = "<group>"; };
 		A13200320100000000000003 /* SetSleepTimerIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetSleepTimerIntent.swift; sourceTree = "<group>"; };
 		A13200320100000000000004 /* MigratedSleepTimerIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigratedSleepTimerIntent.swift; sourceTree = "<group>"; };
 		A13200320100000000000006 /* PocketCastsAppShortcutsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketCastsAppShortcutsProvider.swift; sourceTree = "<group>"; };
 		A13200320300000000000003 /* AppIntents.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = AppIntents.xcstrings; sourceTree = "<group>"; };
 		A13200320300000000000004 /* AppShortcuts.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = AppShortcuts.xcstrings; sourceTree = "<group>"; };
-		AA1B2C3D4E5F607100HEAT03 /* ListeningHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningHeatmapView.swift; sourceTree = "<group>"; };
-		AA1B2C3D4E5F607100HEAT04 /* ListeningHeatmapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningHeatmapViewModel.swift; sourceTree = "<group>"; };
-		9BA8F393FEBF446085FA19E8 /* PlayLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayLogView.swift; sourceTree = "<group>"; };
 		A423129B3C4C4D06B7223468 /* PlayLogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayLogViewController.swift; sourceTree = "<group>"; };
 		AA1B2C3D4E5F607100HEAT03 /* ListeningHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningHeatmapView.swift; sourceTree = "<group>"; };
 		AA1B2C3D4E5F607100HEAT04 /* ListeningHeatmapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListeningHeatmapViewModel.swift; sourceTree = "<group>"; };
@@ -7406,7 +7403,6 @@
 				FF54BCAA2C5A2F4D00A342E5 /* TranscriptFormat.swift in Sources */,
 				F5CDD79F2F4D1AE100D1B221 /* ApiCredentials.swift in Sources */,
 				4054146F2435B82B00431FD5 /* PlaylistManager.swift in Sources */,
-				FF06AFA82CB692D30099EC9B /* MediaFileHandle.swift in Sources */,
 				643B19622F8411DD00D35952 /* LLMChapterService.swift in Sources */,
 				10756F892C59449C0089D34F /* Folder+Sortable.swift in Sources */,
 				BD74F15427F293E400222785 /* HomeGridItem.swift in Sources */,
