@@ -13,5 +13,6 @@ enum WatchInterfaceType: String {
     case upnext
     case nowPlaying
     case filterList
+    case sleepTimer
     case interface
 }

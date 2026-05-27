@@ -38,6 +38,8 @@ extension Publishers {
         static let upNextEpisodeChanged = Publishers.Merge(upNextEpisodeAdded, upNextEpisodeRemoved)
         static let upNextQueueChanged = NotificationCenter.default.publisher(for: Constants.Notifications.upNextQueueChanged)
 
+        static let sleepTimerChanged = NotificationCenter.default.publisher(for: Constants.Notifications.sleepTimerChanged)
+
         // Data Updates
         static let dataUpdated = NotificationCenter.default.publisher(for: WatchConstants.Notifications.dataUpdated, object: nil)
         static let podcastUpdated = NotificationCenter.default.publisher(for: Constants.Notifications.podcastUpdated)

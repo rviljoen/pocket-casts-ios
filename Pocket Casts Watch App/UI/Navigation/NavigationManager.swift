@@ -22,7 +22,7 @@ class NavigationManager: ObservableObject {
         switch type {
         case .downloads, .podcasts, .files, .upnext, .nowPlaying, .filterList:
             currentInterface = type
-        case .unknown, .effects, .episodeDetails, .filter, .interface:
+        case .unknown, .effects, .episodeDetails, .filter, .sleepTimer, .interface:
             currentInterface = nil
         }
     }
