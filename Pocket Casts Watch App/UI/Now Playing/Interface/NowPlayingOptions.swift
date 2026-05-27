@@ -15,29 +15,26 @@ struct NowPlayingOptions: View {
                     }
                     .frame(maxWidth: geo.size.width / 2)
 
-                    NowPlayingOption(iconName: "episodedetails", title: L10n.watchEpisodeDetails) {
-                        presentView = .episodeDetails
+                    NowPlayingOption(systemIconName: "archivebox", title: L10n.archive) {
+                        viewModel.archive()
                         optionSelected.toggle()
                     }
                     .frame(maxWidth: geo.size.width / 2)
                 }
                 .frame(maxHeight: geo.size.height / 2)
 
-                if viewModel.hasChapters {
-                    HStack {
-                        NowPlayingOption(iconName: "prevchapter", title: L10n.watchChapterPrev) {
-                            viewModel.changeChapter(next: false)
-                            optionSelected.toggle()
-                        }
-                        .frame(maxWidth: geo.size.width / 2)
-
-                        NowPlayingOption(iconName: "nextchapter", title: L10n.watchChapterNext) {
-                            viewModel.changeChapter(next: true)
-                            optionSelected.toggle()
-                        }
-                        .frame(maxWidth: geo.size.width / 2)
+                HStack {
+                    NowPlayingOption(iconName: "episodedetails", title: L10n.watchEpisodeDetails) {
+                        presentView = .episodeDetails
                     }
+                    .frame(maxWidth: geo.size.width / 2)
+
+                    NowPlayingOption(systemIconName: "moon.zzz.fill", title: viewModel.sleepTimerButtonTitle, highlighted: viewModel.sleepTimerActive) {
+                        presentView = .sleepTimer
+                    }
+                    .frame(maxWidth: geo.size.width / 2)
                 }
+                .frame(maxHeight: geo.size.height / 2)
             }
             .frame(maxHeight: .infinity, alignment: .center)
         }
@@ -45,8 +42,10 @@ struct NowPlayingOptions: View {
 }
 
 private struct NowPlayingOption: View {
-    var iconName: String
+    var iconName: String? = nil
+    var systemIconName: String? = nil
     var title: String
+    var highlighted: Bool = false
     var action: () -> Void
 
     var body: some View {
@@ -54,10 +53,17 @@ private struct NowPlayingOption: View {
             action()
         } label: {
             VStack(alignment: .center, spacing: 5) {
-                Image(iconName)
-                    .resizable()
-                    .aspectRatio(1, contentMode: .fit)
-                    .frame(minHeight: 20, maxHeight: 30)
+                if let systemIconName {
+                    Image(systemName: systemIconName)
+                        .resizable()
+                        .aspectRatio(1, contentMode: .fit)
+                        .frame(minHeight: 20, maxHeight: 30)
+                } else if let iconName {
+                    Image(iconName)
+                        .resizable()
+                        .aspectRatio(1, contentMode: .fit)
+                        .frame(minHeight: 20, maxHeight: 30)
+                }
 
                 Text(title)
                     .layoutPriority(1)
@@ -67,7 +73,7 @@ private struct NowPlayingOption: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(5)
-            .background(Color.background)
+            .background(highlighted ? Color.selectedBackground : Color.background)
             .clipShape(RoundedRectangle(cornerRadius: 20))
         }
         .buttonStyle(.plain)

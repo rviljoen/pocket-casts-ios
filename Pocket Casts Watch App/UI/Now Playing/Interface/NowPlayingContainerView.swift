@@ -43,6 +43,8 @@ struct NowPlayingContainerView: View {
             EffectsView()
         case .upnext:
             UpNextView()
+        case .sleepTimer:
+            SleepTimerView()
         case .episodeDetails:
             if let episode = viewModel.episode {
                 EpisodeView(viewModel: EpisodeDetailsViewModel(episode: episode, playlist: nil), listTitle: L10n.nowPlaying)
