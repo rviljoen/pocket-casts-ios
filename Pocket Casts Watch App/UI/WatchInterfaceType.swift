@@ -13,6 +13,7 @@ enum WatchInterfaceType: String {
     case upnext
     case nowPlaying
     case filterList
+    case sleepTimer
     case interface
 
     var interfacePosition: Int? {
@@ -37,6 +38,8 @@ enum WatchInterfaceType: String {
             return 7
         case .filterList:
             return 8
+        case .sleepTimer:
+            return 9
         case .interface:
             return nil
         }

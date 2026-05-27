@@ -164,6 +164,39 @@ extension SessionManager {
         WCSession.default.sendMessage(trimSilenceRequest, replyHandler: nil)
     }
 
+    func setSleepTimer(duration: TimeInterval) {
+        guard validateSessionActivated(), WCSession.default.isReachable else { return }
+        let request = [
+            WatchConstants.Messages.messageType: WatchConstants.Messages.SetSleepTimerRequest.type,
+            WatchConstants.Messages.SetSleepTimerRequest.duration: duration
+        ] as [String: Any]
+        WCSession.default.sendMessage(request, replyHandler: nil)
+    }
+
+    func setSleepTimerEndOfEpisode() {
+        guard validateSessionActivated(), WCSession.default.isReachable else { return }
+        let request = [
+            WatchConstants.Messages.messageType: WatchConstants.Messages.SetSleepTimerEpisodesRequest.type,
+            WatchConstants.Messages.SetSleepTimerEpisodesRequest.episodes: 1
+        ] as [String: Any]
+        WCSession.default.sendMessage(request, replyHandler: nil)
+    }
+
+    func cancelSleepTimer() {
+        guard validateSessionActivated(), WCSession.default.isReachable else { return }
+        let message = [WatchConstants.Messages.messageType: WatchConstants.Messages.CancelSleepTimerRequest.type]
+        WCSession.default.sendMessage(message, replyHandler: nil)
+    }
+
+    func extendSleepTimer(by duration: TimeInterval) {
+        guard validateSessionActivated(), WCSession.default.isReachable else { return }
+        let request = [
+            WatchConstants.Messages.messageType: WatchConstants.Messages.ExtendSleepTimerRequest.type,
+            WatchConstants.Messages.ExtendSleepTimerRequest.duration: duration
+        ] as [String: Any]
+        WCSession.default.sendMessage(request, replyHandler: nil)
+    }
+
     func addToUpNext(episodeUuid: String, toTop: Bool) {
         let addToUpNextRequest = [
             WatchConstants.Messages.messageType: WatchConstants.Messages.AddToUpNextRequest.type,

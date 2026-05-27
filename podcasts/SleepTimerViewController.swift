@@ -208,6 +208,7 @@ class SleepTimerViewController: SimpleNotificationsViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         addCustomObserver(Constants.Notifications.playbackProgress, selector: #selector(progressUpdated))
+        addCustomObserver(Constants.Notifications.sleepTimerChanged, selector: #selector(sleepTimerChanged))
         addCustomObserver(Constants.Notifications.themeChanged, selector: #selector(updateColors))
 
         updateDisplay()
@@ -221,6 +222,10 @@ class SleepTimerViewController: SimpleNotificationsViewController {
 
     @objc private func progressUpdated() {
         updateSleepRemainingTime()
+    }
+
+    @objc private func sleepTimerChanged() {
+        updateDisplay()
     }
 
     @objc private func updateColors() {
@@ -360,7 +365,7 @@ class SleepTimerViewController: SimpleNotificationsViewController {
     }
 
     @IBAction func plusFiveTapped(_ sender: Any) {
-        PlaybackManager.shared.sleepTimeRemaining += 5.minutes
+        PlaybackManager.shared.setSleepTimerInterval(PlaybackManager.shared.sleepTimeRemaining + 5.minutes)
         updateSleepRemainingTime()
         Analytics.track(.playerSleepTimerExtended, properties: ["amount": Int(5.minutes)])
     }

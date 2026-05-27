@@ -81,6 +81,15 @@ protocol PlaySourceViewModel {
     var episodeUuidsInQueue: [BaseEpisode] { get }
     func clearUpNext()
 
+    // MARK: Sleep Timer
+
+    var sleepTimeRemaining: TimeInterval { get }
+    var sleepEpisodeCount: Int { get }
+    func setSleepTimer(duration: TimeInterval)
+    func setSleepTimerEndOfEpisode()
+    func cancelSleepTimer()
+    func extendSleepTimer(by duration: TimeInterval)
+
     // MARK: Now Playing
 
     var nowPlayingEpisode: BaseEpisode? { get }

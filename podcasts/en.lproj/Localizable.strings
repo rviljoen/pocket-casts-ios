@@ -313,6 +313,9 @@
 /* A common string used throughout the app. Prompt to cancel the current flow. */
 "cancel" = "Cancel";
 
+/* A common string used to start an action, such as starting a timer. */
+"start" = "Start";
+
 /* An activity message indicating that the process to cancel is running. */
 "canceling" = "Canceling...";
 
@@ -3304,6 +3307,9 @@
 /* Label showing that Sleep Timer will activate after a given number of episodes. %1$@ is the number of episodes and it's always bigger than 1. */
 "sleep_timer_sleeping_after" = "Sleeping in %1$@ episodes";
 
+/* Heading shown above sleep timer duration presets on the watch when no timer is active. */
+"sleep_timer_select_duration" = "Select sleep timer duration";
+
 /* Prompt to confirm when presented with a connection prompt. Used when connecting to a Sonos speaker. */
 "sonos_connect_action" = "CONNECT";
 
@@ -3572,7 +3578,7 @@
 "watch_effects" = "Effects";
 
 /* Prompt in the Apple Watch App to open episode details. */
-"watch_episode_details" = "Episode Details";
+"watch_episode_details" = "Details";
 
 /* Prompt in the Apple Watch app to return to the Main Menu */
 "watch_main_menu" = "Main Menu";

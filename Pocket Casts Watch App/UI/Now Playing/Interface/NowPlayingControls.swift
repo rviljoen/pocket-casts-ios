@@ -51,24 +51,28 @@ struct NowPlayingControls: View {
 
     private var plabackGroup: some View {
         HStack {
-            Button {
-                WKInterfaceDevice.current().play(.click)
+            SkipButton(imageName: "skipback") {
                 viewModel.skip(forward: false)
-            } label: {
-                Image("skipback", bundle: .watchAssets)
-                    .playGroupStlyed()
+            } onLongPress: {
+                if viewModel.hasChapters {
+                    viewModel.changeChapter(next: false)
+                } else {
+                    viewModel.skip(forward: false)
+                }
             }
 
             Spacer()
             playPauseButton
             Spacer()
 
-            Button {
-                WKInterfaceDevice.current().play(.click)
+            SkipButton(imageName: "skipforward") {
                 viewModel.skip(forward: true)
-            } label: {
-                Image("skipforward", bundle: .watchAssets)
-                    .playGroupStlyed()
+            } onLongPress: {
+                if viewModel.hasChapters {
+                    viewModel.changeChapter(next: true)
+                } else {
+                    viewModel.skip(forward: true)
+                }
             }
         }
         .buttonStyle(.plain)
@@ -127,6 +131,39 @@ private extension Image {
     func playGroupStlyed() -> some View {
         resizable()
             .aspectRatio(1, contentMode: .fit)
+    }
+}
+
+private struct SkipButton: View {
+    let imageName: String
+    let onTap: () -> Void
+    let onLongPress: () -> Void
+
+    @State private var longPressRecognized = false
+
+    private let longPressDuration: TimeInterval = 0.5
+
+    var body: some View {
+        Button {
+            guard !longPressRecognized else {
+                longPressRecognized = false
+                return
+            }
+            WKInterfaceDevice.current().play(.click)
+            onTap()
+        } label: {
+            Image(imageName, bundle: .watchAssets)
+                .playGroupStlyed()
+        }
+        .buttonStyle(.plain)
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: longPressDuration)
+                .onEnded { _ in
+                    longPressRecognized = true
+                    WKInterfaceDevice.current().play(.success)
+                    onLongPress()
+                }
+        )
     }
 }
 

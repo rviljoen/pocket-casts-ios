@@ -48,6 +48,10 @@ struct NowPlayingContainerView: View {
                 EmptyView()
             }.hidden()
 
+            NavigationLink(destination: SleepTimerView(), tag: .sleepTimer, selection: $presentedView) {
+                EmptyView()
+            }.hidden()
+
             if let episode = viewModel.episode {
                 NavigationLink(destination: EpisodeView(viewModel: EpisodeDetailsViewModel(episode: episode, playlist: nil), listTitle: L10n.nowPlaying), tag: .episodeDetails, selection: $presentedView) {
                     EmptyView()

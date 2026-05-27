@@ -21,6 +21,8 @@ public enum WatchConstants {
         public static let nowPlayingVolumeBoost = "boost"
         public static let nowPlayingSubtitle = "subTitle"
         public static let nowPlayingSpeed = "speed"
+        public static let nowPlayingSleepTimeRemaining = "sleepTimeRemaining"
+        public static let nowPlayingSleepEpisodeCount = "sleepEpisodeCount"
         public static let upNextInfo = "upNext"
         public static let lastUpdateTime = "last_update"
 
@@ -248,6 +250,25 @@ public enum WatchConstants {
 
         enum StateUpdate {
             public static let type = "stateUpdate"
+        }
+
+        enum SetSleepTimerRequest {
+            public static let type = "setSleepTimerRequest"
+            public static let duration = "duration"
+        }
+
+        enum SetSleepTimerEpisodesRequest {
+            public static let type = "setSleepTimerEpisodesRequest"
+            public static let episodes = "episodes"
+        }
+
+        enum CancelSleepTimerRequest {
+            public static let type = "cancelSleepTimerRequest"
+        }
+
+        enum ExtendSleepTimerRequest {
+            public static let type = "extendSleepTimerRequest"
+            public static let duration = "duration"
         }
     }
 }
