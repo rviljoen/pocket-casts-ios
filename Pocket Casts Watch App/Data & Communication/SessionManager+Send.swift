@@ -164,6 +164,22 @@ extension SessionManager {
         WCSession.default.sendMessage(trimSilenceRequest, replyHandler: nil)
     }
 
+    func setSleepTimer(duration: TimeInterval) {
+        sendSleepTimerRequest(WatchConstants.Messages.SetSleepTimerRequest.type, [WatchConstants.Messages.SetSleepTimerRequest.duration: duration])
+    }
+
+    func setSleepTimerEndOfEpisode() {
+        sendSleepTimerRequest(WatchConstants.Messages.SetSleepTimerEpisodesRequest.type, [WatchConstants.Messages.SetSleepTimerEpisodesRequest.episodes: 1])
+    }
+
+    func cancelSleepTimer() {
+        sendSleepTimerRequest(WatchConstants.Messages.CancelSleepTimerRequest.type)
+    }
+
+    func extendSleepTimer(by duration: TimeInterval) {
+        sendSleepTimerRequest(WatchConstants.Messages.ExtendSleepTimerRequest.type, [WatchConstants.Messages.ExtendSleepTimerRequest.duration: duration])
+    }
+
     func addToUpNext(episodeUuid: String, toTop: Bool) {
         let addToUpNextRequest = [
             WatchConstants.Messages.messageType: WatchConstants.Messages.AddToUpNextRequest.type,
@@ -244,6 +260,14 @@ extension SessionManager {
 
         let message = [WatchConstants.Messages.messageType: messageType]
         WCSession.default.sendMessage(message, replyHandler: nil)
+    }
+
+    private func sendSleepTimerRequest(_ messageType: String, _ values: [String: Any] = [:]) {
+        guard validateSessionActivated(), WCSession.default.isReachable else { return }
+
+        var request = values
+        request[WatchConstants.Messages.messageType] = messageType
+        WCSession.default.sendMessage(request, replyHandler: nil)
     }
 
     /// Transfers an action to the iPhone with guaranteed delivery.

@@ -118,6 +118,14 @@ enum WatchDataManager {
         return UIColor(hex: color)
     }
 
+    static func sleepTimeRemaining() -> TimeInterval {
+        nowPlayingValue(key: WatchConstants.Keys.nowPlayingSleepTimeRemaining) as? TimeInterval ?? -1
+    }
+
+    static func sleepEpisodeCount() -> Int {
+        nowPlayingValue(key: WatchConstants.Keys.nowPlayingSleepEpisodeCount) as? Int ?? 0
+    }
+
     static func nowPlayingSubTitle() -> String? {
         guard let title = nowPlayingValue(key: WatchConstants.Keys.nowPlayingSubtitle) as? String else { return nil }
 

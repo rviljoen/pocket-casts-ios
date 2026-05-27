@@ -77,6 +77,7 @@ class WatchManager: NSObject, WCSessionDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(autoDownloadChanged), name: Constants.Notifications.watchAutoDownloadSettingsChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playbackStateChanged), name: Constants.Notifications.podcastChapterChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playbackStateChanged), name: Constants.Notifications.podcastChaptersDidUpdate, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(playbackStateChanged), name: Constants.Notifications.sleepTimerChanged, object: nil)
 
         Task {
             let log = WatchManager.shared.readLogFile()
@@ -243,6 +244,28 @@ class WatchManager: NSObject, WCSessionDelegate {
             }
         } else if WatchConstants.Messages.PlaybackProgressUpdate.type == messageType {
             handlePlaybackProgressUpdate(payload: payload)
+        } else if WatchConstants.Messages.SetSleepTimerRequest.type == messageType {
+            if let duration = payload[WatchConstants.Messages.SetSleepTimerRequest.duration] as? TimeInterval {
+                DispatchQueue.main.async {
+                    PlaybackManager.shared.setSleepTimerInterval(duration)
+                }
+            }
+        } else if WatchConstants.Messages.SetSleepTimerEpisodesRequest.type == messageType {
+            if let episodes = payload[WatchConstants.Messages.SetSleepTimerEpisodesRequest.episodes] as? Int {
+                DispatchQueue.main.async {
+                    PlaybackManager.shared.numberOfEpisodesToSleepAfter = episodes
+                }
+            }
+        } else if WatchConstants.Messages.CancelSleepTimerRequest.type == messageType {
+            DispatchQueue.main.async {
+                PlaybackManager.shared.cancelSleepTimer(userInitiated: true)
+            }
+        } else if WatchConstants.Messages.ExtendSleepTimerRequest.type == messageType {
+            if let duration = payload[WatchConstants.Messages.ExtendSleepTimerRequest.duration] as? TimeInterval {
+                DispatchQueue.main.async {
+                    PlaybackManager.shared.adjustSleepTimer(by: duration, source: .watch)
+                }
+            }
         } else if WatchConstants.Messages.LoginDetailsRequest.type == messageType {
             // Watch is requesting login details but message was delivered without reply handler
             // This can happen with WatchConnectivity timing issues
@@ -704,6 +727,9 @@ class WatchManager: NSObject, WCSessionDelegate {
             nowPlayingInfo[WatchConstants.Keys.nowPlayingTrimSilence] = effects.trimSilence.isEnabled()
             nowPlayingInfo[WatchConstants.Keys.nowPlayingVolumeBoost] = effects.volumeBoost
             nowPlayingInfo[WatchConstants.Keys.nowPlayingSpeed] = effects.playbackSpeed
+
+            nowPlayingInfo[WatchConstants.Keys.nowPlayingSleepTimeRemaining] = playbackManager.sleepTimeRemaining
+            nowPlayingInfo[WatchConstants.Keys.nowPlayingSleepEpisodeCount] = playbackManager.numberOfEpisodesToSleepAfter
         }
 
         nowPlayingInfo[WatchConstants.Keys.nowPlayingSkipBackAmount] = Settings.skipBackTime

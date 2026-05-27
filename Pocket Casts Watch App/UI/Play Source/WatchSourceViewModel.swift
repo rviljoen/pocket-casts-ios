@@ -97,6 +97,32 @@ class WatchSourceViewModel: PlaySourceViewModel {
         PlaybackManager.shared.changeEffects(effects)
     }
 
+    // MARK: Sleep Timer
+
+    var sleepTimeRemaining: TimeInterval {
+        PlaybackManager.shared.sleepTimeRemaining
+    }
+
+    var sleepEpisodeCount: Int {
+        PlaybackManager.shared.numberOfEpisodesToSleepAfter
+    }
+
+    func setSleepTimer(duration: TimeInterval) {
+        PlaybackManager.shared.setSleepTimerInterval(duration)
+    }
+
+    func setSleepTimerEndOfEpisode() {
+        PlaybackManager.shared.numberOfEpisodesToSleepAfter = 1
+    }
+
+    func cancelSleepTimer() {
+        PlaybackManager.shared.cancelSleepTimer(userInitiated: true)
+    }
+
+    func extendSleepTimer(by duration: TimeInterval) {
+        PlaybackManager.shared.adjustSleepTimer(by: duration, source: .watch)
+    }
+
     // MARK: Episode Actions
 
     func downloaded(episode: BaseEpisode) -> Bool {

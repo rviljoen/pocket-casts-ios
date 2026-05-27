@@ -2057,6 +2057,20 @@ class PlaybackManager: ServerPlaybackDelegate {
         Analytics.track(.playerSleepTimerExtended, source: source, properties: ["amount": Int(duration)])
     }
 
+    /// Extends or reduces a running sleep timer. Reducing never takes it below a minute,
+    /// or below what's left if that's already less than a minute.
+    func adjustSleepTimer(by duration: TimeInterval, source: AnalyticsSource) {
+        guard duration < 0 else {
+            extendSleepTimer(by: duration, source: source)
+            return
+        }
+        guard sleepTimeRemaining >= 0 else { return }
+
+        sleepTimeRemaining = max(min(sleepTimeRemaining, 60), sleepTimeRemaining + duration)
+        syncSleepTimerLiveActivity()
+        NotificationCenter.postOnMainThread(notification: Constants.Notifications.sleepTimerChanged)
+    }
+
     @MainActor
     func restartSleepTimer() {
         guard isSleepTimerActive else {
