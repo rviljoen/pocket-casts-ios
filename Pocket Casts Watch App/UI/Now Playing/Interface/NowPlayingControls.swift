@@ -33,9 +33,7 @@ struct NowPlayingControls: View {
 
     private var progressGroup: some View {
         VStack(alignment: .center) {
-            Text(viewModel.episodeName)
-                .font(.dynamic(size: 14))
-                .lineLimit(1)
+            MarqueeText(text: viewModel.episodeName, font: .dynamic(size: 14))
 
             LinearProgressView(tintColor: viewModel.episodeAccentColor, progress: $viewModel.progress)
 
