@@ -35,8 +35,6 @@ struct NowPlayingControls: View {
         VStack(alignment: .center) {
             MarqueeText(text: viewModel.episodeName, font: .dynamic(size: 14))
 
-            LinearProgressView(tintColor: viewModel.episodeAccentColor, progress: $viewModel.progress)
-
             HStack {
                 Text(viewModel.progressTitle)
                     .foregroundColor(viewModel.episodeAccentColor)
@@ -83,11 +81,25 @@ struct NowPlayingControls: View {
             WKInterfaceDevice.current().play(.click)
             viewModel.playPauseTapped()
         } label: {
-            Image(viewModel.isPlaying ? "pause" : "play")
-                .playGroupStlyed()
+            ZStack {
+                Circle()
+                    .stroke(Color.white.opacity(0.2), lineWidth: 2)
+                Circle()
+                    .trim(from: 0, to: viewModel.progress)
+                    .stroke(viewModel.episodeAccentColor, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                Image(viewModel.isPlaying ? "pause" : "play")
+                    .playGroupStlyed()
+                    .padding(10)
+            }
         }
         .accessibilityLabel(viewModel.isPlaying ? L10n.pause : L10n.play)
         .modifier(HandGestureShortcutPrimaryAction())
+        .modify { button in
+            if #available(watchOS 26.0, *) {
+                button.buttonStyle(.glass).clipShape(Circle())
+            }
+        }
     }
 
     private var navigationGroup: some View {
