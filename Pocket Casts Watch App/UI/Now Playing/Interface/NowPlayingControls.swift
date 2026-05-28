@@ -35,14 +35,19 @@ struct NowPlayingControls: View {
         VStack(alignment: .center) {
             MarqueeText(text: viewModel.episodeName, font: .dynamic(size: 14))
 
-            HStack {
+            HStack(alignment: .top) {
                 Text(viewModel.progressTitle)
                     .foregroundColor(viewModel.episodeAccentColor)
-                Spacer()
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 Text(viewModel.timeRemaining)
+                    .fixedSize()
             }
             .font(.dynamic(size: 13))
+            Spacer()
         }
+        .padding(.horizontal, 8)
     }
 
     private var plabackGroup: some View {
@@ -82,6 +87,14 @@ struct NowPlayingControls: View {
             viewModel.playPauseTapped()
         } label: {
             ZStack {
+//                if #available(watchOS 10.0, *) {
+//                    Circle()
+//                        .fill(Color.white.opacity(0.12))
+//                        .background(.ultraThinMaterial, in: Circle())
+//                } else {
+//                    Circle()
+//                        .fill(Color.white.opacity(0.12))
+//                }
                 Circle()
                     .stroke(Color.white.opacity(0.2), lineWidth: 2)
                 Circle()
@@ -94,12 +107,8 @@ struct NowPlayingControls: View {
             }
         }
         .accessibilityLabel(viewModel.isPlaying ? L10n.pause : L10n.play)
+        .buttonStyle(.plain)
         .modifier(HandGestureShortcutPrimaryAction())
-        .modify { button in
-            if #available(watchOS 26.0, *) {
-                button.buttonStyle(.glass).clipShape(Circle())
-            }
-        }
     }
 
     private var navigationGroup: some View {
