@@ -7,15 +7,15 @@ struct NowPlayingOptions: View {
 
     var body: some View {
         GeometryReader { geo in
-            VStack(spacing: 5) {
-                HStack {
-                    NowPlayingOption(iconName: "markasplayed", title: L10n.markPlayedShort) {
+            VStack(spacing: 8) {
+                HStack(spacing: 8) {
+                    NowPlayingOption(iconName: "markasplayed", label: L10n.markPlayed) {
                         viewModel.markPlayed()
                         optionSelected.toggle()
                     }
                     .frame(maxWidth: geo.size.width / 2)
 
-                    NowPlayingOption(systemIconName: "archivebox", title: L10n.archive) {
+                    NowPlayingOption(systemIconName: "archivebox", label: L10n.archive) {
                         viewModel.archive()
                         optionSelected.toggle()
                     }
@@ -23,19 +23,20 @@ struct NowPlayingOptions: View {
                 }
                 .frame(maxHeight: geo.size.height / 2)
 
-                HStack {
-                    NowPlayingOption(iconName: "episodedetails", title: L10n.watchEpisodeDetails) {
+                HStack(spacing: 8) {
+                    NowPlayingOption(iconName: "episodedetails", label: L10n.watchEpisodeDetails) {
                         presentView = .episodeDetails
                     }
                     .frame(maxWidth: geo.size.width / 2)
 
-                    NowPlayingOption(systemIconName: "moon.zzz.fill", title: viewModel.sleepTimerButtonTitle, highlighted: viewModel.sleepTimerActive) {
+                    NowPlayingOption(systemIconName: "moon.zzz.fill", label: L10n.sleepTimer, highlighted: viewModel.sleepTimerActive) {
                         presentView = .sleepTimer
                     }
                     .frame(maxWidth: geo.size.width / 2)
                 }
                 .frame(maxHeight: geo.size.height / 2)
             }
+            .padding(8)
             .frame(maxHeight: .infinity, alignment: .center)
         }
     }
@@ -44,7 +45,7 @@ struct NowPlayingOptions: View {
 private struct NowPlayingOption: View {
     var iconName: String? = nil
     var systemIconName: String? = nil
-    var title: String
+    let label: String
     var highlighted: Bool = false
     var action: () -> Void
 
@@ -52,31 +53,30 @@ private struct NowPlayingOption: View {
         Button {
             action()
         } label: {
-            VStack(alignment: .center, spacing: 5) {
+            Group {
                 if let systemIconName {
                     Image(systemName: systemIconName)
                         .resizable()
                         .aspectRatio(1, contentMode: .fit)
-                        .frame(minHeight: 20, maxHeight: 30)
+                        .frame(minHeight: 24, maxHeight: 36)
                 } else if let iconName {
                     Image(iconName)
                         .resizable()
                         .aspectRatio(1, contentMode: .fit)
-                        .frame(minHeight: 20, maxHeight: 30)
+                        .frame(minHeight: 24, maxHeight: 36)
                 }
-
-                Text(title)
-                    .layoutPriority(1)
-                    .multilineTextAlignment(.center)
-                    .font(.dynamic(size: 13))
-                    .minimumScaleFactor(0.7)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(5)
-            .background(highlighted ? Color.selectedBackground : Color.background)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .watchGlass(
+                in: RoundedRectangle(cornerRadius: 20, style: .continuous),
+                interactive: highlighted,
+                tint: highlighted ? Color.accentColor.opacity(0.4) : nil,
+                fallback: highlighted ? Color.selectedBackground : Color.background
+            )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(label)
         .frame(maxHeight: .infinity)
     }
 }

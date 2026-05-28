@@ -1,7 +1,6 @@
 import Combine
 import Foundation
 import PocketCastsDataModel
-import PocketCastsUtils
 import SwiftUI
 
 class NowPlayingViewModel: ObservableObject {
@@ -15,8 +14,7 @@ class NowPlayingViewModel: ObservableObject {
     @Published var effectsIconName: String
     @Published var upNextCount: Int
     @Published var hasChapters: Bool
-    @Published var sleepTimerActive: Bool = false
-    @Published var sleepTimerButtonTitle: String = ""
+    @Published var sleepTimerActive: Bool
 
     private var playSource = PlaySourceHelper.playSourceViewModel
     private var cancellables = Set<AnyCancellable>()
@@ -44,16 +42,7 @@ class NowPlayingViewModel: ObservableObject {
         upNextCount = playSource.upNextCount
         hasChapters = playSource.playingEpisodeHasChapters
 
-        let initialRemaining = playSource.sleepTimeRemaining
-        let initialEpisodes = playSource.sleepEpisodeCount
-        sleepTimerActive = initialRemaining >= 0 || initialEpisodes > 0
-        if initialEpisodes > 0 {
-            sleepTimerButtonTitle = L10n.sleepTimerEndOfEpisode
-        } else if initialRemaining >= 0 {
-            sleepTimerButtonTitle = TimeFormatter.shared.playTimeFormat(time: initialRemaining, showSeconds: false)
-        } else {
-            sleepTimerButtonTitle = L10n.sleepTimer
-        }
+        sleepTimerActive = playSource.isSleepTimerActive
 
         Publishers.Merge(
             $episode,
@@ -139,29 +128,10 @@ class NowPlayingViewModel: ObservableObject {
             Publishers.Notification.sleepTimerChanged
         )
         .map { [unowned self] _ in
-            let remaining = self.playSource.sleepTimeRemaining
-            let episodes = self.playSource.sleepEpisodeCount
-            return remaining >= 0 || episodes > 0
+            self.playSource.isSleepTimerActive
         }
         .receive(on: RunLoop.main)
         .assign(to: &$sleepTimerActive)
-
-        Publishers.Merge(
-            dataUpdated,
-            Publishers.Notification.sleepTimerChanged
-        )
-        .map { [unowned self] _ -> String in
-            let remaining = self.playSource.sleepTimeRemaining
-            let episodes = self.playSource.sleepEpisodeCount
-            if episodes > 0 {
-                return L10n.sleepTimerEndOfEpisode
-            } else if remaining >= 0 {
-                return TimeFormatter.shared.playTimeFormat(time: remaining, showSeconds: false)
-            }
-            return L10n.sleepTimer
-        }
-        .receive(on: RunLoop.main)
-        .assign(to: &$sleepTimerButtonTitle)
     }
 
     func skip(forward: Bool) {

@@ -3,6 +3,7 @@ import SwiftUI
 import WatchKit
 
 struct EffectsView: View {
+    var episode: BaseEpisode? = nil
     @StateObject var viewModel = EffectsViewModel()
 
     var body: some View {
@@ -18,14 +19,19 @@ struct EffectsView: View {
                         .buttonStyle(.plain)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(viewModel.playbackSpeed == 1 ? Color.background : Color.selectedBackground)
-                        .cornerRadius(WatchConstants.cornerRadius)
+                        .watchGlass(
+                            in: RoundedRectangle(cornerRadius: WatchConstants.cornerRadius),
+                            interactive: true,
+                            tint: viewModel.playbackSpeed == 1 ? nil : Color.accentColor.opacity(0.4),
+                            fallback: viewModel.playbackSpeed == 1 ? Color.background : Color.selectedBackground
+                        )
 
                     Button(action: { viewModel.increasePlaybackSpeed() }) {
                         Image("plus", bundle: Bundle.watchAssets)
                     }
                     .roundIcon()
                 }
+                .padding(.horizontal, 15)
 
                 if viewModel.trimSilenceAvailable {
                     Toggle(L10n.trimSilence, isOn: $viewModel.trimSilenceEnabled)
@@ -36,8 +42,9 @@ struct EffectsView: View {
                         .styled()
                 }
             }
-            .padding(.top, 15)
+            .padding(.top, 36)
         }
+        .nowPlayingBackground(episode)
         .navigationTitle(L10n.watchEffects)
     }
 }
@@ -45,11 +52,11 @@ struct EffectsView: View {
 // MARK: - Modifiers
 
 private extension Toggle {
+    @MainActor
     func styled() -> some View {
         padding(.vertical)
             .padding(.horizontal, 15)
-            .background(Color.background)
-            .cornerRadius(WatchConstants.cornerRadius)
+            .watchGlass(in: Capsule())
     }
 }
 
