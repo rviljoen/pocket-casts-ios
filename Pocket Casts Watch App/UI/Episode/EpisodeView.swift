@@ -8,22 +8,24 @@ struct EpisodeView: View {
     let listTitle: String
 
     var body: some View {
-        GeometryReader { geo in
-            ScrollView {
-                VStack(alignment: .leading, spacing: 7) {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 7) {
+                HStack(spacing: 12) {
                     artwork
-                    VStack(alignment: .leading, spacing: 7) {
-                        episodeDetails
-                            .offset(y: geo.size.width * -0.6)
-                            .padding(.bottom, geo.size.width * -0.6)
-                        Divider()
-                        episodeActions
-                    }
-                    .scenePadding(.horizontal)
+                    Spacer()
+                    playPauseButton
+                    Spacer()
                 }
+                episodeDetails
+                Divider()
+                episodeActions
+                    .buttonStyle(.plain)
             }
-            .navigationTitle(listTitle)
+            .padding(.horizontal, 12)
+            .padding(.top, 36)
         }
+        .nowPlayingBackground(viewModel.episode)
+        .navigationTitle(listTitle)
         .actionSheet(item: $viewModel.actionRequiresConfirmation) { action in
             ActionSheet(title: Text(action.confirmationTitle),
                         message: Text(action.confirmationMessage),
@@ -38,33 +40,22 @@ struct EpisodeView: View {
     }
 
     private var artwork: some View {
-        ZStack {
-            CachedImage(url: viewModel.episode.largeImageUrl)
-            Image("episodegradient", bundle: Bundle.watchAssets)
-                .resizable()
-        }
+        CachedImage(url: viewModel.episode.largeImageUrl)
+            .frame(width: 64, height: 64)
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
     private var episodeDetails: some View {
         VStack(alignment: .leading, spacing: 7) {
-            playPauseButton
             Text(viewModel.episode.title ?? "")
                 .font(.dynamic(size: 15, weight: .medium))
 
             Text(viewModel.episode.subTitle())
                 .foregroundColor(viewModel.episode.subTitleColor)
                 .font(.dynamic(size: 12, weight: .medium))
-            Text(viewModel.episode.displayDate)
-                .foregroundColor(.subheadlineText)
-                .font(.dynamic(size: 12))
-            Text(viewModel.episode.displayableInfo())
+            Text(viewModel.episode.displayDate + " • "  + viewModel.episode.displayableInfo())
                 .foregroundColor(.subheadlineText)
                 .font(.dynamic(size: 12, weight: .medium))
-
-            if !viewModel.episode.episodeDetails.isEmpty {
-                Text(viewModel.episode.episodeDetails)
-                    .font(.dynamic(size: 13, weight: .medium))
-            }
         }
     }
 
@@ -77,6 +68,7 @@ struct EpisodeView: View {
         }
         .accessibilityLabel(viewModel.isPlaying ? L10n.pause : L10n.play)
         .buttonStyle(.plain)
+        .watchGlass(in: Circle(), interactive: true, fallback: nil)
     }
 
     private var episodeActions: some View {
@@ -86,20 +78,24 @@ struct EpisodeView: View {
                     WKInterfaceDevice.current().play(.success)
                     viewModel.handleEpisodeAction(action, dismiss: dismissView)
                 }) {
-                    switch action {
-                    case .pauseDownload:
-                        DownloadProgressEpisodeActionView(downloadProgress: $viewModel.downloadProgress)
-                    case .playNext, .playLast:
-                        UpNextEpisodeActionView(isCurrentlyPlaying: $viewModel.isCurrentlyPlaying, episodeAction: action)
-                    default:
-                        EpisodeActionView(iconName: action.iconName, title: action.title)
+                    Group {
+                        switch action {
+                        case .pauseDownload:
+                            DownloadProgressEpisodeActionView(downloadProgress: $viewModel.downloadProgress)
+                        case .playNext, .playLast:
+                            UpNextEpisodeActionView(isCurrentlyPlaying: $viewModel.isCurrentlyPlaying, episodeAction: action)
+                        default:
+                            EpisodeActionView(iconName: action.iconName, title: action.title)
+                        }
                     }
+                    .episodeActionCapsule()
                 }
             }
 
             if viewModel.supportsPodcastNavigation, let podcast = viewModel.parentPodcast {
                 NavigationLink(destination: PodcastEpisodeListView(viewModel: .init(podcast: podcast))) {
                     EpisodeActionView(iconName: "episode_goto", title: L10n.goToPodcast)
+                        .episodeActionCapsule()
                 }
             }
         }
@@ -107,6 +103,15 @@ struct EpisodeView: View {
 
     private func dismissView() {
         presentationMode.wrappedValue.dismiss()
+    }
+}
+
+private extension View {
+    func episodeActionCapsule() -> some View {
+        frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 14)
+            .padding(.horizontal, 12)
+            .watchGlass(in: Capsule(), interactive: true)
     }
 }
 
