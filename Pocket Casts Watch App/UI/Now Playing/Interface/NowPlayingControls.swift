@@ -87,14 +87,6 @@ struct NowPlayingControls: View {
             viewModel.playPauseTapped()
         } label: {
             ZStack {
-//                if #available(watchOS 10.0, *) {
-//                    Circle()
-//                        .fill(Color.white.opacity(0.12))
-//                        .background(.ultraThinMaterial, in: Circle())
-//                } else {
-//                    Circle()
-//                        .fill(Color.white.opacity(0.12))
-//                }
                 Circle()
                     .stroke(Color.white.opacity(0.2), lineWidth: 2)
                 Circle()
@@ -107,8 +99,12 @@ struct NowPlayingControls: View {
             }
         }
         .accessibilityLabel(viewModel.isPlaying ? L10n.pause : L10n.play)
-        .buttonStyle(.plain)
         .modifier(HandGestureShortcutPrimaryAction())
+        .modify { button in
+            if #available(watchOS 26.0, *) {
+                button.glassEffect(.clear.interactive(), in: .circle)
+            }
+        }
     }
 
     private var navigationGroup: some View {
