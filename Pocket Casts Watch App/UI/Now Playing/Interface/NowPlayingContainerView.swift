@@ -1,3 +1,5 @@
+import Kingfisher
+import PocketCastsDataModel
 import SwiftUI
 
 struct NowPlayingContainerView: View {
@@ -8,7 +10,7 @@ struct NowPlayingContainerView: View {
 
     var body: some View {
         Group {
-            if let _ = viewModel.episode {
+            if let episode = viewModel.episode {
                 TabView(selection: $selection) {
                     NowPlayingOptions(viewModel: viewModel, presentView: $presentedView, optionSelected: $optionSelected)
                         .tag(1)
@@ -18,6 +20,7 @@ struct NowPlayingContainerView: View {
                         .animation(.none, value: selection)
                 }
                 .animation(.easeInOut, value: selection)
+                .nowPlayingBackground(episode)
             } else {
                 NowPlayingEmptyView()
             }
@@ -40,17 +43,70 @@ struct NowPlayingContainerView: View {
     private func destination(for type: WatchInterfaceType) -> some View {
         switch type {
         case .effects:
-            EffectsView()
+            EffectsView(episode: viewModel.episode)
         case .upnext:
             UpNextView()
         case .sleepTimer:
-            SleepTimerView()
+            SleepTimerView(episode: viewModel.episode)
         case .episodeDetails:
             if let episode = viewModel.episode {
                 EpisodeView(viewModel: EpisodeDetailsViewModel(episode: episode, playlist: nil), listTitle: L10n.nowPlaying)
             }
         default:
             EmptyView()
+        }
+    }
+}
+
+struct NowPlayingArtworkBackground: View {
+    let episode: BaseEpisode
+
+    var body: some View {
+        ZStack {
+            Color.black
+
+            KFImage
+                .url(episode.largeImageUrl)
+                .targetCache(WatchImageHelper.shared.mainCache)
+                .placeholder { _ in
+                    Color.black
+                }
+                .resizable()
+                .scaledToFill()
+                .scaleEffect(1.2)
+                .blur(radius: 20)
+                .saturation(1.15)
+                .clipped()
+                .overlay(Color.black.opacity(0.55))
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+extension View {
+    /// Places the view over the blurred artwork of `episode`, when there is one.
+    func nowPlayingBackground(_ episode: BaseEpisode?) -> some View {
+        ZStack {
+            if let episode {
+                NowPlayingArtworkBackground(episode: episode)
+                    .ignoresSafeArea()
+            }
+
+            self
+        }
+    }
+
+    /// Liquid Glass in `shape` on watchOS 26, otherwise a `fallback` background clipped to `shape`.
+    /// A `nil` fallback leaves the view unchanged on earlier versions.
+    @ViewBuilder
+    func watchGlass(in shape: some Shape, interactive: Bool = false, tint: Color? = nil, fallback: Color? = .background) -> some View {
+        if #available(watchOS 26.0, *) {
+            glassEffect(Glass.clear.tint(tint).interactive(interactive), in: shape)
+        } else if let fallback {
+            background(fallback)
+                .clipShape(shape)
+        } else {
+            self
         }
     }
 }

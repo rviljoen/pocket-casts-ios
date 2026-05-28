@@ -3614,7 +3614,7 @@
 "watch_effects" = "Effects";
 
 /* Prompt in the Apple Watch App to open episode details. */
-"watch_episode_details" = "Details";
+"watch_episode_details" = "Episode Details";
 
 /* Prompt in the Apple Watch app to return to the Main Menu */
 "watch_main_menu" = "Main Menu";

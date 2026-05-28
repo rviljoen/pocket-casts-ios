@@ -25,51 +25,55 @@ struct NowPlayingControls: View {
 
     private var progressGroup: some View {
         VStack(alignment: .center) {
-            Text(viewModel.episodeName)
-                .font(.dynamic(size: 14))
+            MarqueeText(text: viewModel.episodeName, font: .dynamic(size: 14))
+                .id(viewModel.episodeName)
+
+            Text(viewModel.progressTitle)
+                .foregroundColor(viewModel.episodeAccentColor)
                 .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.dynamic(size: 13))
 
-            LinearProgressView(tintColor: viewModel.episodeAccentColor, progress: $viewModel.progress)
-
-            HStack {
-                Text(viewModel.progressTitle)
-                    .foregroundColor(viewModel.episodeAccentColor)
-                Spacer()
-                Text(viewModel.timeRemaining)
-            }
-            .font(.dynamic(size: 13))
+            Spacer()
         }
+        .padding(.horizontal, 8)
     }
 
     private var plabackGroup: some View {
-        HStack {
-            SkipButton(imageName: "skipback") {
-                viewModel.skip(forward: false)
-            } onLongPress: {
-                if viewModel.hasChapters {
-                    viewModel.changeChapter(next: false)
-                } else {
+        VStack(spacing: 4) {
+            HStack {
+                SkipButton(imageName: "skipback") {
                     viewModel.skip(forward: false)
+                } onLongPress: {
+                    if viewModel.hasChapters {
+                        viewModel.changeChapter(next: false)
+                    } else {
+                        viewModel.skip(forward: false)
+                    }
                 }
-            }
 
-            Spacer()
-            playPauseButton
-            Spacer()
+                Spacer()
+                playPauseButton
+                Spacer()
 
-            SkipButton(imageName: "skipforward") {
-                viewModel.skip(forward: true)
-            } onLongPress: {
-                if viewModel.hasChapters {
-                    viewModel.changeChapter(next: true)
-                } else {
+                SkipButton(imageName: "skipforward") {
                     viewModel.skip(forward: true)
+                } onLongPress: {
+                    if viewModel.hasChapters {
+                        viewModel.changeChapter(next: true)
+                    } else {
+                        viewModel.skip(forward: true)
+                    }
                 }
             }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 8)
+            .frame(maxWidth: .infinity, minHeight: 32, idealHeight: 40, maxHeight: 44)
+
+            Text(L10n.queueTimeRemaining(viewModel.timeRemaining))
+                .font(.dynamic(size: 11))
+                .foregroundColor(.secondary)
         }
-        .buttonStyle(.plain)
-        .padding(.horizontal, 2)
-        .frame(maxWidth: .infinity, minHeight: 32, idealHeight: 40, maxHeight: 44)
     }
 
     private var playPauseButton: some View {
@@ -77,11 +81,21 @@ struct NowPlayingControls: View {
             WKInterfaceDevice.current().play(.click)
             viewModel.playPauseTapped()
         } label: {
-            Image(viewModel.isPlaying ? "pause" : "play")
-                .playGroupStlyed()
+            ZStack {
+                Circle()
+                    .stroke(Color.white.opacity(0.2), lineWidth: 2)
+                Circle()
+                    .trim(from: 0, to: viewModel.progress)
+                    .stroke(viewModel.episodeAccentColor, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                Image(viewModel.isPlaying ? "pause" : "play")
+                    .playGroupStlyed()
+                    .padding(10)
+            }
         }
         .accessibilityLabel(viewModel.isPlaying ? L10n.pause : L10n.play)
         .modifier(HandGestureShortcutPrimaryAction())
+        .watchGlass(in: Circle(), interactive: true, fallback: nil)
     }
 
     private var navigationGroup: some View {

@@ -9,6 +9,8 @@ struct EpisodeActionView: View {
             Image(iconName, bundle: Bundle.watchAssets)
             Text(title)
                 .font(.dynamic(size: 16))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
             Spacer()
         }
     }

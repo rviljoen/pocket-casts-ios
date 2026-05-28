@@ -12,6 +12,7 @@ struct NowPlayingRow: View {
                 Text(L10n.nowPlaying)
                 Text(podcastName ?? "")
                     .foregroundColor(.subheadlineText)
+                    .lineLimit(2)
             }
             .font(.dynamic(size: 13))
         }
