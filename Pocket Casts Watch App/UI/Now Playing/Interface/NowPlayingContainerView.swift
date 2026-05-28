@@ -1,4 +1,9 @@
+import Kingfisher
+import PocketCastsDataModel
 import SwiftUI
+import WatchKit
+
+private let watchScreenBounds = WKInterfaceDevice.current().screenBounds
 
 struct NowPlayingContainerView: View {
     @StateObject private var viewModel = NowPlayingViewModel()
@@ -8,7 +13,7 @@ struct NowPlayingContainerView: View {
 
     var body: some View {
         Group {
-            if let _ = viewModel.episode {
+            if let episode = viewModel.episode {
                 TabView(selection: $selection) {
                     NowPlayingOptions(viewModel: viewModel, presentView: $presentedView, optionSelected: $optionSelected)
                         .tag(1)
@@ -18,6 +23,9 @@ struct NowPlayingContainerView: View {
                         .animation(.none, value: selection)
                 }
                 .animation(.easeInOut, value: selection)
+                .frame(minWidth: watchScreenBounds.width,
+                       minHeight: watchScreenBounds.height)
+                .background(NowPlayingArtworkBackground(episode: episode).ignoresSafeArea())
             } else {
                 NowPlayingEmptyView()
             }
@@ -52,6 +60,31 @@ struct NowPlayingContainerView: View {
         default:
             EmptyView()
         }
+    }
+}
+
+private struct NowPlayingArtworkBackground: View {
+    let episode: BaseEpisode
+
+    var body: some View {
+        ZStack {
+            Color.black
+
+            KFImage
+                .url(episode.largeImageUrl)
+                .targetCache(WatchImageHelper.shared.mainCache)
+                .placeholder { _ in
+                    Color.black
+                }
+                .resizable()
+                .scaledToFill()
+                .scaleEffect(1.2)
+                .blur(radius: 20)
+                .saturation(1.15)
+                .clipped()
+                .overlay(Color.black.opacity(0.55))
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
