@@ -45,7 +45,7 @@ struct NowPlayingContainerView: View {
     /// Hidden Navigation items to allow nested screens the ability to push new views outside of the paged TabView
     var navigationHelpers: some View {
         Group {
-            NavigationLink(destination: EffectsView(), tag: .effects, selection: $presentedView) {
+            NavigationLink(destination: EffectsView(episode: viewModel.episode), tag: .effects, selection: $presentedView) {
                 EmptyView()
             }.hidden()
 
