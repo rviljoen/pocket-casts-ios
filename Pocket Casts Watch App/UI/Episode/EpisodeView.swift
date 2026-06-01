@@ -14,10 +14,11 @@ struct EpisodeView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 7) {
-                    HStack {
+                    HStack(spacing: 12) {
+                        artwork
+                        Spacer()
                         playPauseButton
                         Spacer()
-                        artwork
                     }
                     episodeDetails
                     Divider()
