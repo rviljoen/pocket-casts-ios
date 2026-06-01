@@ -47,7 +47,7 @@ struct NowPlayingContainerView: View {
     private func destination(for type: WatchInterfaceType) -> some View {
         switch type {
         case .effects:
-            EffectsView()
+            EffectsView(episode: viewModel.episode)
         case .upnext:
             UpNextView()
         case .sleepTimer:
