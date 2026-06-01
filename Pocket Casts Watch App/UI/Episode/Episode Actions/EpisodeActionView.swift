@@ -11,6 +11,17 @@ struct EpisodeActionView: View {
                 .font(.dynamic(size: 16))
             Spacer()
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .modify { view in
+            if #available(watchOS 26.0, *) {
+                view.glassEffect(.clear.interactive(), in: .capsule)
+            } else {
+                view.background(Color.background)
+                    .clipShape(Capsule())
+            }
+        }
     }
 }
 
