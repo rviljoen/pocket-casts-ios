@@ -34,6 +34,7 @@ struct NowPlayingControls: View {
     private var progressGroup: some View {
         VStack(alignment: .center) {
             MarqueeText(text: viewModel.episodeName, font: .dynamic(size: 14))
+                .id(viewModel.episodeName)
 
             HStack(alignment: .top) {
                 Text(viewModel.progressTitle)
