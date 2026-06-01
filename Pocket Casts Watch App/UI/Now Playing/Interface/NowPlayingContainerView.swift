@@ -1,9 +1,6 @@
 import Kingfisher
 import PocketCastsDataModel
 import SwiftUI
-import WatchKit
-
-private let watchScreenBounds = WKInterfaceDevice.current().screenBounds
 
 struct NowPlayingContainerView: View {
     @StateObject private var viewModel = NowPlayingViewModel()
@@ -15,6 +12,9 @@ struct NowPlayingContainerView: View {
         Group {
             if let episode = viewModel.episode {
                 ZStack {
+                    NowPlayingArtworkBackground(episode: episode)
+                        .ignoresSafeArea()
+
                     navigationHelpers
 
                     TabView(selection: $selection) {
@@ -27,9 +27,6 @@ struct NowPlayingContainerView: View {
                     }
                     .animation(.easeInOut, value: selection)
                 }
-                .frame(minWidth: watchScreenBounds.width,
-                       minHeight: watchScreenBounds.height)
-                .background(NowPlayingArtworkBackground(episode: episode).ignoresSafeArea())
             } else {
                 NowPlayingEmptyView()
             }
