@@ -9,10 +9,12 @@ struct EpisodeActionView: View {
             Image(iconName, bundle: Bundle.watchAssets)
             Text(title)
                 .font(.dynamic(size: 16))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
             Spacer()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 10)
+        .padding(.vertical, 14)
         .padding(.horizontal, 12)
         .modify { view in
             if #available(watchOS 26.0, *) {
