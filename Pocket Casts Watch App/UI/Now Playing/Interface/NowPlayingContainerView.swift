@@ -53,7 +53,7 @@ struct NowPlayingContainerView: View {
                 EmptyView()
             }.hidden()
 
-            NavigationLink(destination: SleepTimerView(), tag: .sleepTimer, selection: $presentedView) {
+            NavigationLink(destination: SleepTimerView(episode: viewModel.episode), tag: .sleepTimer, selection: $presentedView) {
                 EmptyView()
             }.hidden()
 
@@ -66,7 +66,7 @@ struct NowPlayingContainerView: View {
     }
 }
 
-private struct NowPlayingArtworkBackground: View {
+struct NowPlayingArtworkBackground: View {
     let episode: BaseEpisode
 
     var body: some View {
