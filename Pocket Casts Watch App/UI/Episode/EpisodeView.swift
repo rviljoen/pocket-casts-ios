@@ -8,19 +8,27 @@ struct EpisodeView: View {
     let listTitle: String
 
     var body: some View {
-        GeometryReader { geo in
+        ZStack {
+            NowPlayingArtworkBackground(episode: viewModel.episode)
+                .ignoresSafeArea()
+
             ScrollView {
                 VStack(alignment: .leading, spacing: 7) {
-                    artwork
+                    HStack {
+                        playPauseButton
+                        Spacer()
+                        artwork
+                    }
                     episodeDetails
-                        .offset(y: geo.size.width * -0.6)
-                        .padding(.bottom, geo.size.width * -0.6)
                     Divider()
                     episodeActions
+                        .buttonStyle(.plain)
                 }
+                .padding(.horizontal, 12)
+                .padding(.top, 36)
             }
-            .navigationTitle(listTitle)
         }
+        .navigationTitle(listTitle)
         .actionSheet(item: $viewModel.actionRequiresConfirmation) { action in
             ActionSheet(title: Text(action.confirmationTitle),
                         message: Text(action.confirmationMessage),
@@ -35,33 +43,27 @@ struct EpisodeView: View {
     }
 
     private var artwork: some View {
-        ZStack {
-            CachedImage(url: viewModel.episode.largeImageUrl)
-            Image("episodegradient", bundle: Bundle.watchAssets)
-                .resizable()
-        }
+        CachedImage(url: viewModel.episode.largeImageUrl)
+            .frame(width: 64, height: 64)
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
     private var episodeDetails: some View {
         VStack(alignment: .leading, spacing: 7) {
-            playPauseButton
             Text(viewModel.episode.title ?? "")
                 .font(.dynamic(size: 15, weight: .medium))
 
             Text(viewModel.episode.subTitle())
                 .foregroundColor(viewModel.episode.subTitleColor)
                 .font(.dynamic(size: 12, weight: .medium))
-            Text(viewModel.episode.displayDate)
-                .foregroundColor(.subheadlineText)
-                .font(.dynamic(size: 12))
-            Text(viewModel.episode.displayableInfo())
+            Text(viewModel.episode.displayDate + " • "  + viewModel.episode.displayableInfo())
                 .foregroundColor(.subheadlineText)
                 .font(.dynamic(size: 12, weight: .medium))
 
-            if !viewModel.episode.episodeDetails.isEmpty {
-                Text(viewModel.episode.episodeDetails)
-                    .font(.dynamic(size: 13, weight: .medium))
-            }
+//            if !viewModel.episode.episodeDetails.isEmpty {
+//                Text(viewModel.episode.episodeDetails)
+//                    .font(.dynamic(size: 13, weight: .medium))
+//            }
         }
     }
 
@@ -74,6 +76,11 @@ struct EpisodeView: View {
         }
         .accessibilityLabel(viewModel.isPlaying ? L10n.pause : L10n.play)
         .buttonStyle(.plain)
+        .modify { button in
+            if #available(watchOS 26.0, *) {
+                button.glassEffect(.clear.interactive(), in: .circle)
+            }
+        }
     }
 
     private var episodeActions: some View {
