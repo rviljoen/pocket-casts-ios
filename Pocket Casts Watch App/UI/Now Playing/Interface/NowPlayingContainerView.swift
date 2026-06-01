@@ -51,7 +51,7 @@ struct NowPlayingContainerView: View {
         case .upnext:
             UpNextView()
         case .sleepTimer:
-            SleepTimerView()
+            SleepTimerView(episode: viewModel.episode)
         case .episodeDetails:
             if let episode = viewModel.episode {
                 EpisodeView(viewModel: EpisodeDetailsViewModel(episode: episode, playlist: nil), listTitle: L10n.nowPlaying)
@@ -62,7 +62,7 @@ struct NowPlayingContainerView: View {
     }
 }
 
-private struct NowPlayingArtworkBackground: View {
+struct NowPlayingArtworkBackground: View {
     let episode: BaseEpisode
 
     var body: some View {
