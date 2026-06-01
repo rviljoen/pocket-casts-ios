@@ -7,15 +7,15 @@ struct NowPlayingOptions: View {
 
     var body: some View {
         GeometryReader { geo in
-            VStack(spacing: 5) {
-                HStack {
-                    NowPlayingOption(iconName: "markasplayed", title: L10n.markPlayedShort) {
+            VStack(spacing: 8) {
+                HStack(spacing: 8) {
+                    NowPlayingOption(iconName: "markasplayed") {
                         viewModel.markPlayed()
                         optionSelected.toggle()
                     }
                     .frame(maxWidth: geo.size.width / 2)
 
-                    NowPlayingOption(systemIconName: "archivebox", title: L10n.archive) {
+                    NowPlayingOption(systemIconName: "archivebox") {
                         viewModel.archive()
                         optionSelected.toggle()
                     }
@@ -23,19 +23,20 @@ struct NowPlayingOptions: View {
                 }
                 .frame(maxHeight: geo.size.height / 2)
 
-                HStack {
-                    NowPlayingOption(iconName: "episodedetails", title: L10n.watchEpisodeDetails) {
+                HStack(spacing: 8) {
+                    NowPlayingOption(iconName: "episodedetails") {
                         presentView = .episodeDetails
                     }
                     .frame(maxWidth: geo.size.width / 2)
 
-                    NowPlayingOption(systemIconName: "moon.zzz.fill", title: viewModel.sleepTimerButtonTitle, highlighted: viewModel.sleepTimerActive) {
+                    NowPlayingOption(systemIconName: "moon.zzz.fill", highlighted: viewModel.sleepTimerActive) {
                         presentView = .sleepTimer
                     }
                     .frame(maxWidth: geo.size.width / 2)
                 }
                 .frame(maxHeight: geo.size.height / 2)
             }
+            .padding(8)
             .frame(maxHeight: .infinity, alignment: .center)
         }
     }
@@ -44,7 +45,6 @@ struct NowPlayingOptions: View {
 private struct NowPlayingOption: View {
     var iconName: String? = nil
     var systemIconName: String? = nil
-    var title: String
     var highlighted: Bool = false
     var action: () -> Void
 
@@ -52,29 +52,32 @@ private struct NowPlayingOption: View {
         Button {
             action()
         } label: {
-            VStack(alignment: .center, spacing: 5) {
+            Group {
                 if let systemIconName {
                     Image(systemName: systemIconName)
                         .resizable()
                         .aspectRatio(1, contentMode: .fit)
-                        .frame(minHeight: 20, maxHeight: 30)
+                        .frame(minHeight: 24, maxHeight: 36)
                 } else if let iconName {
                     Image(iconName)
                         .resizable()
                         .aspectRatio(1, contentMode: .fit)
-                        .frame(minHeight: 20, maxHeight: 30)
+                        .frame(minHeight: 24, maxHeight: 36)
                 }
-
-                Text(title)
-                    .layoutPriority(1)
-                    .multilineTextAlignment(.center)
-                    .font(.dynamic(size: 13))
-                    .minimumScaleFactor(0.7)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding(5)
-            .background(highlighted ? Color.selectedBackground : Color.background)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .modify { view in
+                if #available(watchOS 26.0, *) {
+                    view.glassEffect(
+                        highlighted ? .clear.tint(Color.accentColor.opacity(0.4)).interactive() : .clear,
+                        in: RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    )
+                } else {
+                    view.background(highlighted ? Color.selectedBackground : Color.background)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                }
+            }
         }
         .buttonStyle(.plain)
         .frame(maxHeight: .infinity)
