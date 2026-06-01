@@ -45,13 +45,13 @@ struct SleepTimerView: View {
                         .foregroundColor(.red)
                         .modify { view in
                             if #available(watchOS 26.0, *) {
-                                view.glassEffect(.clear, in: RoundedRectangle(cornerRadius: WatchConstants.cornerRadius, style: .continuous))
+                                view.glassEffect(.clear, in: .capsule)
                             } else {
                                 view.background(Color.background)
-                                    .cornerRadius(WatchConstants.cornerRadius)
+                                    .clipShape(Capsule())
                             }
                         }
-                        .overlay(RoundedRectangle(cornerRadius: WatchConstants.cornerRadius, style: .continuous).strokeBorder(Color.white.opacity(0.3), lineWidth: 2))
+                        .overlay(Capsule().strokeBorder(Color.white.opacity(0.3), lineWidth: 2))
                         .padding(.horizontal, 8)
                     } else {
                         Text(L10n.sleepTimerSelectDuration)
@@ -75,13 +75,13 @@ struct SleepTimerView: View {
                         .padding(.vertical, 16)
                         .modify { view in
                             if #available(watchOS 26.0, *) {
-                                view.glassEffect(.clear, in: RoundedRectangle(cornerRadius: WatchConstants.cornerRadius, style: .continuous))
+                                view.glassEffect(.clear, in: .capsule)
                             } else {
                                 view.background(Color.background)
-                                    .cornerRadius(WatchConstants.cornerRadius)
+                                    .clipShape(Capsule())
                             }
                         }
-                        .overlay(RoundedRectangle(cornerRadius: WatchConstants.cornerRadius, style: .continuous).strokeBorder(Color.white.opacity(0.3), lineWidth: 2))
+                        .overlay(Capsule().strokeBorder(Color.white.opacity(0.3), lineWidth: 2))
                         .padding(.horizontal, 8)
                     }
                 }
