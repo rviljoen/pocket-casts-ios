@@ -13,6 +13,7 @@ struct MarqueeText: View {
 
     @State private var containerWidth: CGFloat = 0
     @State private var textWidth: CGFloat = 0
+    @State private var textHeight: CGFloat = 0
     @State private var offset: CGFloat = 0
     @State private var leadingFadeLocation: CGFloat = 0
 
@@ -43,17 +44,19 @@ struct MarqueeText: View {
             .mask(maskView)
             .onAppear { containerWidth = proxy.size.width }
         }
+        .frame(height: textHeight > 0 ? textHeight : nil)
         .background(
             textContent
                 .fixedSize()
                 .hidden()
                 .background(GeometryReader { geo in
-                    Color.clear.preference(key: TextWidthKey.self, value: geo.size.width)
+                    Color.clear.preference(key: TextSizeKey.self, value: geo.size)
                 })
         )
-        .onPreferenceChange(TextWidthKey.self) { width in
-            guard width > 0 else { return }
-            textWidth = width
+        .onPreferenceChange(TextSizeKey.self) { size in
+            guard size.width > 0 else { return }
+            textWidth = size.width
+            textHeight = size.height
         }
         .task(id: MarqueeTaskID(needsScrolling: needsScrolling, textWidth: textWidth)) {
             offset = 0
@@ -128,10 +131,11 @@ struct MarqueeText: View {
     }
 }
 
-private struct TextWidthKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = max(value, nextValue())
+private struct TextSizeKey: PreferenceKey {
+    static var defaultValue: CGSize = .zero
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
+        let next = nextValue()
+        if next.width > value.width { value = next }
     }
 }
 

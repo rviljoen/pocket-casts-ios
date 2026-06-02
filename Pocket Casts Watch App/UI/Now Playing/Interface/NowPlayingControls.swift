@@ -36,50 +36,52 @@ struct NowPlayingControls: View {
             MarqueeText(text: viewModel.episodeName, font: .dynamic(size: 14))
                 .id(viewModel.episodeName)
 
-            HStack(alignment: .top) {
-                Text(viewModel.progressTitle)
-                    .foregroundColor(viewModel.episodeAccentColor)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                Text(viewModel.timeRemaining)
-                    .fixedSize()
-            }
-            .font(.dynamic(size: 13))
+            Text(viewModel.progressTitle)
+                .foregroundColor(viewModel.episodeAccentColor)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .font(.dynamic(size: 13))
+
             Spacer()
         }
         .padding(.horizontal, 8)
     }
 
     private var plabackGroup: some View {
-        HStack {
-            SkipButton(imageName: "skipback") {
-                viewModel.skip(forward: false)
-            } onLongPress: {
-                if viewModel.hasChapters {
-                    viewModel.changeChapter(next: false)
-                } else {
+        VStack(spacing: 4) {
+            HStack {
+                SkipButton(imageName: "skipback") {
                     viewModel.skip(forward: false)
+                } onLongPress: {
+                    if viewModel.hasChapters {
+                        viewModel.changeChapter(next: false)
+                    } else {
+                        viewModel.skip(forward: false)
+                    }
                 }
-            }
 
-            Spacer()
-            playPauseButton
-            Spacer()
+                Spacer()
+                playPauseButton
+                Spacer()
 
-            SkipButton(imageName: "skipforward") {
-                viewModel.skip(forward: true)
-            } onLongPress: {
-                if viewModel.hasChapters {
-                    viewModel.changeChapter(next: true)
-                } else {
+                SkipButton(imageName: "skipforward") {
                     viewModel.skip(forward: true)
+                } onLongPress: {
+                    if viewModel.hasChapters {
+                        viewModel.changeChapter(next: true)
+                    } else {
+                        viewModel.skip(forward: true)
+                    }
                 }
             }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 8)
+            .frame(maxWidth: .infinity, minHeight: 32, idealHeight: 40, maxHeight: 44)
+
+            Text(L10n.queueTimeRemaining(viewModel.timeRemaining))
+                .font(.dynamic(size: 11))
+                .foregroundColor(.secondary)
         }
-        .buttonStyle(.plain)
-        .padding(.horizontal, 2)
-        .frame(maxWidth: .infinity, minHeight: 32, idealHeight: 40, maxHeight: 44)
     }
 
     private var playPauseButton: some View {
