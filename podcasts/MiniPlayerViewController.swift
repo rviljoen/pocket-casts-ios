@@ -258,12 +258,19 @@ class MiniPlayerViewController: SimpleNotificationsViewController {
 
             NSLayoutConstraint.deactivate(accessoryEnvironmentConstraints)
             accessoryEnvironmentConstraints = [
-                glassProgressView.widthAnchor.constraint(equalToConstant: isInline ? 34 : 52),
-                glassButtonStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -4),
+                glassProgressView.widthAnchor.constraint(equalToConstant: isInline ? 34 : 92),
+                glassButtonStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: isInline ? -4 : -8),
             ]
             NSLayoutConstraint.activate(accessoryEnvironmentConstraints)
         }
         super.updateViewConstraints()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // UIHostingController resolves its intrinsic size asynchronously; trigger
+        // a second layout pass so the time-left visibility check uses settled bounds.
+        view.setNeedsLayout()
     }
 
     override func viewDidLayoutSubviews() {
