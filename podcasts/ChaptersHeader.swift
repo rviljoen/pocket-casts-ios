@@ -85,7 +85,16 @@ class ChaptersHeader: UIView {
         updateChapterLabel()
         updateButtonLabel()
         updateButtonIcon()
-        generatedHeightConstraint?.isActive = !PlaybackManager.shared.chaptersAreGenerated
+
+        if PlaybackManager.shared.chaptersFromShowNotes {
+            generatedWarningLabel.text = L10n.chaptersLlmShowNotesWarningMessage
+            generatedHeightConstraint?.isActive = false
+        } else if PlaybackManager.shared.chaptersAreGenerated {
+            generatedWarningLabel.text = L10n.chaptersGeneratedWarningMessage
+            generatedHeightConstraint?.isActive = false
+        } else {
+            generatedHeightConstraint?.isActive = true
+        }
     }
 
     private func configure() {
