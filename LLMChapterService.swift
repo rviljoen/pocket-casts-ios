@@ -72,11 +72,16 @@ actor LLMChapterService {
             let result = try JSONDecoder().decode(Response.self, from: responseData)
             FileLog.shared.addMessage("LLMChapterService: extracted \(result.chapters.count) chapters from show notes")
 
-            let entry = LLMChapterCache.Entry(
-                episodeUUID: episodeUUID,
-                chapters: result.chapters.map { LLMChapterCache.Entry.CachedChapter(startTime: $0.startTime, title: $0.title, url: $0.url) }
-            )
-            cache.save(entry)
+            // Only cache non-empty results — caching a zero-chapter response would
+            // permanently skip re-extraction for this episode, even after the server
+            // or show notes improve.
+            if !result.chapters.isEmpty {
+                let entry = LLMChapterCache.Entry(
+                    episodeUUID: episodeUUID,
+                    chapters: result.chapters.map { LLMChapterCache.Entry.CachedChapter(startTime: $0.startTime, title: $0.title, url: $0.url) }
+                )
+                cache.save(entry)
+            }
 
             return convert(result.chapters, episodeDuration: duration)
         } catch {

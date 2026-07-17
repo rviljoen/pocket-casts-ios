@@ -6606,6 +6606,9 @@
 
 "chapters_generated_warning_message" = "These chapters are automatically generated and may not be perfectly accurate.";
 
+/* Warning shown above the chapters list when chapters were extracted from the episode's show notes using an LLM, rather than provided directly by the podcast creator */
+"chapters_llm_show_notes_warning_message" = "These chapters were extracted from the show notes using AI and may not be perfectly accurate.";
+
 /* Title shown when a playlist has no episodes on the TV app */
 "tv_playlist_empty_title" = "No episodes";
 
