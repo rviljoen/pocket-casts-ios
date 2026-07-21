@@ -88,6 +88,7 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
 
         // Check for downloads that were cancelled
         guard let episode = episode(for: downloadTask, forceReload: true) else {
+            FileLog.shared.addMessage("DownloadManager: didCompleteWithError - no episode found for taskDescription: \(downloadTask.taskDescription ?? "nil"), discarding callback. error: \(error.localizedDescription)")
             downloadAttempts.removeValue(forKey: downloadTask.taskIdentifier)
             return
         }
@@ -137,6 +138,7 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         guard let episode = episode(for: downloadTask, forceReload: true) else {
+            FileLog.shared.addMessage("DownloadManager: didFinishDownloadingTo - no episode found for taskDescription: \(downloadTask.taskDescription ?? "nil"), discarding finished download at: \(location.lastPathComponent)")
             downloadAttempts.removeValue(forKey: downloadTask.taskIdentifier)
             return
         }
@@ -273,7 +275,18 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
             }
         }
 
-        let episode = dataManager.findBaseEpisode(downloadTaskId: taskDescription)
+        // taskDescription is always set to the episode's uuid (see resumeDownload), which also happens to be
+        // what downloadTaskId is set to. Resolve by downloadTaskId first, but fall back to the immutable uuid:
+        // clearStuckDownloads can null out downloadTaskId while a download is genuinely in flight, and without
+        // this fallback every subsequent delegate callback would fail to find its episode and be silently
+        // discarded, permanently orphaning the download. A download the user cancelled stays discarded, so late
+        // callbacks from its task can't revive it.
+        var episode = dataManager.findBaseEpisode(downloadTaskId: taskDescription)
+        if episode == nil, let recoveredEpisode = dataManager.findBaseEpisode(uuid: taskDescription),
+           recoveredEpisode.autoDownloadStatus != AutoDownloadStatus.userCancelledDownload.rawValue {
+            FileLog.shared.addMessage("DownloadManager: episodeForTask recovered \(recoveredEpisode.displayableTitle()) by uuid - downloadTaskId was cleared (likely by clearStuckDownloads) while its download was in flight; callback would otherwise have been discarded")
+            episode = recoveredEpisode
+        }
         if let episode {
             downloadingEpisodesCache[taskDescription] = episode
         }
