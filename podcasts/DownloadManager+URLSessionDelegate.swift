@@ -31,7 +31,10 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
     }
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        guard let downloadingEpisode = episodeForTask(downloadTask, forceReload: false) else { return }
+        guard let downloadingEpisode = episodeForTask(downloadTask, forceReload: false) else {
+            FileLog.shared.addMessage("DownloadManager: didWriteData - no episode found for taskDescription: \(downloadTask.taskDescription ?? "nil"), discarding progress callback")
+            return
+        }
 
         let downloadingToStream = downloadingEpisode.autoDownloadStatus == AutoDownloadStatus.playerDownloadedForStreaming.rawValue
         if !downloadingToStream {
@@ -85,6 +88,7 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
 
         // Check for downloads that were cancelled
         guard let episode = episodeForTask(downloadTask, forceReload: true) else {
+            FileLog.shared.addMessage("DownloadManager: didCompleteWithError - no episode found for taskDescription: \(downloadTask.taskDescription ?? "nil"), discarding callback. error: \(error.localizedDescription ?? "none")")
             downloadAttempts.removeValue(forKey: downloadTask.taskIdentifier)
             return
         }
@@ -135,6 +139,7 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         guard let episode = episodeForTask(downloadTask, forceReload: true) else {
+            FileLog.shared.addMessage("DownloadManager: didFinishDownloadingTo - no episode found for taskDescription: \(downloadTask.taskDescription ?? "nil"), discarding finished download at: \(location.lastPathComponent)")
             downloadAttempts.removeValue(forKey: downloadTask.taskIdentifier)
             return
         }
