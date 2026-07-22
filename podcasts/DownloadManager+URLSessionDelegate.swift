@@ -88,7 +88,7 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
 
         // Check for downloads that were cancelled
         guard let episode = episodeForTask(downloadTask, forceReload: true) else {
-            FileLog.shared.addMessage("DownloadManager: didCompleteWithError - no episode found for taskDescription: \(downloadTask.taskDescription ?? "nil"), discarding callback. error: \(error.localizedDescription ?? "none")")
+            FileLog.shared.addMessage("DownloadManager: didCompleteWithError - no episode found for taskDescription: \(downloadTask.taskDescription ?? "nil"), discarding callback. error: \(error.localizedDescription)")
             downloadAttempts.removeValue(forKey: downloadTask.taskIdentifier)
             return
         }
