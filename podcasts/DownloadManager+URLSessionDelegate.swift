@@ -280,7 +280,16 @@ extension DownloadManager: URLSessionDelegate, URLSessionDownloadDelegate {
             }
         }
 
-        let episode = dataManager.findBaseEpisode(downloadTaskId: taskDescription)
+        // taskDescription is always set to the episode's uuid (see resumeDownload), which also happens to be
+        // what downloadTaskId is set to. Resolve by downloadTaskId first, but fall back to the immutable uuid:
+        // clearStuckDownloads can null out downloadTaskId while a download is genuinely in flight, and without
+        // this fallback every subsequent delegate callback would fail to find its episode and be silently
+        // discarded, permanently orphaning the download.
+        var episode = dataManager.findBaseEpisode(downloadTaskId: taskDescription)
+        if episode == nil, let recoveredEpisode = dataManager.findBaseEpisode(uuid: taskDescription) {
+            FileLog.shared.addMessage("DownloadManager: episodeForTask recovered \(recoveredEpisode.displayableTitle()) by uuid - downloadTaskId was cleared (likely by clearStuckDownloads) while its download was in flight; callback would otherwise have been discarded")
+            episode = recoveredEpisode
+        }
         if let episode {
             downloadingEpisodesCache[taskDescription] = episode
         }
