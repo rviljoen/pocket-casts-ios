@@ -90,7 +90,7 @@ struct LogsView: View {
             .padding(.horizontal)
             .padding(.vertical, 8)
 
-            NonEditableTextView(text: model.logs, scrolledToBottom: true)
+            NonEditableTextView(text: model.logs, scrolledToBottom: true, textColor: ThemeColor.primaryText01(for: theme.activeTheme))
                 .ignoresSafeArea(edges: .bottom)
         }
         .navigationTitle(L10n.logs)
