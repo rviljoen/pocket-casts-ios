@@ -995,6 +995,7 @@ private extension MainTabBarController {
                 Task {
                     await bookmarkManager.enrich(bookmark, source: source)
                 }
+                return
             }
             .store(in: &cancellables)
     }
