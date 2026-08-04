@@ -189,7 +189,11 @@ class MiniPlayerViewController: SimpleNotificationsViewController {
         let buttonStack = UIStackView(arrangedSubviews: [skipBackBtn, playPauseBtn, skipFwdBtn])
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
         buttonStack.axis = .horizontal
-        buttonStack.alignment = .fill
+        // Center the buttons at their natural heights rather than stretching
+        // them to the stack height: the inline tab-accessory pill is shorter
+        // than the stack's ideal height, and `.fill` forced the buttons into
+        // an unsatisfiable size against that imposed height.
+        buttonStack.alignment = .center
         glassButtonStack = buttonStack
 
         view.addSubview(podcastArtwork)
@@ -214,7 +218,15 @@ class MiniPlayerViewController: SimpleNotificationsViewController {
 
             buttonStack.topAnchor.constraint(equalTo: view.topAnchor),
             buttonStack.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            buttonStack.heightAnchor.constraint(equalToConstant: 56),
+            {
+                // Ideal height, but let the host-imposed height (e.g. the 48pt
+                // inline tab-accessory pill, and the snapshot frame the player
+                // zoom animator sets in makeMiniSnapshot) win instead of
+                // conflicting with it.
+                let constraint = buttonStack.heightAnchor.constraint(equalToConstant: 56)
+                constraint.priority = UILayoutPriority(999)
+                return constraint
+            }(),
         ])
 
         view.registerForTraitChanges([UITraitTabAccessoryEnvironment.self]) { (view: UIView, _) in
