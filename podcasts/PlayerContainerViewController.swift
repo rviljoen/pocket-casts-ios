@@ -188,7 +188,7 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
 
     private func setupDragHandle() {
         dragHandle.backgroundColor = UIColor.white.withAlphaComponent(0.3)
-        dragHandle.layer.cornerRadius = 2.5
+        dragHandle.layer.cornerRadius = 2
         dragHandle.translatesAutoresizingMaskIntoConstraints = false
         dragHandle.isUserInteractionEnabled = false
         view.addSubview(dragHandle)
@@ -199,8 +199,8 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
         NSLayoutConstraint.activate([
             topConstraint,
             dragHandle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            dragHandle.widthAnchor.constraint(equalToConstant: 72),
-            dragHandle.heightAnchor.constraint(equalToConstant: 5),
+            dragHandle.widthAnchor.constraint(equalToConstant: 60),
+            dragHandle.heightAnchor.constraint(equalToConstant: 4),
             tabsView.topAnchor.constraint(equalTo: dragHandle.bottomAnchor, constant: 16),
             upNextBtn.centerYAnchor.constraint(equalTo: tabsView.centerYAnchor)
         ])
@@ -337,7 +337,7 @@ class PlayerContainerViewController: SimpleNotificationsViewController, PlayerTa
         guard let window = view.window else { return }
 
         let statusBarHeight = UIUtil.statusBarHeight(in: window)
-        // drag handle (8 top + 5 height + 10 gap) + capsule (40) + 10 padding = 73
+        // drag handle (8 top + 4 height) + 16 gap + capsule (40) + 5 bottom padding = 73
         let requiredHeight = 73 + statusBarHeight
 
         if headerHeightConstraint.constant != requiredHeight {
