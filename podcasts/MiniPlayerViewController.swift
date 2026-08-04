@@ -152,6 +152,14 @@ class MiniPlayerViewController: SimpleNotificationsViewController {
         mainView.layer.masksToBounds = true
     }
 
+    /// Drops required constraints to 999. A required constraint can't become optional while it's active.
+    private func relaxForZeroSizeLayout(_ constraints: [NSLayoutConstraint]) {
+        let required = constraints.filter { $0.priority == .required }
+        NSLayoutConstraint.deactivate(required)
+        required.forEach { $0.priority = UILayoutPriority(999) }
+        NSLayoutConstraint.activate(required)
+    }
+
     @available(iOS 26.0, *)
     private func setupLiquidGlassLayout() {
         gradientView.isHidden = true
@@ -174,6 +182,15 @@ class MiniPlayerViewController: SimpleNotificationsViewController {
         skipBackBtn.translatesAutoresizingMaskIntoConstraints = false
         playPauseBtn.translatesAutoresizingMaskIntoConstraints = false
         skipFwdBtn.translatesAutoresizingMaskIntoConstraints = false
+
+        // The tab accessory first lays the view out at zero size, which the hidden xib layout's
+        // insets and the buttons' fixed heights can't fit. Let them yield then rather than log
+        // unsatisfiable constraints; at the real size they're all still met.
+        let mainViewConstraints = view.constraints.filter { $0.firstItem === mainView || $0.secondItem === mainView }
+        let buttonHeightConstraints = [skipBackBtn, playPauseBtn, skipFwdBtn].flatMap { button in
+            button.constraints.filter { $0.firstAttribute == .height && $0.secondItem == nil }
+        }
+        relaxForZeroSizeLayout(mainViewConstraints + buttonHeightConstraints)
 
         podcastArtwork.layer.cornerRadius = 6
         podcastArtwork.layer.masksToBounds = true
@@ -230,7 +247,10 @@ class MiniPlayerViewController: SimpleNotificationsViewController {
         let buttonStack = UIStackView(arrangedSubviews: [skipBackBtn, playPauseBtn, skipFwdBtn])
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
         buttonStack.axis = .horizontal
-        buttonStack.alignment = .fill
+        // Center the buttons at their fixed heights (44pt skip buttons, 40pt
+        // play/pause, from the xib) rather than `.fill`, which forces all three
+        // to the stack's height and can't satisfy those constraints.
+        buttonStack.alignment = .center
         buttonStack.semanticContentAttribute = .playback
         glassButtonStack = buttonStack
 
@@ -255,7 +275,15 @@ class MiniPlayerViewController: SimpleNotificationsViewController {
 
             buttonStack.topAnchor.constraint(equalTo: view.topAnchor),
             buttonStack.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            buttonStack.heightAnchor.constraint(equalToConstant: 56),
+            {
+                // Ideal height, but let the host-imposed height (e.g. the 48pt
+                // inline tab-accessory pill, and the snapshot frame the player
+                // zoom animator sets in makeMiniSnapshot) win instead of
+                // conflicting with it.
+                let constraint = buttonStack.heightAnchor.constraint(equalToConstant: 56)
+                constraint.priority = UILayoutPriority(999)
+                return constraint
+            }(),
         ]
 
         progressView.heightAnchor.constraint(equalToConstant: 5).isActive = true

@@ -161,8 +161,14 @@ class ChaptersHeader: UIView {
 
             chaptersLabel.leadingAnchor.constraint(equalTo: container.layoutMarginsGuide.leadingAnchor),
             chaptersLabel.topAnchor.constraint(equalTo: container.layoutMarginsGuide.topAnchor),
-            chaptersLabel.trailingAnchor.constraint(greaterThanOrEqualTo: toggleButton.leadingAnchor, constant: 8),
-            chaptersLabel.widthAnchor.constraint(equalTo: container.widthAnchor, multiplier: 0.40),
+            toggleButton.leadingAnchor.constraint(greaterThanOrEqualTo: chaptersLabel.trailingAnchor, constant: 8),
+            {
+                // With the margins and the gap, 40% plus the button's 50% doesn't fit at phone
+                // widths, so the label takes what's left there.
+                let constraint = chaptersLabel.widthAnchor.constraint(equalTo: container.widthAnchor, multiplier: 0.40)
+                constraint.priority = UILayoutPriority(999)
+                return constraint
+            }(),
 
             toggleButton.trailingAnchor.constraint(equalTo: container.layoutMarginsGuide.trailingAnchor),
             toggleButton.topAnchor.constraint(equalTo: container.layoutMarginsGuide.topAnchor),
