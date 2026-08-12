@@ -21,14 +21,16 @@ public enum LogFilePaths {
 
     // MARK: - Play Log
 
-    public static var playLogUploadLog: String { playLogDirectory + "/uploadPlayLog.log" }
-
     static var mainPlayLogFilePath: String { playLogDirectory + "/main.log" }
 
     static var backupPlayLogFilePath: String { playLogDirectory + "/old.log" }
 
     static var playLogDirectory: String {
+        #if os(tvOS)
+        let directory = (NSTemporaryDirectory() as NSString).appendingPathComponent("Documents/play_log")
+        #else
         let directory = (NSHomeDirectory() as NSString).appendingPathComponent("Documents/play_log")
+        #endif
         return directory
     }
 }

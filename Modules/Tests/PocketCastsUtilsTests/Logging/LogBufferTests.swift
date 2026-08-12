@@ -131,6 +131,27 @@ final class LogBufferTests: XCTestCase {
         XCTAssertTrue(messages[2].contains("Log Message 3"))
     }
 
+    func testUnformattedEntriesAreWrittenWithoutATimestamp() {
+        // GIVEN that we have a FileLog with a low threshold...
+        let fileWriteSpy = LogPersistenceSpy()
+        let logBuffer = LogBuffer(
+            logPersistence: fileWriteSpy,
+            logRotator: LogRotatorStub(),
+            bufferThreshold: 2
+        )
+
+        // WHEN we append an unformatted entry alongside a logged message...
+        logBuffer.appendUnformatted("Header Line")
+        logBuffer.append("Log Message", date: Date())
+        logBuffer.flush()
+
+        // THEN the unformatted entry is written verbatim while the message keeps its timestamp.
+        let lines = fileWriteSpy.lastWrittenChunk!.split(separator: "\n")
+        XCTAssertEqual(lines[0], "Header Line")
+        XCTAssertTrue(lines[1].hasSuffix("Log Message"))
+        XCTAssertNotEqual(lines[1], "Log Message")
+    }
+
     func testMessagesLoggedConcurrentlyAreAllFlushed() {
         // GIVEN that we have a FileLog with a threshold no amount of messages will reach...
         let fileWriteSpy = LogPersistenceSpy()

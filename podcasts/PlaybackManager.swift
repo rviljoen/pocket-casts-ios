@@ -198,6 +198,14 @@ class PlaybackManager: ServerPlaybackDelegate {
             }
         }
 
+        // Swapping in a new episode tears the player down without going through `pause()`, so
+        // record where the outgoing one got to before that happens.
+        if episodeIsChanging, isPlaying, let outgoingEpisode = currentEpisode {
+            let playLogTime = TimeFormatter.shared.playTimeFormat(time: currentTime())
+            startPlayLogSection(for: outgoingEpisode)
+            PlayLog.shared.addMessage("⏹️ Playback stopped at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(outgoingEpisode.uuid)\">\(playLogTime)</a> (replaced)")
+        }
+
         if let uuid = currentEpisode?.uuid, uuid != episode.uuid {
             chapterManager.clearChapterInfo()
         }
@@ -278,15 +286,24 @@ class PlaybackManager: ServerPlaybackDelegate {
         })
     }
 
+    /// Opens the play log section for `episode`, so its playback events group under one header.
+    ///
+    /// Safe to call before every logged event: `PlayLog` ignores the call when the episode's
+    /// section is already open.
+    private func startPlayLogSection(for episode: BaseEpisode) {
+        let podcastName = (episode as? Episode)?.parentPodcast()?.title ?? "Unknown Podcast"
+        PlayLog.shared.startSection(
+            id: episode.uuid,
+            headerLines: ["<b>\(podcastName)</b>", episode.title ?? "Unknown Episode"]
+        )
+    }
+
     func play(completion: (() -> Void)? = nil, userInitiated: Bool = true) {
         guard let currEpisode = currentEpisode else { return }
 
         FileLog.shared.addMessage("PlaybackManager Play \(currentEpisode?.title ?? "unknown episode") userInitiated: \(userInitiated)")
-        let playLogPodcastName = (currEpisode as? Episode)?.parentPodcast()?.title ?? "Unknown Podcast"
         let playLogTime = TimeFormatter.shared.playTimeFormat(time: currentTime())
-        PlayLog.shared.addSpacer()
-        PlayLog.shared.addLine("<b>\(playLogPodcastName)</b>")
-        PlayLog.shared.addLine(currEpisode.title ?? "Unknown Episode")
+        startPlayLogSection(for: currEpisode)
         PlayLog.shared.addMessage("▶️ Playback started at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(currEpisode.uuid)\">\(playLogTime)</a>")
 
         if userInitiated {
@@ -361,8 +378,8 @@ class PlaybackManager: ServerPlaybackDelegate {
         wasPlayingBeforeInterruption = false
 
         FileLog.shared.addMessage("PlaybackManager pausing playback \(currentEpisode?.title ?? "unknown episode")")
-        let playLogPodcastName = (episode as? Episode)?.parentPodcast()?.title ?? "Unknown Podcast"
         let playLogTime = TimeFormatter.shared.playTimeFormat(time: currentTime())
+        startPlayLogSection(for: episode)
         PlayLog.shared.addMessage("⏸️ Playback stopped at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(episode.uuid)\">\(playLogTime)</a>")
 
         recordPlaybackPosition(sendToServerImmediately: isPlaying, fireNotifications: true)
@@ -965,6 +982,14 @@ class PlaybackManager: ServerPlaybackDelegate {
     }
 
     func endPlayback(saveCurrentEpisode: Bool = true) {
+        // Like swapping episodes, this tears the player down without going through `pause()`, so
+        // record where the episode got to before that happens.
+        if playing(), let outgoingEpisode = currentEpisode() {
+            let playLogTime = TimeFormatter.shared.playTimeFormat(time: currentTime())
+            startPlayLogSection(for: outgoingEpisode)
+            PlayLog.shared.addMessage("⏹️ Playback stopped at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(outgoingEpisode.uuid)\">\(playLogTime)</a> (cleared)")
+        }
+
         cancelUpdateTimer()
         cancelSleepTimer()
         chapterManager.clearChapterInfo()
@@ -1418,8 +1443,8 @@ class PlaybackManager: ServerPlaybackDelegate {
             autoplayIfNeeded()
 
             FileLog.shared.addMessage("Finished playing \(episode.displayableTitle())")
-            let playLogPodcastName = (episode as? Episode)?.parentPodcast()?.title ?? "Unknown Podcast"
             let playLogTime = TimeFormatter.shared.playTimeFormat(time: episode.duration)
+            startPlayLogSection(for: episode)
             PlayLog.shared.addMessage("⏹️ Playback finished at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(episode.uuid)\">\(playLogTime)</a>")
             Analytics.track(.playerEpisodeCompleted, properties: [
                 "podcast_uuid": episode.parentIdentifier(),

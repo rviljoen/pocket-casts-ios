@@ -123,6 +123,12 @@ public final class FileLog {
 /// file in the order they were logged. Only the write itself is dispatched onto `flushQueue`,
 /// which is serial, so flushes never overlap and a read always sees every preceding write.
 final class LogBuffer: @unchecked Sendable {
+    #if os(watchOS)
+        static let defaultMaxFileSize = 65.kilobytes
+    #else
+        static let defaultMaxFileSize = 1.megabytes
+    #endif
+
     private let bufferThreshold: UInt
 
     private let entries = OSAllocatedUnfairLock(initialState: [LogEntry]())
@@ -134,30 +140,41 @@ final class LogBuffer: @unchecked Sendable {
     private let logger: Logger?
     private let mainFilePath: String
     private let backupFilePath: String
+    private let maxFileSize: Int
+    private let emptyMainFileMessage: String
 
     init(logPersistence: PersistentTextWriting,
          logRotator: FileRotating,
          bufferThreshold: UInt = 100,
          mainFilePath: String = LogFilePaths.mainLogFilePath,
          backupFilePath: String = LogFilePaths.backupLogFilePath,
+         maxFileSize: Int = LogBuffer.defaultMaxFileSize,
+         emptyMainFileMessage: String = "Main log is empty",
          loggingTo logger: Logger? = nil) {
         self.logPersistence = logPersistence
         self.logRotator = logRotator
         self.bufferThreshold = bufferThreshold
         self.mainFilePath = mainFilePath
         self.backupFilePath = backupFilePath
+        self.maxFileSize = maxFileSize
+        self.emptyMainFileMessage = emptyMainFileMessage
         self.logger = logger
     }
 
-    #if os(watchOS)
-        private let maxFileSize = 65.kilobytes
-    #else
-        private let maxFileSize = 1.megabytes
-    #endif
-
     func append(_ message: String, date: Date) {
+        append(LogEntry(message, timestamp: date))
+    }
+
+    /// Appends `text` to be written verbatim, without the timestamp prefix a logged message gets.
+    ///
+    /// Used for the header lines that introduce a section of the log rather than record an event.
+    func appendUnformatted(_ text: String) {
+        append(LogEntry(text, timestamp: nil))
+    }
+
+    private func append(_ entry: LogEntry) {
         let hasReachedThreshold = entries.withLock { entries in
-            entries.append(LogEntry(message, timestamp: date))
+            entries.append(entry)
             return entries.count >= bufferThreshold
         }
 
@@ -210,7 +227,7 @@ final class LogBuffer: @unchecked Sendable {
         do {
             mainFileContents = try String(contentsOfFile: mainFilePath)
         } catch {
-            mainFileContents = "Main log is empty"
+            mainFileContents = emptyMainFileMessage
         }
 
         let secondaryFileContents: String
