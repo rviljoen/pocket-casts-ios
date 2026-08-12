@@ -156,6 +156,10 @@ class ChapterManager {
 
         var chapters: [ChapterInfo]
         chaptersFromShowNotes = false
+        // Clear the previous episode's origin up front: the loads below are async, and
+        // until one of the branches sets a new value anything reading the origin (the
+        // fingerprint seek gate, the header warning) would answer for the old episode.
+        chaptersOrigin = .unknown
 
         do {
             let (fileChapters, podloveChapters, podcastIndexChapters, generatedChapters) = try await (fileChaptersAsync, podloveChaptersAsync, podcastIndexChaptersAsync, generatedChaptersAsync)
@@ -186,6 +190,7 @@ class ChapterManager {
             }
         } catch {
             chapters = await fileChaptersAsync
+            chaptersOrigin = chapters.isEmpty ? .unknown : .nativeMedia
             FileLog.shared.addMessage("ChapterManager: using file chapters because there was an error retrieving external sources")
         }
 
@@ -258,6 +263,7 @@ class ChapterManager {
         lastEpisodeUuid = ""
         chapters.removeAll()
         chaptersFromShowNotes = false
+        chaptersOrigin = .unknown
         currentChapters = Chapters()
 
         NotificationCenter.postOnMainThread(notification: Constants.Notifications.podcastChaptersDidUpdate)
