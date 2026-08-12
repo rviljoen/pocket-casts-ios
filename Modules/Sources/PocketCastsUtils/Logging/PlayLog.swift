@@ -1,10 +1,10 @@
-import Combine
 import Foundation
 import os
 
 /// A dedicated log for playback events (started, stopped, etc.).
-/// Writes synchronously to disk on every message to ensure events
-/// are captured even when the app is suspended shortly after.
+///
+/// Shares `FileLog`'s buffering, rotation and file reading through `LogBuffer`, but writes through
+/// to disk on every message so events are captured even when the app is suspended shortly after.
 public final class PlayLog {
     public static let shared: PlayLog = {
         let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.pocketcasts", category: "PlayLog")
@@ -27,88 +27,74 @@ public final class PlayLog {
         )
     }()
 
-    private let logPersistence: PersistentTextWriting
-    private let logRotator: FileRotating
-    private let logger: Logger?
-    private let queue = DispatchQueue(label: "au.com.pocketcasts.playlog")
+    /// The play log holds a short, human-readable history of playback rather than a full debug
+    /// trace, so it rotates well before `FileLog` does.
+    private static let maxFileSize = 65.kilobytes
 
-    private let maxFileSize = 65.kilobytes
+    private let logBuffer: LogBuffer
+    private let logger: Logger?
+
+    /// The section the log is currently writing into, so repeated events for one episode don't
+    /// each repeat the header. `nil` until the first section starts.
+    private let currentSectionID = OSAllocatedUnfairLock<String?>(initialState: nil)
 
     init(
         logPersistence: PersistentTextWriting,
         logRotator: FileRotating,
+        mainFilePath: String = LogFilePaths.mainPlayLogFilePath,
+        backupFilePath: String = LogFilePaths.backupPlayLogFilePath,
         loggingTo logger: Logger? = nil
     ) {
-        self.logPersistence = logPersistence
-        self.logRotator = logRotator
         self.logger = logger
+        self.logBuffer = LogBuffer(
+            logPersistence: logPersistence,
+            logRotator: logRotator,
+            // Never flush on a threshold; every write here is flushed explicitly instead, so a
+            // whole section header reaches disk as one write rather than one write per line.
+            bufferThreshold: .max,
+            mainFilePath: mainFilePath,
+            backupFilePath: backupFilePath,
+            maxFileSize: Self.maxFileSize,
+            emptyMainFileMessage: "Play log is empty",
+            loggingTo: logger
+        )
     }
 
-    public func addMessage(_ message: String, date: Date = Date()) {
-        let entry = LogEntry(message, timestamp: date)
-        let formatted = "\(entry.formattedForLog)\n"
-
-        logger?.log("\(message, privacy: .public)")
-
-        queue.sync {
-            logRotator.rotateFile(ifSizeExceeds: maxFileSize)
-            logPersistence.write(formatted)
+    /// Writes the message to the given destinations, blocking until a file write has finished.
+    public func addMessage(_ message: String, date: Date = Date(), to destinations: FileLog.LogDestination = .all) {
+        if destinations.contains(.console) {
+            logger?.log("\(message, privacy: .public)")
         }
+
+        guard destinations.contains(.file) else { return }
+
+        logBuffer.append(message, date: date)
+        logBuffer.flush()
     }
 
-    public func addLine(_ text: String) {
-        queue.sync {
-            logPersistence.write("\(text)\n")
-        }
-    }
+    /// Opens a section of the log identified by `id`, headed by `headerLines` written verbatim
+    /// without a timestamp prefix.
+    ///
+    /// Calls naming the section already open are ignored, so a run of events for one episode
+    /// groups under a single header instead of repeating it. Call this before every message that
+    /// belongs to a section — whichever event happens first opens it.
+    public func startSection(id: String, headerLines: [String]) {
+        let isAlreadyOpen = currentSectionID.withLock { currentID in
+            guard currentID != id else { return true }
 
-    public func addSpacer() {
-        queue.sync {
-            logPersistence.write("\n")
+            currentID = id
+            return false
         }
+
+        guard !isAlreadyOpen else { return }
+
+        // A blank line separates this section from the one before it.
+        logBuffer.appendUnformatted("")
+        headerLines.forEach { logBuffer.appendUnformatted($0) }
+        logBuffer.flush()
     }
 
     public func logFileAsString() async -> String {
-        return await withCheckedContinuation { continuation in
-            queue.async {
-                let result = self.loadLogContents()
-                continuation.resume(returning: result)
-            }
-        }
-    }
-
-    public func logFileForUpload() -> AnyPublisher<String, Error> {
-        let file = LogFilePaths.playLogUploadLog
-
-        return Future { promise in
-            self.queue.async {
-                let result = self.loadLogContents()
-                do {
-                    try result.write(toFile: file, atomically: true, encoding: .utf8)
-                    promise(.success(file))
-                } catch {
-                    promise(.failure(FileLog.LogError.logGenerationFailed))
-                }
-            }
-        }
-        .eraseToAnyPublisher()
-    }
-
-    private func loadLogContents() -> String {
-        let mainFileContents: String
-        do {
-            mainFileContents = try String(contentsOfFile: LogFilePaths.mainPlayLogFilePath)
-        } catch {
-            mainFileContents = "Play log is empty"
-        }
-
-        let backupFileContents: String
-        do {
-            backupFileContents = try String(contentsOfFile: LogFilePaths.backupPlayLogFilePath)
-        } catch {
-            backupFileContents = ""
-        }
-
-        return "\(backupFileContents)\n\(mainFileContents)"
+        await logBuffer.loadLogFileAsString()
     }
 }
