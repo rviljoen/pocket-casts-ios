@@ -5,10 +5,14 @@ struct LogEntry {
     // MARK: - Public Properties
 
     let message: String
-    let timestamp: Date
+
+    /// When the entry was logged, or `nil` for entries written verbatim without a timestamp prefix.
+    let timestamp: Date?
 
     var formattedForLog: String {
-        "\(formatter.string(from: timestamp)) \(message)"
+        guard let timestamp else { return message }
+
+        return "\(formatter.string(from: timestamp)) \(message)"
     }
 
     // MARK: - Private Properties
@@ -24,7 +28,7 @@ struct LogEntry {
 
     // MARK: - Initializers
 
-    init(_ message: String, timestamp: Date) {
+    init(_ message: String, timestamp: Date?) {
         self.message = message
         self.timestamp = timestamp
     }
