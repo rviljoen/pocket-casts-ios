@@ -984,7 +984,7 @@ class PlaybackManager: ServerPlaybackDelegate {
     func endPlayback(saveCurrentEpisode: Bool = true) {
         // Like swapping episodes, this tears the player down without going through `pause()`, so
         // record where the episode got to before that happens.
-        if playing(), let outgoingEpisode = currentEpisode() {
+        if isPlaying, let outgoingEpisode = currentEpisode {
             let playLogTime = TimeFormatter.shared.playTimeFormat(time: currentTime())
             startPlayLogSection(for: outgoingEpisode)
             PlayLog.shared.addMessage("⏹️ Playback stopped at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(outgoingEpisode.uuid)\">\(playLogTime)</a> (cleared)")

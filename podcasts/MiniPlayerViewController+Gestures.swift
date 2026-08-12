@@ -94,7 +94,7 @@ extension MiniPlayerViewController: UIGestureRecognizerDelegate {
         let archive = OptionAction(label: L10n.archive, icon: "episode-archive") { [weak self] in
             guard let self else { return }
             Analytics.track(.miniPlayerLongPressMenuOptionTapped, properties: ["option": "archive"])
-            if let episode = PlaybackManager.shared.currentEpisode() as? Episode {
+            if let episode = PlaybackManager.shared.currentEpisode as? Episode {
                 AnalyticsEpisodeHelper.shared.currentSource = self.analyticsSource
                 EpisodeManager.archiveEpisode(episode: episode, fireNotification: true)
             }
