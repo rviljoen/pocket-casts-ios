@@ -18,6 +18,10 @@ enum GeneratedChapterSeeker {
         FeatureFlag.generatedChapters.enabled
             && FeatureFlag.syncedTranscripts.enabled
             && PlaybackManager.shared.chaptersAreGenerated
+            // Chapters extracted from the creator's own show notes carry the times the
+            // creator wrote, which are already playback times — there's nothing to
+            // resolve, so never pay the fingerprint delay for them.
+            && !PlaybackManager.shared.chaptersFromShowNotes
             && PlaybackManager.shared.currentEpisode != nil
     }
 
