@@ -7,7 +7,7 @@ extension PlayerContainerViewController {
     func updateColors() {
         view.backgroundColor = .clear
         guard let episode = PlaybackManager.shared.currentEpisode else { return }
-        ImageManager.sharedManager.imageForEpisode(episode, size: .page) { [weak self] image in
+        ImageManager.shared.image(for: episode, size: .page) { [weak self] image in
             let blurred = image.flatMap { Self.gaussianBlur($0, radius: 50) } ?? image
             DispatchQueue.main.async {
                 self?.backgroundImageView.image = blurred

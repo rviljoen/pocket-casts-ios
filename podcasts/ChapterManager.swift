@@ -296,7 +296,7 @@ class ChapterManager {
         // Save episode if we auto-deselected any chapters
         if hasAutoDeselected {
             episode.deselectedChaptersModified = TimeFormatter.currentUTCTimeInMillis()
-            DataManager.sharedManager.save(episode: episode)
+            DataManager.shared.save(episode: episode)
         }
 
         episode.deselectedChapters?

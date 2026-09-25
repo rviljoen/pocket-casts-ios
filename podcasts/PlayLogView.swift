@@ -182,7 +182,7 @@ struct PlayLogWebView: UIViewRepresentable {
             // If the tapped episode is already playing, just seek
             if PlaybackManager.shared.currentEpisode?.uuid == episodeUuid {
                 PlaybackManager.shared.seekTo(time: time)
-            } else if let episode = DataManager.sharedManager.findBaseEpisode(uuid: episodeUuid) {
+            } else if let episode = DataManager.shared.findBaseEpisode(uuid: episodeUuid) {
                 PlaybackManager.shared.load(episode: episode, autoPlay: true, overrideUpNext: false)
                 // Seek after a short delay to allow the episode to load
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
