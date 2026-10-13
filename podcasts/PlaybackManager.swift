@@ -44,6 +44,13 @@ class PlaybackManager: ServerPlaybackDelegate {
     private var wasPlayingBeforeInterruption = false
     private let aboutToPlay = Mutex(false)
 
+    /// Whether the play log's last entry for the current episode says playback is running.
+    ///
+    /// Turning off a car often both sends a remote pause command and removes the audio route,
+    /// so `pause()` runs twice. This lets only the first of those log a stop. It can't be derived
+    /// from `isPlaying`, because iOS may already have halted the player before either call.
+    private let playLogShowsPlaying = Mutex(false)
+
     private let shouldDeactivateSession = Mutex(false)
     private var haveCalledPlayerLoad = false
 
@@ -210,6 +217,9 @@ class PlaybackManager: ServerPlaybackDelegate {
             startPlayLogSection(for: outgoingEpisode)
             PlayLog.shared.addMessage("⏹️ Playback stopped at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(outgoingEpisode.uuid)\">\(playLogTime)</a> (replaced)")
         }
+        if episodeIsChanging {
+            playLogShowsPlaying.value = false
+        }
 
         if let uuid = currentEpisode?.uuid, uuid != episode.uuid {
             chapterManager.clearChapterInfo()
@@ -310,6 +320,7 @@ class PlaybackManager: ServerPlaybackDelegate {
         let playLogTime = TimeFormatter.shared.playTimeFormat(time: currentTime())
         startPlayLogSection(for: currEpisode)
         PlayLog.shared.addMessage("▶️ Playback started at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(currEpisode.uuid)\">\(playLogTime)</a>")
+        playLogShowsPlaying.value = true
 
         if userInitiated {
             analyticsPlaybackHelper.play()
@@ -384,9 +395,16 @@ class PlaybackManager: ServerPlaybackDelegate {
         wasPlayingBeforeInterruption = false
 
         FileLog.shared.addMessage("PlaybackManager pausing playback \(episode.title ?? "unknown episode")")
-        let playLogTime = TimeFormatter.shared.playTimeFormat(time: currentTime())
-        startPlayLogSection(for: episode)
-        PlayLog.shared.addMessage("⏸️ Playback stopped at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(episode.uuid)\">\(playLogTime)</a>")
+        // Read and cleared in one step, so two near-simultaneous pauses can't both log a stop.
+        let shouldLogStop = playLogShowsPlaying.withLock { showsPlaying in
+            defer { showsPlaying = false }
+            return showsPlaying
+        }
+        if shouldLogStop {
+            let playLogTime = TimeFormatter.shared.playTimeFormat(time: currentTime())
+            startPlayLogSection(for: episode)
+            PlayLog.shared.addMessage("⏸️ Playback stopped at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(episode.uuid)\">\(playLogTime)</a>")
+        }
 
         recordPlaybackPosition(sendToServerImmediately: isPlaying, fireNotifications: true)
 
@@ -985,6 +1003,7 @@ class PlaybackManager: ServerPlaybackDelegate {
             startPlayLogSection(for: outgoingEpisode)
             PlayLog.shared.addMessage("⏹️ Playback stopped at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(outgoingEpisode.uuid)\">\(playLogTime)</a> (cleared)")
         }
+        playLogShowsPlaying.value = false
 
         cancelUpdateTimer()
         cancelSleepTimer()
@@ -1434,6 +1453,7 @@ class PlaybackManager: ServerPlaybackDelegate {
             let playLogTime = TimeFormatter.shared.playTimeFormat(time: episode.duration)
             startPlayLogSection(for: episode)
             PlayLog.shared.addMessage("⏹️ Playback finished at <a href=\"http://localhost/#playerJumpTo=\(playLogTime)&episode=\(episode.uuid)\">\(playLogTime)</a>")
+            playLogShowsPlaying.value = false
             Analytics.track(.playerEpisodeCompleted, properties: [
                 "podcast_uuid": episode.parentIdentifier(),
                 "episode_uuid": episode.uuid
