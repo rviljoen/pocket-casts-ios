@@ -107,6 +107,7 @@ class PlaylistDetailViewController: PCViewController, UIScrollViewDelegate {
     var longPressMultiSelectIndexPath: IndexPath?
     var multiSelectActionInProgress = false
     var preSearchContentOffset: CGPoint?
+    var swipedIndexPath: IndexPath?
 
     var multiSelectFooter: MultiSelectFooterView! {
         didSet {
