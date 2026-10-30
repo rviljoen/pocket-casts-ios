@@ -192,12 +192,17 @@ class PlaylistDetailViewModel: ObservableObject {
     }
 
     func remove(episode uuid: String, at index: Int) {
+        removeEpisodeFromList(at: index)
+        delete(episodes: [uuid])
+    }
+
+    /// Removes the row from the list without touching the playlist itself
+    func removeEpisodeFromList(at index: Int) {
         var newData = episodes
+        guard newData.indices.contains(index) else { return }
         newData.remove(at: index)
         let changeSetTuple = buildChangeSet(source: episodes, newData: newData)
         onChange(changeSetTuple.1, true, changeSetTuple.0)
-
-        delete(episodes: [uuid])
     }
 
     func move(episode: ListEpisode, toIndex index: Int) {

@@ -17,10 +17,12 @@ extension PlaylistDetailViewController: SwipeHandler {
     }
 
     func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
+        swipedIndexPath = indexPath
         reloader.pause(for: .seconds(8)) // Adding a timeout just in case calling `resume` for whatever reason
     }
 
     func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
+        swipedIndexPath = nil
         reloader.resume(after: .seconds(1))
     }
 
@@ -36,7 +38,13 @@ extension PlaylistDetailViewController: SwipeHandler {
 
     func actionPerformed(willBeRemoved: Bool) {
         reloader.resume(after: .seconds(1))
-        if willBeRemoved {
+        guard willBeRemoved else { return }
+
+        // Remove the row synchronously, as UIKit expects for a destructive swipe action. Reloading
+        // asynchronously instead makes the row flash over the blurred header as it's removed.
+        if let swipedIndexPath, !viewModel.playlist.showArchivedEpisodes {
+            viewModel.removeEpisodeFromList(at: swipedIndexPath.row)
+        } else {
             viewModel.reloadEpisodeList()
         }
     }
@@ -63,7 +71,6 @@ extension PlaylistDetailViewController: SwipeHandler {
     func removeFromManualPlaylist(episode: PocketCastsDataModel.Episode, at: IndexPath) {
         track(episode: episode, added: false, to: viewModel.playlist, source: "swipe_remove")
 
-        viewModel.delete(episodes: [episode.uuid])
-        viewModel.reloadEpisodeList()
+        viewModel.remove(episode: episode.uuid, at: at.row)
     }
 }
