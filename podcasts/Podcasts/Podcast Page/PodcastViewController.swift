@@ -114,6 +114,12 @@ class PodcastViewController: PCViewController, PodcastActionsDelegate, MultiSele
 
     var cellHeights: [IndexPath: CGFloat] = [:]
 
+    /// Reloading while a swipe action is still animating makes a deleted row jump to the top of the
+    /// table, behind the header artwork, so reloads requested mid-swipe wait for the swipe to end.
+    var isSwipingRow = false
+    var needsEpisodeReloadAfterSwipe = false
+    var swipedIndexPath: IndexPath?
+
     var podcastRatingViewModel = PodcastRatingViewModel()
 
     private var podcastInfo: PodcastInfo?
@@ -595,8 +601,13 @@ class PodcastViewController: PCViewController, PodcastActionsDelegate, MultiSele
         }
     }
 
-    @objc private func refreshEpisodes() {
+    @objc func refreshEpisodes() {
         guard let podcast else { return }
+
+        if isSwipingRow {
+            needsEpisodeReloadAfterSwipe = true
+            return
+        }
 
         loadLocalEpisodes(podcast: podcast, animated: true)
     }
@@ -708,9 +719,19 @@ class PodcastViewController: PCViewController, PodcastActionsDelegate, MultiSele
                 let changeSet = StagedChangeset(source: oldData, target: finalData)
                 do {
                     try SJCommonUtils.catchException {
-                        self.episodesTable.reload(using: changeSet, with: .none, setData: { data in
-                            self.episodeInfo = data
-                        })
+                        // Fade deleted rows (e.g. archived with Hide Archived on) instead of removing them abruptly
+                        self.episodesTable.reload(
+                            using: changeSet,
+                            deleteSectionsAnimation: .none,
+                            insertSectionsAnimation: .none,
+                            reloadSectionsAnimation: .none,
+                            deleteRowsAnimation: .fade,
+                            insertRowsAnimation: .none,
+                            reloadRowsAnimation: .none,
+                            setData: { data in
+                                self.episodeInfo = data
+                            }
+                        )
                     }
                 } catch {
                     self.episodeInfo = finalData
