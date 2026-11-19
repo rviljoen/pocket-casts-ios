@@ -24,4 +24,10 @@ protocol ShowInfoCoordinating {
         podcastUuid: String,
         episodeUuid: String
     ) async throws -> EpisodeTranscriptData
+
+    /// The raw text of the server-generated (VTT) transcript, or nil when the episode has none.
+    func loadGeneratedTranscriptText(
+        podcastUuid: String,
+        episodeUuid: String
+    ) async throws -> String?
 }

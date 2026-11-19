@@ -24,6 +24,10 @@ final class TranscriptManagerTests: XCTestCase {
             let transcript = Episode.Metadata.Transcript(url: transcriptURL.absoluteString, type: "text/vtt", language: nil)
             return (transcripts: [transcript], hasGeneratedTranscripts: false, isDisplayingGeneratedTranscript: false)
         }
+
+        func loadGeneratedTranscriptText(podcastUuid: String, episodeUuid: String) async throws -> String? {
+            nil
+        }
     }
 
     class GeneratedMockShowCoordinator: MockShowCoordinator {

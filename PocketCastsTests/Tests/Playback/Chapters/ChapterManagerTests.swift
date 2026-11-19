@@ -157,6 +157,10 @@ private class ShowInfoCoordinatorMock: ShowInfoCoordinating {
     func loadTranscriptsMetadata(podcastUuid: String, episodeUuid: String) async throws -> EpisodeTranscriptData {
         return (transcripts: [], hasGeneratedTranscripts: false, isDisplayingGeneratedTranscript: false)
     }
+
+    func loadGeneratedTranscriptText(podcastUuid: String, episodeUuid: String) async throws -> String? {
+        nil
+    }
 }
 
 private class EpisodeMock: Episode {
