@@ -262,6 +262,36 @@ class ChapterManager {
     }
 
     #if !os(watchOS) && !os(tvOS) && !APPCLIP
+    /// Makes the AI chapter requests for an episode ahead of playback, so they're cached when
+    /// it plays. Follows `parseLocalAndRemoteChapters`: chapters in the file or provided by the
+    /// creator win over AI ones, so then nothing is requested. The result isn't shown.
+    ///
+    /// Call it on a chapter manager of its own, not the player's: it sets this instance's
+    /// state as it goes.
+    func precomputeLLMChapters(for episode: BaseEpisode, duration: TimeInterval) async {
+        let started = Date()
+        let remote: (podlove: [Episode.Metadata.EpisodeChapter]?, podcastIndex: [PodcastIndexChapter]?, generated: [GeneratedChapter]?)
+        do {
+            remote = try await showInfoCoordinator.loadChapters(podcastUuid: episode.parentIdentifier(), episodeUuid: episode.uuid)
+        } catch {
+            FileLog.shared.addMessage("ChapterManager [debug]: couldn't load chapters to precompute for \(episode.uuid) - \(error.localizedDescription)")
+            return
+        }
+
+        if !(await loadChapters(for: episode, duration: duration)).isEmpty {
+            FileLog.shared.addMessage("ChapterManager [debug]: \(episode.uuid) has chapters in its file, nothing to precompute")
+            return
+        }
+        if let explicit = parseExplicitChapters(podlove: remote.podlove, podcastIndex: remote.podcastIndex, duration: duration), !explicit.isEmpty {
+            FileLog.shared.addMessage("ChapterManager [debug]: \(episode.uuid) has creator chapters, nothing to precompute")
+            return
+        }
+
+        let llmChapters = await loadLLMChaptersLogged(for: episode, duration: duration, generatedChapters: remote.generated)
+        let outcome = llmChapters.map { "\($0.chapters.count) chapters (\($0.origin.analyticsDescription))" } ?? "no AI chapters"
+        FileLog.shared.addMessage("ChapterManager [debug]: precomputed \(outcome) for \(episode.uuid) in \(Int(Date().timeIntervalSince(started)))s")
+    }
+
     /// Timestamped chapters from the show notes when there are any. Otherwise, when the
     /// show notes list the episode's topics and the server generated chapters for it, the
     /// topics placed on the generated transcript, which replace the generated chapters.
@@ -290,14 +320,14 @@ class ChapterManager {
         // on the same reference timeline, and that AI chapters weren't turned off.
         guard extraction.topics.count >= LLMChapterService.minimumTopicCount,
               let generatedChapters, !generatedChapters.isEmpty else {
-            FileLog.shared.addMessage("ChapterManager: show notes have no timestamps and \(extraction.topics.count) topics, generated chapters: \(generatedChapters?.count ?? 0)")
+            FileLog.shared.addMessage("ChapterManager [debug]: no AI chapters for \(episode.uuid): show notes have no timestamps and \(extraction.topics.count) topics (need \(LLMChapterService.minimumTopicCount)), generated chapters: \(generatedChapters?.count ?? 0)")
             return nil
         }
 
         guard let transcriptText = try await showInfoCoordinator.loadGeneratedTranscriptText(podcastUuid: podcastUuid, episodeUuid: episode.uuid),
               let serverTranscript = TranscriptModel.makeModel(from: transcriptText, format: .vtt),
               !serverTranscript.cues.isEmpty else {
-            FileLog.shared.addMessage("ChapterManager: no generated transcript to align \(extraction.topics.count) show notes topics against")
+            FileLog.shared.addMessage("ChapterManager [debug]: no generated transcript to align \(extraction.topics.count) show notes topics against")
             return nil
         }
 
@@ -305,6 +335,7 @@ class ChapterManager {
         let aligned = await LLMChapterService.shared.alignTopics(
             episodeUUID: episode.uuid,
             topics: extraction.topics,
+            topicsInOrder: extraction.topicsInOrder,
             transcript: transcript,
             transcriptSource: origin == .llmLocalTranscriptAligned ? "on-device" : "server-generated",
             episodeTitle: episode.title,

@@ -177,7 +177,9 @@ class EpisodeCell: ThemeableCell, MainEpisodeActionViewDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(upNextEpisodeChanged(_:)), name: Constants.Notifications.upNextEpisodeAdded, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(upNextEpisodeChanged(_:)), name: Constants.Notifications.upNextEpisodeRemoved, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(upNextQueueChanged), name: Constants.Notifications.upNextQueueChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(localTranscriptStateChanged(_:)), name: LocalTranscripts.stateChangedNotification, object: nil)
 
+        setUpLocalTranscriptIndicator()
         updateSize()
     }
 
@@ -227,6 +229,64 @@ class EpisodeCell: ThemeableCell, MainEpisodeActionViewDelegate {
         }
     }
 
+    // MARK: - Local transcript indicator
+
+    /// Shows that the episode has an on-device transcript (a filled icon), or is getting one
+    /// (an outline): its file has dynamically inserted ads, so its chapters and transcript
+    /// come from a transcript made on this device.
+    private lazy var localTranscriptIndicator: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFit
+        imageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 11, weight: .medium)
+        imageView.isHidden = true
+        NSLayoutConstraint.activate([
+            imageView.widthAnchor.constraint(equalToConstant: 16),
+            imageView.heightAnchor.constraint(equalToConstant: 16)
+        ])
+        return imageView
+    }()
+
+    /// Adds the indicator to the row of icons before the episode info, after the bookmark icon.
+    private func setUpLocalTranscriptIndicator() {
+        guard let infoStack = informationLabel.superview as? UIStackView,
+              let labelIndex = infoStack.arrangedSubviews.firstIndex(of: informationLabel) else {
+            return
+        }
+        infoStack.insertArrangedSubview(localTranscriptIndicator, at: labelIndex)
+    }
+
+    private func updateLocalTranscriptIndicator() {
+        guard let episode else {
+            localTranscriptIndicator.isHidden = true
+            return
+        }
+
+        let symbolName: String?
+        if LocalTranscripts.progress(for: episode.uuid) != nil || LocalTranscripts.isQueued(episode.uuid) {
+            symbolName = "captions.bubble"
+        } else if LocalTranscripts.hasTranscript(for: episode) {
+            symbolName = "captions.bubble.fill"
+        } else {
+            symbolName = nil
+        }
+
+        localTranscriptIndicator.image = symbolName.flatMap { UIImage(systemName: $0) }
+        localTranscriptIndicator.tintColor = ThemeColor.primaryIcon02()
+        if localTranscriptIndicator.isHidden != (symbolName == nil) {
+            localTranscriptIndicator.isHidden = symbolName == nil
+        }
+    }
+
+    @objc private func localTranscriptStateChanged(_ notification: Notification) {
+        // Without an episode, the whole index changed.
+        let episodeUUID = notification.userInfo?[LocalTranscripts.episodeUUIDKey] as? String
+        guard episodeUUID == nil || episodeUUID == episode?.uuid else { return }
+        DispatchQueue.main.async { [weak self] in
+            self?.updateLocalTranscriptIndicator()
+        }
+    }
+
     // MARK: - Populate Method
 
     func populateFrom(episode: BaseEpisode, tintColor: UIColor?, playlistUuid: String? = nil, podcastUuid: String? = nil, listUuid: String? = nil) {
@@ -267,6 +327,8 @@ class EpisodeCell: ThemeableCell, MainEpisodeActionViewDelegate {
             } else {
                 uploadStatusIndicator.isHidden = true
             }
+
+            updateLocalTranscriptIndicator()
 
             // Since this calls out to the DB we'll cache the value here so later calls don't hit it again
             let showBookmarksIcon = self.showBookmarksIcon

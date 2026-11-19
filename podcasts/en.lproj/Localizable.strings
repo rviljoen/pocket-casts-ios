@@ -6765,3 +6765,6 @@
 
 /* Label at the bottom of the transcript while the episode is being transcribed on this device. %1$@ is how far along it is as a percentage, e.g. "42%" */
 "transcript_source_transcribing" = "Transcribing on device %1$@";
+
+/* Label at the bottom of the transcript while the episode waits for other episodes to finish being transcribed on this device */
+"transcript_source_queued" = "Waiting to transcribe on device";
