@@ -16,12 +16,24 @@ struct TranscriptCue: Sendable {
 extension NSAttributedString: @retroactive @unchecked Sendable {
 }
 
+/// A stretch of music detected in the audio.
+struct TranscriptMusic: Sendable {
+    let range: ClosedRange<TimeInterval>
+    /// The classifier's average confidence that the stretch is music, from 0 to 1.
+    let confidence: Double?
+    /// Quiet music under speech, like an ad's music bed, rather than music in its own right.
+    let isBed: Bool
+}
+
 struct TranscriptModel: Sendable {
 
     let attributedText: NSAttributedString
     let cues: [TranscriptCue]
     let type: String
     let hasJavascript: Bool
+    /// Where music was detected in the audio, for transcripts made on the device. Empty for
+    /// every other transcript.
+    var music: [TranscriptMusic] = []
 
     static func makeModel(from transcriptText: String, format: TranscriptFormat) -> TranscriptModel? {
         let trimmedTranscript = transcriptText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -170,4 +182,8 @@ struct TranscriptModel: Sendable {
 extension NSAttributedString.Key {
 
     static var transcriptSpeaker = NSAttributedString.Key("TranscriptSpeaker")
+
+    /// Marks a chapter title heading, which also carries `transcriptSpeaker` so it's left out
+    /// of passages like a speaker name, but is styled as a larger, bold heading.
+    static var transcriptChapter = NSAttributedString.Key("TranscriptChapter")
 }

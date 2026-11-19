@@ -1,0 +1,814 @@
+import AVFoundation
+import Foundation
+import PocketCastsDataModel
+import PocketCastsUtils
+import SoundAnalysis
+import Speech
+
+/// On-device transcripts of the episode file the listener actually has.
+///
+/// The server-generated transcript is made from a reference copy of the audio, which doesn't
+/// contain dynamically inserted ads. When the listener's file has them, every time after the
+/// first inserted ad is off, and the ads themselves are invisible. A transcript of the
+/// listener's own file fixes both: its times are on the playback timeline, and its text
+/// includes the inserted ads.
+///
+/// Transcripts are made with `SpeechTranscriber` (iOS 26) from a downloaded file, and cached
+/// per file, since a new download can carry different ads.
+enum LocalTranscripts {
+    /// The server transcript is treated as out of sync when it ends this much earlier (or
+    /// later) than the audio. An outro of music or silence explains a small difference; an
+    /// inserted ad is usually 30 seconds or more.
+    static let durationMismatchThreshold: TimeInterval = 45
+
+    static var isSupported: Bool {
+        if #available(iOS 26.0, *) {
+            return SpeechTranscriber.isAvailable
+        }
+        return false
+    }
+
+    /// Whether `serverTranscript` covers a noticeably different length of audio than the
+    /// listener's file, which is what inserted ads cause.
+    static func isOutOfSync(serverTranscript: TranscriptModel, audioDuration: TimeInterval) -> Bool {
+        guard audioDuration > 0, let transcriptEnd = serverTranscript.cues.map(\.endTime).max() else {
+            return false
+        }
+        let difference = audioDuration - transcriptEnd
+        FileLog.shared.addMessage("LocalTranscripts [debug]: server transcript ends at \(Int(transcriptEnd))s, audio is \(Int(audioDuration))s (difference \(Int(difference))s)")
+        return abs(difference) > durationMismatchThreshold
+    }
+
+    /// The complete local file for `episode`, or nil while it's only streaming. Transcribing
+    /// needs the whole file.
+    static func localAudioURL(for episode: BaseEpisode) -> URL? {
+        if episode.downloaded(pathFinder: DownloadManager.shared) {
+            return URL(fileURLWithPath: episode.pathToDownloadedFile(pathFinder: DownloadManager.shared))
+        }
+        if let episode = episode as? Episode, episode.streamDownloaded(pathFinder: DownloadManager.shared) {
+            let path = DownloadManager.shared.streamingBufferPath(for: episode)
+            if FileManager.default.fileExists(atPath: path) {
+                return URL(fileURLWithPath: path)
+            }
+        }
+        return nil
+    }
+
+    /// A chapter start to show as a heading in a transcript.
+    struct ChapterBreak: Equatable, Sendable {
+        let time: TimeInterval
+        let title: String
+    }
+
+    /// The cached transcript of `episode`'s current local file, if one has been made, with a
+    /// heading at each of `chapterBreaks`.
+    static func cachedTranscript(for episode: BaseEpisode, chapterBreaks: [ChapterBreak] = []) -> TranscriptModel? {
+        guard let audioURL = localAudioURL(for: episode),
+              let cached = LocalTranscriptCache.load(episodeUUID: episode.uuid, audioURL: audioURL) else {
+            return nil
+        }
+        var model = makeModel(from: cached.segments, chapterBreaks: chapterBreaks)
+        model?.music = (cached.music ?? []).map { TranscriptMusic(range: $0.start...$0.end, confidence: $0.confidence, isBed: $0.isBed ?? false) }
+        return model
+    }
+
+    /// Whether `episode`'s cached transcript has no music detection yet, or one from an older
+    /// version of it.
+    private static func cachedTranscriptNeedsMusic(for episode: BaseEpisode) -> Bool {
+        guard let audioURL = localAudioURL(for: episode),
+              let cached = LocalTranscriptCache.load(episodeUUID: episode.uuid, audioURL: audioURL) else {
+            return false
+        }
+        return cached.needsMusic
+    }
+
+    /// Which transcript to use in place of a server-generated one.
+    enum Source {
+        /// The server transcript matches the audio, or there's no way to replace it.
+        case server
+        /// An on-device transcript of the listener's file.
+        case local(TranscriptModel)
+        /// The server transcript doesn't match the audio, and an on-device transcript is
+        /// being made. Until it's ready, the server transcript is all there is.
+        case transcribing
+    }
+
+    /// Picks the transcript to use instead of `serverTranscript` (a generated transcript).
+    /// When it doesn't match the audio and there's no cached on-device transcript yet, starts
+    /// one, and calls `completion` once it's done with whether it succeeded. Progress is
+    /// reported with `stateChangedNotification`.
+    static func source(replacing serverTranscript: TranscriptModel,
+                       for episode: BaseEpisode,
+                       audioDuration: TimeInterval,
+                       chapterBreaks: [ChapterBreak] = [],
+                       completion: (@Sendable (Bool) -> Void)? = nil) -> Source {
+        let audioDuration = audioDuration > 0 ? audioDuration : episode.duration
+        guard isOutOfSync(serverTranscript: serverTranscript, audioDuration: audioDuration) else {
+            return .server
+        }
+        if let localTranscript = cachedTranscript(for: episode, chapterBreaks: chapterBreaks) {
+            // A transcript cached before music detection is used as it is, and gets its music
+            // detected in the background, calling `completion` once it has.
+            if cachedTranscriptNeedsMusic(for: episode) {
+                FileLog.shared.addMessage("LocalTranscripts [debug]: cached transcript of \(episode.uuid) has no current music detection, running it")
+                transcribeInBackground(episode, completion: completion ?? { _ in })
+            }
+            return .local(localTranscript)
+        }
+        guard transcribeInBackground(episode, completion: completion ?? { _ in }) else {
+            return .server
+        }
+        return .transcribing
+    }
+
+    // MARK: Progress
+
+    /// Posted on the main queue when a transcription starts, progresses or ends. `userInfo`
+    /// holds the episode's UUID under `episodeUUIDKey`, and once it ends, whether it
+    /// succeeded under `succeededKey`.
+    static let stateChangedNotification = Notification.Name("LocalTranscriptsStateChanged")
+    static let episodeUUIDKey = "episodeUUID"
+    static let succeededKey = "succeeded"
+
+    /// How far through `episodeUUID`'s file the transcription is, from 0 to 1, or nil when it
+    /// isn't being transcribed.
+    static func progress(for episodeUUID: String) -> Double? {
+        LocalTranscriptProgress.shared.fraction(for: episodeUUID)
+    }
+
+    /// Transcribes `episode`'s local file in the background unless that's already happening,
+    /// then calls `completion` with whether a transcript was cached. Returns false, without
+    /// calling `completion`, when on-device transcription or a local file isn't available or
+    /// another episode is being transcribed.
+    @discardableResult
+    static func transcribeInBackground(_ episode: BaseEpisode, completion: @escaping @Sendable (Bool) -> Void) -> Bool {
+        guard #available(iOS 26.0, *), SpeechTranscriber.isAvailable else {
+            FileLog.shared.addMessage("LocalTranscripts [debug]: on-device transcription isn't available")
+            return false
+        }
+        guard let audioURL = localAudioURL(for: episode) else {
+            FileLog.shared.addMessage("LocalTranscripts [debug]: \(episode.uuid) isn't downloaded, can't transcribe it")
+            return false
+        }
+        // Only one transcription runs at a time: each is heavy, and a second one would just
+        // slow both down. Another episode is picked up again by a later load.
+        guard LocalTranscriptProgress.shared.begin(episodeUUID: episode.uuid) else {
+            FileLog.shared.addMessage("LocalTranscripts [debug]: busy transcribing another episode, skipping \(episode.uuid) for now")
+            return false
+        }
+
+        let episodeUUID = episode.uuid
+        Task.detached(priority: .utility) {
+            let succeeded = await LocalTranscriber.shared.transcribe(episodeUUID: episodeUUID, audioURL: audioURL)
+            completion(succeeded)
+        }
+        return true
+    }
+
+    /// A pause at least this long starts a new paragraph.
+    private static let paragraphPause: TimeInterval = 1.5
+    /// A paragraph this long ends at the next sentence end.
+    private static let paragraphTargetDuration: TimeInterval = 30
+    /// A paragraph this long ends at the next segment, sentence end or not.
+    private static let paragraphMaxDuration: TimeInterval = 90
+
+    /// Builds a transcript model whose cues are the transcriber's segments, so it can be used
+    /// anywhere a parsed server transcript is. The transcriber gives no paragraphs, so they're
+    /// made from pauses and length, and each chapter in `chapterBreaks` starts with its title
+    /// as a heading. Headings are marked like speaker names, so they're styled as headings
+    /// and left out of bookmark passages.
+    fileprivate static func makeModel(from segments: [LocalTranscriptCache.Segment], chapterBreaks: [ChapterBreak] = []) -> TranscriptModel? {
+        let text = NSMutableAttributedString()
+        var cues: [TranscriptCue] = []
+        var pendingBreaks = chapterBreaks.sorted { $0.time < $1.time }[...]
+        var paragraphStart: TimeInterval?
+        var previous: LocalTranscriptCache.Segment?
+
+        for segment in segments {
+            // The chapters that have started by this segment: only the last gets a heading,
+            // the others had no text of their own.
+            var heading: ChapterBreak?
+            while let next = pendingBreaks.first, next.time <= segment.start + 0.5 {
+                heading = next
+                pendingBreaks.removeFirst()
+            }
+
+            if let heading {
+                text.append(NSAttributedString(string: text.length > 0 ? "\n\n" : ""))
+                text.append(NSAttributedString(string: heading.title, attributes: [.transcriptSpeaker: heading.title, .transcriptChapter: heading.title]))
+                text.append(NSAttributedString(string: "\n"))
+                paragraphStart = segment.start
+            } else if let previous, let start = paragraphStart {
+                let pause = segment.start - previous.end
+                let length = previous.end - start
+                let endsSentence = previous.text.last.map { ".?!".contains($0) } ?? false
+                if pause >= paragraphPause || length >= paragraphMaxDuration || (endsSentence && length >= paragraphTargetDuration) {
+                    text.append(NSAttributedString(string: "\n"))
+                    paragraphStart = segment.start
+                } else {
+                    text.append(NSAttributedString(string: " "))
+                }
+            } else {
+                paragraphStart = segment.start
+            }
+
+            let piece = NSAttributedString(string: segment.text)
+            cues.append(TranscriptCue(startTime: segment.start, endTime: segment.end, characterRange: NSRange(location: text.length, length: piece.length)))
+            text.append(piece)
+            previous = segment
+        }
+        guard !cues.isEmpty else { return nil }
+        return TranscriptModel(attributedText: text, cues: cues, type: TranscriptFormat.vtt.rawValue, hasJavascript: false)
+    }
+}
+
+// MARK: - Transcription
+
+@available(iOS 26.0, *)
+private actor LocalTranscriber {
+    static let shared = LocalTranscriber()
+
+    /// The transcription in progress, which callers for the same episode wait on.
+    /// `LocalTranscriptProgress` keeps a second episode from starting while it runs.
+    private var current: (episodeUUID: String, task: Task<Bool, Never>)?
+
+    func transcribe(episodeUUID: String, audioURL: URL) async -> Bool {
+        if let current {
+            if current.episodeUUID == episodeUUID {
+                return await current.task.value
+            }
+            // Only reachable in the moment between one transcription ending and the actor
+            // clearing it.
+            FileLog.shared.addMessage("LocalTranscripts [debug]: busy transcribing \(current.episodeUUID), skipping \(episodeUUID) for now")
+            LocalTranscriptProgress.shared.finish(episodeUUID: episodeUUID, succeeded: false)
+            return false
+        }
+
+        let task = Task<Bool, Never> {
+            defer { self.current = nil }
+            let succeeded = await Self.transcribeAndCache(episodeUUID: episodeUUID, audioURL: audioURL)
+            LocalTranscriptProgress.shared.finish(episodeUUID: episodeUUID, succeeded: succeeded)
+            return succeeded
+        }
+        current = (episodeUUID, task)
+        return await task.value
+    }
+
+    /// Share of the progress bar given to transcription when music detection follows it.
+    private static let transcriptionProgressShare = 0.9
+
+    /// Transcribes the file and detects its music, caching both. A transcript cached before
+    /// music detection was added only gets its music detected.
+    private static func transcribeAndCache(episodeUUID: String, audioURL: URL) async -> Bool {
+        let report: @Sendable (Double) -> Void = { fraction in
+            LocalTranscriptProgress.shared.update(episodeUUID: episodeUUID, fraction: fraction)
+        }
+
+        let segments: [LocalTranscriptCache.Segment]
+        let musicProgress: @Sendable (Double) -> Void
+        if let cached = LocalTranscriptCache.load(episodeUUID: episodeUUID, audioURL: audioURL), cached.needsMusic {
+            segments = cached.segments
+            musicProgress = report
+        } else {
+            do {
+                let started = Date()
+                segments = try await run(audioURL: audioURL) { report($0 * transcriptionProgressShare) }
+                guard !segments.isEmpty else {
+                    FileLog.shared.addMessage("LocalTranscripts [debug]: transcription of \(episodeUUID) produced no text")
+                    return false
+                }
+                let audioEnd = segments.last?.end ?? 0
+                FileLog.shared.addMessage("LocalTranscripts [debug]: transcribed \(Int(audioEnd))s of \(episodeUUID) into \(segments.count) segments in \(Int(Date().timeIntervalSince(started)))s")
+            } catch {
+                FileLog.shared.addMessage("LocalTranscripts [debug]: transcription of \(episodeUUID) failed - \(error.localizedDescription)")
+                return false
+            }
+            musicProgress = { report(transcriptionProgressShare + $0 * (1 - transcriptionProgressShare)) }
+        }
+
+        // Music is an extra hint, so a failure still caches the transcript, with no music, and
+        // isn't retried.
+        let music: [LocalTranscriptCache.MusicRange]
+        do {
+            music = try await MusicDetector.detect(in: audioURL, episodeUUID: episodeUUID, onProgress: musicProgress)
+        } catch {
+            FileLog.shared.addMessage("LocalTranscripts [debug]: music detection of \(episodeUUID) failed - \(error.localizedDescription)")
+            music = []
+        }
+
+        LocalTranscriptCache.save(LocalTranscriptCache.Entry(episodeUUID: episodeUUID, audioURL: audioURL, segments: segments, music: music))
+        return true
+    }
+
+    private enum TranscriptionError: LocalizedError {
+        case unsupportedLocale
+
+        var errorDescription: String? {
+            switch self {
+            case .unsupportedLocale: "no supported transcription locale"
+            }
+        }
+    }
+
+    /// Transcribes the file, calling `onProgress` with how far through it the results have
+    /// reached, from 0 to 1.
+    private static func run(audioURL: URL, onProgress: @escaping @Sendable (Double) -> Void) async throws -> [LocalTranscriptCache.Segment] {
+        // Episodes don't carry a language, so use the device's, falling back to US English.
+        var supportedLocale = await SpeechTranscriber.supportedLocale(equivalentTo: .current)
+        if supportedLocale == nil {
+            supportedLocale = await SpeechTranscriber.supportedLocale(equivalentTo: Locale(identifier: "en-US"))
+        }
+        guard let locale = supportedLocale else {
+            throw TranscriptionError.unsupportedLocale
+        }
+        FileLog.shared.addMessage("LocalTranscripts [debug]: transcribing \(audioURL.lastPathComponent) in \(locale.identifier)")
+
+        // Final results only, with a time range on every run of text so long results can
+        // be split into short timed segments.
+        let transcriber = SpeechTranscriber(locale: locale, transcriptionOptions: [], reportingOptions: [], attributeOptions: [.audioTimeRange])
+
+        // The language model is a system asset that may need downloading the first time.
+        if let request = try await AssetInventory.assetInstallationRequest(supporting: [transcriber]) {
+            FileLog.shared.addMessage("LocalTranscripts [debug]: downloading speech assets for \(locale.identifier)")
+            try await request.downloadAndInstall()
+        }
+
+        let audioFile = try AVAudioFile(forReading: audioURL)
+        let sampleRate = audioFile.processingFormat.sampleRate
+        let fileDuration = sampleRate > 0 ? Double(audioFile.length) / sampleRate : 0
+
+        // Results arrive in order while the file is analyzed, so collect them concurrently,
+        // and use how far they've reached as the progress.
+        let collector = Task<[LocalTranscriptCache.Segment], Error> {
+            var segments: [LocalTranscriptCache.Segment] = []
+            for try await result in transcriber.results {
+                segments += Self.segments(from: result)
+                if fileDuration > 0 {
+                    onProgress(min(1, result.range.end.seconds / fileDuration))
+                }
+            }
+            return segments
+        }
+
+        let analyzer = SpeechAnalyzer(modules: [transcriber])
+        do {
+            if let lastSample = try await analyzer.analyzeSequence(from: audioFile) {
+                try await analyzer.finalizeAndFinish(through: lastSample)
+            } else {
+                await analyzer.cancelAndFinishNow()
+            }
+        } catch {
+            await analyzer.cancelAndFinishNow()
+            collector.cancel()
+            throw error
+        }
+
+        return try await collector.value.sorted { $0.start < $1.start }
+    }
+
+    /// Segments longer than this are split, so chapter and ad boundaries placed on the
+    /// transcript stay precise.
+    private static let maxSegmentDuration: TimeInterval = 5
+
+    /// Splits a result into segments of up to `maxSegmentDuration`, breaking early at the end
+    /// of a sentence, using the time range on each run of its text. A result without
+    /// per-run times becomes one segment.
+    private static func segments(from result: SpeechTranscriber.Result) -> [LocalTranscriptCache.Segment] {
+        var segments: [LocalTranscriptCache.Segment] = []
+        var text = ""
+        var start: TimeInterval?
+        var end: TimeInterval = 0
+
+        func flush() {
+            let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let start, !trimmed.isEmpty {
+                segments.append(LocalTranscriptCache.Segment(start: start, end: end, text: trimmed))
+            }
+            text = ""
+            start = nil
+        }
+
+        for run in result.text.runs {
+            let runText = String(result.text[run.range].characters)
+            text += runText
+            guard let range = run.audioTimeRange else { continue }
+
+            let runStart = start ?? range.start.seconds
+            start = runStart
+            end = range.end.seconds
+            let endsSentence = runText.trimmingCharacters(in: .whitespaces).last.map { ".?!".contains($0) } ?? false
+            if endsSentence || end - runStart >= maxSegmentDuration {
+                flush()
+            }
+        }
+        flush()
+
+        if segments.isEmpty {
+            let whole = String(result.text.characters).trimmingCharacters(in: .whitespacesAndNewlines)
+            if !whole.isEmpty {
+                segments.append(LocalTranscriptCache.Segment(start: result.range.start.seconds, end: result.range.end.seconds, text: whole))
+            }
+        }
+        return segments
+    }
+}
+
+// MARK: - Music detection
+
+/// Finds music in an episode file with SoundAnalysis' built-in sound classifier: jingles
+/// between segments, and the music beds ads are often read over, which both mark boundaries.
+@available(iOS 26.0, *)
+private enum MusicDetector {
+    /// Analysis window, and how much consecutive windows overlap. Shorter windows place a
+    /// boundary more precisely but are noisier.
+    private static let windowDuration: TimeInterval = 1.5
+    private static let overlapFactor = 0.5
+
+    /// Music comes in two kinds, told apart separately:
+    ///
+    /// - Jingles and stings: music in its own right, possibly with a host over it. The
+    ///   confidence, averaged over `smoothingWindows`, stays at `musicConfidence` or more.
+    /// - Beds: quiet music under speech, typical of ads. Speech drowns it out, so the
+    ///   confidence only flickers above `bedWindowConfidence`, but much more often than in
+    ///   plain talk: at least `bedDensity` of the windows around each point.
+    private static let smoothingWindows = 5
+    private static let musicConfidence = 0.45
+    private static let musicEdgeConfidence = 0.35
+    private static let musicMergeGap: TimeInterval = 5
+    private static let musicMinimumDuration: TimeInterval = 2
+
+    private static let bedWindowConfidence = 0.15
+    private static let bedDensityWindows = 13
+    private static let bedDensity = 0.35
+    private static let bedMergeGap: TimeInterval = 12
+    private static let bedMinimumDuration: TimeInterval = 8
+
+    static func detect(in audioURL: URL, episodeUUID: String, onProgress: @escaping @Sendable (Double) -> Void) async throws -> [LocalTranscriptCache.MusicRange] {
+        let started = Date()
+        let analyzer = try SNAudioFileAnalyzer(url: audioURL)
+        let request = try SNClassifySoundRequest(classifierIdentifier: .version1)
+        request.overlapFactor = overlapFactor
+        let window = CMTime(seconds: windowDuration, preferredTimescale: 1000)
+        switch request.windowDurationConstraint {
+        case .durationRange(let range) where range.containsTime(window):
+            request.windowDuration = window
+        case .enumeratedDurations(let durations):
+            if let closest = durations.min(by: { abs($0.seconds - windowDuration) < abs($1.seconds - windowDuration) }) {
+                request.windowDuration = closest
+            }
+        default:
+            break
+        }
+
+        let fileDuration = (try? AVAudioFile(forReading: audioURL)).map { Double($0.length) / $0.processingFormat.sampleRate } ?? 0
+        let observer = MusicObserver(fileDuration: fileDuration, onProgress: onProgress)
+        try analyzer.add(request, withObserver: observer)
+        let completed = await withCheckedContinuation { continuation in
+            analyzer.analyze { continuation.resume(returning: $0) }
+        }
+        if let error = observer.error {
+            throw error
+        }
+
+        let ranges = stretches(from: observer.windows)
+        let total = ranges.filter { $0.isBed != true }.reduce(0) { $0 + $1.end - $1.start }
+        let bedTotal = ranges.filter { $0.isBed == true }.reduce(0) { $0 + $1.end - $1.start }
+        FileLog.shared.addMessage("LocalTranscripts [debug]: music detection of \(episodeUUID) took \(String(format: "%.1f", Date().timeIntervalSince(started)))s for \(Int(fileDuration))s of audio (window \(String(format: "%.2f", request.windowDuration.seconds))s, completed: \(completed)): \(ranges.filter { $0.isBed != true }.count) music stretches (\(Int(total))s), \(ranges.filter { $0.isBed == true }.count) beds under speech (\(Int(bedTotal))s)")
+        #if DEBUG
+        logTimeline(observer.windows)
+        for range in ranges {
+            FileLog.shared.console("LocalTranscripts [debug] | \(range.isBed == true ? "bed  " : "music") \(Self.timestamp(range.start))-\(Self.timestamp(range.end)) (\(Int(range.end - range.start))s), confidence average \(Self.percent(range.confidence)), lowest \(Self.percent(range.minimumConfidence))")
+        }
+        #endif
+        return ranges
+    }
+
+    /// Finds the music stretches and beds in the windows (see `musicConfidence` and
+    /// `bedDensity`), sorted by start.
+    private static func stretches(from windows: [MusicObserver.Window]) -> [LocalTranscriptCache.MusicRange] {
+        let windows = windows.sorted { $0.start < $1.start }
+        guard !windows.isEmpty else { return [] }
+        let confidences = windows.map(\.confidence)
+
+        // Music: where the smoothed confidence is high, with each end trimmed back to a window
+        // that's confident on its own, since smoothing blurs the edges.
+        let smoothed = movingAverage(confidences, width: smoothingWindows)
+        let music = runs(where: { smoothed[$0] >= musicConfidence }, count: windows.count)
+            .compactMap { run -> ClosedRange<Int>? in
+                var lower = run.lowerBound
+                var upper = run.upperBound
+                while lower < upper, confidences[lower] < musicEdgeConfidence { lower += 1 }
+                while upper > lower, confidences[upper] < musicEdgeConfidence { upper -= 1 }
+                return lower...upper
+            }
+        let musicRuns = merge(music, in: windows, gap: musicMergeGap, minimumDuration: musicMinimumDuration)
+
+        // Beds: where windows above the bed confidence are dense, outside the music, trimmed
+        // to the first and last such window.
+        let isMusic = Set(musicRuns.flatMap { Array($0) })
+        let flickers = confidences.map { $0 >= bedWindowConfidence ? 1.0 : 0.0 }
+        let density = movingAverage(flickers, width: bedDensityWindows)
+        let beds = runs(where: { density[$0] >= bedDensity && !isMusic.contains($0) }, count: windows.count)
+            .compactMap { run -> ClosedRange<Int>? in
+                guard let lower = run.first(where: { flickers[$0] > 0 }),
+                      let upper = run.last(where: { flickers[$0] > 0 }) else { return nil }
+                return lower...upper
+            }
+        let bedRuns = merge(beds, in: windows, gap: bedMergeGap, minimumDuration: bedMinimumDuration, barrier: isMusic)
+
+        func range(_ run: ClosedRange<Int>, isBed: Bool) -> LocalTranscriptCache.MusicRange {
+            let values = confidences[run]
+            return LocalTranscriptCache.MusicRange(
+                start: windows[run.lowerBound].start,
+                end: windows[run.upperBound].end,
+                isBed: isBed,
+                confidence: values.reduce(0, +) / Double(values.count),
+                minimumConfidence: values.min()
+            )
+        }
+        return (musicRuns.map { range($0, isBed: false) } + bedRuns.map { range($0, isBed: true) })
+            .sorted { $0.start < $1.start }
+    }
+
+    /// Each value averaged with its neighbours, `width` values in all.
+    private static func movingAverage(_ values: [Double], width: Int) -> [Double] {
+        let half = width / 2
+        return values.indices.map { index in
+            let neighbours = values[max(0, index - half)...min(values.count - 1, index + half)]
+            return neighbours.reduce(0, +) / Double(neighbours.count)
+        }
+    }
+
+    /// The runs of consecutive indices where `isIncluded` holds.
+    private static func runs(where isIncluded: (Int) -> Bool, count: Int) -> [ClosedRange<Int>] {
+        var runs: [ClosedRange<Int>] = []
+        var start: Int?
+        for index in 0..<count {
+            if isIncluded(index) {
+                start = start ?? index
+            } else if let runStart = start {
+                runs.append(runStart...(index - 1))
+                start = nil
+            }
+        }
+        if let start {
+            runs.append(start...(count - 1))
+        }
+        return runs
+    }
+
+    /// Joins runs less than `gap` apart, unless a window in `barrier` is between them, then
+    /// drops runs shorter than `minimumDuration`.
+    private static func merge(_ runs: [ClosedRange<Int>], in windows: [MusicObserver.Window], gap: TimeInterval, minimumDuration: TimeInterval, barrier: Set<Int> = []) -> [ClosedRange<Int>] {
+        var merged: [ClosedRange<Int>] = []
+        for run in runs {
+            if let last = merged.last,
+               windows[run.lowerBound].start - windows[last.upperBound].end <= gap,
+               !(last.upperBound..<run.lowerBound).contains(where: { barrier.contains($0) }) {
+                merged[merged.count - 1] = last.lowerBound...run.upperBound
+            } else {
+                merged.append(run)
+            }
+        }
+        return merged.filter { windows[$0.upperBound].end - windows[$0.lowerBound].start >= minimumDuration }
+    }
+
+    /// Seconds of audio per timeline line in the debug output.
+    private static let timelineLineDuration: TimeInterval = 15
+
+    /// Logs every window's music confidence as a bar from ▁ (0%) to █ (100%), one console
+    /// line per `timelineLineDuration`, to compare with where the music really is. Windows
+    /// below `bedWindowConfidence` are drawn as · so the stretches stand out.
+    private static func logTimeline(_ windows: [MusicObserver.Window]) {
+        let bars: [Character] = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
+        let windows = windows.sorted { $0.start < $1.start }
+        FileLog.shared.console("LocalTranscripts [debug]: music confidence timeline (each bar is one window, ▁ 0% to █ 100%, · below \(percent(bedWindowConfidence)); music at \(percent(musicConfidence)) averaged over \(smoothingWindows) windows, bed at \(percent(bedDensity)) of \(bedDensityWindows) windows above \(percent(bedWindowConfidence)))")
+        var lineStart: TimeInterval = 0
+        var line = ""
+        var peak = 0.0
+        func flush() {
+            guard !line.isEmpty else { return }
+            FileLog.shared.console("LocalTranscripts [debug] | \(timestamp(lineStart)) \(line)  peak \(percent(peak))")
+            line = ""
+            peak = 0
+        }
+        for window in windows {
+            if window.start >= lineStart + timelineLineDuration {
+                flush()
+                lineStart = (window.start / timelineLineDuration).rounded(.down) * timelineLineDuration
+            }
+            let level = min(bars.count - 1, Int(window.confidence * Double(bars.count)))
+            line.append(window.confidence >= bedWindowConfidence ? bars[level] : "·")
+            peak = max(peak, window.confidence)
+        }
+        flush()
+    }
+
+    private static func percent(_ confidence: Double?) -> String {
+        confidence.map { "\(Int(($0 * 100).rounded()))%" } ?? "?"
+    }
+
+    private static func timestamp(_ seconds: TimeInterval) -> String {
+        let total = Int(seconds)
+        return String(format: "%d:%02d:%02d", total / 3600, (total % 3600) / 60, total % 60)
+    }
+}
+
+/// Collects every analysis window with its music confidence. Called on SoundAnalysis' own queue,
+/// and only read once the analysis has finished.
+private final class MusicObserver: NSObject, SNResultsObserving, @unchecked Sendable {
+    struct Window {
+        let start: TimeInterval
+        let end: TimeInterval
+        /// How confident the classifier is that the window is music.
+        let confidence: Double
+    }
+
+    private let fileDuration: TimeInterval
+    private let onProgress: @Sendable (Double) -> Void
+    private var lastReportedPercent = -1
+
+    private(set) var windows: [Window] = []
+    private(set) var error: Error?
+
+    init(fileDuration: TimeInterval, onProgress: @escaping @Sendable (Double) -> Void) {
+        self.fileDuration = fileDuration
+        self.onProgress = onProgress
+    }
+
+    func request(_ request: SNRequest, didProduce result: SNResult) {
+        guard let result = result as? SNClassificationResult else { return }
+        let start = result.timeRange.start.seconds
+        let end = start + result.timeRange.duration.seconds
+        windows.append(Window(start: start, end: end, confidence: result.classification(forIdentifier: "music")?.confidence ?? 0))
+        if fileDuration > 0 {
+            let percent = Int(min(1, end / fileDuration) * 100)
+            if percent > lastReportedPercent {
+                lastReportedPercent = percent
+                onProgress(Double(percent) / 100)
+            }
+        }
+    }
+
+    func request(_ request: SNRequest, didFailWithError error: Error) {
+        self.error = error
+    }
+}
+
+// MARK: - Progress
+
+/// The one transcription that may run at a time, and how far it's got. Readable from any
+/// thread, so the transcript view can show it without waiting on the transcriber.
+private final class LocalTranscriptProgress: @unchecked Sendable {
+    static let shared = LocalTranscriptProgress()
+
+    private let lock = NSLock()
+    private var current: (episodeUUID: String, fraction: Double)?
+
+    func fraction(for episodeUUID: String) -> Double? {
+        lock.withLock {
+            current?.episodeUUID == episodeUUID ? current?.fraction : nil
+        }
+    }
+
+    /// Claims the transcriber for `episodeUUID`. Returns false when another episode has it.
+    func begin(episodeUUID: String) -> Bool {
+        let started: Bool = lock.withLock {
+            if let current {
+                return current.episodeUUID == episodeUUID
+            }
+            current = (episodeUUID, 0)
+            return true
+        }
+        if started {
+            post(episodeUUID: episodeUUID)
+        }
+        return started
+    }
+
+    /// Records progress, notifying only when it moves by at least a whole percent.
+    func update(episodeUUID: String, fraction: Double) {
+        let changed: Bool = lock.withLock {
+            guard let current, current.episodeUUID == episodeUUID,
+                  Int(fraction * 100) > Int(current.fraction * 100) else {
+                return false
+            }
+            self.current = (episodeUUID, fraction)
+            return true
+        }
+        if changed {
+            post(episodeUUID: episodeUUID)
+        }
+    }
+
+    func finish(episodeUUID: String, succeeded: Bool) {
+        let finished: Bool = lock.withLock {
+            guard current?.episodeUUID == episodeUUID else { return false }
+            current = nil
+            return true
+        }
+        if finished {
+            post(episodeUUID: episodeUUID, succeeded: succeeded)
+        }
+    }
+
+    private func post(episodeUUID: String, succeeded: Bool? = nil) {
+        DispatchQueue.main.async {
+            var userInfo: [String: Any] = [LocalTranscripts.episodeUUIDKey: episodeUUID]
+            if let succeeded {
+                userInfo[LocalTranscripts.succeededKey] = succeeded
+            }
+            NotificationCenter.default.post(name: LocalTranscripts.stateChangedNotification, object: nil, userInfo: userInfo)
+        }
+    }
+}
+
+// MARK: - Cache
+
+/// Local transcripts on disk, one per episode, valid only for the exact file they were made
+/// from (matched by size and modification date).
+private enum LocalTranscriptCache {
+    struct Segment: Codable {
+        let start: TimeInterval
+        let end: TimeInterval
+        let text: String
+    }
+
+    struct MusicRange: Codable {
+        let start: TimeInterval
+        let end: TimeInterval
+        /// Whether this is music in its own right or a bed under speech. Optional so entries
+        /// cached before it was recorded still decode, as music.
+        let isBed: Bool?
+        /// The music classification confidence over the stretch: its average and its
+        /// lowest window. Optional so entries cached before it was recorded still decode.
+        let confidence: Double?
+        let minimumConfidence: Double?
+    }
+
+    /// Bump when music detection changes, so cached music is detected again.
+    static let musicVersion = 5
+
+    struct Entry: Codable {
+        let episodeUUID: String
+        let audioFileIdentity: String
+        let segments: [Segment]
+        /// Where music was detected. Nil for entries cached before music detection was added,
+        /// which get it run on their next use.
+        let music: [MusicRange]?
+        let musicVersion: Int?
+
+        /// Whether music needs detecting (again): never run, or run by an older version.
+        var needsMusic: Bool {
+            music == nil || musicVersion != LocalTranscriptCache.musicVersion
+        }
+
+        init(episodeUUID: String, audioURL: URL, segments: [Segment], music: [MusicRange]) {
+            self.episodeUUID = episodeUUID
+            audioFileIdentity = LocalTranscriptCache.identity(of: audioURL) ?? ""
+            self.segments = segments
+            self.music = music
+            musicVersion = LocalTranscriptCache.musicVersion
+        }
+    }
+
+    static func load(episodeUUID: String, audioURL: URL) -> Entry? {
+        guard let identity = identity(of: audioURL),
+              let fileURL = try? cacheFileURL(for: episodeUUID),
+              let data = try? Data(contentsOf: fileURL),
+              let entry = try? JSONDecoder().decode(Entry.self, from: data),
+              entry.audioFileIdentity == identity else {
+            return nil
+        }
+        return entry
+    }
+
+    static func save(_ entry: Entry) {
+        guard let fileURL = try? cacheFileURL(for: entry.episodeUUID),
+              let data = try? JSONEncoder().encode(entry) else {
+            return
+        }
+        try? data.write(to: fileURL, options: .atomic)
+    }
+
+    /// Size and modification date: a re-download, which may carry different ads, changes both.
+    static func identity(of audioURL: URL) -> String? {
+        guard let attributes = try? FileManager.default.attributesOfItem(atPath: audioURL.path),
+              let size = attributes[.size] as? NSNumber,
+              let modified = attributes[.modificationDate] as? Date else {
+            return nil
+        }
+        return "\(size.int64Value)-\(Int(modified.timeIntervalSince1970))"
+    }
+
+    private static func cacheFileURL(for episodeUUID: String) throws -> URL {
+        let fileManager = FileManager.default
+        let directory = try fileManager.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            .appendingPathComponent("PocketCasts", isDirectory: true)
+            .appendingPathComponent("LocalTranscripts", isDirectory: true)
+        if !fileManager.fileExists(atPath: directory.path) {
+            try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+        }
+        return directory.appendingPathComponent("\(episodeUUID).json")
+    }
+}

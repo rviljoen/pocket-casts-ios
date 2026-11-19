@@ -106,6 +106,23 @@ actor ShowInfoCoordinator: ShowInfoCoordinating {
 #endif
     }
 
+    public func loadGeneratedTranscriptText(podcastUuid: String, episodeUuid: String) async throws -> String? {
+#if os(watchOS)
+        return nil
+#else
+        guard FeatureFlag.generatedTranscripts.enabled else { return nil }
+
+        // Episodes the server has marked as having no generated transcript would only 404.
+        if let episode = dataManager.findEpisode(uuid: episodeUuid), episode.hasGeneratedTranscript == false {
+            return nil
+        }
+
+        let transcript = buildGeneratedTranscript(podcastUuid: podcastUuid, episodeUuid: episodeUuid)
+        guard let url = URL(string: transcript.url) else { return nil }
+        return try await transcriptDataRetriever.loadTranscript(url: url)
+#endif
+    }
+
     @discardableResult
     func loadShowInfo(
         podcastUuid: String,

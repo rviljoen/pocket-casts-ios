@@ -562,8 +562,10 @@ class PlaybackManager: ServerPlaybackDelegate {
         onlyPlayable ? chapterManager.playableChapterCount() : chapterManager.visibleChapterCount()
     }
 
+    /// Whether chapter start times are on the generated transcript's reference timeline,
+    /// so seeking to them goes through fingerprint resolution.
     var chaptersAreGenerated: Bool {
-        chapterManager.chaptersOrigin == .generated
+        chapterManager.chaptersOrigin.usesReferenceTimeline
     }
 
     /// The loaded chapters' origin as its Tracks value (e.g. "generated",
@@ -576,6 +578,20 @@ class PlaybackManager: ServerPlaybackDelegate {
     var chaptersFromShowNotes: Bool {
         chapterManager.chaptersFromShowNotes
     }
+
+    /// Whether the chapters are show notes topics placed on the transcript by the LLM,
+    /// rather than timestamps written in the show notes.
+    var chaptersFromShowNotesTopics: Bool {
+        chapterManager.chaptersOrigin.isFromShowNotesTopics
+    }
+
+    #if !os(watchOS) && !os(tvOS) && !APPCLIP
+    /// The current chapters as headings for an on-device transcript, or none when they aren't
+    /// on the playback timeline.
+    func chapterBreaksForLocalTranscript() -> [LocalTranscripts.ChapterBreak] {
+        chapterManager.chapterBreaksOnPlaybackTimeline()
+    }
+    #endif
 
     func index(for chapter: Chapters) -> Int? {
         chapterManager.index(for: chapter)
