@@ -18,9 +18,12 @@ actor LLMChapterService {
     struct ShowNotesExtraction {
         /// Timestamped chapters, when the show notes have them.
         let chapters: [ChapterInfo]
-        /// The episode's topics in running order, when the show notes list them without
+        /// The episode's topics, when the show notes list or describe them without
         /// timestamps. Empty whenever `chapters` isn't.
         let topics: [String]
+        /// Whether `topics` follow the episode's running order. True for a list of topics;
+        /// false for topics drawn from a prose summary, which may mention them in any order.
+        var topicsInOrder = true
 
         static let empty = ShowNotesExtraction(chapters: [], topics: [])
     }
@@ -35,7 +38,7 @@ actor LLMChapterService {
     // MARK: - Show notes extraction
 
     /// Bump when `showNotesPrompt` or `showNotesSchema` changes, so cached results are requested again.
-    private static let showNotesPromptVersion = 3
+    private static let showNotesPromptVersion = 4
 
     private static let showNotesPrompt = """
     You are a podcast chapter extractor. Given podcast show notes (which may be HTML or plain text), extract any chapter/timestamp information.
@@ -57,8 +60,9 @@ actor LLMChapterService {
     - Write each topic as a short chapter title, keeping the show notes' own wording where possible.
     - A topic is a story or segment, not a list item. News rundowns often list several links or headlines about the same story (for example the same company's announcement reported by different outlets, or a launch and the reaction to it); combine those into one topic named for the story, rather than one topic per link.
     - Leave out sponsors, ads, promo codes, links, credits, calls to action, social handles, and guest bios.
-    - A prose summary that isn't laid out as a list of topics is not a topic list.
-    - Return an empty topics array if chapters were found, or if there is no topic list.
+    - A prose summary can also give the topics, when it names at least 3 distinct, concrete things the episode discusses (for example "we discuss why X, how Y, and whether Z; we also cover W"). Then make each one a topic, in the order the summary mentions them. Leave out the guest's bio, the umbrella theme of the whole episode, and calls to action like "tune in" or "hit play". A vague teaser that doesn't name specific discussion points gives no topics.
+    - "topics_in_order": true when the topics come from a list laid out in running order, false when they come from a prose summary, whose order may not follow the episode.
+    - Return an empty topics array if chapters were found, or if the show notes neither list nor describe the topics.
     """
 
     private static let showNotesSchema: [String: Any] = [
@@ -80,9 +84,10 @@ actor LLMChapterService {
             "topics": [
                 "type": "array",
                 "items": ["type": "string"]
-            ]
+            ],
+            "topics_in_order": ["type": "boolean"]
         ],
-        "required": ["chapters", "topics"],
+        "required": ["chapters", "topics", "topics_in_order"],
         "additionalProperties": false
     ]
 
@@ -101,12 +106,19 @@ actor LLMChapterService {
 
         let chapters: [Chapter]
         let topics: [String]
+        let topicsInOrder: Bool?
+
+        enum CodingKeys: String, CodingKey {
+            case chapters
+            case topics
+            case topicsInOrder = "topics_in_order"
+        }
     }
 
     // MARK: - Transcript alignment
 
     /// Bump when `alignmentPrompt`, `alignmentSchema` or the transcript formatting changes.
-    private static let alignmentPromptVersion = 8
+    private static let alignmentPromptVersion = 9
 
     /// Show notes need at least this many topics before they're worth aligning.
     static let minimumTopicCount = 3
@@ -149,7 +161,7 @@ actor LLMChapterService {
     - "title": a short chapter title for the topic, based on the show notes wording; don't invent new topics
 
     Rules:
-    - Topics are usually discussed in the order listed, so start times should increase with topic_index.
+    - Topics are usually discussed in the order listed, so start times should increase with topic_index. When the topics are marked as coming from a summary, they can come up in any order; place each where it's mainly discussed.
     - A chapter starts where the topic itself is introduced, not at an ad break, sponsor read, or housekeeping that comes before it.
     - If a topic isn't discussed, or you can't locate where it begins with reasonable confidence, leave it out rather than guessing.
     - Each topic appears at most once.
@@ -332,12 +344,16 @@ actor LLMChapterService {
             let chapters = Self.cleanUp(output.chapters)
             let topics = chapters.isEmpty ? Self.cleanUp(output.topics) : []
             FileLog.shared.addMessage("LLMChapterService: extracted \(chapters.count) chapters and \(topics.count) untimed topics from show notes")
-            Self.debugLog("show notes topics for \(episodeUUID)", body: topics.enumerated().map { "\($0.offset). \($0.element)" }.joined(separator: "\n"))
-            return LLMChapterCache.Entry(key: key, chapters: chapters, topics: topics)
+            return LLMChapterCache.Entry(key: key, chapters: chapters, topics: topics, topicsInOrder: output.topicsInOrder ?? true)
         }
 
         guard let entry else { return .empty }
-        return ShowNotesExtraction(chapters: convert(entry.chapters, episodeDuration: duration), topics: entry.topics)
+        let topicsInOrder = entry.topicsInOrder ?? true
+        Self.debugLog(
+            "show notes for \(episodeUUID): \(entry.chapters.count) timestamped chapters, \(entry.topics.count) topics\(entry.topics.isEmpty ? "" : topicsInOrder ? " (listed in order)" : " (from a prose summary)")",
+            body: entry.topics.enumerated().map { "\($0.offset). \($0.element)" }.joined(separator: "\n")
+        )
+        return ShowNotesExtraction(chapters: convert(entry.chapters, episodeDuration: duration), topics: entry.topics, topicsInOrder: topicsInOrder)
     }
 
     /// Places `topics` on the timeline of `transcript`, returning no chapters when too few
@@ -345,8 +361,10 @@ actor LLMChapterService {
     /// the chapters share the reference timeline that generated chapters use.
     /// - Parameters:
     ///   - topicHints: Where the show notes say each topic starts, when they give times.
+    ///   - topicsInOrder: Whether the topics follow the episode's order, so a topic placed
+    ///     out of order is a mistake.
     ///   - transcriptSource: Where `transcript` came from, for debug logging.
-    func alignTopics(episodeUUID: String, topics: [String], topicHints: [TimeInterval]? = nil, transcript: TranscriptModel, transcriptSource: String, episodeTitle: String?, duration: TimeInterval) async -> [ChapterInfo] {
+    func alignTopics(episodeUUID: String, topics: [String], topicHints: [TimeInterval]? = nil, topicsInOrder: Bool = true, transcript: TranscriptModel, transcriptSource: String, episodeTitle: String?, duration: TimeInterval) async -> [ChapterInfo] {
         let topics = zip(topics.indices, topics).map { index, topic in
             guard let hint = topicHints?[safe: index] else { return topic }
             return "\(topic) (show notes time \(Self.timestamp(hint)))"
@@ -369,7 +387,7 @@ actor LLMChapterService {
             kind: .transcriptAligned,
             model: Settings.llmChapterModel,
             version: Self.alignmentPromptVersion,
-            inputs: topics + [transcriptText]
+            inputs: topics + [transcriptText, topicsInOrder ? "ordered" : "unordered"]
         )
 
         Self.debugLog("""
@@ -384,7 +402,7 @@ actor LLMChapterService {
         // Only the model's response is cached; turning it into chapters happens on every load,
         // so changes to that processing apply to cached episodes without a new request.
         let entry = await cachedRequest(key) { apiKey in
-            let (_, rawResponse) = try await self.requestAlignment(apiKey: apiKey, model: key.model, topics: topics, transcriptText: transcriptText, episodeTitle: episodeTitle)
+            let (_, rawResponse) = try await self.requestAlignment(apiKey: apiKey, model: key.model, topics: topics, topicsInOrder: topicsInOrder, transcriptText: transcriptText, episodeTitle: episodeTitle)
             return LLMChapterCache.Entry(key: key, chapters: [], rawResponse: rawResponse)
         }
 
@@ -397,7 +415,7 @@ actor LLMChapterService {
 
         let lineStarts = lines.filter { !$0.isMarker }.map(\.startTime)
         let quotes = QuoteLocator(transcript: transcript)
-        let topicChapters = Self.placeTopics(output.chapters, topicCount: topics.count, lineStarts: lineStarts, quotes: quotes)
+        let topicChapters = Self.placeTopics(output.chapters, topicCount: topics.count, inOrder: topicsInOrder, lineStarts: lineStarts, quotes: quotes)
         // Ads only make sense around topics that were placed; without them, fall back entirely.
         let ads = topicChapters.isEmpty ? [] : Self.placeAds(output.ads, lineStarts: lineStarts, quotes: quotes)
         if topicChapters.isEmpty, !output.ads.isEmpty {
@@ -489,12 +507,13 @@ actor LLMChapterService {
         ).output
     }
 
-    private func requestAlignment(apiKey: String, model: String, topics: [String], transcriptText: String, episodeTitle: String?) async throws -> (output: AlignmentOutput, rawText: String) {
+    private func requestAlignment(apiKey: String, model: String, topics: [String], topicsInOrder: Bool, transcriptText: String, episodeTitle: String?) async throws -> (output: AlignmentOutput, rawText: String) {
         var userParts: [String] = []
         if let episodeTitle {
             userParts.append("Episode: \(episodeTitle)")
         }
-        userParts.append("Topics:\n" + topics.enumerated().map { "\($0.offset). \($0.element)" }.joined(separator: "\n"))
+        let topicsHeading = topicsInOrder ? "Topics:" : "Topics (from a summary of the episode, so they may come up in any order):"
+        userParts.append(topicsHeading + "\n" + topics.enumerated().map { "\($0.offset). \($0.element)" }.joined(separator: "\n"))
         userParts.append("Transcript:\n\(transcriptText)")
 
         // Reading a whole transcript is a much larger request than the show notes, so it
@@ -651,7 +670,7 @@ actor LLMChapterService {
     /// line, out-of-range topics and repeats are
     /// dropped, and the chapters must follow the show notes order. Returns nothing when fewer
     /// than half the topics survive, so the caller falls back to the generated chapters.
-    private static func placeTopics(_ placed: [AlignmentOutput.Chapter], topicCount: Int, lineStarts: [TimeInterval], quotes: QuoteLocator) -> [LLMChapterCache.Entry.CachedChapter] {
+    private static func placeTopics(_ placed: [AlignmentOutput.Chapter], topicCount: Int, inOrder: Bool, lineStarts: [TimeInterval], quotes: QuoteLocator) -> [LLMChapterCache.Entry.CachedChapter] {
         var seenTopics = Set<Int>()
         var decisions: [String] = []
         let candidates = placed
@@ -681,6 +700,17 @@ actor LLMChapterService {
             }
             .sorted { $0.topic < $1.topic }
 
+        // Topics from a summary have no order to check: keep each at its own time, dropping
+        // only ones placed at the same time as an earlier topic.
+        guard inOrder else {
+            var seenTimes = Set<TimeInterval>()
+            let byTime = candidates.sorted { $0.startTime < $1.startTime }.filter { seenTimes.insert($0.startTime).inserted }
+            decisions += candidates.filter { candidate in !byTime.contains { $0.topic == candidate.topic } }
+                .map { "DROP topic \($0.topic) at \(timestamp($0.startTime)) \"\($0.title)\": same time as another topic" }
+            debugLog("topic placement, any order (\(byTime.count) kept of \(placed.count) returned, \(topicCount) sent)", body: decisions.joined(separator: "\n"))
+            return finishPlacement(byTime, topicCount: topicCount)
+        }
+
         // Keep the longest run whose start times increase in topic order. One misplaced
         // topic then costs only that chapter, instead of every chapter after it.
         var runLength = [Int](repeating: 1, count: candidates.count)
@@ -702,6 +732,13 @@ actor LLMChapterService {
         decisions += outOfOrder.map { "DROP topic \($0.topic) at \(timestamp($0.startTime)) \"\($0.title)\": out of order with the other topics" }
         debugLog("topic placement (\(ordered.count) kept of \(placed.count) returned, \(topicCount) sent)", body: decisions.joined(separator: "\n"))
 
+        return finishPlacement(ordered, topicCount: topicCount)
+    }
+
+    /// Turns placed topics, sorted by time, into chapters: nothing when fewer than half the
+    /// topics were placed, and otherwise starting at 0:00, with an "Intro" when the first
+    /// topic starts later.
+    private static func finishPlacement(_ ordered: [(topic: Int, startTime: TimeInterval, title: String)], topicCount: Int) -> [LLMChapterCache.Entry.CachedChapter] {
         let minimumPlaced = max(2, (topicCount + 1) / 2)
         guard ordered.count >= minimumPlaced else {
             FileLog.shared.addMessage("LLMChapterService: only \(ordered.count) of \(topicCount) topics placed in order, need \(minimumPlaced)")

@@ -47,6 +47,9 @@ struct LLMChapterCache {
         let chapters: [CachedChapter]
         /// Topics listed in the show notes without timestamps. Only set for `.showNotes`.
         let topics: [String]
+        /// Whether `topics` follow the episode's order (see `ShowNotesExtraction.topicsInOrder`).
+        /// Optional so entries saved before it was added still decode.
+        let topicsInOrder: Bool?
         /// The model's JSON response, kept so debug logging can show it on a cache hit.
         /// Optional so entries saved before it was added still decode.
         let rawResponse: String?
@@ -57,12 +60,13 @@ struct LLMChapterCache {
             let url: String?
         }
 
-        init(key: Key, chapters: [CachedChapter], topics: [String] = [], rawResponse: String? = nil) {
+        init(key: Key, chapters: [CachedChapter], topics: [String] = [], topicsInOrder: Bool = true, rawResponse: String? = nil) {
             episodeUUID = key.episodeUUID
             model = key.model
             inputHash = key.inputHash
             self.chapters = chapters
             self.topics = topics
+            self.topicsInOrder = topicsInOrder
             self.rawResponse = rawResponse
         }
     }

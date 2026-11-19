@@ -1287,6 +1287,9 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
                 progress = fraction
                 text = L10n.transcriptSourceTranscribing(fraction.formatted(.percent.precision(.fractionLength(0))))
                 symbolName = "waveform"
+            } else if let episodeUUID = currentEpisodeUUID, LocalTranscripts.isQueued(episodeUUID) {
+                text = L10n.transcriptSourceQueued
+                symbolName = "clock"
             } else {
                 text = L10n.transcriptSourceServer
                 symbolName = "cloud"

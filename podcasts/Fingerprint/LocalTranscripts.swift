@@ -4,6 +4,7 @@ import PocketCastsDataModel
 import PocketCastsUtils
 import SoundAnalysis
 import Speech
+import UIKit
 
 /// On-device transcripts of the episode file the listener actually has.
 ///
@@ -74,7 +75,7 @@ enum LocalTranscripts {
 
     /// Whether `episode`'s cached transcript has no music detection yet, or one from an older
     /// version of it.
-    private static func cachedTranscriptNeedsMusic(for episode: BaseEpisode) -> Bool {
+    static func cachedTranscriptNeedsMusic(for episode: BaseEpisode) -> Bool {
         guard let audioURL = localAudioURL(for: episode),
               let cached = LocalTranscriptCache.load(episodeUUID: episode.uuid, audioURL: audioURL) else {
             return false
@@ -94,13 +95,17 @@ enum LocalTranscripts {
     }
 
     /// Picks the transcript to use instead of `serverTranscript` (a generated transcript).
-    /// When it doesn't match the audio and there's no cached on-device transcript yet, starts
+    /// When it doesn't match the audio and there's no cached on-device transcript yet, queues
     /// one, and calls `completion` once it's done with whether it succeeded. Progress is
     /// reported with `stateChangedNotification`.
+    ///
+    /// - Parameter urgent: Whether the episode is wanted now (it's playing, or its transcript
+    ///   is open), which puts it at the front of the queue. Prefetching passes false.
     static func source(replacing serverTranscript: TranscriptModel,
                        for episode: BaseEpisode,
                        audioDuration: TimeInterval,
                        chapterBreaks: [ChapterBreak] = [],
+                       urgent: Bool = true,
                        completion: (@Sendable (Bool) -> Void)? = nil) -> Source {
         let audioDuration = audioDuration > 0 ? audioDuration : episode.duration
         guard isOutOfSync(serverTranscript: serverTranscript, audioDuration: audioDuration) else {
@@ -111,11 +116,11 @@ enum LocalTranscripts {
             // detected in the background, calling `completion` once it has.
             if cachedTranscriptNeedsMusic(for: episode) {
                 FileLog.shared.addMessage("LocalTranscripts [debug]: cached transcript of \(episode.uuid) has no current music detection, running it")
-                transcribeInBackground(episode, completion: completion ?? { _ in })
+                transcribeInBackground(episode, urgent: urgent, completion: completion ?? { _ in })
             }
             return .local(localTranscript)
         }
-        guard transcribeInBackground(episode, completion: completion ?? { _ in }) else {
+        guard transcribeInBackground(episode, urgent: urgent, completion: completion ?? { _ in }) else {
             return .server
         }
         return .transcribing
@@ -136,12 +141,35 @@ enum LocalTranscripts {
         LocalTranscriptProgress.shared.fraction(for: episodeUUID)
     }
 
-    /// Transcribes `episode`'s local file in the background unless that's already happening,
-    /// then calls `completion` with whether a transcript was cached. Returns false, without
-    /// calling `completion`, when on-device transcription or a local file isn't available or
-    /// another episode is being transcribed.
+    /// Whether `episode` has a finished on-device transcript of its current file. Cheap enough
+    /// for list rows: it answers from an index kept in memory, and says false until that's
+    /// loaded (see `loadIndex`), which posts `stateChangedNotification` without an episode.
+    static func hasTranscript(for episode: BaseEpisode) -> Bool {
+        guard let cachedIdentity = LocalTranscriptIndex.shared.identity(for: episode.uuid),
+              let audioURL = localAudioURL(for: episode) else {
+            return false
+        }
+        return LocalTranscriptCache.identity(of: audioURL) == cachedIdentity
+    }
+
+    /// Loads the index `hasTranscript` answers from, in the background.
+    static func loadIndex() {
+        LocalTranscriptIndex.shared.loadInBackground()
+    }
+
+    /// Whether `episodeUUID` is waiting its turn to be transcribed.
+    static func isQueued(_ episodeUUID: String) -> Bool {
+        LocalTranscriptProgress.shared.isQueued(episodeUUID)
+    }
+
+    /// Queues `episode`'s local file for transcription unless it's already queued, then calls
+    /// `completion` with whether a transcript was cached. Returns false, without calling
+    /// `completion`, when on-device transcription or a local file isn't available.
+    ///
+    /// Transcriptions run one at a time, in the order queued, except that an `urgent` one
+    /// goes to the front.
     @discardableResult
-    static func transcribeInBackground(_ episode: BaseEpisode, completion: @escaping @Sendable (Bool) -> Void) -> Bool {
+    static func transcribeInBackground(_ episode: BaseEpisode, urgent: Bool = true, completion: @escaping @Sendable (Bool) -> Void) -> Bool {
         guard #available(iOS 26.0, *), SpeechTranscriber.isAvailable else {
             FileLog.shared.addMessage("LocalTranscripts [debug]: on-device transcription isn't available")
             return false
@@ -150,16 +178,9 @@ enum LocalTranscripts {
             FileLog.shared.addMessage("LocalTranscripts [debug]: \(episode.uuid) isn't downloaded, can't transcribe it")
             return false
         }
-        // Only one transcription runs at a time: each is heavy, and a second one would just
-        // slow both down. Another episode is picked up again by a later load.
-        guard LocalTranscriptProgress.shared.begin(episodeUUID: episode.uuid) else {
-            FileLog.shared.addMessage("LocalTranscripts [debug]: busy transcribing another episode, skipping \(episode.uuid) for now")
-            return false
-        }
-
         let episodeUUID = episode.uuid
         Task.detached(priority: .utility) {
-            let succeeded = await LocalTranscriber.shared.transcribe(episodeUUID: episodeUUID, audioURL: audioURL)
+            let succeeded = await LocalTranscriber.shared.transcribe(episodeUUID: episodeUUID, audioURL: audioURL, urgent: urgent)
             completion(succeeded)
         }
         return true
@@ -228,30 +249,84 @@ enum LocalTranscripts {
 private actor LocalTranscriber {
     static let shared = LocalTranscriber()
 
-    /// The transcription in progress, which callers for the same episode wait on.
-    /// `LocalTranscriptProgress` keeps a second episode from starting while it runs.
-    private var current: (episodeUUID: String, task: Task<Bool, Never>)?
+    /// One episode waiting for, or getting, its transcription. Everyone who asked for it waits
+    /// on `result`.
+    private final class Job: @unchecked Sendable {
+        let episodeUUID: String
+        let audioURL: URL
+        let queuedAt = Date()
+        let result: Task<Bool, Never>
+        private let continuation: AsyncStream<Bool>.Continuation
 
-    func transcribe(episodeUUID: String, audioURL: URL) async -> Bool {
-        if let current {
-            if current.episodeUUID == episodeUUID {
-                return await current.task.value
+        init(episodeUUID: String, audioURL: URL) {
+            self.episodeUUID = episodeUUID
+            self.audioURL = audioURL
+            let (stream, continuation) = AsyncStream<Bool>.makeStream()
+            self.continuation = continuation
+            result = Task {
+                for await succeeded in stream {
+                    return succeeded
+                }
+                return false
             }
-            // Only reachable in the moment between one transcription ending and the actor
-            // clearing it.
-            FileLog.shared.addMessage("LocalTranscripts [debug]: busy transcribing \(current.episodeUUID), skipping \(episodeUUID) for now")
-            LocalTranscriptProgress.shared.finish(episodeUUID: episodeUUID, succeeded: false)
-            return false
         }
 
-        let task = Task<Bool, Never> {
-            defer { self.current = nil }
-            let succeeded = await Self.transcribeAndCache(episodeUUID: episodeUUID, audioURL: audioURL)
-            LocalTranscriptProgress.shared.finish(episodeUUID: episodeUUID, succeeded: succeeded)
-            return succeeded
+        func finish(succeeded: Bool) {
+            continuation.yield(succeeded)
+            continuation.finish()
         }
-        current = (episodeUUID, task)
-        return await task.value
+    }
+
+    /// Transcriptions run one at a time: each is heavy, and running two would only slow both.
+    private var running: Job?
+    private var pending: [Job] = []
+
+    func transcribe(episodeUUID: String, audioURL: URL, urgent: Bool) async -> Bool {
+        let job: Job
+        if let running, running.episodeUUID == episodeUUID {
+            job = running
+        } else if let index = pending.firstIndex(where: { $0.episodeUUID == episodeUUID }) {
+            job = pending[index]
+            if urgent, index > 0 {
+                pending.remove(at: index)
+                pending.insert(job, at: 0)
+                FileLog.shared.addMessage("LocalTranscripts [debug]: \(episodeUUID) is wanted now, moved to the front of the queue")
+            }
+        } else {
+            job = Job(episodeUUID: episodeUUID, audioURL: audioURL)
+            if urgent {
+                pending.insert(job, at: 0)
+            } else {
+                pending.append(job)
+            }
+            LocalTranscriptProgress.shared.queue(episodeUUID: episodeUUID)
+            let ahead = (running == nil ? 0 : 1) + (pending.firstIndex { $0 === job } ?? 0)
+            FileLog.shared.addMessage("LocalTranscripts [debug]: queued \(episodeUUID) for transcription (\(urgent ? "wanted now" : "prefetch"), \(ahead) ahead of it)")
+        }
+        startNextIfIdle()
+        return await job.result.value
+    }
+
+    private func startNextIfIdle() {
+        guard running == nil, !pending.isEmpty else { return }
+        let job = pending.removeFirst()
+        running = job
+        LocalTranscriptProgress.shared.start(episodeUUID: job.episodeUUID)
+        let waited = Date().timeIntervalSince(job.queuedAt)
+        if waited >= 1 {
+            FileLog.shared.addMessage("LocalTranscripts [debug]: starting \(job.episodeUUID) after \(Int(waited))s in the queue, \(pending.count) still queued")
+        }
+        Task {
+            let succeeded = await Self.transcribeAndCache(episodeUUID: job.episodeUUID, audioURL: job.audioURL)
+            await self.finished(job, succeeded: succeeded)
+        }
+    }
+
+    private func finished(_ job: Job, succeeded: Bool) {
+        LocalTranscriptProgress.shared.finish(episodeUUID: job.episodeUUID, succeeded: succeeded)
+        job.finish(succeeded: succeeded)
+        running = nil
+        startNextIfIdle()
     }
 
     /// Share of the progress bar given to transcription when music detection follows it.
@@ -260,6 +335,9 @@ private actor LocalTranscriber {
     /// Transcribes the file and detects its music, caching both. A transcript cached before
     /// music detection was added only gets its music detected.
     private static func transcribeAndCache(episodeUUID: String, audioURL: URL) async -> Bool {
+        if let cached = LocalTranscriptCache.load(episodeUUID: episodeUUID, audioURL: audioURL), !cached.needsMusic {
+            return true
+        }
         let report: @Sendable (Double) -> Void = { fraction in
             LocalTranscriptProgress.shared.update(episodeUUID: episodeUUID, fraction: fraction)
         }
@@ -278,7 +356,8 @@ private actor LocalTranscriber {
                     return false
                 }
                 let audioEnd = segments.last?.end ?? 0
-                FileLog.shared.addMessage("LocalTranscripts [debug]: transcribed \(Int(audioEnd))s of \(episodeUUID) into \(segments.count) segments in \(Int(Date().timeIntervalSince(started)))s")
+                let state = await MainActor.run { Self.appStateDescription() }
+                FileLog.shared.addMessage("LocalTranscripts [debug]: transcribed \(Int(audioEnd))s of \(episodeUUID) into \(segments.count) segments in \(Int(Date().timeIntervalSince(started)))s (app now \(state))")
             } catch {
                 FileLog.shared.addMessage("LocalTranscripts [debug]: transcription of \(episodeUUID) failed - \(error.localizedDescription)")
                 return false
@@ -298,6 +377,15 @@ private actor LocalTranscriber {
 
         LocalTranscriptCache.save(LocalTranscriptCache.Entry(episodeUUID: episodeUUID, audioURL: audioURL, segments: segments, music: music))
         return true
+    }
+
+    /// Whether the app is in the foreground and audio is playing, to see from the logs how
+    /// transcriptions fare while the app is in the background.
+    @MainActor
+    private static func appStateDescription() -> String {
+        let foreground = UIApplication.shared.applicationState == .active ? "in the foreground" : "in the background"
+        let playing = PlaybackManager.shared.isPlaying ? "playing" : "not playing"
+        return "\(foreground), \(playing)"
     }
 
     private enum TranscriptionError: LocalizedError {
@@ -657,12 +745,14 @@ private final class MusicObserver: NSObject, SNResultsObserving, @unchecked Send
 
 // MARK: - Progress
 
-/// The one transcription that may run at a time, and how far it's got. Readable from any
-/// thread, so the transcript view can show it without waiting on the transcriber.
+/// The transcription queue's state: what's waiting, what's running and how far it's got.
+/// Readable from any thread, so the transcript view can show it without waiting on the
+/// transcriber.
 private final class LocalTranscriptProgress: @unchecked Sendable {
     static let shared = LocalTranscriptProgress()
 
     private let lock = NSLock()
+    private var queued: [String] = []
     private var current: (episodeUUID: String, fraction: Double)?
 
     func fraction(for episodeUUID: String) -> Double? {
@@ -671,19 +761,25 @@ private final class LocalTranscriptProgress: @unchecked Sendable {
         }
     }
 
-    /// Claims the transcriber for `episodeUUID`. Returns false when another episode has it.
-    func begin(episodeUUID: String) -> Bool {
-        let started: Bool = lock.withLock {
-            if let current {
-                return current.episodeUUID == episodeUUID
+    func isQueued(_ episodeUUID: String) -> Bool {
+        lock.withLock { queued.contains(episodeUUID) }
+    }
+
+    func queue(episodeUUID: String) {
+        lock.withLock {
+            if current?.episodeUUID != episodeUUID, !queued.contains(episodeUUID) {
+                queued.append(episodeUUID)
             }
+        }
+        post(episodeUUID: episodeUUID)
+    }
+
+    func start(episodeUUID: String) {
+        lock.withLock {
+            queued.removeAll { $0 == episodeUUID }
             current = (episodeUUID, 0)
-            return true
         }
-        if started {
-            post(episodeUUID: episodeUUID)
-        }
-        return started
+        post(episodeUUID: episodeUUID)
     }
 
     /// Records progress, notifying only when it moves by at least a whole percent.
@@ -702,14 +798,13 @@ private final class LocalTranscriptProgress: @unchecked Sendable {
     }
 
     func finish(episodeUUID: String, succeeded: Bool) {
-        let finished: Bool = lock.withLock {
-            guard current?.episodeUUID == episodeUUID else { return false }
-            current = nil
-            return true
+        lock.withLock {
+            queued.removeAll { $0 == episodeUUID }
+            if current?.episodeUUID == episodeUUID {
+                current = nil
+            }
         }
-        if finished {
-            post(episodeUUID: episodeUUID, succeeded: succeeded)
-        }
+        post(episodeUUID: episodeUUID, succeeded: succeeded)
     }
 
     private func post(episodeUUID: String, succeeded: Bool? = nil) {
@@ -719,6 +814,46 @@ private final class LocalTranscriptProgress: @unchecked Sendable {
                 userInfo[LocalTranscripts.succeededKey] = succeeded
             }
             NotificationCenter.default.post(name: LocalTranscripts.stateChangedNotification, object: nil, userInfo: userInfo)
+        }
+    }
+}
+
+// MARK: - Index
+
+/// Which episodes have a cached transcript, and of which file, kept in memory so list rows
+/// can show it without reading transcripts from disk.
+private final class LocalTranscriptIndex: @unchecked Sendable {
+    static let shared = LocalTranscriptIndex()
+
+    private let lock = NSLock()
+    private var identities: [String: String] = [:]
+    private var isLoading = false
+
+    func identity(for episodeUUID: String) -> String? {
+        lock.withLock { identities[episodeUUID] }
+    }
+
+    func record(episodeUUID: String, identity: String) {
+        lock.withLock { identities[episodeUUID] = identity }
+    }
+
+    func loadInBackground() {
+        let shouldLoad: Bool = lock.withLock {
+            guard !isLoading else { return false }
+            isLoading = true
+            return true
+        }
+        guard shouldLoad else { return }
+
+        DispatchQueue.global(qos: .utility).async {
+            let loaded = LocalTranscriptCache.allIdentities()
+            self.lock.withLock {
+                // Entries saved while loading are newer than what's on disk was read as.
+                self.identities.merge(loaded) { current, _ in current }
+            }
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: LocalTranscripts.stateChangedNotification, object: nil)
+            }
         }
     }
 }
@@ -789,6 +924,26 @@ private enum LocalTranscriptCache {
             return
         }
         try? data.write(to: fileURL, options: .atomic)
+        LocalTranscriptIndex.shared.record(episodeUUID: entry.episodeUUID, identity: entry.audioFileIdentity)
+    }
+
+    /// The cached entries' episodes and the file each was made from, without their segments.
+    static func allIdentities() -> [String: String] {
+        struct Header: Decodable {
+            let episodeUUID: String
+            let audioFileIdentity: String
+        }
+        guard let directory = try? cacheFileURL(for: "x").deletingLastPathComponent(),
+              let files = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil) else {
+            return [:]
+        }
+        var identities: [String: String] = [:]
+        for file in files where file.pathExtension == "json" {
+            guard let data = try? Data(contentsOf: file),
+                  let header = try? JSONDecoder().decode(Header.self, from: data) else { continue }
+            identities[header.episodeUUID] = header.audioFileIdentity
+        }
+        return identities
     }
 
     /// Size and modification date: a re-download, which may carry different ads, changes both.
