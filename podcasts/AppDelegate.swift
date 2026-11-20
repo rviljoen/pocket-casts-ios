@@ -48,6 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         DataManager.logger = SentryLogger()
         ServerConfig.shared.errorLogger = SentryLogger()
 
+        ServerTranscriptStatus.shared.start()
         LocalTranscriptPrefetcher.shared.start()
 
         appInstallState = appLifecycleAnalytics.checkApplicationInstalledOrUpgraded()

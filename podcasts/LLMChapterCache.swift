@@ -11,11 +11,14 @@ struct LLMChapterCache {
         case showNotes
         /// Show notes topics placed on the generated transcript's timeline.
         case transcriptAligned
+        /// Chapters made from the transcript alone, when the show notes don't list topics.
+        case transcriptGenerated
 
         fileprivate var fileSuffix: String {
             switch self {
             case .showNotes: ""
             case .transcriptAligned: "-aligned"
+            case .transcriptGenerated: "-generated"
             }
         }
     }

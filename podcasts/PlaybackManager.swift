@@ -579,6 +579,16 @@ class PlaybackManager: ServerPlaybackDelegate {
         chapterManager.chaptersFromShowNotes
     }
 
+    /// Whether the LLM made the chapters, from the show notes or a transcript.
+    var chaptersFromLLM: Bool {
+        chapterManager.chaptersOrigin.isFromLLM
+    }
+
+    /// Whether the LLM made the chapters from a transcript alone.
+    var chaptersFromTranscript: Bool {
+        chapterManager.chaptersOrigin == .llmTranscriptGenerated
+    }
+
     /// Whether the chapters are show notes topics placed on the transcript by the LLM,
     /// rather than timestamps written in the show notes.
     var chaptersFromShowNotesTopics: Bool {

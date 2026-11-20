@@ -40,6 +40,14 @@ class TranscriptManager {
     private(set) var hasGeneratedTranscripts: Bool = false
     private(set) var isDisplayingGeneratedTranscript: Bool = false
 
+    /// Posted when a transcript has loaded, with the episode's UUID under `episodeUUIDKey`,
+    /// whether it's the Pocket Casts generated one under `isGeneratedKey`, and whether it has
+    /// timings under `isTimedKey`.
+    static let transcriptLoadedNotification = Notification.Name("TranscriptManagerTranscriptLoaded")
+    static let episodeUUIDKey = "episodeUUID"
+    static let isGeneratedKey = "isGenerated"
+    static let isTimedKey = "isTimed"
+
     init(episodeUUID: String, podcastUUID: String, showCoordinator: ShowInfoCoordinating = ShowInfoCoordinator.shared) {
         self.episodeUUID = episodeUUID
         self.podcastUUID = podcastUUID
@@ -58,6 +66,11 @@ class TranscriptManager {
         while let transcript = TranscriptFormat.bestTranscript(from: transcriptsAvailable) {
             do {
                 let model = try await loadTranscript(transcript)
+                NotificationCenter.default.post(name: Self.transcriptLoadedNotification, object: nil, userInfo: [
+                    Self.episodeUUIDKey: episodeUUID,
+                    Self.isGeneratedKey: isDisplayingGeneratedTranscript,
+                    Self.isTimedKey: !model.cues.isEmpty
+                ])
                 return model
             } catch TranscriptError.empty, TranscriptError.failedToParse {
                 transcriptsAvailable.removeAll { other in

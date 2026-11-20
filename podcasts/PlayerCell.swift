@@ -11,6 +11,7 @@ class PlayerCell: ThemeableSwipeCell {
             dayName.themeOverride = themeOverride
             dividerView.themeOverride = themeOverride
             starIndicator?.image = PlayerCell.starIndicatorImage(for: themeOverride ?? Theme.shared.activeTheme)
+            localTranscriptIndicator?.themeOverride = themeOverride
         }
     }
 
@@ -109,8 +110,12 @@ class PlayerCell: ThemeableSwipeCell {
         NotificationCenter.default.addObserver(self, selector: #selector(updateCellForDownloadStatusChange(_:)), name: Constants.Notifications.episodeDownloadStatusChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateCellForStarredChange(_:)), name: Constants.Notifications.episodeStarredChanged, object: nil)
 
+        localTranscriptIndicator = LocalTranscriptIndicatorView.insert(after: downloadedIndicator)
         updateSize()
     }
+
+    /// Shows when the episode has an on-device transcript, after the downloaded icon.
+    private var localTranscriptIndicator: LocalTranscriptIndicatorView?
 
     override func addSubview(_ view: UIView) {
         super.addSubview(view)
@@ -145,6 +150,8 @@ class PlayerCell: ThemeableSwipeCell {
         }
         updateDownloadStatus()
         updateStarStatus()
+        localTranscriptIndicator?.themeOverride = themeOverride
+        localTranscriptIndicator?.episode = episode
 
         EpisodeDateHelper.setDate(episode: episode, on: dayName, tintColor: ThemeColor.primaryText01(for: themeOverride))
         accessibilityLabel = labelForAccessibility(episode: episode)
