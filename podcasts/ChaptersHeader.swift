@@ -111,7 +111,10 @@ class ChaptersHeader: UIView {
         updateButtonLabel()
         updateButtonIcon()
 
-        if PlaybackManager.shared.chaptersFromShowNotesTopics {
+        if PlaybackManager.shared.chaptersFromTranscript {
+            generatedWarningLabel.text = L10n.chaptersLlmTranscriptWarningMessage
+            generatedHeightConstraint?.isActive = false
+        } else if PlaybackManager.shared.chaptersFromShowNotesTopics {
             generatedWarningLabel.text = L10n.chaptersLlmShowNotesTopicsWarningMessage
             generatedHeightConstraint?.isActive = false
         } else if PlaybackManager.shared.chaptersFromShowNotes {

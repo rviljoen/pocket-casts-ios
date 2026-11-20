@@ -10,8 +10,12 @@ class UpNextNowPlayingCell: ThemeableCell {
             dateLabel.themeOverride = themeOverride
             timeRemainingLabel.themeOverride = themeOverride
             roundedBackgroundView.themeOverride = themeOverride
+            localTranscriptIndicator?.themeOverride = themeOverride
         }
     }
+
+    /// Shows when the episode has an on-device transcript, after the downloaded icon.
+    private var localTranscriptIndicator: LocalTranscriptIndicatorView?
 
     @IBOutlet var roundedBackgroundView: ThemeableView!
 
@@ -95,6 +99,7 @@ class UpNextNowPlayingCell: ThemeableCell {
         NotificationCenter.default.addObserver(self, selector: #selector(updateCellForDownloadStatusChange(_:)), name: Constants.Notifications.episodeDownloaded, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateCellForDownloadStatusChange(_:)), name: Constants.Notifications.episodeDownloadStatusChanged, object: nil)
 
+        localTranscriptIndicator = LocalTranscriptIndicatorView.insert(after: downloadedIndicator)
         updateSize()
     }
 
@@ -114,6 +119,8 @@ class UpNextNowPlayingCell: ThemeableCell {
         }
 
         EpisodeDateHelper.setDate(episode: episode, on: dateLabel, tintColor: ThemeColor.primaryText02(for: themeOverride))
+        localTranscriptIndicator?.themeOverride = themeOverride
+        localTranscriptIndicator?.episode = self.episode ?? episode
 
         if let dateText = dateLabel.text {
             dateLabel.accessibilityLabel = L10n.queueNowPlayingAccessibility(dateText)

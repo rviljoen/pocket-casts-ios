@@ -17,12 +17,24 @@ enum ChapterOrigin {
     /// on-device transcript of the listener's own file, made because the generated
     /// transcript didn't match it (dynamic ads).
     case llmLocalTranscriptAligned
+    /// Topics listed in the show notes without timestamps, placed by the LLM on the
+    /// podcast's own timed transcript, which matched the length of the listener's file.
+    case llmPodcastTranscriptAligned
+    /// Made by the LLM from a transcript alone, because the show notes don't list the
+    /// episode's topics. Always on the playback timeline: the transcript is an on-device one,
+    /// or the podcast's own that matches the file.
+    case llmTranscriptGenerated
     case unknown
 
     /// Whether start times are on the generated transcript's reference timeline, which
     /// dynamic ads shift, so seeking should resolve the real position by fingerprinting.
     var usesReferenceTimeline: Bool {
         self == .generated || self == .llmTranscriptAligned
+    }
+
+    /// Whether the LLM made the chapters, from the show notes, a transcript, or both.
+    var isFromLLM: Bool {
+        isFromShowNotes || self == .llmTranscriptGenerated
     }
 
     /// Whether the chapters came from the LLM reading the show notes.
@@ -33,7 +45,16 @@ enum ChapterOrigin {
     /// Whether the chapters are show notes topics the LLM placed on a transcript, rather
     /// than timestamps written in the show notes.
     var isFromShowNotesTopics: Bool {
-        self == .llmTranscriptAligned || self == .llmLocalTranscriptAligned
+        self == .llmTranscriptAligned || self == .llmLocalTranscriptAligned || self == .llmPodcastTranscriptAligned
+    }
+
+    /// The transcript topics were placed on, for the LLM debug log.
+    var transcriptDescription: String {
+        switch self {
+        case .llmLocalTranscriptAligned: "on-device"
+        case .llmPodcastTranscriptAligned: "podcast's own"
+        default: "server-generated"
+        }
     }
 
     var analyticsDescription: String {
@@ -50,6 +71,10 @@ enum ChapterOrigin {
             "llm_transcript_aligned"
         case .llmLocalTranscriptAligned:
             "llm_local_transcript_aligned"
+        case .llmPodcastTranscriptAligned:
+            "llm_podcast_transcript_aligned"
+        case .llmTranscriptGenerated:
+            "llm_transcript_generated"
         case .podcastIndex:
             "podcast_index"
         case .unknown:
@@ -293,14 +318,15 @@ class ChapterManager {
     }
 
     /// Timestamped chapters from the show notes when there are any. Otherwise, when the
-    /// show notes list the episode's topics and the server generated chapters for it, the
-    /// topics placed on the generated transcript, which replace the generated chapters.
+    /// show notes list the episode's topics, the topics placed on a timed transcript (the
+    /// podcast's own, or the generated one when the server generated chapters for it). When
+    /// they don't, chapters made from a transcript on the file's timeline alone.
     private func loadLLMChapters(for episode: BaseEpisode, duration: TimeInterval, generatedChapters: [GeneratedChapter]?) async throws -> LLMChapters? {
         let podcastUuid = episode.parentIdentifier()
-        let showNotes = try await showInfoCoordinator.loadShowNotes(podcastUuid: podcastUuid, episodeUuid: episode.uuid)
+        let showNotes = (try? await showInfoCoordinator.loadShowNotes(podcastUuid: podcastUuid, episodeUuid: episode.uuid)) ?? ""
         guard !showNotes.isEmpty, showNotes != CacheServerHandler.noShowNotesMessage else {
             FileLog.shared.addMessage("ChapterManager: no usable show notes for \(episode.uuid)")
-            return nil
+            return await transcriptChapters(for: episode, duration: duration)
         }
 
         let extraction = await LLMChapterService.shared.extractChapters(
@@ -316,32 +342,63 @@ class ChapterManager {
             return (extraction.chapters, .llmShowNotes)
         }
 
-        // Only replace generated chapters: their existence means the server has a transcript
-        // on the same reference timeline, and that AI chapters weren't turned off.
-        guard extraction.topics.count >= LLMChapterService.minimumTopicCount,
-              let generatedChapters, !generatedChapters.isEmpty else {
-            FileLog.shared.addMessage("ChapterManager [debug]: no AI chapters for \(episode.uuid): show notes have no timestamps and \(extraction.topics.count) topics (need \(LLMChapterService.minimumTopicCount)), generated chapters: \(generatedChapters?.count ?? 0)")
+        guard extraction.topics.count >= LLMChapterService.minimumTopicCount else {
+            FileLog.shared.addMessage("ChapterManager [debug]: show notes of \(episode.uuid) have no timestamps and \(extraction.topics.count) topics (need \(LLMChapterService.minimumTopicCount)), making chapters from the transcript")
+            return await transcriptChapters(for: episode, duration: duration)
+        }
+
+        // The generated transcript only replaces generated chapters: their existence means the
+        // server has a transcript on the same reference timeline, and that AI chapters weren't
+        // turned off. The podcast's own transcript needs AI chapters to be on.
+        let hasGeneratedChapters = !(generatedChapters ?? []).isEmpty
+        guard let reference = await Self.loadAlignmentReference(for: episode, includePodcasts: !Settings.disableAiChapters, includeGenerated: hasGeneratedChapters, showInfoCoordinator: showInfoCoordinator) else {
+            FileLog.shared.addMessage("ChapterManager [debug]: no timed transcript to align \(extraction.topics.count) show notes topics against (generated chapters: \(generatedChapters?.count ?? 0))")
             return nil
         }
 
-        guard let transcriptText = try await showInfoCoordinator.loadGeneratedTranscriptText(podcastUuid: podcastUuid, episodeUuid: episode.uuid),
-              let serverTranscript = TranscriptModel.makeModel(from: transcriptText, format: .vtt),
-              !serverTranscript.cues.isEmpty else {
-            FileLog.shared.addMessage("ChapterManager [debug]: no generated transcript to align \(extraction.topics.count) show notes topics against")
+        guard case let (transcript, origin)? = transcriptForAlignment(reference, episode: episode, duration: duration) else {
             return nil
         }
-
-        let (transcript, origin) = transcriptForAlignment(serverTranscript: serverTranscript, episode: episode, duration: duration)
         let aligned = await LLMChapterService.shared.alignTopics(
             episodeUUID: episode.uuid,
             topics: extraction.topics,
             topicsInOrder: extraction.topicsInOrder,
             transcript: transcript,
-            transcriptSource: origin == .llmLocalTranscriptAligned ? "on-device" : "server-generated",
+            transcriptSource: origin.transcriptDescription,
             episodeTitle: episode.title,
             duration: duration
         )
         return aligned.isEmpty ? nil : (aligned, origin)
+    }
+
+    /// Chapters made from the episode's transcript alone, for show notes that don't list its
+    /// topics. Only from a transcript on the file's timeline: the podcast's own that matches
+    /// the file, or an on-device one. When there's only the generated transcript and it
+    /// matches, the server's generated chapters are already made from it. While an on-device
+    /// transcript is being made, there are none, and the chapters reload once it's ready.
+    private func transcriptChapters(for episode: BaseEpisode, duration: TimeInterval) async -> LLMChapters? {
+        guard !Settings.disableAiChapters else { return nil }
+        let audioDuration = duration > 0 ? duration : episode.duration
+        guard audioDuration >= LLMChapterService.minimumGenerationDuration else {
+            FileLog.shared.addMessage("ChapterManager [debug]: \(episode.uuid) is too short to make chapters from its transcript (\(Int(audioDuration))s)")
+            return nil
+        }
+
+        guard let reference = await Self.loadAlignmentReference(for: episode, showInfoCoordinator: showInfoCoordinator),
+              case let (transcript, origin)? = transcriptForAlignment(reference, episode: episode, duration: duration),
+              origin != .llmTranscriptAligned else {
+            FileLog.shared.addMessage("ChapterManager [debug]: no transcript on the timeline of \(episode.uuid)'s file to make chapters from")
+            return nil
+        }
+
+        let chapters = await LLMChapterService.shared.generateChapters(
+            episodeUUID: episode.uuid,
+            transcript: transcript,
+            transcriptSource: origin.transcriptDescription,
+            episodeTitle: episode.title,
+            duration: duration
+        )
+        return chapters.isEmpty ? nil : (chapters, .llmTranscriptGenerated)
     }
 
     /// Show notes timestamps are for the episode without dynamically inserted ads. When the
@@ -350,21 +407,21 @@ class ChapterManager {
     /// chapters are placed again on an on-device transcript of the file, by title with the
     /// timestamps as hints, which also finds the ads.
     ///
-    /// Returns nil to keep the show notes timestamps: when the file matches the generated
-    /// transcript, when there's no generated transcript to compare with, or while the
-    /// on-device transcript is being made (the chapters reload once it's ready).
+    /// Returns nil to keep the show notes timestamps: when the file matches the podcast's own
+    /// timed transcript or the generated one, when there's neither to compare with, or while
+    /// the on-device transcript is being made (the chapters reload once it's ready).
     private func realignShowNotesChapters(_ chapters: [ChapterInfo], for episode: BaseEpisode, duration: TimeInterval) async -> LLMChapters? {
         guard chapters.count >= LLMChapterService.minimumTopicCount else { return nil }
 
-        guard let transcriptText = try? await showInfoCoordinator.loadGeneratedTranscriptText(podcastUuid: episode.parentIdentifier(), episodeUuid: episode.uuid),
-              let serverTranscript = TranscriptModel.makeModel(from: transcriptText, format: .vtt),
-              !serverTranscript.cues.isEmpty else {
-            FileLog.shared.addMessage("ChapterManager [debug]: no generated transcript to check \(episode.uuid)'s show notes timestamps for inserted ads")
+        guard let reference = await Self.loadAlignmentReference(for: episode, showInfoCoordinator: showInfoCoordinator) else {
+            FileLog.shared.addMessage("ChapterManager [debug]: no timed transcript to check \(episode.uuid)'s show notes timestamps for inserted ads")
             return nil
         }
 
-        let (transcript, origin) = transcriptForAlignment(serverTranscript: serverTranscript, episode: episode, duration: duration)
-        guard origin == .llmLocalTranscriptAligned else { return nil }
+        guard case let (transcript, origin)? = transcriptForAlignment(reference, episode: episode, duration: duration),
+              origin == .llmLocalTranscriptAligned else {
+            return nil
+        }
 
         FileLog.shared.addMessage("ChapterManager [debug]: placing \(chapters.count) show notes chapters on the on-device transcript of \(episode.uuid)")
         let aligned = await LLMChapterService.shared.alignTopics(
@@ -379,15 +436,68 @@ class ChapterManager {
         return aligned.isEmpty ? nil : (aligned, .llmLocalTranscriptAligned)
     }
 
-    /// The transcript to place show notes topics on. The generated transcript is made from a
-    /// reference copy of the audio without dynamically inserted ads; when the listener's file
-    /// is a different length, it has them, and the generated transcript's times drift from
-    /// it. Then an on-device transcript of the file is used instead, once one exists: until
-    /// then the generated one is used, and a transcription starts in the background that
-    /// reloads the chapters when it finishes.
-    private func transcriptForAlignment(serverTranscript: TranscriptModel, episode: BaseEpisode, duration: TimeInterval) -> (TranscriptModel, ChapterOrigin) {
+    /// A timed transcript of the episode to place show notes topics on, or to compare with
+    /// the file's length to find inserted ads.
+    struct AlignmentReference {
+        enum Kind {
+            /// The podcast's own, from its feed: cued against the publisher's audio.
+            case podcast
+            /// Generated by Pocket Casts from a reference copy of the audio.
+            case generated
+        }
+
+        let transcript: TranscriptModel
+        let kind: Kind
+    }
+
+    /// The podcast's own timed transcript, which is the one the transcript view shows, or
+    /// else the Pocket Casts generated one. Either is cued against audio without dynamically
+    /// inserted ads.
+    static func loadAlignmentReference(for episode: BaseEpisode,
+                                       includePodcasts: Bool = true,
+                                       includeGenerated: Bool = true,
+                                       showInfoCoordinator: ShowInfoCoordinating = ShowInfoCoordinator.shared) async -> AlignmentReference? {
+        let podcastUuid = episode.parentIdentifier()
+
+        if includePodcasts {
+            let manager = TranscriptManager(episodeUUID: episode.uuid, podcastUUID: podcastUuid, showCoordinator: showInfoCoordinator)
+            if let transcript = try? await manager.loadTranscript(),
+               !manager.isDisplayingGeneratedTranscript,
+               !transcript.cues.isEmpty {
+                return AlignmentReference(transcript: transcript, kind: .podcast)
+            }
+        }
+
+        guard includeGenerated,
+              let transcriptText = try? await showInfoCoordinator.loadGeneratedTranscriptText(podcastUuid: podcastUuid, episodeUuid: episode.uuid),
+              let transcript = TranscriptModel.makeModel(from: transcriptText, format: .vtt),
+              !transcript.cues.isEmpty else {
+            return nil
+        }
+        return AlignmentReference(transcript: transcript, kind: .generated)
+    }
+
+    /// The transcript to place show notes topics on, and the origin of chapters placed on it.
+    /// The reference transcript is cued against audio without dynamically inserted ads; when
+    /// the listener's file is a different length, it has them, and the reference's times
+    /// drift from it. Then an on-device transcript of the file is used instead, once one
+    /// exists, and until then a transcription starts in the background that reloads the
+    /// chapters when it finishes. Meanwhile:
+    /// - A generated transcript is used as it is: seeking maps its times onto the file by
+    ///   fingerprinting.
+    /// - A podcast's transcript can't be mapped, so this returns nil and there are no AI
+    ///   chapters until the on-device transcript is ready.
+    private func transcriptForAlignment(_ reference: AlignmentReference, episode: BaseEpisode, duration: TimeInterval) -> (TranscriptModel, ChapterOrigin)? {
         let audioDuration = duration > 0 ? duration : episode.duration
-        let source = LocalTranscripts.source(replacing: serverTranscript, for: episode, audioDuration: audioDuration) { [weak self] succeeded in
+        let referenceName = reference.kind == .podcast ? "podcast's transcript" : "generated transcript"
+
+        if reference.kind == .podcast,
+           !LocalTranscripts.isOutOfSync(serverTranscript: reference.transcript, audioDuration: audioDuration) {
+            FileLog.shared.addMessage("ChapterManager [debug]: podcast's transcript matches the audio of \(episode.uuid), placing topics on it")
+            return (reference.transcript, .llmPodcastTranscriptAligned)
+        }
+
+        let source = LocalTranscripts.source(replacing: reference.transcript, for: episode, audioDuration: audioDuration) { [weak self] succeeded in
             guard succeeded else { return }
             DispatchQueue.main.async {
                 // Reload only if the listener is still on this episode.
@@ -398,14 +508,18 @@ class ChapterManager {
         }
 
         switch source {
-        case .server:
-            return (serverTranscript, .llmTranscriptAligned)
         case .local(let localTranscript):
-            FileLog.shared.addMessage("ChapterManager [debug]: generated transcript doesn't match the audio, using the on-device transcript for \(episode.uuid)")
+            FileLog.shared.addMessage("ChapterManager [debug]: \(referenceName) doesn't match the audio, using the on-device transcript for \(episode.uuid)")
             return (localTranscript, .llmLocalTranscriptAligned)
-        case .transcribing:
-            FileLog.shared.addMessage("ChapterManager [debug]: generated transcript doesn't match the audio, transcribing \(episode.uuid) on device")
-            return (serverTranscript, .llmTranscriptAligned)
+        case .server, .transcribing:
+            if case .transcribing = source {
+                FileLog.shared.addMessage("ChapterManager [debug]: \(referenceName) doesn't match the audio, transcribing \(episode.uuid) on device")
+            }
+            guard reference.kind == .generated else {
+                FileLog.shared.addMessage("ChapterManager [debug]: no transcript on the timeline of \(episode.uuid)'s file to place topics on yet")
+                return nil
+            }
+            return (reference.transcript, .llmTranscriptAligned)
         }
     }
     #endif

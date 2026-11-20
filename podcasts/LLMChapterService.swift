@@ -166,7 +166,11 @@ actor LLMChapterService {
     - If a topic isn't discussed, or you can't locate where it begins with reasonable confidence, leave it out rather than guessing.
     - Each topic appears at most once.
     - A topic may end with "(show notes time H:MM:SS)": where the show notes say it starts, in a version of the episode that can differ from this transcript (inserted ads shift everything after them). Use it as a hint to find the right place, but go by where the transcript shows the topic begins, and leave the time out of the title.
+    """ + "\n\n" + transcriptRules
 
+    /// How to read the music lines in a condensed transcript, and how to list its ads. Shared by
+    /// the alignment and generation prompts.
+    private static let transcriptRules = """
     Music:
     - The transcript may contain lines marking music detected in the audio, with how sure the detection is:
       - "[0:12:41] [music until 0:12:47, confidence 62%]": music in its own right, possibly with someone talking over it, like a show's intro, a jingle between segments, or a sting going into or out of an ad break.
@@ -203,24 +207,26 @@ actor LLMChapterService {
                     "additionalProperties": false
                 ]
             ],
-            "ads": [
-                "type": "array",
-                "items": [
-                    "type": "object",
-                    "properties": [
-                        "start_time": ["type": "string"],
-                        "start_quote": ["type": "string"],
-                        "end_time": ["anyOf": [["type": "string"], ["type": "null"]]],
-                        "end_quote": ["anyOf": [["type": "string"], ["type": "null"]]],
-                        "sponsor": ["anyOf": [["type": "string"], ["type": "null"]]]
-                    ],
-                    "required": ["start_time", "start_quote", "end_time", "end_quote", "sponsor"],
-                    "additionalProperties": false
-                ]
-            ]
+            "ads": adsSchema
         ],
         "required": ["chapters", "ads"],
         "additionalProperties": false
+    ]
+
+    private static let adsSchema: [String: Any] = [
+        "type": "array",
+        "items": [
+            "type": "object",
+            "properties": [
+                "start_time": ["type": "string"],
+                "start_quote": ["type": "string"],
+                "end_time": ["anyOf": [["type": "string"], ["type": "null"]]],
+                "end_quote": ["anyOf": [["type": "string"], ["type": "null"]]],
+                "sponsor": ["anyOf": [["type": "string"], ["type": "null"]]]
+            ],
+            "required": ["start_time", "start_quote", "end_time", "end_quote", "sponsor"],
+            "additionalProperties": false
+        ]
     ]
 
     private struct AlignmentOutput: Decodable {
@@ -257,6 +263,69 @@ actor LLMChapterService {
 
         let chapters: [Chapter]
         let ads: [Ad]
+    }
+
+    // MARK: - Transcript chapters
+
+    /// Bump when `generationPrompt`, `generationSchema` or the transcript formatting changes.
+    private static let generationPromptVersion = 1
+
+    /// Episodes shorter than this don't get chapters made from their transcript.
+    static let minimumGenerationDuration: TimeInterval = 10 * 60
+
+    private static let generationPrompt = """
+    You divide a podcast episode into chapters. You are given a transcript of the episode in which every line starts with a [H:MM:SS] timestamp.
+
+    Split the episode into chapters at the main changes of topic, and return them in order. For each chapter:
+    - "start_time": the timestamp of the transcript line where the chapter begins, copied exactly as written without the brackets
+    - "start_quote": the first 5 to 8 words of the chapter, copied exactly from the transcript, including any transcription mistakes
+    - "title": a short, specific title for what's discussed (for example "Why the enterprise roadmap was scrapped", not "Discussion" or "Part 2"), in the episode's language
+
+    Rules:
+    - Aim for chapters of about 4 to 10 minutes. A segment that stands on its own, like a listener question, can be shorter, but don't split one conversation thread into pieces.
+    - The first chapter starts at the beginning and covers the introduction; title it for what it introduces, or "Intro" if it's only a greeting.
+    - A chapter starts where the topic itself is introduced, not at an ad break, sponsor read, or housekeeping that comes before it.
+    - Ads are not chapters: list them in "ads" instead, and don't start a chapter at one.
+    - The transcript may misspell names; spell the guest's and other names as in the episode title.
+    """ + "\n\n" + transcriptRules
+
+    private static let generationSchema: [String: Any] = [
+        "type": "object",
+        "properties": [
+            "chapters": [
+                "type": "array",
+                "items": [
+                    "type": "object",
+                    "properties": [
+                        "start_time": ["type": "string"],
+                        "start_quote": ["type": "string"],
+                        "title": ["type": "string"]
+                    ],
+                    "required": ["start_time", "start_quote", "title"],
+                    "additionalProperties": false
+                ]
+            ],
+            "ads": adsSchema
+        ],
+        "required": ["chapters", "ads"],
+        "additionalProperties": false
+    ]
+
+    private struct GenerationOutput: Decodable {
+        struct Chapter: Decodable {
+            let startTime: String
+            let startQuote: String?
+            let title: String
+
+            enum CodingKeys: String, CodingKey {
+                case startTime = "start_time"
+                case startQuote = "start_quote"
+                case title
+            }
+        }
+
+        let chapters: [Chapter]
+        let ads: [AlignmentOutput.Ad]
     }
 
     /// One line of the condensed transcript sent for alignment.
@@ -413,16 +482,73 @@ actor LLMChapterService {
             return []
         }
 
+        return place(output.chapters, ads: output.ads, topicCount: topics.count, inOrder: topicsInOrder, lines: lines, transcript: transcript, duration: duration, summary: "aligned", from: "\(topics.count) topics")
+    }
+
+    /// Chapters made from `transcript` alone, for an episode whose show notes don't list its
+    /// topics: the model splits it at the main changes of topic and finds its ads. Returns
+    /// nothing when it fails or too few chapters can be placed. `transcript` should be on the
+    /// playback timeline (an on-device transcript, or a podcast's own that matches the file).
+    func generateChapters(episodeUUID: String, transcript: TranscriptModel, transcriptSource: String, episodeTitle: String?, duration: TimeInterval) async -> [ChapterInfo] {
+        let lines = Self.condense(transcript)
+        guard !lines.isEmpty else {
+            FileLog.shared.addMessage("LLMChapterService: transcript for \(episodeUUID) has no timed lines to make chapters from")
+            return []
+        }
+
+        let transcriptText = lines.map { "[\(Self.timestamp($0.startTime))] \($0.text)" }.joined(separator: "\n")
+        guard transcriptText.count <= Self.maxTranscriptCharacters else {
+            FileLog.shared.addMessage("LLMChapterService: transcript for \(episodeUUID) is too long to make chapters from (\(transcriptText.count) characters)")
+            return []
+        }
+
+        let key = LLMChapterCache.Key(
+            episodeUUID: episodeUUID,
+            kind: .transcriptGenerated,
+            model: Settings.llmChapterModel,
+            version: Self.generationPromptVersion,
+            inputs: [episodeTitle ?? "", transcriptText]
+        )
+
+        Self.debugLog("""
+            making chapters for \(episodeUUID) "\(episodeTitle ?? "")" with \(key.model) from the \(transcriptSource) transcript: \
+            \(transcript.cues.count) cues condensed to \(lines.count) lines with \(transcript.music.count) music markers (\(transcriptText.count) characters), \
+            episode duration \(duration > 0 ? Self.timestamp(duration) : "unknown")
+            """)
+        Self.debugLog("transcript sent", body: transcriptText)
+
+        let entry = await cachedRequest(key) { apiKey in
+            let (_, rawResponse) = try await self.requestGeneration(apiKey: apiKey, model: key.model, transcriptText: transcriptText, episodeTitle: episodeTitle)
+            return LLMChapterCache.Entry(key: key, chapters: [], rawResponse: rawResponse)
+        }
+
+        guard let rawResponse = entry?.rawResponse else { return [] }
+        Self.debugLog("model response", body: rawResponse)
+        guard let output = try? JSONDecoder().decode(GenerationOutput.self, from: Data(rawResponse.utf8)) else {
+            FileLog.shared.addMessage("LLMChapterService: cached chapters response for \(episodeUUID) doesn't decode")
+            return []
+        }
+
+        // Placed like topics listed in this order, so a chapter placed out of order is dropped.
+        let chapters = output.chapters.enumerated().map { index, chapter in
+            AlignmentOutput.Chapter(topicIndex: index, startTime: chapter.startTime, startQuote: chapter.startQuote, title: chapter.title)
+        }
+        return place(chapters, ads: output.ads, topicCount: chapters.count, inOrder: true, lines: lines, transcript: transcript, duration: duration, summary: "made", from: "the transcript")
+    }
+
+    /// Places the model's chapters and ads on the transcript's text and turns them into
+    /// chapters, logging how it went.
+    private func place(_ placed: [AlignmentOutput.Chapter], ads modelAds: [AlignmentOutput.Ad], topicCount: Int, inOrder: Bool, lines: [TranscriptLine], transcript: TranscriptModel, duration: TimeInterval, summary: String, from source: String) -> [ChapterInfo] {
         let lineStarts = lines.filter { !$0.isMarker }.map(\.startTime)
         let quotes = QuoteLocator(transcript: transcript)
-        let topicChapters = Self.placeTopics(output.chapters, topicCount: topics.count, inOrder: topicsInOrder, lineStarts: lineStarts, quotes: quotes)
+        let topicChapters = Self.placeTopics(placed, topicCount: topicCount, inOrder: inOrder, lineStarts: lineStarts, quotes: quotes)
         // Ads only make sense around topics that were placed; without them, fall back entirely.
-        let ads = topicChapters.isEmpty ? [] : Self.placeAds(output.ads, lineStarts: lineStarts, quotes: quotes)
-        if topicChapters.isEmpty, !output.ads.isEmpty {
-            Self.debugLog("ignoring \(output.ads.count) ads because no topic chapters survived")
+        let ads = topicChapters.isEmpty ? [] : Self.placeAds(modelAds, lineStarts: lineStarts, quotes: quotes)
+        if topicChapters.isEmpty, !modelAds.isEmpty {
+            Self.debugLog("ignoring \(modelAds.count) ads because no topic chapters survived")
         }
         let chapters = Self.removeShortChapters(Self.insertAds(ads, into: topicChapters))
-        FileLog.shared.addMessage("LLMChapterService: aligned \(topicChapters.count) chapters from \(topics.count) topics (model returned \(output.chapters.count)) with \(ads.count) ad chapters from \(output.ads.count) ads")
+        FileLog.shared.addMessage("LLMChapterService: \(summary) \(topicChapters.count) chapters from \(source) (model returned \(placed.count)) with \(ads.count) ad chapters from \(modelAds.count) ads")
         Self.debugLog("final chapters", body: chapters.map { "\(Self.timestamp($0.startTime))  \($0.title)" }.joined(separator: "\n"))
         return convert(chapters, episodeDuration: duration)
     }
@@ -524,6 +650,24 @@ actor LLMChapterService {
             system: Self.alignmentPrompt,
             user: userParts.joined(separator: "\n\n"),
             schema: Self.alignmentSchema,
+            effort: "medium",
+            timeout: 180
+        )
+    }
+
+    private func requestGeneration(apiKey: String, model: String, transcriptText: String, episodeTitle: String?) async throws -> (output: GenerationOutput, rawText: String) {
+        var userParts: [String] = []
+        if let episodeTitle {
+            userParts.append("Episode: \(episodeTitle)")
+        }
+        userParts.append("Transcript:\n\(transcriptText)")
+
+        return try await sendMessage(
+            apiKey: apiKey,
+            model: model,
+            system: Self.generationPrompt,
+            user: userParts.joined(separator: "\n\n"),
+            schema: Self.generationSchema,
             effort: "medium",
             timeout: 180
         )

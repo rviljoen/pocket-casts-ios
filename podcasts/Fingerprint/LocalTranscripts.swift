@@ -94,7 +94,8 @@ enum LocalTranscripts {
         case transcribing
     }
 
-    /// Picks the transcript to use instead of `serverTranscript` (a generated transcript).
+    /// Picks the transcript to use instead of `serverTranscript` (a generated transcript, or
+    /// a podcast's timed one, which is also cued against audio without inserted ads).
     /// When it doesn't match the audio and there's no cached on-device transcript yet, queues
     /// one, and calls `completion` once it's done with whether it succeeded. Progress is
     /// reported with `stateChangedNotification`.

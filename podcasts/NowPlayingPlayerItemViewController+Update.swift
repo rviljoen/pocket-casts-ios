@@ -291,7 +291,7 @@ extension NowPlayingPlayerItemViewController {
         let base = L10n.playerChapterCount(index.localized(), PlaybackManager.shared.chapterCount().localized())
         let result = NSMutableAttributedString(string: base)
 
-        guard PlaybackManager.shared.chaptersFromShowNotes,
+        guard PlaybackManager.shared.chaptersFromLLM,
               let sparklesImage = UIImage(systemName: "sparkles") else {
             return result
         }
