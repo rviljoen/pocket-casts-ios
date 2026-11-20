@@ -4,9 +4,10 @@ import UIKit
 /// A small icon for episode rows showing where the episode's transcript comes from:
 /// - Green: made on this device, because its file has dynamically inserted ads. An outline
 ///   while it's queued or being made, filled once it's done.
-/// - Blue: a transcript from the server. Filled once one is downloaded: the podcast's own
-///   (a text page icon when it's untimed text), or the Pocket Casts generated one. An outline
-///   while a generated one is on the server but not downloaded yet (or downloading).
+/// - Purple: the podcast's own transcript, from its feed, once downloaded. A text bubble when
+///   it's untimed text.
+/// - Blue: the Pocket Casts generated transcript. An outline while it's on the server (or
+///   downloading), filled once it's downloaded.
 /// - Grey: the server hasn't generated one yet.
 ///
 /// Hidden when there's nothing to show. Keeps itself up to date as transcripts change.
@@ -74,7 +75,7 @@ final class LocalTranscriptIndicatorView: UIImageView {
         let server = ServerTranscriptStatus.shared
         switch server.state(for: episode) {
         case .podcast(let isTimed)?:
-            return (.systemBlue, isTimed ? filled : text)
+            return (.systemPurple, isTimed ? filled : text)
         case .downloaded? where !server.isLoading(episode.uuid):
             return (.systemBlue, filled)
         case .downloaded?, .available?:
