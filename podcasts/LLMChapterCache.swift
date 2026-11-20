@@ -13,12 +13,15 @@ struct LLMChapterCache {
         case transcriptAligned
         /// Chapters made from the transcript alone, when the show notes don't list topics.
         case transcriptGenerated
+        /// Ads found in the transcript, added to show notes chapters that don't mark them.
+        case transcriptAds
 
         fileprivate var fileSuffix: String {
             switch self {
             case .showNotes: ""
             case .transcriptAligned: "-aligned"
             case .transcriptGenerated: "-generated"
+            case .transcriptAds: "-ads"
             }
         }
     }

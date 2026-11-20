@@ -113,8 +113,9 @@ LLM chapter origins (`ChapterOrigin`):
 | Show notes extraction | Low | `showNotesPromptVersion` |
 | Topic placement | Medium | `alignmentPromptVersion` |
 | Transcript chapters | Medium | `generationPromptVersion` |
+| Ads only | Medium | `adsPromptVersion` |
 
-- **Cache** (`LLMChapterCache`): one file per episode per kind in `Application Support/PocketCasts/LLMChapters/`. The file suffixes are none (show notes), `-aligned` and `-generated`.
+- **Cache** (`LLMChapterCache`): one file per episode per kind in `Application Support/PocketCasts/LLMChapters/`. The file suffixes are none (show notes), `-aligned`, `-generated` and `-ads`.
   - The key hashes the model, the prompt version and the inputs, so a change to any of them makes a new request.
   - Only the model's raw response is cached. Turning it into chapters happens on every load, so tuning the placement code takes effect without new requests.
   - A failed request isn't retried for 10 minutes.
@@ -125,7 +126,10 @@ LLM chapter origins (`ChapterOrigin`):
 - **Timestamped chapters**, when the notes have timestamps. These ignore links, so a show with several links per story doesn't get a chapter for each link.
 - **An untimed topic list**, when they don't. It's taken from numbered or bulleted topics, or from a prose summary. `topicsInOrder` is false for prose, since a summary may not follow the episode's order.
 
-**Timestamped chapters, with DAI** (`realignShowNotesChapters`): show notes timestamps are for the publisher's audio. When the file's length doesn't match the reference transcript (2.4), the file has inserted ads. The chapters are then placed again on the on-device transcript, by title, with the original timestamps as hints. This also finds the ads.
+**Timestamped chapters** (`realignShowNotesChapters`): show notes timestamps are for the publisher's audio, and the show notes rarely list the ads. What happens depends on the reference transcript (2.4):
+- **The file's length differs (inserted ads):** the chapters are placed again on the on-device transcript, by title, with the original timestamps as hints. This also finds the ads. It needs at least 3 chapters.
+- **The podcast's own timed transcript matches the file:** the timestamps are right, so they stay. An **ads-only request** (`addAds`) finds the ads built into the episode in that transcript. They're added as `AD:` chapters with the same placement code. A show notes chapter starting less than 30 seconds after an ad moves to the ad's end, and only the slivers between back-to-back ads are removed; short show notes chapters are kept.
+- **Only the generated transcript matches:** the timestamps stay, with no ads. The generated transcript is on the reference timeline, so ad times from it could be a few seconds off from the show notes' playback times.
 
 **Topics** (`alignTopics`): needs at least `minimumTopicCount` (3) topics.
 1. The condensed transcript and the numbered topics go to the model. The transcript is merged into lines of about 10 seconds, each starting with `[H:MM:SS]`, with music marker lines when available.

@@ -402,24 +402,44 @@ class ChapterManager {
     }
 
     /// Show notes timestamps are for the episode without dynamically inserted ads. When the
-    /// listener's file has them (the generated transcript is a different length from it),
+    /// listener's file has them (the reference transcript is a different length from it),
     /// every timestamp after an inserted ad is early, and the ads aren't chapters. Then the
     /// chapters are placed again on an on-device transcript of the file, by title with the
     /// timestamps as hints, which also finds the ads.
     ///
-    /// Returns nil to keep the show notes timestamps: when the file matches the podcast's own
-    /// timed transcript or the generated one, when there's neither to compare with, or while
-    /// the on-device transcript is being made (the chapters reload once it's ready).
+    /// When the file matches the podcast's own timed transcript, the timestamps are right, but
+    /// the ads built into the episode aren't chapters either: they're found in that transcript
+    /// and added, leaving the show notes chapters where they are.
+    ///
+    /// Returns nil to keep the show notes timestamps as they are: when the file matches the
+    /// generated transcript, when there's no timed transcript to compare with, or while the
+    /// on-device transcript is being made (the chapters reload once it's ready).
     private func realignShowNotesChapters(_ chapters: [ChapterInfo], for episode: BaseEpisode, duration: TimeInterval) async -> LLMChapters? {
-        guard chapters.count >= LLMChapterService.minimumTopicCount else { return nil }
-
         guard let reference = await Self.loadAlignmentReference(for: episode, showInfoCoordinator: showInfoCoordinator) else {
             FileLog.shared.addMessage("ChapterManager [debug]: no timed transcript to check \(episode.uuid)'s show notes timestamps for inserted ads")
             return nil
         }
 
-        guard case let (transcript, origin)? = transcriptForAlignment(reference, episode: episode, duration: duration),
-              origin == .llmLocalTranscriptAligned else {
+        guard case let (transcript, origin)? = transcriptForAlignment(reference, episode: episode, duration: duration) else {
+            return nil
+        }
+
+        if origin == .llmPodcastTranscriptAligned {
+            guard !Settings.disableAiChapters else { return nil }
+            FileLog.shared.addMessage("ChapterManager [debug]: finding the ads in the podcast's transcript of \(episode.uuid) to add to its \(chapters.count) show notes chapters")
+            let withAds = await LLMChapterService.shared.addAds(
+                to: chapters,
+                episodeUUID: episode.uuid,
+                transcript: transcript,
+                transcriptSource: origin.transcriptDescription,
+                episodeTitle: episode.title,
+                duration: duration
+            )
+            return (withAds, .llmShowNotes)
+        }
+
+        guard origin == .llmLocalTranscriptAligned,
+              chapters.count >= LLMChapterService.minimumTopicCount else {
             return nil
         }
 
@@ -493,7 +513,7 @@ class ChapterManager {
 
         if reference.kind == .podcast,
            !LocalTranscripts.isOutOfSync(serverTranscript: reference.transcript, audioDuration: audioDuration) {
-            FileLog.shared.addMessage("ChapterManager [debug]: podcast's transcript matches the audio of \(episode.uuid), placing topics on it")
+            FileLog.shared.addMessage("ChapterManager [debug]: podcast's transcript matches the audio of \(episode.uuid), using it")
             return (reference.transcript, .llmPodcastTranscriptAligned)
         }
 
