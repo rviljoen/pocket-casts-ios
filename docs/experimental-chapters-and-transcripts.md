@@ -160,7 +160,7 @@ LLM chapter origins (`ChapterOrigin`):
 `ChapterManager.transcriptChapters` and `LLMChapterService.generateChapters` run when the show notes have no timestamps and fewer than 3 topics, or aren't usable at all. They also require:
 - the episode to be at least 10 minutes long;
 - AI chapters to be on;
-- a transcript **on the playback timeline**: the podcast's own that matches the file, or an on-device one. When only the generated transcript is available and it matches, the server's generated chapters already come from it, so no request is made.
+- a transcript **on the playback timeline**: the podcast's own that matches the file, or an on-device one. The on-device one may also be made because the episode has no transcript at all (2.6). When only the generated transcript is available and it matches, the server's generated chapters already come from it, so no request is made.
 
 The model splits the episode at the main changes of topic, aiming for 4 to 10 minute chapters with specific titles, and lists the ads. Placement is the same as for topics (2.3). The music and ad rules in the prompt are shared word for word with topic placement (`transcriptRules`).
 
@@ -173,6 +173,12 @@ These fix DAI: a transcript made from the listener's own file is on the playback
   - `.server` when the lengths match, or the file can't be transcribed;
   - `.local(model)` when a cached on-device transcript exists;
   - `.transcribing` after queuing a transcription.
+- **No transcript at all:** when an episode has neither the podcast's transcript nor a generated one, there's no length to compare with, so it can't be checked for inserted ads. It's transcribed anyway, but only once it's wanted, with `LocalTranscripts.onDeviceSource`. It isn't transcribed on download, because the server often generates a transcript later. Three places start it, and all share the same queued job:
+  - `LocalTranscriptPrefetcher` when the episode starts playing (`Constants.Notifications.playbackStarted`, once per episode);
+  - `ChapterManager` when it needs a transcript for chapters (2.5, or topic placement), which then reloads the chapters when the transcription is done. Precomputing never starts one;
+  - the transcript view, which shows progress in place of the "no transcript" message, then loads the transcript (2.8).
+
+  If the server generates a transcript later and it matches the file, it's used, and the on-device one is left unused.
 - **Queue:** `LocalTranscriber` is an actor that runs one job at a time. Urgent jobs (the episode is playing, or its transcript is open) go to the front; prefetch jobs go to the back. A completion handler fires when a job finishes, which is how chapters and the transcript view reload.
 - **Music detection** (`MusicDetector`, SoundAnalysis `SNClassifySoundRequest`, 1.5-second windows): this takes about 10% of the progress bar. It finds two kinds of music:
   - **Music:** jingles, intros and stings, from a smoothed confidence.
@@ -192,6 +198,8 @@ Started from `AppDelegate`, it observes `Constants.Notifications.episodeDownload
    - **Lengths differ:** queue an on-device transcription, then precompute the chapters when it finishes.
    - **Already transcribed:** precompute the chapters.
 3. To precompute chapters, it calls `ChapterManager().precomputeLLMChapters` on a throwaway `ChapterManager`. That makes and caches the AI requests without touching what's playing. It's skipped when the file or feed has its own chapters.
+
+An episode with no transcript at all isn't transcribed here: that waits until it starts playing (2.6).
 
 This only runs while the app is running. With the audio background mode, that includes the background while something is playing. A transcription that's cut short is picked up again when the episode plays.
 
@@ -290,5 +298,6 @@ Everything logs to `FileLog`. Useful prefixes:
 - **iOS 26:** on-device transcripts need iOS 26 and a downloaded (or fully stream-cached) file. They only run while the app is running.
 - **Length check:** the 45-second check catches inserted ads, but not ads swapped for ones of about the same length.
 - **Grey icon:** `hasGeneratedTranscript == false` can't tell "not generated yet" from "never will be".
+- **No transcript at all:** these are transcribed on device when played, whether or not the file has inserted ads, since there's nothing to compare with. Show notes with timestamps aren't moved onto that transcript, because it can't tell whether they're off. Offline, an episode can look as if it has no transcript, so it's transcribed.
 - **Podcast transcripts in the rows:** the episode row icon only knows about a podcast transcript once one has been downloaded.
 - **Web pages:** show notes pages on the web, such as a "full show notes" link, aren't followed. That was decided against as brittle; transcript chapters (2.5) cover those episodes.

@@ -94,6 +94,8 @@ class ChapterManager {
     private var visibleChapters = [ChapterInfo]()
 
     private var lastEpisodeUuid = ""
+    /// Whether this instance is making chapters ahead of playback, not for the player.
+    private var isPrecomputing = false
 
     var currentChapters = Chapters()
 
@@ -295,6 +297,7 @@ class ChapterManager {
     /// state as it goes.
     func precomputeLLMChapters(for episode: BaseEpisode, duration: TimeInterval) async {
         let started = Date()
+        isPrecomputing = true
         let remote: (podlove: [Episode.Metadata.EpisodeChapter]?, podcastIndex: [PodcastIndexChapter]?, generated: [GeneratedChapter]?)
         do {
             remote = try await showInfoCoordinator.loadChapters(podcastUuid: episode.parentIdentifier(), episodeUuid: episode.uuid)
@@ -351,12 +354,19 @@ class ChapterManager {
         // server has a transcript on the same reference timeline, and that AI chapters weren't
         // turned off. The podcast's own transcript needs AI chapters to be on.
         let hasGeneratedChapters = !(generatedChapters ?? []).isEmpty
-        guard let reference = await Self.loadAlignmentReference(for: episode, includePodcasts: !Settings.disableAiChapters, includeGenerated: hasGeneratedChapters, showInfoCoordinator: showInfoCoordinator) else {
+        let transcript: TranscriptModel
+        let origin: ChapterOrigin
+        if let reference = await Self.loadAlignmentReference(for: episode, includePodcasts: !Settings.disableAiChapters, includeGenerated: hasGeneratedChapters, showInfoCoordinator: showInfoCoordinator) {
+            guard case let (referenceTranscript, referenceOrigin)? = transcriptForAlignment(reference, episode: episode, duration: duration) else {
+                return nil
+            }
+            transcript = referenceTranscript
+            origin = referenceOrigin
+        } else if let onDeviceTranscript = await onDeviceTranscriptWithoutServerOne(for: episode, duration: duration) {
+            transcript = onDeviceTranscript
+            origin = .llmLocalTranscriptAligned
+        } else {
             FileLog.shared.addMessage("ChapterManager [debug]: no timed transcript to align \(extraction.topics.count) show notes topics against (generated chapters: \(generatedChapters?.count ?? 0))")
-            return nil
-        }
-
-        guard case let (transcript, origin)? = transcriptForAlignment(reference, episode: episode, duration: duration) else {
             return nil
         }
         let aligned = await LLMChapterService.shared.alignTopics(
@@ -373,9 +383,10 @@ class ChapterManager {
 
     /// Chapters made from the episode's transcript alone, for show notes that don't list its
     /// topics. Only from a transcript on the file's timeline: the podcast's own that matches
-    /// the file, or an on-device one. When there's only the generated transcript and it
-    /// matches, the server's generated chapters are already made from it. While an on-device
-    /// transcript is being made, there are none, and the chapters reload once it's ready.
+    /// the file, or an on-device one (also made when the episode has no transcript at all).
+    /// When there's only the generated transcript and it matches, the server's generated
+    /// chapters are already made from it. While an on-device transcript is being made, there
+    /// are none, and the chapters reload once it's ready.
     private func transcriptChapters(for episode: BaseEpisode, duration: TimeInterval) async -> LLMChapters? {
         guard !Settings.disableAiChapters else { return nil }
         let audioDuration = duration > 0 ? duration : episode.duration
@@ -384,10 +395,21 @@ class ChapterManager {
             return nil
         }
 
-        guard let reference = await Self.loadAlignmentReference(for: episode, showInfoCoordinator: showInfoCoordinator),
-              case let (transcript, origin)? = transcriptForAlignment(reference, episode: episode, duration: duration),
-              origin != .llmTranscriptAligned else {
-            FileLog.shared.addMessage("ChapterManager [debug]: no transcript on the timeline of \(episode.uuid)'s file to make chapters from")
+        let transcript: TranscriptModel
+        let origin: ChapterOrigin
+        if let reference = await Self.loadAlignmentReference(for: episode, showInfoCoordinator: showInfoCoordinator) {
+            guard case let (referenceTranscript, referenceOrigin)? = transcriptForAlignment(reference, episode: episode, duration: duration),
+                  referenceOrigin != .llmTranscriptAligned else {
+                FileLog.shared.addMessage("ChapterManager [debug]: no transcript on the timeline of \(episode.uuid)'s file to make chapters from")
+                return nil
+            }
+            transcript = referenceTranscript
+            origin = referenceOrigin
+        } else if let onDeviceTranscript = await onDeviceTranscriptWithoutServerOne(for: episode, duration: duration) {
+            transcript = onDeviceTranscript
+            origin = .llmLocalTranscriptAligned
+        } else {
+            FileLog.shared.addMessage("ChapterManager [debug]: no timed transcript of \(episode.uuid) to make chapters from")
             return nil
         }
 
@@ -517,15 +539,7 @@ class ChapterManager {
             return (reference.transcript, .llmPodcastTranscriptAligned)
         }
 
-        let source = LocalTranscripts.source(replacing: reference.transcript, for: episode, audioDuration: audioDuration) { [weak self] succeeded in
-            guard succeeded else { return }
-            DispatchQueue.main.async {
-                // Reload only if the listener is still on this episode.
-                guard let self, self.lastEpisodeUuid == episode.uuid else { return }
-                FileLog.shared.addMessage("ChapterManager [debug]: on-device transcript ready, reloading chapters for \(episode.uuid)")
-                self.parseChapters(episode: episode, duration: audioDuration)
-            }
-        }
+        let source = LocalTranscripts.source(replacing: reference.transcript, for: episode, audioDuration: audioDuration, completion: reloadWhenTranscribed(episode, duration: audioDuration))
 
         switch source {
         case .local(let localTranscript):
@@ -540,6 +554,43 @@ class ChapterManager {
                 return nil
             }
             return (reference.transcript, .llmTranscriptAligned)
+        }
+    }
+
+    /// An on-device transcript to make the chapters from, when the episode has no transcript
+    /// at all: neither the podcast's nor a generated one. Starts one when there isn't one yet,
+    /// and the chapters reload once it's ready. Only for the episode being played, never when
+    /// precomputing: the server may still generate a transcript.
+    private func onDeviceTranscriptWithoutServerOne(for episode: BaseEpisode, duration: TimeInterval) async -> TranscriptModel? {
+        guard !isPrecomputing, !Settings.disableAiChapters, LocalTranscripts.isSupported else { return nil }
+        // Any transcript the transcript view would show, timed or not.
+        let transcriptManager = TranscriptManager(episodeUUID: episode.uuid, podcastUUID: episode.parentIdentifier(), showCoordinator: showInfoCoordinator)
+        guard (try? await transcriptManager.loadTranscript()) == nil else { return nil }
+
+        let audioDuration = duration > 0 ? duration : episode.duration
+        switch LocalTranscripts.onDeviceSource(for: episode, completion: reloadWhenTranscribed(episode, duration: audioDuration)) {
+        case .local(let transcript):
+            FileLog.shared.addMessage("ChapterManager [debug]: \(episode.uuid) has no transcript, using its on-device one")
+            return transcript
+        case .transcribing:
+            FileLog.shared.addMessage("ChapterManager [debug]: \(episode.uuid) has no transcript, transcribing it on device")
+            return nil
+        case .server:
+            FileLog.shared.addMessage("ChapterManager [debug]: \(episode.uuid) has no transcript, and can't be transcribed on device")
+            return nil
+        }
+    }
+
+    /// Reloads the chapters once an on-device transcript of `episode` is ready, if it's still
+    /// the episode they're for.
+    private func reloadWhenTranscribed(_ episode: BaseEpisode, duration: TimeInterval) -> @Sendable (Bool) -> Void {
+        { [weak self] succeeded in
+            guard succeeded else { return }
+            DispatchQueue.main.async {
+                guard let self, self.lastEpisodeUuid == episode.uuid else { return }
+                FileLog.shared.addMessage("ChapterManager [debug]: on-device transcript ready, reloading chapters for \(episode.uuid)")
+                self.parseChapters(episode: episode, duration: duration)
+            }
         }
     }
     #endif

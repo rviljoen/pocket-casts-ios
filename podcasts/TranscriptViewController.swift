@@ -87,6 +87,9 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
     }
 
     private var transcriptSource: TranscriptSource = .publisher
+    /// Whether the episode has no transcript, and the view is waiting for one being made on
+    /// this device.
+    private var isWaitingForOnDeviceTranscript = false
     /// Whether the displayed transcript has timings (cues). A publisher's HTML or plain text
     /// transcript doesn't, so it can't follow playback.
     private var transcriptIsTimed = true
@@ -764,6 +767,7 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
         errorView.isHidden = true
         activityIndicatorView.startAnimating()
         sourceIndicatorView.isHidden = true
+        isWaitingForOnDeviceTranscript = false
     }
 
     private func setupShowTranscriptState() {
@@ -836,49 +840,21 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
                 } else {
                     source = isPublisherOnFile ? .publisherOnFile : .publisher
                 }
-                await MainActor.run {
-                    self.setHasGeneratedTranscripts(hasGeneratedTranscripts)
-                    self.transcriptSource = source
-                    self.transcriptIsTimed = !transcript.cues.isEmpty
-                    if source == .local {
-                        self.displayedChapterBreaks = Self.chapterBreaks(for: episodeUUID)
-                    }
-                    switch source {
-                    case .local, .publisherOnFile:
-                        // Cued against this file already, so there's nothing to fingerprint.
-                        FingerprintTimingManager.shared.stop()
-                        self.startHighlightDisplayLink()
-                    case .server:
-                        let isCurrentEpisode = PlaybackManager.shared.isCurrentEpisode(uuid: episodeUUID)
-                        if FeatureFlag.syncedTranscripts.enabled, !self.showFromEpisode || isCurrentEpisode {
-                            FingerprintTimingManager.shared.prepareForCurrentEpisode()
-                        }
-                        self.startHighlightDisplayLink()
-                    case .publisher:
-                        self.stopSyncedTranscripts()
-                    }
-                    UIView.animate(withDuration: 0.25) {
-                        if hasGeneratedTranscripts, self.shouldShowPremiumView {
-                            self.stackView.alpha = 0
-                            self.showGeneratedTranscriptsPremiumOverlay?()
-                        } else {
-                            if self.isPlayerTab {
-                                self.stackView.alpha = 1
-                            }
-                            self.appearDate = Date()
-                            let syncedState = FingerprintTimingManager.shared.state
-                            self.track(.transcriptShown, properties: [
-                                "type": transcript.type,
-                                "show_as_webpage": transcript.hasJavascript,
-                                "synced_flag_enabled": FeatureFlag.syncedTranscripts.enabled,
-                                "synced_state": syncedState.analyticsName
-                            ])
-                        }
-                        self.bannerView.isHidden = !hasGeneratedTranscripts
-                    }
-                }
+                await prepareToShow(transcript, source: source, hasGeneratedTranscripts: hasGeneratedTranscripts, episodeUUID: episodeUUID)
                 await show(transcript: transcript, resetPosition: shouldResetPosition)
             } catch {
+                // No transcript at all: one made on this device, once the file is downloaded.
+                switch await Self.onDeviceTranscriptWithoutServerOne(episodeUUID: episodeUUID) {
+                case .local(let transcript)?:
+                    await prepareToShow(transcript, source: .local, hasGeneratedTranscripts: false, episodeUUID: episodeUUID)
+                    await show(transcript: transcript, resetPosition: shouldResetPosition)
+                    return
+                case .transcribing?:
+                    await showWaitingForOnDeviceTranscript()
+                    return
+                case .server?, nil:
+                    break
+                }
                 await stopSyncedTranscripts()
                 await track(.transcriptError, properties: ["error_code": (error as NSError).code])
                 await show(error: error)
@@ -1076,6 +1052,76 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
         return formattedText
     }
 
+    /// Sets up the view for a transcript that has loaded, before showing it.
+    private func prepareToShow(_ transcript: TranscriptModel, source: TranscriptSource, hasGeneratedTranscripts: Bool, episodeUUID: String) {
+        isWaitingForOnDeviceTranscript = false
+        setHasGeneratedTranscripts(hasGeneratedTranscripts)
+        transcriptSource = source
+        transcriptIsTimed = !transcript.cues.isEmpty
+        if source == .local {
+            displayedChapterBreaks = Self.chapterBreaks(for: episodeUUID)
+        }
+        switch source {
+        case .local, .publisherOnFile:
+            // Cued against this file already, so there's nothing to fingerprint.
+            FingerprintTimingManager.shared.stop()
+            startHighlightDisplayLink()
+        case .server:
+            let isCurrentEpisode = PlaybackManager.shared.isCurrentEpisode(uuid: episodeUUID)
+            if FeatureFlag.syncedTranscripts.enabled, !showFromEpisode || isCurrentEpisode {
+                FingerprintTimingManager.shared.prepareForCurrentEpisode()
+            }
+            startHighlightDisplayLink()
+        case .publisher:
+            stopSyncedTranscripts()
+        }
+        UIView.animate(withDuration: 0.25) { [self] in
+            if hasGeneratedTranscripts, shouldShowPremiumView {
+                stackView.alpha = 0
+                showGeneratedTranscriptsPremiumOverlay?()
+            } else {
+                if isPlayerTab {
+                    stackView.alpha = 1
+                }
+                appearDate = Date()
+                let syncedState = FingerprintTimingManager.shared.state
+                track(.transcriptShown, properties: [
+                    "type": transcript.type,
+                    "show_as_webpage": transcript.hasJavascript,
+                    "synced_flag_enabled": FeatureFlag.syncedTranscripts.enabled,
+                    "synced_state": syncedState.analyticsName
+                ])
+            }
+            bannerView.isHidden = !hasGeneratedTranscripts
+        }
+    }
+
+    /// For an episode with no transcript, while one is made on this device: says so in place
+    /// of the transcript, with its progress. `localTranscriptStateChanged` keeps it up to date,
+    /// and loads the transcript once it's ready.
+    private func showWaitingForOnDeviceTranscript() {
+        isWaitingForOnDeviceTranscript = true
+        stopSyncedTranscripts()
+        activityIndicatorView.stopAnimating()
+        sourceIndicatorView.isHidden = true
+        shareButton.isHidden = true
+        searchButton.isHidden = true
+        setControlButton(playButton, visible: true)
+        errorView.isHidden = false
+        updateWaitingForOnDeviceTranscriptMessage()
+    }
+
+    private func updateWaitingForOnDeviceTranscriptMessage() {
+        guard let episodeUUID = currentEpisodeUUID else { return }
+        let message: String
+        if let fraction = LocalTranscripts.progress(for: episodeUUID) {
+            message = L10n.transcriptNoneTranscribing(fraction.formatted(.percent.precision(.fractionLength(0))))
+        } else {
+            message = L10n.transcriptNoneQueued
+        }
+        errorView.setMessage(message, attributes: makeStyle(alignment: .center))
+    }
+
     private func show(error: Error) {
         activityIndicatorView.stopAnimating()
         sourceIndicatorView.isHidden = true
@@ -1225,6 +1271,24 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
         return nil
     }
 
+    /// The on-device transcript of an episode with no transcript at all, or that one is being
+    /// made, which `localTranscriptStateChanged` follows. Nil (or `.server`) when one can't be
+    /// made: on-device transcription isn't available, or the episode isn't downloaded.
+    nonisolated private static func onDeviceTranscriptWithoutServerOne(episodeUUID: String) async -> LocalTranscripts.Source? {
+        guard LocalTranscripts.isSupported, let episode = DataManager.shared.findBaseEpisode(uuid: episodeUUID) else { return nil }
+        let chapterBreaks = await Self.chapterBreaks(for: episodeUUID)
+        let source = LocalTranscripts.onDeviceSource(for: episode, chapterBreaks: chapterBreaks)
+        switch source {
+        case .local:
+            FileLog.shared.addMessage("TranscriptViewController [debug]: \(episodeUUID) has no transcript, showing its on-device one")
+        case .transcribing:
+            FileLog.shared.addMessage("TranscriptViewController [debug]: \(episodeUUID) has no transcript, transcribing it on device")
+        case .server:
+            break
+        }
+        return source
+    }
+
     /// Whether `transcript` (a timed one) covers the same length as the episode's audio, so
     /// its times are playback times. One that's noticeably shorter or longer is for a version
     /// without the file's inserted ads.
@@ -1284,6 +1348,19 @@ class TranscriptViewController: PlayerItemViewController, AnalyticsSourceProvide
         }
 
         let succeeded = notification.userInfo?[LocalTranscripts.succeededKey] as? Bool
+        if isWaitingForOnDeviceTranscript {
+            switch succeeded {
+            case true?:
+                FileLog.shared.addMessage("TranscriptViewController [debug]: on-device transcript ready, loading \(episodeUUID)")
+                loadTranscript()
+            case false?:
+                isWaitingForOnDeviceTranscript = false
+                show(error: TranscriptError.notAvailable)
+            case nil:
+                updateWaitingForOnDeviceTranscriptMessage()
+            }
+            return
+        }
         // Replaces a server transcript, or a podcast's timed one that doesn't match the file.
         if succeeded == true, transcriptSource == .server || (transcriptSource == .publisher && transcriptIsTimed) {
             FileLog.shared.addMessage("TranscriptViewController [debug]: on-device transcript ready, reloading \(episodeUUID)")

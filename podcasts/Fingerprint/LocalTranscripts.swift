@@ -85,7 +85,8 @@ enum LocalTranscripts {
 
     /// Which transcript to use in place of a server-generated one.
     enum Source {
-        /// The server transcript matches the audio, or there's no way to replace it.
+        /// The server transcript matches the audio, or there's no way to replace it (or, for
+        /// `onDeviceSource`, to make one).
         case server
         /// An on-device transcript of the listener's file.
         case local(TranscriptModel)
@@ -112,6 +113,21 @@ enum LocalTranscripts {
         guard isOutOfSync(serverTranscript: serverTranscript, audioDuration: audioDuration) else {
             return .server
         }
+        return onDeviceSource(for: episode, chapterBreaks: chapterBreaks, urgent: urgent, completion: completion)
+    }
+
+    /// The on-device transcript of `episode`'s file when one is cached, or else queues one
+    /// like `source(replacing:)`. `.server` means one can't be made: on-device transcription
+    /// isn't available, or the episode isn't downloaded.
+    ///
+    /// Called directly for an episode with no transcript at all, where there's nothing to
+    /// compare the file with. Then only when it's wanted now (it's playing, or its transcript
+    /// is open), never ahead of time: the server may still generate a transcript, which would
+    /// make this one unnecessary.
+    static func onDeviceSource(for episode: BaseEpisode,
+                               chapterBreaks: [ChapterBreak] = [],
+                               urgent: Bool = true,
+                               completion: (@Sendable (Bool) -> Void)? = nil) -> Source {
         if let localTranscript = cachedTranscript(for: episode, chapterBreaks: chapterBreaks) {
             // A transcript cached before music detection is used as it is, and gets its music
             // detected in the background, calling `completion` once it has.

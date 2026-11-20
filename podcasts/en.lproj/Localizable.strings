@@ -6780,3 +6780,9 @@
 
 /* Label at the bottom of the transcript saying the transcript was supplied by the podcast with timings, but for a different length of audio than the downloaded file (which has inserted ads), so it can't follow along with playback */
 "transcript_source_publisher_unsynced" = "Podcast's transcript, not synced to this file";
+
+/* Shown in place of the transcript of an episode that has no transcript, while one is being made on the device. %1$@ is how far it has got, as a percentage, for example 42%. */
+"transcript_none_transcribing" = "This episode has no transcript. Transcribing it on this device: %1$@";
+
+/* Shown in place of the transcript of an episode that has no transcript, while it waits its turn to be transcribed on the device. */
+"transcript_none_queued" = "This episode has no transcript. Waiting to transcribe it on this device";

@@ -5,16 +5,28 @@ import PocketCastsUtils
 extension Episode {
     func checkTranscriptAvailability() {
         Task {
-            if let metadata = try? await ShowInfoCoordinator.shared.loadTranscriptsMetadata(podcastUuid: parentIdentifier(), episodeUuid: uuid) {
-                let transcriptsAvailable = !metadata.transcripts.isEmpty
-                let hasGeneratedTranscripts = metadata.hasGeneratedTranscripts
-                let userInfo = [
-                    "episodeUuid": uuid,
-                    "isAvailable": transcriptsAvailable,
-                    "hasGeneratedTranscripts": hasGeneratedTranscripts
-                ]
-                NotificationCenter.postOnMainThread(notification: Constants.Notifications.episodeTranscriptAvailabilityChanged, userInfo: userInfo)
-            }
+            let metadata = try? await ShowInfoCoordinator.shared.loadTranscriptsMetadata(podcastUuid: parentIdentifier(), episodeUuid: uuid)
+            let transcriptsAvailable = !(metadata?.transcripts.isEmpty ?? true)
+            // Without one from the server, the transcript view makes one on this device.
+            let canTranscribeOnDevice = !transcriptsAvailable && canBeTranscribedOnDevice
+            guard metadata != nil || canTranscribeOnDevice else { return }
+
+            let userInfo = [
+                "episodeUuid": uuid,
+                "isAvailable": transcriptsAvailable || canTranscribeOnDevice,
+                "hasGeneratedTranscripts": metadata?.hasGeneratedTranscripts ?? false
+            ]
+            NotificationCenter.postOnMainThread(notification: Constants.Notifications.episodeTranscriptAvailabilityChanged, userInfo: userInfo)
         }
+    }
+
+    /// Whether the transcript view can make a transcript of this episode on the device: it's
+    /// downloaded, and on-device transcription is available.
+    private var canBeTranscribedOnDevice: Bool {
+        #if os(iOS) && !APPCLIP
+        return LocalTranscripts.isSupported && LocalTranscripts.localAudioURL(for: self) != nil
+        #else
+        return false
+        #endif
     }
 }
