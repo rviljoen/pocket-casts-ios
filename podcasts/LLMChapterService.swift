@@ -328,6 +328,28 @@ actor LLMChapterService {
         let ads: [AlignmentOutput.Ad]
     }
 
+    // MARK: - Ads
+
+    /// Bump when `adsPrompt`, `adsOnlySchema` or the transcript formatting changes.
+    private static let adsPromptVersion = 1
+
+    private static let adsPrompt = """
+    You find the ad breaks in a podcast episode. You are given a transcript of the episode in which every line starts with a [H:MM:SS] timestamp. The episode's chapters are already known, so return only its ads, as described below.
+    """ + "\n\n" + transcriptRules
+
+    private static let adsOnlySchema: [String: Any] = [
+        "type": "object",
+        "properties": [
+            "ads": adsSchema
+        ],
+        "required": ["ads"],
+        "additionalProperties": false
+    ]
+
+    private struct AdsOutput: Decodable {
+        let ads: [AlignmentOutput.Ad]
+    }
+
     /// One line of the condensed transcript sent for alignment.
     private struct TranscriptLine {
         let startTime: TimeInterval
@@ -536,6 +558,61 @@ actor LLMChapterService {
         return place(chapters, ads: output.ads, topicCount: chapters.count, inOrder: true, lines: lines, transcript: transcript, duration: duration, summary: "made", from: "the transcript")
     }
 
+    /// `chapters` with ad chapters added, found in `transcript`, for chapters that are already
+    /// right but don't mark the ads: show notes timestamps, when the file matches the
+    /// publisher's audio. `transcript` must be on the same timeline as `chapters`. The
+    /// chapters themselves don't move, except one starting just after an ad, which starts at
+    /// its end instead. Returns `chapters` unchanged when there are no ads or the request fails.
+    func addAds(to chapters: [ChapterInfo], episodeUUID: String, transcript: TranscriptModel, transcriptSource: String, episodeTitle: String?, duration: TimeInterval) async -> [ChapterInfo] {
+        let lines = Self.condense(transcript)
+        let transcriptText = lines.map { "[\(Self.timestamp($0.startTime))] \($0.text)" }.joined(separator: "\n")
+        guard !lines.isEmpty, transcriptText.count <= Self.maxTranscriptCharacters else {
+            FileLog.shared.addMessage("LLMChapterService: transcript for \(episodeUUID) can't be searched for ads (\(lines.count) lines, \(transcriptText.count) characters)")
+            return chapters
+        }
+
+        let key = LLMChapterCache.Key(
+            episodeUUID: episodeUUID,
+            kind: .transcriptAds,
+            model: Settings.llmChapterModel,
+            version: Self.adsPromptVersion,
+            inputs: [transcriptText]
+        )
+
+        Self.debugLog("""
+            finding ads in \(episodeUUID) "\(episodeTitle ?? "")" with \(key.model) for \(chapters.count) show notes chapters, \
+            \(transcriptSource) transcript: \(lines.count) lines with \(transcript.music.count) music markers (\(transcriptText.count) characters)
+            """)
+        Self.debugLog("transcript sent", body: transcriptText)
+
+        let entry = await cachedRequest(key) { apiKey in
+            let (_, rawResponse) = try await self.requestAds(apiKey: apiKey, model: key.model, transcriptText: transcriptText, episodeTitle: episodeTitle)
+            return LLMChapterCache.Entry(key: key, chapters: [], rawResponse: rawResponse)
+        }
+
+        guard let rawResponse = entry?.rawResponse else { return chapters }
+        Self.debugLog("model response", body: rawResponse)
+        guard let output = try? JSONDecoder().decode(AdsOutput.self, from: Data(rawResponse.utf8)) else {
+            FileLog.shared.addMessage("LLMChapterService: cached ads response for \(episodeUUID) doesn't decode")
+            return chapters
+        }
+
+        let lineStarts = lines.filter { !$0.isMarker }.map(\.startTime)
+        let ads = Self.placeAds(output.ads, lineStarts: lineStarts, quotes: QuoteLocator(transcript: transcript))
+        guard !ads.isEmpty else {
+            FileLog.shared.addMessage("LLMChapterService: no ads found in \(episodeUUID) (model returned \(output.ads.count))")
+            return chapters
+        }
+
+        let existing = chapters.map { LLMChapterCache.Entry.CachedChapter(startTime: $0.startTime.seconds, title: $0.title, url: $0.url) }
+        // The show notes chose these chapters, so only the slivers left between back-to-back
+        // ads are removed, not short chapters of their own.
+        let withAds = Self.removeShortChapters(Self.insertAds(ads, into: existing), minimumTopicDuration: 0)
+        FileLog.shared.addMessage("LLMChapterService: added \(ads.count) ad chapters from \(output.ads.count) ads to \(chapters.count) show notes chapters")
+        Self.debugLog("final chapters", body: withAds.map { "\(Self.timestamp($0.startTime))  \($0.title)" }.joined(separator: "\n"))
+        return convert(withAds, episodeDuration: duration)
+    }
+
     /// Places the model's chapters and ads on the transcript's text and turns them into
     /// chapters, logging how it went.
     private func place(_ placed: [AlignmentOutput.Chapter], ads modelAds: [AlignmentOutput.Ad], topicCount: Int, inOrder: Bool, lines: [TranscriptLine], transcript: TranscriptModel, duration: TimeInterval, summary: String, from source: String) -> [ChapterInfo] {
@@ -668,6 +745,24 @@ actor LLMChapterService {
             system: Self.generationPrompt,
             user: userParts.joined(separator: "\n\n"),
             schema: Self.generationSchema,
+            effort: "medium",
+            timeout: 180
+        )
+    }
+
+    private func requestAds(apiKey: String, model: String, transcriptText: String, episodeTitle: String?) async throws -> (output: AdsOutput, rawText: String) {
+        var userParts: [String] = []
+        if let episodeTitle {
+            userParts.append("Episode: \(episodeTitle)")
+        }
+        userParts.append("Transcript:\n\(transcriptText)")
+
+        return try await sendMessage(
+            apiKey: apiKey,
+            model: model,
+            system: Self.adsPrompt,
+            user: userParts.joined(separator: "\n\n"),
+            schema: Self.adsOnlySchema,
             effort: "medium",
             timeout: 180
         )
@@ -1018,7 +1113,7 @@ actor LLMChapterService {
     /// their start: topic chapters shorter than `minimumTopicDuration` before another topic,
     /// and any non-ad chapter shorter than `minimumResumedDuration` before an ad (a few seconds
     /// of the interrupted topic between back-to-back ads). Ad chapters always stay.
-    private static func removeShortChapters(_ chapters: [LLMChapterCache.Entry.CachedChapter]) -> [LLMChapterCache.Entry.CachedChapter] {
+    private static func removeShortChapters(_ chapters: [LLMChapterCache.Entry.CachedChapter], minimumTopicDuration: TimeInterval = LLMChapterService.minimumTopicDuration) -> [LLMChapterCache.Entry.CachedChapter] {
         func isAd(_ chapter: LLMChapterCache.Entry.CachedChapter) -> Bool {
             chapter.title.hasPrefix(adTitlePrefix)
         }
