@@ -230,9 +230,10 @@ This only runs while the app is running. With the audio background mode, that in
 |---|---|
 | Green outline | On-device transcript queued or in progress |
 | Green filled | On-device transcript done |
-| Blue filled | A server transcript has been downloaded: the podcast's own timed one, or the generated one |
-| Blue text bubble | The podcast's own transcript has been downloaded, but it's untimed text (HTML or plain) |
-| Blue outline | Generated transcript on the server, not downloaded yet (or downloading) |
+| Purple filled | The podcast's own timed transcript has been downloaded |
+| Purple text bubble | The podcast's own transcript has been downloaded, but it's untimed text (HTML or plain) |
+| Blue filled | Pocket Casts generated transcript downloaded |
+| Blue outline | Pocket Casts generated transcript on the server, not downloaded yet (or downloading) |
 | Grey filled | The server says there's no generated transcript (`hasGeneratedTranscript == false`) |
 | Hidden | Unknown |
 
