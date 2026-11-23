@@ -29,6 +29,32 @@ enum LocalTranscripts {
         return false
     }
 
+    /// Whether `episode`'s podcast is excluded from on-device transcription in settings. An
+    /// excluded podcast's episodes are never transcribed, and transcripts cached before it was
+    /// excluded are ignored, so it's as if they didn't exist.
+    static func isExcluded(_ episode: BaseEpisode) -> Bool {
+        isExcluded(podcastUUID: episode.parentIdentifier())
+    }
+
+    static func isExcluded(podcastUUID: String) -> Bool {
+        Settings.localTranscriptionExcludedPodcasts.contains(podcastUUID)
+    }
+
+    /// Excludes the podcasts in `podcastUUIDs` from on-device transcription, or includes them
+    /// again, and refreshes the transcript indicators. Their episodes already waiting to be
+    /// transcribed are dropped when their turn comes; one being transcribed finishes.
+    static func setExcluded(_ excluded: Bool, podcastUUIDs: [String]) {
+        var podcasts = Settings.localTranscriptionExcludedPodcasts
+        if excluded {
+            podcasts.formUnion(podcastUUIDs)
+        } else {
+            podcasts.subtract(podcastUUIDs)
+        }
+        Settings.localTranscriptionExcludedPodcasts = podcasts
+        FileLog.shared.addMessage("LocalTranscripts: \(excluded ? "excluded" : "included") \(podcastUUIDs.count) podcasts \(excluded ? "from" : "in") on-device transcription, \(podcasts.count) now excluded")
+        NotificationCenter.postOnMainThread(notification: stateChangedNotification)
+    }
+
     /// Whether `serverTranscript` covers a noticeably different length of audio than the
     /// listener's file, which is what inserted ads cause.
     static func isOutOfSync(serverTranscript: TranscriptModel, audioDuration: TimeInterval) -> Bool {
@@ -64,7 +90,8 @@ enum LocalTranscripts {
     /// The cached transcript of `episode`'s current local file, if one has been made, with a
     /// heading at each of `chapterBreaks`.
     static func cachedTranscript(for episode: BaseEpisode, chapterBreaks: [ChapterBreak] = []) -> TranscriptModel? {
-        guard let audioURL = localAudioURL(for: episode),
+        guard !isExcluded(episode),
+              let audioURL = localAudioURL(for: episode),
               let cached = LocalTranscriptCache.load(episodeUUID: episode.uuid, audioURL: audioURL) else {
             return nil
         }
@@ -76,7 +103,8 @@ enum LocalTranscripts {
     /// Whether `episode`'s cached transcript has no music detection yet, or one from an older
     /// version of it.
     static func cachedTranscriptNeedsMusic(for episode: BaseEpisode) -> Bool {
-        guard let audioURL = localAudioURL(for: episode),
+        guard !isExcluded(episode),
+              let audioURL = localAudioURL(for: episode),
               let cached = LocalTranscriptCache.load(episodeUUID: episode.uuid, audioURL: audioURL) else {
             return false
         }
@@ -162,7 +190,8 @@ enum LocalTranscripts {
     /// for list rows: it answers from an index kept in memory, and says false until that's
     /// loaded (see `loadIndex`), which posts `stateChangedNotification` without an episode.
     static func hasTranscript(for episode: BaseEpisode) -> Bool {
-        guard let cachedIdentity = LocalTranscriptIndex.shared.identity(for: episode.uuid),
+        guard !isExcluded(episode),
+              let cachedIdentity = LocalTranscriptIndex.shared.identity(for: episode.uuid),
               let audioURL = localAudioURL(for: episode) else {
             return false
         }
@@ -181,7 +210,8 @@ enum LocalTranscripts {
 
     /// Queues `episode`'s local file for transcription unless it's already queued, then calls
     /// `completion` with whether a transcript was cached. Returns false, without calling
-    /// `completion`, when on-device transcription or a local file isn't available.
+    /// `completion`, when on-device transcription or a local file isn't available, or the
+    /// podcast is excluded.
     ///
     /// Transcriptions run one at a time, in the order queued, except that an `urgent` one
     /// goes to the front.
@@ -191,13 +221,18 @@ enum LocalTranscripts {
             FileLog.shared.addMessage("LocalTranscripts [debug]: on-device transcription isn't available")
             return false
         }
+        guard !isExcluded(episode) else {
+            FileLog.shared.addMessage("LocalTranscripts [debug]: \(episode.uuid)'s podcast is excluded from on-device transcription")
+            return false
+        }
         guard let audioURL = localAudioURL(for: episode) else {
             FileLog.shared.addMessage("LocalTranscripts [debug]: \(episode.uuid) isn't downloaded, can't transcribe it")
             return false
         }
         let episodeUUID = episode.uuid
+        let podcastUUID = episode.parentIdentifier()
         Task.detached(priority: .utility) {
-            let succeeded = await LocalTranscriber.shared.transcribe(episodeUUID: episodeUUID, audioURL: audioURL, urgent: urgent)
+            let succeeded = await LocalTranscriber.shared.transcribe(episodeUUID: episodeUUID, podcastUUID: podcastUUID, audioURL: audioURL, urgent: urgent)
             completion(succeeded)
         }
         return true
@@ -270,13 +305,15 @@ private actor LocalTranscriber {
     /// on `result`.
     private final class Job: @unchecked Sendable {
         let episodeUUID: String
+        let podcastUUID: String
         let audioURL: URL
         let queuedAt = Date()
         let result: Task<Bool, Never>
         private let continuation: AsyncStream<Bool>.Continuation
 
-        init(episodeUUID: String, audioURL: URL) {
+        init(episodeUUID: String, podcastUUID: String, audioURL: URL) {
             self.episodeUUID = episodeUUID
+            self.podcastUUID = podcastUUID
             self.audioURL = audioURL
             let (stream, continuation) = AsyncStream<Bool>.makeStream()
             self.continuation = continuation
@@ -298,7 +335,7 @@ private actor LocalTranscriber {
     private var running: Job?
     private var pending: [Job] = []
 
-    func transcribe(episodeUUID: String, audioURL: URL, urgent: Bool) async -> Bool {
+    func transcribe(episodeUUID: String, podcastUUID: String, audioURL: URL, urgent: Bool) async -> Bool {
         let job: Job
         if let running, running.episodeUUID == episodeUUID {
             job = running
@@ -310,7 +347,7 @@ private actor LocalTranscriber {
                 FileLog.shared.addMessage("LocalTranscripts [debug]: \(episodeUUID) is wanted now, moved to the front of the queue")
             }
         } else {
-            job = Job(episodeUUID: episodeUUID, audioURL: audioURL)
+            job = Job(episodeUUID: episodeUUID, podcastUUID: podcastUUID, audioURL: audioURL)
             if urgent {
                 pending.insert(job, at: 0)
             } else {
@@ -325,6 +362,13 @@ private actor LocalTranscriber {
     }
 
     private func startNextIfIdle() {
+        // Jobs whose podcast was excluded while they waited are dropped.
+        while running == nil, let job = pending.first, LocalTranscripts.isExcluded(podcastUUID: job.podcastUUID) {
+            pending.removeFirst()
+            FileLog.shared.addMessage("LocalTranscripts [debug]: dropped \(job.episodeUUID) from the queue, its podcast is excluded from on-device transcription")
+            LocalTranscriptProgress.shared.finish(episodeUUID: job.episodeUUID, succeeded: false)
+            job.finish(succeeded: false)
+        }
         guard running == nil, !pending.isEmpty else { return }
         let job = pending.removeFirst()
         running = job

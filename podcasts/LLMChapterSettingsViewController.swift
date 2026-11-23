@@ -1,27 +1,32 @@
+import PocketCastsDataModel
 import PocketCastsUtils
 import UIKit
 
-class LLMChapterSettingsViewController: PCTableViewController, UITextFieldDelegate {
+class LLMChapterSettingsViewController: PCTableViewController, UITextFieldDelegate, PodcastSelectionDelegate {
     private enum Section: Int, CaseIterable {
         case apiKey
         case model
         case connection
+        case transcription
     }
 
     private enum Row {
         case apiKeyField
         case modelField
         case testConnection
+        case excludedPodcasts
     }
 
     private let tableStructure: [[Row]] = [
         [.apiKeyField],
         [.modelField],
-        [.testConnection]
+        [.testConnection],
+        [.excludedPodcasts]
     ]
 
     private let textFieldCellId = "TextFieldCellId"
     private let buttonCellId = "ButtonCell"
+    private let disclosureCellId = "DisclosureCell"
 
     private weak var apiKeyTextField: UITextField?
     private weak var modelTextField: UITextField?
@@ -31,6 +36,13 @@ class LLMChapterSettingsViewController: PCTableViewController, UITextFieldDelega
         title = "LLM Chapters"
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: textFieldCellId)
         tableView.register(UINib(nibName: "ButtonCell", bundle: nil), forCellReuseIdentifier: buttonCellId)
+        tableView.register(UINib(nibName: "DisclosureCell", bundle: nil), forCellReuseIdentifier: disclosureCellId)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // The excluded count changes in the podcast chooser.
+        tableView.reloadData()
     }
 
     // MARK: - Table View
@@ -72,7 +84,20 @@ class LLMChapterSettingsViewController: PCTableViewController, UITextFieldDelega
             cell.buttonTitle.text = "Test Extraction"
             cell.buttonTitle.textColor = ThemeColor.support01()
             return cell
+
+        case .excludedPodcasts:
+            let cell = tableView.dequeueReusableCell(withIdentifier: disclosureCellId, for: indexPath) as! DisclosureCell
+            cell.cellLabel.text = "Excluded Podcasts"
+            let count = excludedSubscribedPodcastUUIDs().count
+            cell.cellSecondaryLabel.text = count == 0 ? "None" : "\(count)"
+            return cell
         }
+    }
+
+    /// The subscribed podcasts that are excluded from on-device transcription.
+    private func excludedSubscribedPodcastUUIDs() -> [String] {
+        let excluded = Settings.localTranscriptionExcludedPodcasts
+        return DataManager.shared.allPodcasts(includeUnsubscribed: false).map(\.uuid).filter { excluded.contains($0) }
     }
 
     private func textField(in cell: UITableViewCell) -> UITextField {
@@ -118,8 +143,13 @@ class LLMChapterSettingsViewController: PCTableViewController, UITextFieldDelega
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let row = tableStructure[indexPath.section][indexPath.row]
-        if row == .testConnection {
+        switch row {
+        case .testConnection:
             testConnection()
+        case .excludedPodcasts:
+            showExcludedPodcastsChooser()
+        case .apiKeyField, .modelField:
+            break
         }
     }
 
@@ -127,6 +157,7 @@ class LLMChapterSettingsViewController: PCTableViewController, UITextFieldDelega
         switch Section(rawValue: section) {
         case .apiKey: return "Anthropic API Key"
         case .model: return "Model"
+        case .transcription: return "On-Device Transcription"
         case .connection, .none: return nil
         }
     }
@@ -135,6 +166,7 @@ class LLMChapterSettingsViewController: PCTableViewController, UITextFieldDelega
         switch Section(rawValue: section) {
         case .apiKey: return "Stored in the Keychain on this device. Chapters will be extracted from show notes when no embedded chapters are found. Clear the field to remove the key."
         case .model: return "The Claude model used for extraction. The model must support structured outputs."
+        case .transcription: return "Episodes of excluded podcasts are never transcribed on this device, and transcripts already made of them are ignored, so they get no chapters made from one. Use it for podcasts in a language the transcriber doesn't support, or with very long episodes."
         case .connection, .none: return nil
         }
     }
@@ -142,6 +174,31 @@ class LLMChapterSettingsViewController: PCTableViewController, UITextFieldDelega
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         UITableView.automaticDimension
     }
+
+    // MARK: - Excluded Podcasts
+
+    private func showExcludedPodcastsChooser() {
+        let chooser = PodcastChooserViewController()
+        chooser.delegate = self
+        chooser.allowSelectAll = false
+        chooser.selectedUuids = excludedSubscribedPodcastUUIDs()
+        navigationController?.pushViewController(chooser, animated: true)
+    }
+
+    func bulkSelectionChange(selected: Bool) {
+        let all = DataManager.shared.allPodcasts(includeUnsubscribed: false).map(\.uuid)
+        LocalTranscripts.setExcluded(selected, podcastUUIDs: all)
+    }
+
+    func podcastSelected(podcast: String) {
+        LocalTranscripts.setExcluded(true, podcastUUIDs: [podcast])
+    }
+
+    func podcastUnselected(podcast: String) {
+        LocalTranscripts.setExcluded(false, podcastUUIDs: [podcast])
+    }
+
+    func didChangePodcasts(numberSelected: Int) {}
 
     // MARK: - UITextFieldDelegate
 

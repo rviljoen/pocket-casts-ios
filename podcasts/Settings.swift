@@ -559,6 +559,15 @@ class Settings: NSObject {
         get { UserDefaults.standard.string(forKey: llmChapterModelKey) ?? defaultLLMChapterModel }
         set { UserDefaults.standard.set(newValue, forKey: llmChapterModelKey) }
     }
+
+    private static let localTranscriptionExcludedPodcastsKey = "LocalTranscriptionExcludedPodcasts"
+
+    /// UUIDs of podcasts never transcribed on device: ones in a language the transcriber
+    /// doesn't handle, or with episodes too long to be worth it.
+    static var localTranscriptionExcludedPodcasts: Set<String> {
+        get { Set(UserDefaults.standard.stringArray(forKey: localTranscriptionExcludedPodcastsKey) ?? []) }
+        set { UserDefaults.standard.set(newValue.sorted(), forKey: localTranscriptionExcludedPodcastsKey) }
+    }
     #endif
 
     // MARK: - Chapter Filter Keywords

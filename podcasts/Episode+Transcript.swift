@@ -21,10 +21,10 @@ extension Episode {
     }
 
     /// Whether the transcript view can make a transcript of this episode on the device: it's
-    /// downloaded, and on-device transcription is available.
+    /// downloaded, on-device transcription is available, and its podcast isn't excluded from it.
     private var canBeTranscribedOnDevice: Bool {
         #if os(iOS) && !APPCLIP
-        return LocalTranscripts.isSupported && LocalTranscripts.localAudioURL(for: self) != nil
+        return LocalTranscripts.isSupported && !LocalTranscripts.isExcluded(self) && LocalTranscripts.localAudioURL(for: self) != nil
         #else
         return false
         #endif
