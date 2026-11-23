@@ -52,8 +52,14 @@ extension EpisodeDetailViewController: WKNavigationDelegate, SFSafariViewControl
                     vc?.showNotesHolderTopAnchor?.constant = 0.0
                     vc?.showNotesWebViewTopConstraint?.constant = 20.0
                 }
-                if let metadata = try? await ShowInfoCoordinator.shared.loadTranscriptsMetadata(podcastUuid: parentIdentifier, episodeUuid: episodeUUID), !metadata.transcripts.isEmpty {
-                    let viewModel = TranscriptExcerptViewModel(episodeUUID: episodeUUID, podcastUUID: parentIdentifier, isGeneratedTranscript: metadata.hasGeneratedTranscripts) { [weak self] in
+                let metadata = try? await ShowInfoCoordinator.shared.loadTranscriptsMetadata(podcastUuid: parentIdentifier, episodeUuid: episodeUUID)
+                let hasServerTranscript = !(metadata?.transcripts.isEmpty ?? true)
+                // A transcript already made on this device counts too: the transcript view
+                // shows it when the server has none. One isn't started from here.
+                let hasOnDeviceTranscript = LocalTranscripts.hasTranscript(for: episode)
+                if hasServerTranscript || hasOnDeviceTranscript {
+                    let isGeneratedTranscript = hasServerTranscript ? metadata?.hasGeneratedTranscripts ?? false : true
+                    let viewModel = TranscriptExcerptViewModel(episodeUUID: episodeUUID, podcastUUID: parentIdentifier, isGeneratedTranscript: isGeneratedTranscript) { [weak self] in
                         DispatchQueue.main.async {
                             guard let self else { return }
 
