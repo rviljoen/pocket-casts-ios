@@ -198,7 +198,17 @@ enum LocalTranscripts {
         return LocalTranscriptCache.identity(of: audioURL) == cachedIdentity
     }
 
-    /// Loads the index `hasTranscript` answers from, in the background.
+    /// Deletes `episodeUUID`'s on-device transcript, for when its file is deleted. A transcript
+    /// only matches the exact file it was made from, and a new download is a different file,
+    /// so it could never be used again.
+    static func removeTranscript(for episodeUUID: String) {
+        guard LocalTranscriptCache.remove(episodeUUID: episodeUUID) else { return }
+        FileLog.shared.addMessage("LocalTranscripts [debug]: removed \(episodeUUID)'s transcript with its file")
+        NotificationCenter.postOnMainThread(notification: stateChangedNotification, userInfo: [episodeUUIDKey: episodeUUID])
+    }
+
+    /// Loads the index `hasTranscript` answers from, in the background, and deletes the
+    /// transcripts whose file is gone or has been replaced.
     static func loadIndex() {
         LocalTranscriptIndex.shared.loadInBackground()
     }
@@ -898,6 +908,10 @@ private final class LocalTranscriptIndex: @unchecked Sendable {
         lock.withLock { identities[episodeUUID] = identity }
     }
 
+    func remove(episodeUUID: String) {
+        lock.withLock { identities[episodeUUID] = nil }
+    }
+
     func loadInBackground() {
         let shouldLoad: Bool = lock.withLock {
             guard !isLoading else { return false }
@@ -907,7 +921,12 @@ private final class LocalTranscriptIndex: @unchecked Sendable {
         guard shouldLoad else { return }
 
         DispatchQueue.global(qos: .utility).async {
-            let loaded = LocalTranscriptCache.allIdentities()
+            var loaded = LocalTranscriptCache.allIdentities()
+            for (episodeUUID, identity) in loaded where !Self.matchesFile(episodeUUID: episodeUUID, identity: identity) {
+                // Removed before the index is filled, so the rows never show it.
+                LocalTranscriptCache.remove(episodeUUID: episodeUUID, ifIdentity: identity)
+                loaded[episodeUUID] = nil
+            }
             self.lock.withLock {
                 // Entries saved while loading are newer than what's on disk was read as.
                 self.identities.merge(loaded) { current, _ in current }
@@ -916,6 +935,15 @@ private final class LocalTranscriptIndex: @unchecked Sendable {
                 NotificationCenter.default.post(name: LocalTranscripts.stateChangedNotification, object: nil)
             }
         }
+    }
+
+    /// Whether the episode still has the local file a transcript with `identity` was made from.
+    private static func matchesFile(episodeUUID: String, identity: String) -> Bool {
+        guard let episode = DataManager.shared.findBaseEpisode(uuid: episodeUUID),
+              let audioURL = LocalTranscripts.localAudioURL(for: episode) else {
+            return false
+        }
+        return LocalTranscriptCache.identity(of: audioURL) == identity
     }
 }
 
@@ -988,12 +1016,34 @@ private enum LocalTranscriptCache {
         LocalTranscriptIndex.shared.record(episodeUUID: entry.episodeUUID, identity: entry.audioFileIdentity)
     }
 
+    /// Deletes the episode's entry, if it has one, and returns whether it did.
+    @discardableResult
+    static func remove(episodeUUID: String) -> Bool {
+        LocalTranscriptIndex.shared.remove(episodeUUID: episodeUUID)
+        guard let fileURL = try? cacheFileURL(for: episodeUUID) else { return false }
+        return (try? FileManager.default.removeItem(at: fileURL)) != nil
+    }
+
+    /// Deletes the episode's entry only if it's still the one made from the file with
+    /// `identity`, so a transcript saved since it was read isn't lost.
+    static func remove(episodeUUID: String, ifIdentity identity: String) {
+        guard let fileURL = try? cacheFileURL(for: episodeUUID),
+              let data = try? Data(contentsOf: fileURL),
+              let header = try? JSONDecoder().decode(Header.self, from: data),
+              header.audioFileIdentity == identity else {
+            return
+        }
+        try? FileManager.default.removeItem(at: fileURL)
+        FileLog.shared.addMessage("LocalTranscripts [debug]: removed \(episodeUUID)'s transcript, its file is gone or was replaced")
+    }
+
+    private struct Header: Decodable {
+        let episodeUUID: String
+        let audioFileIdentity: String
+    }
+
     /// The cached entries' episodes and the file each was made from, without their segments.
     static func allIdentities() -> [String: String] {
-        struct Header: Decodable {
-            let episodeUUID: String
-            let audioFileIdentity: String
-        }
         guard let directory = try? cacheFileURL(for: "x").deletingLastPathComponent(),
               let files = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil) else {
             return [:]

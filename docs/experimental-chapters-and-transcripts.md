@@ -185,7 +185,7 @@ These fix DAI: a transcript made from the listener's own file is on the playback
   - **Beds:** quiet music under speech, usually ads, from how many windows have some music.
 
   These become `[music until …]` and `[music bed under speech until …]` lines in the condensed transcript, as hints for the model. A `musicVersion` bump re-runs detection on cached transcripts.
-- **Cache** (`LocalTranscriptCache`): `Application Support/PocketCasts/LocalTranscripts/<episode>.json`. Each entry is keyed by the file's identity (size and modification time), since a new download can carry different ads. `LocalTranscriptIndex` keeps an in-memory map of episodes to file identities, so the episode rows can check quickly.
+- **Cache** (`LocalTranscriptCache`): `Application Support/PocketCasts/LocalTranscripts/<episode>.json`. Each entry is keyed by the file's identity (size and modification time), since a new download can carry different ads. `LocalTranscriptIndex` keeps an in-memory map of episodes to file identities, so the episode rows can check quickly. A transcript is deleted with its file (`EpisodeManager.deleteFiles`, which archiving and removing a download go through), and when the index loads, entries whose file is gone or was replaced are deleted too.
 - **Progress:** `LocalTranscriptProgress` tracks the queue and the current job. `LocalTranscripts.stateChangedNotification` is posted on the main queue when a job is queued, makes progress or finishes.
 - **The model** (`makeModel`) groups segments into paragraphs, at pauses of 1.5 seconds or more, aiming for about 30 seconds and at most 90. It adds chapter headings at the current chapters' start times, in a larger bold font.
 

@@ -560,6 +560,11 @@ class EpisodeManager: NSObject {
         do {
             try fileManager.removeItem(atPath: downloadManager.tempPath(for: episode))
         } catch {}
+
+        #if !os(watchOS) && !APPCLIP && !os(tvOS)
+        // an on-device transcript only matches the file just deleted
+        LocalTranscripts.removeTranscript(for: episode.uuid)
+        #endif
     }
 
     class func removeDownload(for episodes: [BaseEpisode]) {
